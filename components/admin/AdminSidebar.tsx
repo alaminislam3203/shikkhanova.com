@@ -78,7 +78,7 @@ export default function AdminSidebar({
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-gradient-to-b from-[#020D24] via-[#041A42] to-[#010816] text-white flex flex-col justify-between p-5 border-r border-brand-800/60 shadow-2xl transition-transform duration-300 lg:translate-x-0 lg:static lg:z-auto ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-gradient-to-b from-[#020D24] via-[#041A42] to-[#010816] text-white flex flex-col justify-between p-5 border-r border-brand-800/60 shadow-2xl transition-transform duration-300 lg:translate-x-0 lg:sticky lg:top-0 lg:min-h-screen lg:z-30 shrink-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >

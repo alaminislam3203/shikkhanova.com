@@ -200,7 +200,7 @@ export default function AdminPage() {
   const totalRevenue = approvedPurchases.reduce((acc, curr) => acc + curr.amount, 0);
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 items-start">
+    <div className="min-h-screen bg-slate-100/80 flex flex-col lg:flex-row">
       
       {/* Side Menu Navigation */}
       <AdminSidebar
@@ -212,7 +212,7 @@ export default function AdminPage() {
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 w-full space-y-6">
+      <div className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 space-y-6">
         
         {/* Top Navbar / Header Bar */}
         <div className="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200/90 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
