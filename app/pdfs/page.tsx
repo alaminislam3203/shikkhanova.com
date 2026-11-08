@@ -187,9 +187,9 @@ export default function PdfsPage() {
           <div className="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0">
             <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl flex items-center justify-between gap-5 shadow-xl hover:bg-white/15 transition">
               <div className="flex items-center gap-3">
-                <span className="w-10 h-10 rounded-xl bg-bkash text-white font-black text-xs flex items-center justify-center shadow-md">
-                  bKash
-                </span>
+                <div className="w-14 h-10 rounded-xl bg-white p-1.5 flex items-center justify-center shadow-md">
+                  <img src="/assets/images/bkash.png" alt="bKash" className="h-full w-auto object-contain" />
+                </div>
                 <div>
                   <p className="text-[10px] text-blue-200 font-bold uppercase tracking-wider">বিকাশ পার্সোনাল</p>
                   <p className="text-base font-black font-mono text-white tracking-wider">01712592519</p>
@@ -202,9 +202,9 @@ export default function PdfsPage() {
 
             <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl flex items-center justify-between gap-5 shadow-xl hover:bg-white/15 transition">
               <div className="flex items-center gap-3">
-                <span className="w-10 h-10 rounded-xl bg-nagad text-white font-black text-xs flex items-center justify-center shadow-md">
-                  নগদ
-                </span>
+                <div className="w-14 h-10 rounded-xl bg-white p-1.5 flex items-center justify-center shadow-md">
+                  <img src="/assets/images/nagad.png" alt="Nagad" className="h-full w-auto object-contain" />
+                </div>
                 <div>
                   <p className="text-[10px] text-blue-200 font-bold uppercase tracking-wider">নগদ পার্সোনাল</p>
                   <p className="text-base font-black font-mono text-white tracking-wider">01712592519</p>

@@ -122,7 +122,9 @@ export default function PdfPurchaseModal({
                     : 'border-slate-200 hover:border-slate-300'
                 }`}
               >
-                <span className="w-7 h-7 rounded-lg bg-bkash text-white text-[10px] font-black flex items-center justify-center">বিকাশ</span>
+                <div className="w-11 h-8 rounded-lg bg-white p-1 flex items-center justify-center shadow-xs border border-slate-200/80">
+                  <img src="/assets/images/bkash.png" alt="bKash" className="h-full w-auto object-contain" />
+                </div>
                 <div>
                   <p className="text-xs font-bold text-slate-800">bKash Personal</p>
                   <p className="text-[11px] font-mono text-slate-500">01712592519</p>
@@ -138,7 +140,9 @@ export default function PdfPurchaseModal({
                     : 'border-slate-200 hover:border-slate-300'
                 }`}
               >
-                <span className="w-7 h-7 rounded-lg bg-nagad text-white text-[10px] font-black flex items-center justify-center">নগদ</span>
+                <div className="w-11 h-8 rounded-lg bg-white p-1 flex items-center justify-center shadow-xs border border-slate-200/80">
+                  <img src="/assets/images/nagad.png" alt="Nagad" className="h-full w-auto object-contain" />
+                </div>
                 <div>
                   <p className="text-xs font-bold text-slate-800">Nagad Personal</p>
                   <p className="text-[11px] font-mono text-slate-500">01712592519</p>

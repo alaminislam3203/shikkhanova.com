@@ -129,10 +129,13 @@ export default function PdfCard({ pdf, onBuyClick }: PdfCardProps) {
               <span className="text-[10px] bg-rose-100 text-rose-700 font-extrabold px-2 py-0.5 rounded-full inline-block mb-1">
                 বিশেষ ছাড়
               </span>
-              <div className="flex items-center justify-end gap-1">
-                <span className="w-3.5 h-3.5 rounded-full bg-[#E2136E] inline-block" title="bKash"></span>
-                <span className="w-3.5 h-3.5 rounded-full bg-[#F7941D] inline-block" title="Nagad"></span>
-                <span className="text-[10px] text-slate-500 font-bold ml-1">bKash/Nagad</span>
+              <div className="flex items-center justify-end gap-1.5">
+                <div className="bg-white px-1.5 py-0.5 rounded-md border border-slate-200/80 shadow-xs flex items-center">
+                  <img src="/assets/images/bkash.png" alt="bKash" className="h-3.5 w-auto object-contain" />
+                </div>
+                <div className="bg-white px-1.5 py-0.5 rounded-md border border-slate-200/80 shadow-xs flex items-center">
+                  <img src="/assets/images/nagad.png" alt="Nagad" className="h-3.5 w-auto object-contain" />
+                </div>
               </div>
             </div>
           </div>
