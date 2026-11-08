@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>শিক্ষা MCQ — Class 6-10</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,"Noto Sans Bengali",sans-serif;background:#f5f7fb;color:#182230}
+.header{background:linear-gradient(135deg,#0b63ce,#6d28d9);color:#fff;padding:25px 16px;text-align:center}
+.header h1{margin:0;font-size:30px}.header p{margin:8px 0 0}
+.wrap{max-width:1100px;margin:auto;padding:24px 15px}.page{display:none}.page.active{display:block}
+.hero,.panel{background:#fff;border-radius:20px;padding:25px;box-shadow:0 6px 24px #00000012;margin-bottom:20px}
+.hero{text-align:center}.hero h2{font-size:28px}.classes{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px}
+.classbtn{border:0;border-radius:18px;padding:25px 12px;background:#fff;box-shadow:0 5px 18px #00000012;cursor:pointer;font-size:18px;font-weight:bold}
+.classbtn:hover{transform:translateY(-2px);background:#eef5ff}
+.subjects{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px}
+.subject{padding:20px;border:1px solid #e2e8f0;border-radius:15px;background:#fff;cursor:pointer}
+.subject:hover{border-color:#1769e0;background:#f6f9ff}
+.icon{font-size:30px}.back{background:#eef2f7;border:0;padding:10px 15px;border-radius:10px;cursor:pointer;margin-bottom:15px}
+.btn{background:#1769e0;color:white;border:0;padding:13px 18px;border-radius:11px;font-weight:bold;cursor:pointer}
+select{padding:12px;border:1px solid #d8dee8;border-radius:10px;width:100%;margin:8px 0 15px}
+.test{display:none}.top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.timer{background:#fff0f0;color:#b42318;padding:9px 13px;border-radius:9px;font-weight:bold}
+.progress{height:8px;background:#e7ebf0;border-radius:10px;margin:18px 0;overflow:hidden}.bar{height:100%;width:0;background:#1769e0}
+.q{font-size:20px;font-weight:bold;margin:20px 0}.opt{display:block;padding:13px;border:1px solid #dce2ea;border-radius:10px;margin:9px 0;cursor:pointer}.opt:hover{background:#f4f7ff}
+.actions{display:flex;gap:10px}.actions button{flex:1}.result{text-align:center}.score{font-size:45px;color:#1769e0;font-weight:bold}.review{text-align:left}.good{color:#087443}.bad{color:#b42318}
+.footer{text-align:center;padding:25px;color:#667085}
+</style>
+</head>
+<body>
+<div class="header"><h1>📚 শিক্ষা MCQ</h1><p>৬ষ্ঠ–১০ম শ্রেণির Online Model Test</p></div>
+
+<div class="wrap">
+<div id="home" class="page active">
+<div class="hero"><h2>আপনার শ্রেণি নির্বাচন করুন</h2><p>প্রথমে শ্রেণি নির্বাচন করুন, তারপর বিষয় ও Model Test বেছে নিন।</p></div>
+<div class="classes" id="classList"></div>
+</div>
+
+<div id="classPage" class="page">
+<button class="back" onclick="goHome()">← Home</button>
+<div class="panel">
+<h2 id="classTitle"></h2><p>আপনার বিষয় নির্বাচন করুন</p>
+<div class="subjects" id="subjectList"></div>
+</div>
+</div>
+
+<div id="subjectPage" class="page">
+<button class="back" onclick="goClass()">← আগের পেজ</button>
+<div class="panel">
+<h2 id="subjectTitle"></h2>
+<p>Model Test নির্বাচন করুন</p>
+<label>প্রশ্ন সংখ্যা</label>
+<select id="count"><option value="5">৫টি প্রশ্ন</option><option value="10">১০টি প্রশ্ন</option></select>
+<label>সময়</label>
+<select id="minutes"><option value="5">৫ মিনিট</option><option value="10">১০ মিনিট</option><option value="20">২০ মিনিট</option></select>
+<button class="btn" onclick="startTest()">🚀 Model Test শুরু করুন</button>
+</div>
+</div>
+
+<div id="testPage" class="page">
+<div class="panel test">
+<div class="top"><b id="testInfo"></b><span class="timer">⏱️ <span id="time"></span></span></div>
+<div class="progress"><div class="bar" id="bar"></div></div>
+<div id="question"></div>
+<div class="actions"><button class="btn" onclick="previousQ()">⬅️ আগের</button><button class="btn" onclick="nextQ()">পরের ➡️</button></div>
+</div>
+</div>
+
+<div id="resultPage" class="page">
+<div class="panel result"><h2>🎉 পরীক্ষা শেষ</h2><div class="score" id="score"></div><p id="message"></p><div class="review" id="review"></div><button class="btn" onclick="goHome()">🏠 Home</button></div>
+</div>
+</div>
+
+<div class="footer">© 2026 শিক্ষা MCQ • Class 6–10</div>
+
+<script>
+const classes=["৬ষ্ঠ শ্রেণি","৭ম শ্রেণি","৮ম শ্রেণি","৯ম শ্রেণি","১০ম শ্রেণি"];
+const subjects=[
+["📕","বাংলা"],["📘","English"],["➗","গণিত"],["🔬","বিজ্ঞান"],["🌍","বাংলাদেশ ও বিশ্বপরিচয়"]
+];
+const questions=[
+["বাংলা বর্ণমালায় স্বরবর্ণ কয়টি?",["৯টি","১১টি","১৩টি","১৫টি"],1],
+["‘টসটস’ কোন ধরনের দ্বিত্ব?",["অনুকার দ্বিত্ব","ঋণাত্মক দ্বিত্ব","পুনরাবৃত্ত দ্বিত্ব","কোনোটিই নয়"],0],
+["What is the plural of 'book'?",["bookes","books","bookies","book"],1],
+["5 × 6 = ?",["11","20","30","35"],2],
+["পানির রাসায়নিক সংকেত কোনটি?",["CO₂","O₂","H₂O","NaCl"],2],
+["বাংলাদেশ স্বাধীন হয় কোন সালে?",["১৯৪৭","১৯৫২","১৯৭১","১৯৭৫"],2],
+["সূর্য একটি—",["গ্রহ","উপগ্রহ","নক্ষত্র","ধূমকেতু"],2],
+["2 + 3 × 4 = ?",["20","14","10","24"],1],
+["Choose the correct sentence.",["He go school","He goes to school","He going school","He gone school"],1],
+["‘অতি’ কোন ধরনের উপসর্গ?",["বাংলা","সংস্কৃত","বিদেশি","আরবি"],1]
+];
+
+let selectedClass="",selectedSubject="",qs=[],answers=[],idx=0,left=0,timer;
+
+function show(id){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active")}
+function goHome(){clearInterval(timer);show("home")}
+function goClass(){show("classPage")}
+function chooseClass(c){selectedClass=c;classTitle.textContent="🎓 "+c;subjectList.innerHTML=subjects.map(s=>`<div class="subject" onclick="chooseSubject('${s[1]}')"><div class="icon">${s[0]}</div><h3>${s[1]}</h3><p>MCQ Model Test</p></div>`).join("");show("classPage")}
+function chooseSubject(s){selectedSubject=s;subjectTitle.textContent="📚 "+selectedClass+" • "+s;show("subjectPage")}
+function startTest(){
+ qs=[...questions].sort(()=>Math.random()-.5).slice(0,+count.value);answers=Array(qs.length).fill(null);idx=0;left=+minutes.value*60;
+ testInfo.textContent=selectedClass+" • "+selectedSubject;show("testPage");document.querySelector(".test").style.display="block";
+ clearInterval(timer);timer=setInterval(tick,1000);render();
+}
+function tick(){left--;showTime();if(left<=0)finish()}
+function showTime(){time.textContent=String(Math.floor(left/60)).padStart(2,"0")+":"+String(left%60).padStart(2,"0")}
+function render(){
+ const q=qs[idx];bar.style.width=((idx+1)/qs.length*100)+"%";
+ question.innerHTML=`<div class="q">${idx+1}. ${q[0]}</div>`+q[1].map((x,k)=>`<label class="opt"><input type="radio" name="answer" ${answers[idx]===k?"checked":""} onchange="answers[idx]=${k}"> ${x}</label>`).join("");
+ showTime();
+}
+function nextQ(){if(idx<qs.length-1){idx++;render()}else finish()}
+function previousQ(){if(idx>0){idx--;render()}}
+function finish(){
+ clearInterval(timer);let scoreN=answers.reduce((n,a,k)=>n+(a===qs[k][2]?1:0),0);
+ score.textContent=scoreN+" / "+qs.length;
+ message.textContent=scoreN===qs.length?"অসাধারণ! সবগুলো সঠিক হয়েছে।":scoreN>=qs.length*.6?"ভালো হয়েছে!":"আরও অনুশীলন করুন।";
+ review.innerHTML="<h3>উত্তর পর্যালোচনা</h3>"+qs.map((q,k)=>`<p class="${answers[k]===q[2]?"good":"bad"}"><b>${k+1}. ${q[0]}</b><br>সঠিক উত্তর: ${q[1][q[2]]}</p>`).join("");
+ show("resultPage");
+}
+classList.innerHTML=classes.map(c=>`<button class="classbtn" onclick="chooseClass('${c}')">🎓<br>${c}</button>`).join("");
+</script>
+</body>
+</html>

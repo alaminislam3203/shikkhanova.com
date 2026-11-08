@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-hind: 'Hind Siliguri', sans-serif;
+  --font-inter: 'Inter', sans-serif;
+}
+
+body {
+  font-family: var(--font-hind), var(--font-inter), sans-serif;
+  background-color: #f8fafc;
+  color: #1e293b;
+  overflow-x: hidden;
+}
+
+/* Custom Gradient Utilities Matching logo.png */
+.bg-brand-gradient {
+  background: linear-gradient(135deg, #003893 0%, #0d47a1 50%, #1d63d8 100%);
+}
+
+.bg-nova-gradient {
+  background: linear-gradient(135deg, #ff7300 0%, #f97316 50%, #ea580c 100%);
+}
+
+.bg-slogan-gradient {
+  background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+}
+
+/* Custom Card & Glassmorphic Effects */
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+/* Print Only Utilities for Marksheets & Invoices */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+  #printableArea {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 20px;
+    box-shadow: none !important;
+    border: none !important;
+  }
+}

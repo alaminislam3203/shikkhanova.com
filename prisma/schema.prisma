@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+}
+
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum PaymentMethod {
+  BKASH
+  NAGAD
+}
+
+model User {
+  id            String         @id @default(cuid())
+  name          String
+  email         String         @unique
+  password      String
+  phone         String?
+  role          Role           @default(STUDENT)
+  classGrade    Int?           // 5 to 10
+  rollNumber    Int?           // Student Roll
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  attendances   Attendance[]
+  results       ExamResult[]
+  pdfPurchases  PdfPurchase[]
+
+  @@index([classGrade, rollNumber])
+}
+
+model Attendance {
+  id          String           @id @default(cuid())
+  studentId   String?
+  student     User?            @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  classGrade  Int              // 5, 6, 7, 8, 9, 10
+  rollNumber  Int              // Student Roll
+  studentName String?
+  date        DateTime         @default(now())
+  status      AttendanceStatus @default(PRESENT)
+  remarks     String?
+  createdAt   DateTime         @default(now())
+
+  @@index([classGrade, date])
+  @@index([classGrade, rollNumber])
+}
+
+model ExamResult {
+  id            String   @id @default(cuid())
+  studentId     String?
+  student       User?    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  examTitle     String   // e.g. "Monthly Evaluation Test", "Model Test"
+  classGrade    Int      // 5 to 10
+  rollNumber    Int      // Roll
+  studentName   String
+  totalMarks    Float    @default(100)
+  obtainedMarks Float
+  grade         String   // A+, A, A-, B, C, F
+  gpa           Float    // 5.00, 4.00, etc.
+  subjectMarks  String?  // JSON string: [{"subject": "Math", "marks": 92, "total": 100}]
+  createdAt     DateTime @default(now())
+
+  @@index([classGrade, rollNumber])
+}
+
+model PdfMaterial {
+  id          String        @id @default(cuid())
+  title       String        // e.g., "Class 7 Math Chapter 3 Special Note"
+  description String?
+  classGrade  Int           // 5 to 10
+  subject     String        // Mathematics, Science, English, etc.
+  price       Float         @default(50) // in BDT
+  fileUrl     String        // URL or path to download after approval
+  isFree      Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+
+  purchases   PdfPurchase[]
+
+  @@index([classGrade, subject])
+}
+
+model PdfPurchase {
+  id            String        @id @default(cuid())
+  studentId     String
+  student       User          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  pdfId         String
+  pdf           PdfMaterial   @relation(fields: [pdfId], references: [id], onDelete: Cascade)
+  amount        Float
+  paymentMethod PaymentMethod // BKASH or NAGAD
+  senderPhone   String        // Phone number from which money was sent
+  trxId         String        @unique // Transaction ID entered by student
+  status        PaymentStatus @default(PENDING) // PENDING -> APPROVED | REJECTED
+  note          String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([studentId])
+  @@index([status])
+}
+
+model VideoLesson {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  classGrade  Int      // 5 to 10
+  subject     String
+  youtubeUrl  String
+  youtubeId   String   // YouTube Video ID e.g. "dQw4w9WgXcQ"
+  channel     String   @default("@ShikkhaNova")
+  createdAt   DateTime @default(now())
+
+  @@index([classGrade, subject])
+}
