@@ -1,6 +1,33 @@
-import 'dotenv/config';
+import fs from 'fs';
+import path from 'path';
 import { PrismaClient, Role, PaymentMethod, PaymentStatus } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+
+// Native .env parser without requiring external 'dotenv' package
+try {
+  const envPath = path.resolve(process.cwd(), '.env');
+  if (fs.existsSync(envPath)) {
+    const envConfig = fs.readFileSync(envPath, 'utf8');
+    envConfig.split('\n').forEach((line) => {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#')) {
+        const [key, ...rest] = trimmed.split('=');
+        if (key && rest.length > 0 && !process.env[key.trim()]) {
+          let val = rest.join('=').trim();
+          if (
+            (val.startsWith('"') && val.endsWith('"')) ||
+            (val.startsWith("'") && val.endsWith("'"))
+          ) {
+            val = val.slice(1, -1);
+          }
+          process.env[key.trim()] = val;
+        }
+      }
+    });
+  }
+} catch {
+  // Ignore fallback
+}
 
 const prisma = new PrismaClient();
 
@@ -52,9 +79,12 @@ async function main() {
     },
   });
 
-  // 3. Seed PDF Materials
-  const pdf1 = await prisma.pdfMaterial.create({
-    data: {
+  // 3. Seed Sample PDF Materials
+  const pdf1 = await prisma.pdfMaterial.upsert({
+    where: { id: 'seed-pdf-1' },
+    update: {},
+    create: {
+      id: 'seed-pdf-1',
       title: '৭ম শ্রেণি গণিত ১ম সাময়িক স্পেশাল হ্যান্ডনোট ও সূত্রাবলি',
       description: 'বীজগণিতীয় রাশি, জ্যামিতির বেসিক ও অধ্যায়ভিত্তিক সৃজনশীল সমাধান।',
       classGrade: 7,
@@ -64,49 +94,71 @@ async function main() {
     },
   });
 
-  const pdf2 = await prisma.pdfMaterial.create({
-    data: {
+  const pdf2 = await prisma.pdfMaterial.upsert({
+    where: { id: 'seed-pdf-2' },
+    update: {},
+    create: {
+      id: 'seed-pdf-2',
       title: '৮ম শ্রেণি সাধারণ বিজ্ঞান ফাইনাল মডেল টেস্ট ও সাজেশন',
-      description: 'পদার্থের প্রকৃতি, জীব ও পরিবেশ অধ্যায়ের ১০০% কমন উপযোগী প্রশ্নাবলি।',
+      description: 'পদার্থের প্রকৃতি, জীব ও পরিবেশ অধ্যায়ের পূর্ণাঙ্গ ব্যাখ্যাসহ সৃজনশীল প্রশ্নব্যাংক।',
       classGrade: 8,
       subject: 'বিজ্ঞান (Science)',
       price: 60,
-      fileUrl: '/assets/pdfs/class-8-science.pdf',
+      fileUrl: '/assets/pdfs/class-8-science-special.pdf',
     },
   });
 
-  const pdf3 = await prisma.pdfMaterial.create({
-    data: {
-      title: '৯ম-১০ম শ্রেণি পদার্থবিজ্ঞান গাণিতিক সমস্যার সহজ সমাধান',
-      description: 'গতি ও বল অধ্যায়ের সকল গাণিতিক সূত্র ও শর্টকাট টেকনিক।',
+  const pdf3 = await prisma.pdfMaterial.upsert({
+    where: { id: 'seed-pdf-3' },
+    update: {},
+    create: {
+      id: 'seed-pdf-3',
+      title: '৯ম শ্রেণি পদার্থবিজ্ঞান গাণিতিক সমস্যা ও সূত্রাবলি',
+      description: 'গতি, বল ও কাজ-ক্ষমতা-শক্তি অধ্যায়ের শতভাগ কমন উপযোগী হ্যান্ডনোট।',
       classGrade: 9,
-      subject: 'পদার্থবিজ্ঞান (Physics)',
+      subject: 'পদার্থবিজ্ঞান',
       price: 80,
-      fileUrl: '/assets/pdfs/class-9-physics.pdf',
+      fileUrl: '/assets/pdfs/class-9-physics-special.pdf',
     },
   });
 
-  // 4. Seed Exam Results
-  await prisma.examResult.create({
-    data: {
-      examTitle: 'মাসিক মূল্যায়ন ও মডেল টেস্ট',
+  // 4. Seed Sample Exam Results
+  await prisma.examResult.upsert({
+    where: { id: 'res-seed-1' },
+    update: {},
+    create: {
+      id: 'res-seed-1',
+      studentId: student1.id,
+      examTitle: '১ম সাময়িক মূল্যায়ন পরীক্ষা ২০২৬',
       classGrade: 7,
       rollNumber: 1,
       studentName: 'রাকিবুল হাসান',
       totalMarks: 400,
       obtainedMarks: 368,
       grade: 'A+',
-      gpa: 5.00,
+      gpa: 5.0,
       subjectMarks: JSON.stringify([
-        { subject: 'বাংলা (Bangla)', fullMarks: 100, obtained: 92, grade: 'A+', gpa: 5.00 },
-        { subject: 'ইংরেজি (English)', fullMarks: 100, obtained: 88, grade: 'A+', gpa: 5.00 },
-        { subject: 'গণিত (Mathematics)', fullMarks: 100, obtained: 96, grade: 'A+', gpa: 5.00 },
-        { subject: 'সাধারণ বিজ্ঞান (Science)', fullMarks: 100, obtained: 92, grade: 'A+', gpa: 5.00 },
+        { subject: 'বাংলা', fullMarks: 100, obtained: 88, grade: 'A+', gpa: 5.0 },
+        { subject: 'ইংরেজি', fullMarks: 100, obtained: 86, grade: 'A+', gpa: 5.0 },
+        { subject: 'সাধারণ গণিত', fullMarks: 100, obtained: 98, grade: 'A+', gpa: 5.0 },
+        { subject: 'সাধারণ বিজ্ঞান', fullMarks: 100, obtained: 96, grade: 'A+', gpa: 5.0 },
       ]),
     },
   });
 
-  console.log('Seeding completed successfully!');
+  // 5. Seed Sample Attendance Record
+  await prisma.attendance.create({
+    data: {
+      studentId: student1.id,
+      classGrade: 7,
+      rollNumber: 1,
+      studentName: 'রাকিবুল হাসান',
+      status: 'PRESENT',
+      date: new Date(),
+    },
+  });
+
+  console.log('Database seeded successfully! Ready for production.');
 }
 
 main()
@@ -117,4 +169,3 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
-
