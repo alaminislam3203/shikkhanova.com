@@ -130,7 +130,7 @@ export default function Footer() {
                   href="/"
                   className="hover:text-nova-400 transition-colors inline-block"
                 >
-                  হোমপেজ
+                  হোম
                 </Link>
               </li>
               <li>
@@ -138,7 +138,7 @@ export default function Footer() {
                   href="/attendance"
                   className="hover:text-nova-400 transition-colors inline-block"
                 >
-                  রোল উপস্থিতি (৫ম - ১০ম শ্রেণি)
+                  উপস্থিতি
                 </Link>
               </li>
               <li>
@@ -146,7 +146,7 @@ export default function Footer() {
                   href="/results"
                   className="hover:text-nova-400 transition-colors inline-block"
                 >
-                  কোচিং রেজাল্ট ও মার্কশিট
+              রেজাল্ট ও মার্কশিট
                 </Link>
               </li>
               <li>
@@ -162,17 +162,10 @@ export default function Footer() {
                   href="/videos"
                   className="hover:text-nova-400 transition-colors inline-block"
                 >
-                  ইউটিউব ভিডিও ক্লাস
+                 ভিডিও ক্লাস
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/login"
-                  className="hover:text-nova-400 transition-colors inline-block"
-                >
-                  শিক্ষার্থী ও অ্যাডমিন লগইন
-                </Link>
-              </li>
+            
             </ul>
           </div>
 
