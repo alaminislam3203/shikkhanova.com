@@ -49,6 +49,18 @@ try {
       try { fs.rmSync(dir, { recursive: true, force: true }); } catch {}
     }
   });
+
+  // 4. Delete all .bat files from root directory as requested by user
+  try {
+    const rootFiles = fs.readdirSync(rootDir);
+    rootFiles.forEach((file) => {
+      if (file.toLowerCase().endsWith('.bat')) {
+        try {
+          fs.unlinkSync(path.join(rootDir, file));
+        } catch {}
+      }
+    });
+  } catch {}
 } catch (err) {
   // Silent cleanup fallback
 }
