@@ -12,6 +12,18 @@ export async function GET() {
     }
 
     if (session.user.id === 'admin-master-id') {
+      let adminImage = session.user.image || null;
+      try {
+        const dbAdmin = await prisma.user.findUnique({
+          where: { email: session.user.email || 'robiulnil101@gmail.com' },
+        });
+        if (dbAdmin?.image) {
+          adminImage = dbAdmin.image;
+        }
+      } catch (err) {
+        console.error('Error fetching admin DB record:', err);
+      }
+
       return NextResponse.json({
         user: {
           id: 'admin-master-id',
@@ -21,7 +33,7 @@ export async function GET() {
           phone: session.user.phone || '01712592519',
           classGrade: null,
           rollNumber: null,
-          image: session.user.image || null,
+          image: adminImage,
         },
       });
     }
@@ -63,6 +75,26 @@ export async function PATCH(req: Request) {
     const { name, phone, classGrade, rollNumber, currentPassword, newPassword } = body;
 
     if (session.user.id === 'admin-master-id') {
+      try {
+        await prisma.user.upsert({
+          where: { email: session.user.email || 'robiulnil101@gmail.com' },
+          update: {
+            name: name || undefined,
+            phone: phone || undefined,
+            image: body.image || undefined,
+          },
+          create: {
+            name: name || session.user.name || 'শিক্ষানোভা অ্যাডমিন',
+            email: session.user.email || 'robiulnil101@gmail.com',
+            password: 'master_admin_placeholder',
+            role: 'ADMIN',
+            phone: phone || '01712592519',
+            image: body.image || null,
+          },
+        });
+      } catch (adminSaveErr) {
+        console.error('Error saving admin details in DB:', adminSaveErr);
+      }
       return NextResponse.json({ message: 'মাস্টার অ্যাডমিন তথ্য সফলভাবে সংরক্ষিত হয়েছে' });
     }
 
@@ -71,6 +103,7 @@ export async function PATCH(req: Request) {
     if (phone !== undefined) updateData.phone = phone;
     if (classGrade !== undefined) updateData.classGrade = classGrade ? parseInt(classGrade) : null;
     if (rollNumber !== undefined) updateData.rollNumber = rollNumber ? parseInt(rollNumber) : null;
+    if (body.image) updateData.image = body.image;
 
     // Handle Password Change if requested
     if (newPassword) {
