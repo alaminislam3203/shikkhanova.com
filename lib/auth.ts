@@ -88,10 +88,15 @@ export const authOptions: NextAuthOptions = {
         token.role = user.role;
         token.classGrade = user.classGrade;
         token.rollNumber = user.rollNumber;
+        token.phone = (user as any).phone;
         token.picture = (user as any).image;
       }
-      if (trigger === 'update' && session?.user?.image) {
-        token.picture = session.user.image;
+      if (trigger === 'update' && session?.user) {
+        if (session.user.image) token.picture = session.user.image;
+        if (session.user.name) token.name = session.user.name;
+        if (session.user.phone !== undefined) token.phone = session.user.phone;
+        if (session.user.classGrade !== undefined) token.classGrade = session.user.classGrade;
+        if (session.user.rollNumber !== undefined) token.rollNumber = session.user.rollNumber;
       }
       return token;
     },
@@ -101,6 +106,7 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role as Role;
         session.user.classGrade = token.classGrade as number | null;
         session.user.rollNumber = token.rollNumber as number | null;
+        session.user.phone = token.phone as string | null;
         if (token.picture) {
           session.user.image = token.picture as string;
         }

@@ -27,6 +27,7 @@ declare module 'next-auth/jwt' {
     role: Role;
     classGrade?: number | null;
     rollNumber?: number | null;
+    phone?: string | null;
   }
 }
 

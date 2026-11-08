@@ -10,7 +10,7 @@ try {
   execSync('npx prisma generate', { stdio: 'inherit' });
 
   console.log('🚀 Building Next.js Application...');
-  execSync('next build', { stdio: 'inherit' });
+  execSync('npx next build', { stdio: 'inherit' });
 } catch (error) {
   console.error('Build step failed:', error);
   process.exit(1);
