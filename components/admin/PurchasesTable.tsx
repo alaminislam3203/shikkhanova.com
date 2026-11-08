@@ -66,15 +66,15 @@ export default function PurchasesTable({
                 </td>
 
                 <td className="py-4 px-6">
-                  <div className="flex items-center gap-1.5 font-bold">
-                    <span
-                      className={`px-2 py-0.5 rounded text-[11px] font-black text-white ${
-                        pur.paymentMethod === 'BKASH' ? 'bg-[#E2136E]' : 'bg-[#F7941D]'
-                      }`}
-                    >
-                      {pur.paymentMethod}
-                    </span>
-                    <span className="font-mono text-xs">{pur.senderPhone}</span>
+                  <div className="flex items-center gap-2">
+                    <div className="bg-white px-1.5 py-0.5 rounded-md border border-slate-200 shadow-xs flex items-center">
+                      <img
+                        src={pur.paymentMethod === 'BKASH' ? '/assets/images/bkash.png' : '/assets/images/nagad.png'}
+                        alt={pur.paymentMethod}
+                        className="h-3.5 w-auto object-contain"
+                      />
+                    </div>
+                    <span className="font-mono text-xs font-bold text-slate-800">{pur.senderPhone}</span>
                   </div>
                   <div className="text-[11px] text-slate-400 mt-0.5">
                     {new Date(pur.createdAt).toLocaleDateString('bn-BD')}
