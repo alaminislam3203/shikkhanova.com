@@ -4,6 +4,7 @@ import AuthProvider from '@/components/AuthProvider';
 import AppLayout from '@/components/common/AppLayout';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXTAUTH_URL || 'https://shikkhanova.com'),
   title: 'শিক্ষানোভা (SikkhaNova) - শিখবো, জিতবো | শ্রেণি ৫-১০ শিক্ষা ব্যবস্থাপনা',
   description:
     'শিক্ষানোভা - জুম্মাপাড়া, নীলফামারী সদর। ৫ম থেকে ১০ম শ্রেণির রোল ভিত্তিক হাজিরা, কোচিং পরীক্ষার ফলাফল, প্রিমিয়াম পিডিএফ শিট এবং ইউটিউব ভিডিও ক্লাস প্ল্যাটফর্ম।',
