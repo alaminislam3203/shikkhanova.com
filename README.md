@@ -1,7 +1,146 @@
-# শিক্ষানোভা (SikkhaNova)
+# 🎓 শিক্ষানোভা (SikkhaNova) - "শিখবো, জিতবো"
 
-**Website:** [sikkhanova.com](https://sikkhanova.com)  
-**Location:** Jummapara, Nilphamari Sadar  
-**Contact:** 01712592519 | robiulnil101@gmail.com  
-**Target:** Classes 5 - 10 Educational Management System  
+> **৫ম থেকে ১০ম শ্রেণির আধুনিক শিক্ষা ব্যবস্থাপনা, রোল ভিত্তিক হাজিরা, কোচিং ফলাফল, প্রিমিয়াম পিডিএফ শিট ও ইউটিউব ভিডিও প্ল্যাটফর্ম।**
 
+---
+
+## 📌 ১. প্রাতিষ্ঠানিক পরিচিতি ও যোগাযোগ
+
+| ক্ষেত্র | তথ্য |
+| :--- | :--- |
+| **প্ল্যাটফর্ম নাম** | **শিক্ষানোভা (SikkhaNova)** |
+| **স্লোগান** | **"শিখবো, জিতবো"** |
+| **ডোমেইন** | [`sikkhanova.com`](https://sikkhanova.com) |
+| **সেন্টার লোকেশন** | **জুম্মাপাড়া, নীলফামারী সদর, নীলফামারী** |
+| **মোবাইল / হেল্পলাইন** | **`01712592519`** (কল ও হোয়াটসঅ্যাপ) |
+| **অফিশিয়াল ইমেইল** | `robiulnil101@gmail.com` |
+| **ইউটিউব চ্যানেল** | [https://youtube.com/@ShikkhaNova](https://youtube.com/@ShikkhaNova) |
+| **ফেসবুক পেজ** | [https://facebook.com/ShikkhaNova](https://facebook.com/ShikkhaNova) |
+| **মাস্টার অ্যাডমিন লগইন** | ইমেইল: `robiulnil101@gmail.com` \| পাসওয়ার্ড: `RABIUL@20` |
+
+---
+
+## 🎨 ২. লোগো ও থিম কালার প্যালেট (`logo.png` ভিত্তিক)
+
+প্রজেক্টের সমগ্র ডিজাইন `logo.png`-এর অফিসিয়াল রঙের সাথে নিখুঁতভাবে সমন্বয় করা হয়েছে:
+
+- 🔷 **রয়্যাল নেভি ব্লু (Royal Navy Blue):** `#003893` / `#0B409C` (লোগোর গ্র্যাজুয়েশন ক্যাপ ও "Shikkha" লেখার গাঢ় নীল)
+- 🔶 **এনার্জি ওয়ার্ম অরেঞ্জ (Warm Energy Orange):** `#FF7300` / `#FA7912` (লোগোর খোলা বই, রশ্মি ও "Nova" লেখার উজ্জ্বল কমলা)
+- 🔴 **স্লোগান ক্রিমসন রেড (Slogan Crimson Red):** `#E11D48` / `#D80032` (লোগোর নিচে "শিখবো, জিতবো" স্লোগানের বিশেষ লাল)
+- 🌸 **বিকাশ মেজেন্টা (bKash):** `#E2136E`
+- 🍊 **নগদ অরেঞ্জ (Nagad):** `#F7941D`
+
+---
+
+## 📂 ৩. ফোল্ডার বাই ফোল্ডার অ্যাসেট স্ট্রাকচার (Asset Structure)
+
+প্রজেক্টের সকল অ্যাসেট অত্যন্ত সুশৃঙ্খলভাবে সাজানো হয়েছে:
+
+```
+d:\MY-PROJECT\Shikkha Nova\
+├── public/
+│   ├── logo.png                       # অফিসিয়াল হাই-রেজুলেশন পিএনজি লোগো
+│   ├── logo.svg                       # ভেক্টর এসভিজি লোগো
+│   └── assets/
+│       ├── logos/                     # ব্র্যান্ডিং লোগো ফোল্ডার
+│       │   ├── logo.png
+│       │   └── logo.svg
+│       ├── images/                    # ব্যানার ও ক্লাসরুমের ছবি
+│       ├── icons/                     # কাস্টম এসভিজি ও পিএনজি আইকন
+│       └── pdfs/                      # ক্লাস ৫-১০ এর পিডিএফ হ্যান্ডনোট
+├── prisma/
+│   ├── schema.prisma                  # PostgreSQL ডেটাবেজ স্কিমা
+│   └── seed.ts                        # অটোমেটিক ডামি ডেটা ও অ্যাডমিন সিডার
+├── lib/
+│   ├── prisma.ts                      # Prisma Client সিঙ্গলটন
+│   └── auth.ts                        # NextAuth কনফিগারেশন ও পাসওয়ার্ড হ্যাশিং
+├── components/
+│   ├── common/
+│   │   ├── Logo.tsx                   # রিউজেবল লোগো কম্পোনেন্ট (SVG ফলব্যাক সহ)
+│   │   ├── Navbar.tsx                 # রেসপন্সিভ নাবার
+│   │   └── Footer.tsx                 # আল্ট্রা-প্রিমিয়াম ফুটার (২৪/৭ ব্যানার ও পেমেন্ট কার্ড)
+│   ├── home/
+│   │   ├── HeroSection.tsx            # ৩D ফ্লোটিং গ্লাস লোগো শোকেস সহ হিরো সেকশন
+│   │   ├── ClassSelector.tsx          # ৫-১০ শ্রেণি নির্বাচন গ্রিড
+│   │   ├── FeaturesGrid.tsx           # ৪টি প্রধান ফিচার কার্ড
+│   │   ├── PaymentBanner.tsx          # বিকাশ/নগদ পেমেন্ট ব্যানার
+│   │   └── ContactCards.tsx           # ঠিকানা ও যোগাযোগ কার্ড
+│   ├── attendance/
+│   │   └── AttendanceTable.tsx        # রোল ভিত্তিক হাজিরা টেবিল
+│   ├── results/
+│   │   └── MarksheetView.tsx          # প্রিন্টযোগ্য মার্কশিট কম্পোনেন্ট
+│   ├── pdfs/
+│   │   ├── PdfCard.tsx                # পিডিএফ হ্যান্ডনোট কার্ড
+│   │   └── PdfPurchaseModal.tsx       # TrxID সাবমিশন পপআপ মডাল
+│   └── videos/
+│       └── VideoPlayerModal.tsx       # ইউটিউব ভিডিও প্লেয়ার মডাল
+├── types/
+│   ├── index.ts                       # কেন্দ্রীয় টাইপস্ক্রিপ্ট ইন্টারফেস ও ডেটা টাইপ
+│   └── next-auth.d.ts                 # NextAuth টাইপ এক্সটেনশন
+├── app/
+│   ├── layout.tsx                     # রুট লেআউট ও মেটাডেটা
+│   ├── globals.css                    # কাস্টম সিএসএস ও ফন্ট
+│   ├── page.tsx                       # প্রিমিয়াম মডুলার হোমপেজ
+│   ├── login/page.tsx                 # NextAuth লগইন পেজ (অ্যাডমিন কুইক ফিল)
+│   ├── register/page.tsx              # শিক্ষার্থী রেজিস্ট্রেশন পেজ
+│   ├── attendance/page.tsx            # ক্লাস ৫-১০ রোল ভিত্তিক হাজিরা
+│   ├── results/page.tsx               # কোচিং রেজাল্ট ও মার্কশিট অনুসন্ধান
+│   ├── pdfs/page.tsx                  # পিডিএফ হ্যান্ডনোট শপ ও TrxID সাবমিট
+│   ├── videos/page.tsx                # @ShikkhaNova ইউটিউব ক্লাস প্লেয়ার
+│   ├── admin/page.tsx                 # অ্যাডমিন প্যানেল (TrxID অ্যাপ্রুভাল ও রেজাল্ট এন্ট্রি)
+│   └── api/                           # নেক্সটজেএস ব্যাকএন্ড রুট হ্যান্ডলারসমূহ
+├── push-to-github.bat                 # গিটহাবে পুশ করার স্ক্রিপ্ট
+└── start-project.bat                  # ডেটাবেজ ও সার্ভার চালুর স্ক্রিপ্ট
+```
+
+---
+
+## 🛠️ ৪. প্রযুক্তি স্ট্যাক (Tech Stack)
+
+- **ফ্রেমওয়ার্ক:** Next.js 14 (App Router, React 18, TypeScript)
+- **অথেনটিকেশন:** NextAuth.js (Credentials Provider + JWT Session)
+- **ডেটাবেজ:** PostgreSQL (Prisma ORM)
+- **স্টাইলিং:** Tailwind CSS (কাস্টম ব্র্যান্ড থিম)
+- **আইকন:** `react-icons` (`fa6`, `hi2`, `tb`)
+- **ফন্ট:** Hind Siliguri (বাংলা) + Inter (ইংরেজি)
+
+---
+
+## 🚀 ৫. যেভাবে প্রজেক্ট চালু করবেন (Installation & Setup)
+
+### ধাপ ১: ডিপেন্ডেন্সি ইনস্টল করুন
+আপনার টার্মিনালে নিচের কমান্ডটি চালান:
+```bash
+npm install
+```
+
+### ধাপ ২: এনভায়রনমেন্ট ভেরিয়েবল সেটআপ করুন
+`.env.example` ফাইলটি কপি করে `.env` নামে সেভ করুন এবং আপনার PostgreSQL ডেটাবেজ লিংক দিন:
+```env
+DATABASE_URL="postgresql://postgres:[PASSWORD]@[HOST]:5432/[DB_NAME]?schema=public"
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="shikkhanova-super-secret-jwt-key-2026-rabiul20"
+ADMIN_EMAIL="robiulnil101@gmail.com"
+ADMIN_PASSWORD="RABIUL@20"
+```
+
+### ধাপ ৩: ডেটাবেজ মাইগ্রেশন ও সিডিং চালান
+```bash
+npx prisma db push
+npm run prisma:seed
+```
+
+### ধাপ ৪: ডেভেলপমেন্ট সার্ভার চালু করুন
+```bash
+npm run dev
+```
+ব্রাউজারে ওপেন করুন: [http://localhost:3000](http://localhost:3000)
+
+---
+
+## 💳 ৬. ম্যানুয়াল পিডিএফ পেমেন্ট কার্যপদ্ধতি (Manual bKash/Nagad Workflow)
+
+1. শিক্ষার্থী যে বিষয়ের পিডিএফ নোট পেতে চায় তার **"কিনুন (TrxID দিন)"** বাটনে ক্লিক করবে।
+2. শিক্ষার্থী তার বিকাশ বা নগদ অ্যাপ থেকে **`01712592519`** পার্সোনাল নম্বরে নির্ধারিত ফি সেন্ড মানি করবে।
+3. পেমেন্ট শেষে পাওয়া **TrxID** এবং নিজের মোবাইল নম্বর দিয়ে সাবমিট করবে।
+4. অ্যাডমিন তার **অ্যাডমিন প্যানেলে (`/admin`)** গিয়ে ট্রানজ্যাকশনটি দেখে **"Approve"** বাটনে চাপ দিলেই শিক্ষার্থীর অ্যাকাউন্টে তাৎক্ষণিকভাবে পিডিএফ ডাউনলোড লিংক আনলক হয়ে যাবে।

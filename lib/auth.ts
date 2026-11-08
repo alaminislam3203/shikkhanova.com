@@ -95,3 +95,4 @@ export const authOptions: NextAuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET || 'shikkhanova-super-secret-jwt-key-2026-rabiul20',
 };
+

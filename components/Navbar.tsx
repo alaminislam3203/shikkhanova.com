@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import Logo from '@/components/common/Logo';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import {
@@ -86,31 +87,8 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             
-            {/* Brand Logo with Theme from logo.png */}
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative w-44 sm:w-52 h-14 flex items-center">
-                <img
-                  src="/logo.png"
-                  alt="Shikkha Nova - শিখবো, জিতবো"
-                  className="w-full h-full object-contain group-hover:scale-102 transition-transform duration-200"
-                  onError={(e) => {
-                    // Fallback to stylized SVG header if image isn't loaded yet
-                    (e.target as HTMLElement).style.display = 'none';
-                    const fallback = document.getElementById('logo-fallback');
-                    if (fallback) fallback.style.display = 'flex';
-                  }}
-                />
-                <div id="logo-fallback" style={{ display: 'none' }} className="items-center gap-2">
-                  <div className="w-10 h-10 rounded-xl bg-brand-700 text-white flex items-center justify-center font-black text-xl shadow-md">
-                    🎓
-                  </div>
-                  <div>
-                    <span className="text-2xl font-black text-brand-700">Shikkha<span className="text-nova-500">Nova</span></span>
-                    <span className="block text-[11px] font-bold text-slogan-600">শিখবো, জিতবো</span>
-                  </div>
-                </div>
-              </div>
-            </Link>
+            {/* Brand Logo Component */}
+            <Logo size="md" />
 
             {/* Desktop Navigation Links */}
             <nav className="hidden lg:flex items-center gap-1">
@@ -240,3 +218,4 @@ export default function Navbar() {
     </>
   );
 }
+

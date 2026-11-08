@@ -131,3 +131,4 @@ model VideoLesson {
 
   @@index([classGrade, subject])
 }
+

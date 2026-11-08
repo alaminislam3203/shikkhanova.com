@@ -3,3 +3,4 @@ Store UI banners, hero illustrations, classroom photos, and promotional banners 
 - `hero-banner.jpg`
 - `classroom.jpg`
 - `certificate-template.png`
+

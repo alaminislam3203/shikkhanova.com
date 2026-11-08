@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Logo from '@/components/common/Logo';
 import {
   FaEnvelope,
   FaLock,
@@ -55,14 +56,14 @@ export default function LoginPage() {
     <div className="max-w-md mx-auto my-8 space-y-6">
       
       {/* Brand Header */}
-      <div className="text-center space-y-2">
-        <div className="w-16 h-16 rounded-2xl bg-brand-700 text-white flex items-center justify-center font-black text-3xl mx-auto shadow-brand">
-          🎓
+      <div className="text-center space-y-3">
+        <div className="bg-white rounded-2xl p-2.5 inline-flex items-center shadow-md border border-slate-200">
+          <Logo size="md" />
         </div>
-        <h1 className="text-3xl font-black text-brand-900">
+        <h1 className="text-2xl sm:text-3xl font-black text-brand-900">
           শিক্ষানোভা <span className="text-nova-500">লগইন</span>
         </h1>
-        <p className="text-xs text-slogan-600 font-bold inline-flex items-center gap-1 bg-rose-50 px-3 py-1 rounded-full">
+        <p className="text-xs text-slogan-600 font-bold inline-flex items-center gap-1 bg-rose-50 px-3 py-1 rounded-full border border-rose-100">
           <HiSparkles /> "শিখবো, জিতবো" • শিক্ষার্থী ও অ্যাডমিন পোর্টাল
         </p>
       </div>
@@ -147,3 +148,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

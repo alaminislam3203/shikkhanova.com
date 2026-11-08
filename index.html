@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>শিক্ষানোভা (SikkhaNova) - শিক্ষা ব্যবস্থাপনা ও কোচিং প্ল্যাটফর্ম</title>
-  <meta name="description" content="সেন্টার: জুম্মাপাড়া, নীলফামারী সদর। ক্লাস ৫ থেকে ১০ পর্যন্ত শিক্ষার্থীদের রোল ভিত্তিক উপস্থিতি, কোচিং রেজাল্ট, ইউটিউব ভিডিও ক্লাস ও বিকাশ/নগদ পেমেন্ট সিস্টেম।">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%20%22100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+  <title>শিক্ষানোভা (SikkhaNova) - শিখবো, জিতবো | শ্রেণি ৫-১০ শিক্ষা ব্যবস্থাপনা</title>
+  <meta name="description" content="সেন্টার: জুম্মাপাড়া, নীলফামারী সদর। ক্লাস ৫ থেকে ১০ পর্যন্ত শিক্ষার্থীদের রোল ভিত্তিক উপস্থিতি, কোচিং রেজাল্ট, প্রিমিয়াম পিডিএফ হ্যান্ডনোট ও ইউটিউব ভিডিও ক্লাস।">
+  <link rel="icon" href="logo.svg">
   
   <!-- Google Fonts: Hind Siliguri for Bengali & Inter for English -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -21,17 +21,30 @@
         extend: {
           colors: {
             brand: {
-              50: '#eef8ff',
-              100: '#d8efff',
-              200: '#bae1ff',
-              500: '#1d72b8',
-              600: '#145794',
-              700: '#0f4273',
-              800: '#0b3156',
-              900: '#07203b',
+              50: '#F0F5FF',
+              100: '#E0EBFF',
+              200: '#C2D9FF',
+              500: '#1D63D8',
+              600: '#0C4CB8',
+              700: '#003893', // Exact 'Shikkha' Royal Navy Blue from logo.png
+              800: '#082C6D',
+              900: '#041A42',
             },
-            bkash: '#e2136e',
-            nagad: '#f7941d'
+            nova: {
+              50: '#FFF8F0',
+              100: '#FFEDD9',
+              500: '#FF7300', // Exact 'Nova' Warm Energy Orange from logo.png
+              600: '#EA580C',
+              700: '#C2410C',
+            },
+            slogan: {
+              50: '#FFF1F4',
+              500: '#F43F5E',
+              600: '#E11D48', // Exact "শিখবো, জিতবো" Slogan Crimson Red
+              700: '#BE123C',
+            },
+            bkash: '#E2136E',
+            nagad: '#F7941D'
           },
           fontFamily: {
             sans: ['"Hind Siliguri"', 'Inter', 'sans-serif'],
@@ -52,7 +65,7 @@
     @media print {
       body * { visibility: hidden; }
       #printableArea, #printableArea * { visibility: visible; }
-      #printableArea { position: absolute; left: 0; top: 0; width: 100%; }
+      #printableArea { position: absolute; left: 0; top: 0; width: 100%; margin: 0; }
       .no-print { display: none !important; }
       .print-only { display: block !important; }
     }
@@ -61,108 +74,110 @@
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
   <!-- Top Announcement Bar -->
-  <div class="bg-gradient-to-r from-brand-700 via-brand-600 to-indigo-700 text-white text-xs sm:text-sm py-2 px-4 shadow-sm no-print">
+  <div class="bg-gradient-to-r from-brand-900 via-brand-800 to-brand-700 text-white text-xs py-2 px-4 shadow-sm no-print border-b border-brand-600/40">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-center sm:text-left">
-      <div class="flex items-center gap-4 flex-wrap justify-center">
-        <span class="inline-flex items-center gap-1.5 font-medium">
-          <i data-lucide="map-pin" class="w-4 h-4 text-amber-300"></i>
+      <div class="flex items-center gap-3 sm:gap-4 flex-wrap justify-center sm:justify-start">
+        <span class="inline-flex items-center gap-1.5 font-medium text-slate-200">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-nova-500"></i>
           জুম্মাপাড়া, নীলফামারী সদর
         </span>
-        <span class="hidden md:inline text-blue-200">|</span>
-        <span class="inline-flex items-center gap-1.5">
-          <i data-lucide="phone-call" class="w-4 h-4 text-emerald-300"></i>
-          ০১৭১২৫৯২৫১৯ (01712592519)
-        </span>
-        <span class="hidden md:inline text-blue-200">|</span>
-        <span class="inline-flex items-center gap-1.5">
-          <i data-lucide="mail" class="w-4 h-4 text-rose-300"></i>
-          robiulnil101@gmail.com
+        <span class="hidden md:inline text-brand-400">•</span>
+        <a href="tel:01712592519" class="inline-flex items-center gap-1.5 text-slate-200 hover:text-white transition">
+          <i data-lucide="phone" class="w-3.5 h-3.5 text-emerald-400"></i>
+          ০১৭১২৫৯২৫১৯
+        </a>
+        <span class="hidden md:inline text-brand-400">•</span>
+        <span class="text-slogan-600 font-bold bg-white/10 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+          <i data-lucide="sparkles" class="w-3 h-3 text-nova-500"></i>
+          শিখবো, জিতবো
         </span>
       </div>
+
       <div class="flex items-center gap-3">
-        <span class="bg-amber-400 text-slate-900 text-xs px-2.5 py-0.5 rounded-full font-bold">শ্রেণি ৫ থেকে ১০</span>
-        <span class="text-xs text-blue-100">sikkhanova.com</span>
+        <a href="https://facebook.com/ShikkhaNova" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-slate-200 hover:text-white bg-blue-600/50 hover:bg-blue-600 px-2.5 py-0.5 rounded-full text-[11px] transition">
+          Facebook
+        </a>
+        <a href="https://youtube.com/@ShikkhaNova" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-slate-200 hover:text-white bg-red-600/60 hover:bg-red-600 px-2.5 py-0.5 rounded-full text-[11px] transition">
+          <i data-lucide="youtube" class="w-3.5 h-3.5"></i> @ShikkhaNova
+        </a>
+        <span class="text-[11px] text-brand-200 font-mono">sikkhanova.com</span>
       </div>
     </div>
   </div>
 
   <!-- Main Navigation Bar -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm no-print">
+  <header class="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 shadow-sm no-print">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center h-16 sm:h-20">
+      <div class="flex justify-between items-center h-20">
         
         <!-- Logo -->
         <a href="#home" onclick="switchTab('home')" class="flex items-center gap-3 group">
-          <div class="w-11 h-11 sm:w-12 sm:h-12 bg-gradient-to-tr from-brand-600 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-brand-500/20 group-hover:scale-105 transition-transform">
-            <i data-lucide="graduation-cap" class="w-6 h-6 sm:w-7 sm:h-7"></i>
-          </div>
-          <div>
-            <div class="flex items-center gap-1.5">
-              <span class="text-2xl font-bold bg-gradient-to-r from-brand-700 to-indigo-700 bg-clip-text text-transparent">শিক্ষানোভা</span>
-              <span class="text-xs font-semibold uppercase tracking-wider bg-brand-100 text-brand-800 px-1.5 py-0.5 rounded">SikkhaNova</span>
-            </div>
-            <p class="text-xs text-slate-500 font-medium">কোচিং ও একাডেমি ম্যানেজমেন্ট</p>
+          <div class="relative w-44 sm:w-52 h-14 flex items-center">
+            <img
+              src="logo.png"
+              alt="Shikkha Nova - শিখবো, জিতবো"
+              class="w-full h-full object-contain group-hover:scale-102 transition-transform duration-200"
+              onerror="this.onerror=null; this.src='logo.svg';"
+            />
           </div>
         </a>
 
         <!-- Desktop Menu -->
-        <nav class="hidden md:flex items-center gap-1 lg:gap-2">
-          <button onclick="switchTab('home')" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-1.5 text-brand-700 bg-brand-50" data-tab="home">
-            <i data-lucide="home" class="w-4 h-4"></i> হোম
+        <nav class="hidden lg:flex items-center gap-1">
+          <button onclick="switchTab('home')" class="nav-btn px-3.5 py-2 rounded-xl text-sm font-bold transition flex items-center gap-1.5 text-brand-700 bg-brand-50" data-tab="home">
+            <i data-lucide="home" class="w-4 h-4 text-brand-700"></i> হোম
           </button>
-          <button onclick="switchTab('attendance')" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-1.5 text-slate-600 hover:text-brand-600 hover:bg-slate-100" data-tab="attendance">
-            <i data-lucide="user-check" class="w-4 h-4"></i> রোল উপস্থিতি (5-10)
+          <button onclick="switchTab('attendance')" class="nav-btn px-3.5 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-1.5 text-slate-600 hover:text-brand-700 hover:bg-slate-50" data-tab="attendance">
+            <i data-lucide="user-check" class="w-4 h-4"></i> রোল উপস্থিতি (৫-১০)
           </button>
-          <button onclick="switchTab('result')" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-1.5 text-slate-600 hover:text-brand-600 hover:bg-slate-100" data-tab="result">
-            <i data-lucide="award" class="w-4 h-4"></i> রেজাল্ট ও মার্কশিট
+          <button onclick="switchTab('result')" class="nav-btn px-3.5 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-1.5 text-slate-600 hover:text-brand-700 hover:bg-slate-50" data-tab="result">
+            <i data-lucide="award" class="w-4 h-4 text-nova-500"></i> কোচিং রেজাল্ট
           </button>
-          <button onclick="switchTab('videos')" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-1.5 text-slate-600 hover:text-brand-600 hover:bg-slate-100" data-tab="videos">
-            <i data-lucide="youtube" class="w-4 h-4 text-red-600"></i> ভিডিও ক্লাস (@RABIUL@20)
+          <button onclick="switchTab('pdfs')" class="nav-btn px-3.5 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-1.5 text-slate-600 hover:text-brand-700 hover:bg-slate-50" data-tab="pdfs">
+            <i data-lucide="file-text" class="w-4 h-4 text-slogan-600"></i> পিডিএফ শিট ও নোট
+            <span class="text-[10px] bg-nova-500 text-white px-1.5 py-0.5 rounded-full font-bold">TrxID</span>
           </button>
-          <button onclick="switchTab('payment')" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-1.5 text-slate-600 hover:text-brand-600 hover:bg-slate-100" data-tab="payment">
-            <i data-lucide="credit-card" class="w-4 h-4 text-emerald-600"></i> ফি ও পেমেন্ট (bKash/Nagad)
+          <button onclick="switchTab('videos')" class="nav-btn px-3.5 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-1.5 text-slate-600 hover:text-brand-700 hover:bg-slate-50" data-tab="videos">
+            <i data-lucide="youtube" class="w-4 h-4 text-red-600"></i> ভিডিও ক্লাস
           </button>
         </nav>
 
         <!-- CTA & Mobile Toggle -->
         <div class="flex items-center gap-3">
-          <button onclick="switchTab('payment')" class="hidden sm:inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-md transition-all transform hover:-translate-y-0.5">
-            <i data-lucide="wallet" class="w-4 h-4"></i> অ্যাপ কিনুন / ফি দিন
+          <button onclick="switchTab('pdfs')" class="hidden sm:inline-flex items-center gap-2 bg-gradient-to-r from-nova-500 to-nova-600 hover:from-nova-600 hover:to-nova-700 text-white text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl shadow-md transition transform hover:-translate-y-0.5">
+            <i data-lucide="file-down" class="w-4 h-4"></i> পিডিএফ শিট সংগ্রহ
           </button>
-          <button id="mobileMenuBtn" class="md:hidden p-2 text-slate-600 hover:text-brand-600 hover:bg-slate-100 rounded-lg">
+          <button id="mobileMenuBtn" onclick="document.getElementById('mobileMenu').classList.toggle('hidden')" class="lg:hidden p-2 text-slate-600 hover:text-brand-700 hover:bg-slate-100 rounded-xl">
             <i data-lucide="menu" class="w-6 h-6"></i>
           </button>
         </div>
       </div>
 
       <!-- Mobile Dropdown Menu -->
-      <div id="mobileMenu" class="hidden md:hidden py-4 border-t border-slate-200 flex flex-col gap-2">
-        <button onclick="switchTab('home')" class="mobile-nav-btn text-left px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 bg-brand-50 text-brand-700" data-tab="home">
+      <div id="mobileMenu" class="hidden lg:hidden py-4 border-t border-slate-200 flex flex-col gap-1.5">
+        <button onclick="switchTab('home')" class="mobile-nav-btn text-left px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 bg-brand-50 text-brand-700" data-tab="home">
           <i data-lucide="home" class="w-4 h-4"></i> হোম ড্যাশবোর্ড
         </button>
-        <button onclick="switchTab('attendance')" class="mobile-nav-btn text-left px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100" data-tab="attendance">
+        <button onclick="switchTab('attendance')" class="mobile-nav-btn text-left px-4 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100" data-tab="attendance">
           <i data-lucide="user-check" class="w-4 h-4"></i> রোল ভিত্তিক উপস্থিতি (Class 5 - 10)
         </button>
-        <button onclick="switchTab('result')" class="mobile-nav-btn text-left px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100" data-tab="result">
-          <i data-lucide="award" class="w-4 h-4"></i> কোচিং রেজাল্ট ও মার্কশিট
+        <button onclick="switchTab('result')" class="mobile-nav-btn text-left px-4 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100" data-tab="result">
+          <i data-lucide="award" class="w-4 h-4 text-nova-500"></i> কোচিং রেজাল্ট ও মার্কশিট
         </button>
-        <button onclick="switchTab('videos')" class="mobile-nav-btn text-left px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100" data-tab="videos">
-          <i data-lucide="youtube" class="w-4 h-4 text-red-600"></i> ইউটিউব ভিডিও ক্লাস (@RABIUL@20)
+        <button onclick="switchTab('pdfs')" class="mobile-nav-btn text-left px-4 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100" data-tab="pdfs">
+          <i data-lucide="file-text" class="w-4 h-4 text-slogan-600"></i> পিডিএফ শিট (বিকাশ/নগদ TrxID)
         </button>
-        <button onclick="switchTab('payment')" class="mobile-nav-btn text-left px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100" data-tab="payment">
-          <i data-lucide="credit-card" class="w-4 h-4 text-emerald-600"></i> অ্যাপ পেমেন্ট ও ফি (বিকাশ / নগদ)
-        </button>
-        <button onclick="switchTab('contact')" class="mobile-nav-btn text-left px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100" data-tab="contact">
-          <i data-lucide="map-pin" class="w-4 h-4"></i> যোগাযোগ ও সেন্টারের ঠিকানা
+        <button onclick="switchTab('videos')" class="mobile-nav-btn text-left px-4 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100" data-tab="videos">
+          <i data-lucide="youtube" class="w-4 h-4 text-red-600"></i> ইউটিউব ভিডিও ক্লাস (@ShikkhaNova)
         </button>
       </div>
     </div>
   </header>
 
   <!-- Notification Toast -->
-  <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none bg-slate-900 text-white px-5 py-3 rounded-xl shadow-xl flex items-center gap-3">
+  <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3">
     <i id="toastIcon" data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>
-    <span id="toastMsg" class="text-sm font-medium">অপারেশন সফল হয়েছে!</span>
+    <span id="toastMsg" class="text-sm font-bold">অপারেশন সফল হয়েছে!</span>
   </div>
 
   <!-- MAIN CONTENT CONTAINER -->
@@ -171,118 +186,126 @@
     <!-- ============================================================== -->
     <!-- TAB 1: HOME DASHBOARD -->
     <!-- ============================================================== -->
-    <section id="tab-home" class="tab-pane space-y-8">
+    <section id="tab-home" class="tab-pane space-y-10">
       
       <!-- Hero Banner -->
-      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-700 via-brand-600 to-indigo-800 text-white p-6 sm:p-10 shadow-xl">
-        <div class="relative z-10 max-w-2xl space-y-4">
-          <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-white/20 backdrop-blur-md text-white border border-white/20">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-            সেন্টার: জুম্মাপাড়া, নীলফামারী সদর
-          </span>
-          <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
-            শিক্ষানোভা (SikkhaNova)
-          </h1>
-          <p class="text-base sm:text-lg text-blue-100 leading-relaxed">
-            ৫ম থেকে ১০ম শ্রেণির শিক্ষার্থীদের রোল নম্বর অনুযায়ী দৈনিক উপস্থিতি, কোচিং রেজাল্ট পাবলিশ, ইউটিউব ভিডিও ক্লাস ও সহজ বিকাশ/নগদ পেমেন্ট ম্যানেজমেন্ট প্ল্যাটফর্ম।
-          </p>
-          <div class="flex flex-wrap gap-3 pt-2">
-            <button onclick="switchTab('attendance')" class="inline-flex items-center gap-2 bg-white text-brand-700 hover:bg-blue-50 font-bold px-5 py-2.5 rounded-xl text-sm shadow transition">
-              <i data-lucide="user-check" class="w-4 h-4"></i> রোল উপস্থিতি শুরু করুন
-            </button>
-            <button onclick="switchTab('result')" class="inline-flex items-center gap-2 bg-indigo-900/60 hover:bg-indigo-900 font-semibold text-white px-5 py-2.5 rounded-xl text-sm border border-white/20 transition">
-              <i data-lucide="award" class="w-4 h-4"></i> রেজাল্ট দেখুন
-            </button>
-            <button onclick="switchTab('payment')" class="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-500 font-bold text-slate-900 px-5 py-2.5 rounded-xl text-sm shadow transition">
-              <i data-lucide="credit-card" class="w-4 h-4"></i> বিকাশ/নগদে ফি দিন
-            </button>
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-950 via-brand-800 to-indigo-950 text-white p-6 sm:p-12 lg:p-16 shadow-2xl border border-brand-700/50">
+        <div class="absolute -right-20 -top-20 w-96 h-96 rounded-full bg-nova-500/20 blur-3xl pointer-events-none"></div>
+        <div class="absolute -left-20 -bottom-20 w-96 h-96 rounded-full bg-slogan-600/20 blur-3xl pointer-events-none"></div>
+
+        <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          <div class="lg:col-span-7 space-y-5">
+            <div class="flex flex-wrap items-center gap-2.5">
+              <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-white/10 backdrop-blur-md text-nova-300 border border-white/20">
+                <i data-lucide="map-pin" class="w-3.5 h-3.5 text-nova-500"></i>
+                জুম্মাপাড়া, নীলফামারী সদর
+              </span>
+              <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-extrabold bg-slogan-600/40 text-rose-200 border border-slogan-500/50">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-nova-300"></i>
+                "শিখবো, জিতবো"
+              </span>
+              <span class="bg-emerald-500/20 text-emerald-300 text-xs px-2.5 py-1 rounded-full font-bold border border-emerald-400/30">
+                শ্রেণি ৫ থেকে ১০
+              </span>
+            </div>
+
+            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
+              শিক্ষানোভা <span class="text-nova-500">SikkhaNova</span>
+            </h1>
+
+            <p class="text-base sm:text-lg text-blue-100 font-normal leading-relaxed max-w-xl">
+              ৫ম থেকে ১০ম শ্রেণির শিক্ষার্থীদের জন্য রোল অনুযায়ী দৈনিক উপস্থিতি, কোচিং পরীক্ষার ফলাফল, বিকাশ ও নগদে প্রিমিয়াম পিডিএফ হ্যান্ডনোট সংগ্রহ এবং ইউটিউব ভিডিও ক্লাস।
+            </p>
+
+            <div class="flex flex-wrap gap-3 pt-2">
+              <button onclick="switchTab('attendance')" class="inline-flex items-center gap-2 bg-gradient-to-r from-nova-500 to-nova-600 hover:from-nova-600 hover:to-nova-700 text-white font-bold px-6 py-3.5 rounded-2xl text-sm shadow-md transition transform hover:-translate-y-0.5">
+                <i data-lucide="user-check" class="w-4 h-4"></i> রোল উপস্থিতি দিন
+              </button>
+              <button onclick="switchTab('result')" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-bold px-6 py-3.5 rounded-2xl text-sm border border-white/20 transition transform hover:-translate-y-0.5">
+                <i data-lucide="award" class="w-4 h-4 text-nova-300"></i> কোচিং রেজাল্ট দেখুন
+              </button>
+              <button onclick="switchTab('pdfs')" class="inline-flex items-center gap-2 bg-slogan-600 hover:bg-slogan-700 text-white font-bold px-6 py-3.5 rounded-2xl text-sm shadow transition transform hover:-translate-y-0.5">
+                <i data-lucide="file-text" class="w-4 h-4"></i> পিডিএফ শিট (TrxID)
+              </button>
+            </div>
           </div>
+
+          <!-- Logo Showcase 3D Floating Glass Card -->
+          <div class="lg:col-span-5 flex justify-center">
+            <div class="w-full max-w-sm bg-white/95 backdrop-blur-xl rounded-3xl p-6 sm:p-8 text-slate-800 shadow-2xl border-2 border-white/40 space-y-5 transform hover:scale-102 transition-transform duration-300">
+              <div class="bg-gradient-to-b from-slate-50 to-white rounded-2xl p-4 border border-slate-100 flex items-center justify-center shadow-inner">
+                <img
+                  src="logo.png"
+                  alt="Shikkha Nova - শিখবো, জিতবো"
+                  class="w-full max-h-24 sm:max-h-28 object-contain"
+                  onerror="this.onerror=null; this.src='logo.svg';"
+                />
+              </div>
+
+              <div class="space-y-2.5 text-xs">
+                <div class="flex items-center justify-between p-2.5 rounded-xl bg-brand-50 text-brand-900 font-bold border border-brand-100">
+                  <span class="flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-nova-600"></i> কেন্দ্র:</span>
+                  <span>জুম্মাপাড়া, নীলফামারী সদর</span>
+                </div>
+                <div class="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50 text-emerald-900 font-bold border border-emerald-100">
+                  <span class="flex items-center gap-1.5"><i data-lucide="phone" class="w-3.5 h-3.5 text-emerald-600"></i> যোগাযোগ:</span>
+                  <span class="font-mono">01712592519</span>
+                </div>
+                <div class="flex items-center justify-between p-2.5 rounded-xl bg-rose-50 text-rose-900 font-bold border border-rose-100">
+                  <span class="flex items-center gap-1.5"><i data-lucide="sparkles" class="w-3.5 h-3.5 text-slogan-600"></i> স্লোগান:</span>
+                  <span class="font-black text-slogan-600">"শিখবো, জিতবো"</span>
+                </div>
+              </div>
+
+              <button onclick="switchTab('attendance')" class="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-brand-700 to-brand-900 hover:from-brand-800 hover:to-black text-white font-bold py-3 rounded-xl text-xs shadow-md transition">
+                <span>শিক্ষার্থী ড্যাশবোর্ডে প্রবেশ</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
         </div>
-        <!-- Decorative Background Circle -->
-        <div class="absolute -right-16 -bottom-16 w-80 h-80 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
       </div>
 
-      <!-- Quick Metrics Grid -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4">
-          <div class="w-12 h-12 rounded-xl bg-blue-100 text-brand-600 flex items-center justify-center font-bold">
-            <i data-lucide="users" class="w-6 h-6"></i>
-          </div>
-          <div>
-            <p class="text-xs text-slate-500 font-semibold uppercase">টার্গেট শ্রেণি</p>
-            <h3 class="text-xl sm:text-2xl font-bold text-slate-800">৫ম - ১০ম শ্রেণি</h3>
-          </div>
-        </div>
-
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4">
-          <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold">
-            <i data-lucide="check-circle" class="w-6 h-6"></i>
-          </div>
-          <div>
-            <p class="text-xs text-slate-500 font-semibold uppercase">অ্যাটেন্ডেন্স মেথড</p>
-            <h3 class="text-xl sm:text-2xl font-bold text-slate-800">রোল ভিত্তিক (Roll)</h3>
-          </div>
-        </div>
-
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4">
-          <div class="w-12 h-12 rounded-xl bg-red-100 text-red-600 flex items-center justify-center font-bold">
-            <i data-lucide="youtube" class="w-6 h-6"></i>
-          </div>
-          <div>
-            <p class="text-xs text-slate-500 font-semibold uppercase">ইউটিউব চ্যানেল</p>
-            <h3 class="text-lg sm:text-xl font-bold text-slate-800">@RABIUL@20</h3>
-          </div>
-        </div>
-
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4">
-          <div class="w-12 h-12 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center font-bold">
-            <i data-lucide="wallet" class="w-6 h-6"></i>
-          </div>
-          <div>
-            <p class="text-xs text-slate-500 font-semibold uppercase">পেমেন্ট গেটওয়ে</p>
-            <h3 class="text-lg sm:text-xl font-bold text-slate-800">bKash & Nagad</h3>
-          </div>
-        </div>
-      </div>
-
-      <!-- Class 5 to 10 Quick Navigation Cards -->
+      <!-- Class 5 to 10 Navigation Grid -->
       <div class="space-y-4">
         <div class="flex justify-between items-center">
           <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-            <i data-lucide="book-open" class="w-5 h-5 text-brand-600"></i> শ্রেণি নির্বাচন (Class 5 - 10)
+            <i data-lucide="book-open" class="w-5 h-5 text-brand-700"></i> শ্রেণি নির্বাচন (Class 5 - 10)
           </h2>
-          <span class="text-xs font-semibold text-slate-500">যে কোনো ক্লাসে ক্লিক করে সরাসরি হাজিরা বা রেজাল্ট দেখুন</span>
+          <span class="text-xs font-semibold text-slate-500">রোল নম্বর অনুযায়ী সাজানো</span>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <div onclick="selectClassForAttendance(5)" class="cursor-pointer bg-white hover:bg-brand-50 border border-slate-200 hover:border-brand-300 p-4 rounded-xl text-center shadow-sm transition group">
-            <span class="text-2xl font-black text-brand-600 group-hover:scale-110 inline-block transition-transform">৫ম</span>
-            <p class="text-xs font-bold text-slate-600 mt-1">Class 5</p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
+          <div onclick="selectClassForAttendance(5)" class="cursor-pointer bg-white hover:bg-brand-50/70 border border-slate-200/80 hover:border-brand-300 p-5 rounded-2xl text-center shadow-sm transition group">
+            <span class="text-3xl font-black text-brand-700 group-hover:scale-110 inline-block transition-transform">৫ম</span>
+            <p class="text-xs font-bold text-slate-700 mt-1">Class 5</p>
             <span class="text-[11px] text-slate-400">রোল ১-৫০</span>
           </div>
-          <div onclick="selectClassForAttendance(6)" class="cursor-pointer bg-white hover:bg-brand-50 border border-slate-200 hover:border-brand-300 p-4 rounded-xl text-center shadow-sm transition group">
-            <span class="text-2xl font-black text-brand-600 group-hover:scale-110 inline-block transition-transform">৬ষ্ঠ</span>
-            <p class="text-xs font-bold text-slate-600 mt-1">Class 6</p>
+          <div onclick="selectClassForAttendance(6)" class="cursor-pointer bg-white hover:bg-brand-50/70 border border-slate-200/80 hover:border-brand-300 p-5 rounded-2xl text-center shadow-sm transition group">
+            <span class="text-3xl font-black text-brand-700 group-hover:scale-110 inline-block transition-transform">৬ষ্ঠ</span>
+            <p class="text-xs font-bold text-slate-700 mt-1">Class 6</p>
             <span class="text-[11px] text-slate-400">রোল ১-৫০</span>
           </div>
-          <div onclick="selectClassForAttendance(7)" class="cursor-pointer bg-white hover:bg-brand-50 border border-slate-200 hover:border-brand-300 p-4 rounded-xl text-center shadow-sm transition group">
-            <span class="text-2xl font-black text-brand-600 group-hover:scale-110 inline-block transition-transform">৭ম</span>
-            <p class="text-xs font-bold text-slate-600 mt-1">Class 7</p>
+          <div onclick="selectClassForAttendance(7)" class="cursor-pointer bg-white hover:bg-brand-50/70 border border-slate-200/80 hover:border-brand-300 p-5 rounded-2xl text-center shadow-sm transition group">
+            <span class="text-3xl font-black text-brand-700 group-hover:scale-110 inline-block transition-transform">৭ম</span>
+            <p class="text-xs font-bold text-slate-700 mt-1">Class 7</p>
             <span class="text-[11px] text-slate-400">রোল ১-৫০</span>
           </div>
-          <div onclick="selectClassForAttendance(8)" class="cursor-pointer bg-white hover:bg-brand-50 border border-slate-200 hover:border-brand-300 p-4 rounded-xl text-center shadow-sm transition group">
-            <span class="text-2xl font-black text-brand-600 group-hover:scale-110 inline-block transition-transform">৮ম</span>
-            <p class="text-xs font-bold text-slate-600 mt-1">Class 8</p>
+          <div onclick="selectClassForAttendance(8)" class="cursor-pointer bg-white hover:bg-brand-50/70 border border-slate-200/80 hover:border-brand-300 p-5 rounded-2xl text-center shadow-sm transition group">
+            <span class="text-3xl font-black text-brand-700 group-hover:scale-110 inline-block transition-transform">৮ম</span>
+            <p class="text-xs font-bold text-slate-700 mt-1">Class 8</p>
             <span class="text-[11px] text-slate-400">রোল ১-৫০</span>
           </div>
-          <div onclick="selectClassForAttendance(9)" class="cursor-pointer bg-white hover:bg-brand-50 border border-slate-200 hover:border-brand-300 p-4 rounded-xl text-center shadow-sm transition group">
-            <span class="text-2xl font-black text-brand-600 group-hover:scale-110 inline-block transition-transform">৯ম</span>
-            <p class="text-xs font-bold text-slate-600 mt-1">Class 9</p>
+          <div onclick="selectClassForAttendance(9)" class="cursor-pointer bg-white hover:bg-brand-50/70 border border-slate-200/80 hover:border-brand-300 p-5 rounded-2xl text-center shadow-sm transition group">
+            <span class="text-3xl font-black text-brand-700 group-hover:scale-110 inline-block transition-transform">৯ম</span>
+            <p class="text-xs font-bold text-slate-700 mt-1">Class 9</p>
             <span class="text-[11px] text-slate-400">রোল ১-৫০</span>
           </div>
-          <div onclick="selectClassForAttendance(10)" class="cursor-pointer bg-white hover:bg-brand-50 border border-slate-200 hover:border-brand-300 p-4 rounded-xl text-center shadow-sm transition group">
-            <span class="text-2xl font-black text-brand-600 group-hover:scale-110 inline-block transition-transform">১০ম</span>
-            <p class="text-xs font-bold text-slate-600 mt-1">Class 10</p>
+          <div onclick="selectClassForAttendance(10)" class="cursor-pointer bg-white hover:bg-brand-50/70 border border-slate-200/80 hover:border-brand-300 p-5 rounded-2xl text-center shadow-sm transition group">
+            <span class="text-3xl font-black text-brand-700 group-hover:scale-110 inline-block transition-transform">১০ম</span>
+            <p class="text-xs font-bold text-slate-700 mt-1">Class 10</p>
             <span class="text-[11px] text-slate-400">রোল ১-৫০</span>
           </div>
         </div>
@@ -290,172 +313,80 @@
 
       <!-- Feature Highlight Rows -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        <!-- Attendance Info -->
-        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
           <div class="space-y-3">
-            <div class="w-10 h-10 rounded-lg bg-blue-50 text-brand-600 flex items-center justify-center">
-              <i data-lucide="clipboard-check" class="w-5 h-5"></i>
+            <div class="w-12 h-12 rounded-2xl bg-brand-50 text-brand-700 flex items-center justify-center font-bold">
+              <i data-lucide="clipboard-check" class="w-6 h-6"></i>
             </div>
             <h3 class="text-lg font-bold text-slate-800">রোল অনুযায়ী উপস্থিতি</h3>
-            <p class="text-sm text-slate-600">
-              শ্রেণি ৫, ৬, ৭ সহ প্রতিটি ক্লাসের শিক্ষার্থীদের রোল নম্বর দ্বারা সহজে প্রেজেন্ট বা অ্যাবসেন্ট মার্ক করুন এবং ডেইলি হাজিরা রিপোর্ট সংরক্ষণ করুন।
+            <p class="text-xs sm:text-sm text-slate-600">
+              শ্রেণি ৫ থেকে ১০ম শ্রেণির শিক্ষার্থীদের রোল নম্বর দ্বারা সহজে হাজিরা এন্ট্রি ও শতকরা উপস্থিতি ট্র্যাকিং।
             </p>
           </div>
-          <button onclick="switchTab('attendance')" class="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-brand-600 hover:text-brand-700">
-            হাজিরা মডিউলে যান <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          <button onclick="switchTab('attendance')" class="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-brand-700 hover:text-brand-800">
+            হাজিরা প্যানেলে যান <i data-lucide="arrow-right" class="w-4 h-4"></i>
           </button>
         </div>
 
-        <!-- Result Info -->
-        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
           <div class="space-y-3">
-            <div class="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
-              <i data-lucide="file-text" class="w-5 h-5"></i>
+            <div class="w-12 h-12 rounded-2xl bg-amber-50 text-nova-600 flex items-center justify-center font-bold">
+              <i data-lucide="award" class="w-6 h-6"></i>
             </div>
             <h3 class="text-lg font-bold text-slate-800">কোচিং পরীক্ষার ফলাফল</h3>
-            <p class="text-sm text-slate-600">
-              উইকলি টেস্ট, মান্থলি টেস্ট ও মডেল টেস্টের ফলাফল প্রকাশ। রোল নম্বর ও শ্রেণি সিলেক্ট করে সঙ্গে সঙ্গে মার্কশিট দেখা ও প্রিন্ট করার সুবিধা।
+            <p class="text-xs sm:text-sm text-slate-600">
+              উইকলি টেস্ট, মান্থলি ও মডেল টেস্টের ফলাফল। শ্রেণি ও রোল নম্বর দিয়ে তাৎক্ষণিক মার্কশিট দেখা ও প্রিন্ট সুবিধা।
             </p>
           </div>
-          <button onclick="switchTab('result')" class="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-amber-600 hover:text-amber-700">
+          <button onclick="switchTab('result')" class="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-nova-600 hover:text-nova-700">
             রেজাল্ট চেক করুন <i data-lucide="arrow-right" class="w-4 h-4"></i>
           </button>
         </div>
 
-        <!-- Video & Payment -->
-        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
           <div class="space-y-3">
-            <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
-              <i data-lucide="smartphone" class="w-5 h-5"></i>
+            <div class="w-12 h-12 rounded-2xl bg-rose-50 text-slogan-600 flex items-center justify-center font-bold">
+              <i data-lucide="file-text" class="w-6 h-6"></i>
             </div>
-            <h3 class="text-lg font-bold text-slate-800">ইউটিউব ক্লাস ও পেমেন্ট</h3>
-            <p class="text-sm text-slate-600">
-              ইউটিউব চ্যানেল <strong>@RABIUL@20</strong> এর মাধ্যমে ভিডিও লেকচার দেখার ব্যবস্থা এবং সরাসরি বিকাশ ও নগদে অ্যাপ/কোর্স ফি পরিশোধের অপশন।
+            <h3 class="text-lg font-bold text-slate-800">পিডিএফ হ্যান্ডনোট (TrxID)</h3>
+            <p class="text-xs sm:text-sm text-slate-600">
+              বিকাশ ও নগদে (01712592519) ফি পাঠিয়ে TrxID সাবমিট করলেই অ্যাডমিন যাচাই করে পিডিএফ শিট আনলক করবেন।
             </p>
           </div>
-          <button onclick="switchTab('payment')" class="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-emerald-600 hover:text-emerald-700">
-            ফি ও পেমেন্ট অপশন <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          <button onclick="switchTab('pdfs')" class="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-slogan-600 hover:text-slogan-700">
+            পিডিএফ নোট সংগ্রহ <i data-lucide="arrow-right" class="w-4 h-4"></i>
           </button>
         </div>
-
       </div>
 
     </section>
 
     <!-- ============================================================== -->
-    <!-- TAB 2: ATTENDANCE MODULE (রোল ভিত্তিক হাজিরা ৫-১০) -->
+    <!-- TAB 2: ATTENDANCE MODULE -->
     <!-- ============================================================== -->
     <section id="tab-attendance" class="tab-pane hidden space-y-6">
-      
-      <!-- Top Header & Filter Controls -->
-      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+      <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-4">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div>
-            <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
-              <i data-lucide="user-check" class="w-6 h-6 text-brand-600"></i> রোল নম্বর অনুযায়ী উপস্থিতি (Attendance)
+            <h2 class="text-2xl font-black text-brand-900 flex items-center gap-2">
+              <i data-lucide="user-check" class="w-6 h-6 text-brand-700"></i> রোল নম্বর অনুযায়ী উপস্থিতি
             </h2>
-            <p class="text-sm text-slate-500">৫ম থেকে ১০ম শ্রেণি - প্রতিদিনের রোল ভিত্তিক উপস্থিতি ট্র্যাকিং</p>
+            <p class="text-xs sm:text-sm text-slate-500">৫ম থেকে ১০ম শ্রেণি - প্রতিদিনের রোল ভিত্তিক উপস্থিতি ট্র্যাকিং</p>
           </div>
           <div class="flex items-center gap-2">
-            <button onclick="markAllAttendance('Present')" class="px-3 py-1.5 text-xs font-bold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 rounded-lg transition">
-              সবাইকে Present করুন
+            <button onclick="markAllAttendance('PRESENT')" class="px-3.5 py-2 text-xs font-bold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 rounded-xl transition">
+              সবাইকে Present
             </button>
-            <button onclick="saveAttendanceData()" class="px-4 py-2 text-xs font-bold bg-brand-600 hover:bg-brand-700 text-white rounded-lg shadow transition flex items-center gap-1.5">
+            <button onclick="saveAttendanceData()" class="px-4 py-2 text-xs font-bold bg-brand-700 hover:bg-brand-800 text-white rounded-xl shadow transition flex items-center gap-1.5">
               <i data-lucide="save" class="w-4 h-4"></i> সংরক্ষণ করুন
             </button>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-slate-100">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 border-t border-slate-100">
           <div>
-            <label class="block text-xs font-bold text-slate-600 mb-1">শ্রেণি (Class Select)</label>
-            <select id="attendanceClassSelect" onchange="renderAttendanceList()" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-brand-500 focus:outline-none">
-              <option value="5">Class 5 (৫ম শ্রেণি)</option>
-              <option value="6">Class 6 (৬ষ্ঠ শ্রেণি)</option>
-              <option value="7" selected>Class 7 (৭ম শ্রেণি)</option>
-              <option value="8">Class 8 (৮ম শ্রেণি)</option>
-              <option value="9">Class 9 (৯ম শ্রেণি)</option>
-              <option value="10">Class 10 (১০ম শ্রেণি)</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-slate-600 mb-1">তারিখ (Date)</label>
-            <input type="date" id="attendanceDate" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-brand-500 focus:outline-none">
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-slate-600 mb-1">রোল দিয়ে সার্চ (Search by Roll)</label>
-            <div class="relative">
-              <input type="text" id="attendanceRollSearch" oninput="filterAttendanceList()" placeholder="যেমন: 1, 5, 12..." class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-9 pr-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
-              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Attendance Stats Cards -->
-      <div class="grid grid-cols-3 gap-4">
-        <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl text-center">
-          <span class="text-xs text-blue-600 font-bold uppercase">মোট শিক্ষার্থী</span>
-          <h4 id="statTotalStudents" class="text-2xl font-black text-brand-700">২০</h4>
-        </div>
-        <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-center">
-          <span class="text-xs text-emerald-600 font-bold uppercase">উপস্থিত (Present)</span>
-          <h4 id="statPresentStudents" class="text-2xl font-black text-emerald-700">০</h4>
-        </div>
-        <div class="bg-rose-50 border border-rose-200 p-4 rounded-xl text-center">
-          <span class="text-xs text-rose-600 font-bold uppercase">অনুপস্থিত (Absent)</span>
-          <h4 id="statAbsentStudents" class="text-2xl font-black text-rose-700">০</h4>
-        </div>
-      </div>
-
-      <!-- Attendance Table -->
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse">
-            <thead>
-              <tr class="bg-slate-100 text-slate-700 text-xs font-bold uppercase border-b border-slate-200">
-                <th class="py-3.5 px-4 text-center w-20">রোল (Roll)</th>
-                <th class="py-3.5 px-4">শিক্ষার্থীর নাম</th>
-                <th class="py-3.5 px-4">শ্রেণি</th>
-                <th class="py-3.5 px-4">অভিভাবকের ফোন</th>
-                <th class="py-3.5 px-4 text-center">হাজিরা স্ট্যাটাস (Status)</th>
-              </tr>
-            </thead>
-            <tbody id="attendanceTableBody" class="divide-y divide-slate-100 text-sm">
-              <!-- Dynamically Populated by JavaScript -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-    </section>
-
-    <!-- ============================================================== -->
-    <!-- TAB 3: COACHING RESULTS & MARKSHEET -->
-    <!-- ============================================================== -->
-    <section id="tab-result" class="tab-pane hidden space-y-6">
-      
-      <!-- Result Search Card -->
-      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4 no-print">
-        <div class="flex justify-between items-center">
-          <div>
-            <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
-              <i data-lucide="award" class="w-6 h-6 text-amber-500"></i> কোচিং ফলাফল ও মার্কশিট (Coaching Result)
-            </h2>
-            <p class="text-sm text-slate-500">শ্রেণি এবং রোল নম্বর দিয়ে তাৎক্ষণিক ফলাফল অনুসন্ধান করুন</p>
-          </div>
-          <button onclick="openAddResultModal()" class="px-3.5 py-2 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-slate-900 rounded-xl transition flex items-center gap-1.5 shadow">
-            <i data-lucide="plus-circle" class="w-4 h-4"></i> নতুন রেজাল্ট যুক্ত করুন
-          </button>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-slate-100">
-          <div>
-            <label class="block text-xs font-bold text-slate-600 mb-1">শ্রেণি নির্বাচন করুন</label>
-            <select id="resultClassSelect" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm font-semibold text-slate-800">
+            <label class="block text-xs font-bold text-slate-700 mb-1">শ্রেণি (Class Select)</label>
+            <select id="attendanceClassSelect" onchange="renderAttendanceList()" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-sm font-semibold">
               <option value="5">Class 5 (৫ম)</option>
               <option value="6">Class 6 (৬ষ্ঠ)</option>
               <option value="7" selected>Class 7 (৭ম)</option>
@@ -466,464 +397,323 @@
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-600 mb-1">শিক্ষার্থীর রোল নম্বর (Roll)</label>
-            <input type="number" id="resultRollInput" placeholder="যেমন: 1, 2, 5..." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm font-semibold text-slate-800">
+            <label class="block text-xs font-bold text-slate-700 mb-1">তারিখ (Date)</label>
+            <input type="date" id="attendanceDate" onchange="renderAttendanceList()" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-sm font-semibold">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">রোল বা নাম দিয়ে খুঁজুন</label>
+            <input type="text" id="attendanceRollSearch" oninput="filterAttendanceList()" placeholder="যেমন: 1, 5, রাকিবুল..." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-sm">
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="grid grid-cols-3 gap-4">
+        <div class="bg-white border border-slate-200 p-4 rounded-2xl text-center shadow-sm">
+          <span class="text-xs text-slate-400 font-bold uppercase">মোট শিক্ষার্থী</span>
+          <h4 id="statTotalStudents" class="text-2xl font-black text-brand-700">২০</h4>
+        </div>
+        <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl text-center">
+          <span class="text-xs text-emerald-600 font-bold uppercase">উপস্থিত (Present)</span>
+          <h4 id="statPresentStudents" class="text-2xl font-black text-emerald-700">০</h4>
+        </div>
+        <div class="bg-rose-50 border border-rose-200 p-4 rounded-2xl text-center">
+          <span class="text-xs text-rose-600 font-bold uppercase">অনুপস্থিত (Absent)</span>
+          <h4 id="statAbsentStudents" class="text-2xl font-black text-rose-700">০</h4>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-100 text-slate-700 text-xs font-bold uppercase border-b border-slate-200">
+                <th class="py-3.5 px-4 text-center w-20">রোল (Roll)</th>
+                <th class="py-3.5 px-4">শিক্ষার্থীর নাম</th>
+                <th class="py-3.5 px-4">শ্রেণি</th>
+                <th class="py-3.5 px-4">অভিভাবকের ফোন</th>
+                <th class="py-3.5 px-4 text-center">হাজিরা স্ট্যাটাস</th>
+              </tr>
+            </thead>
+            <tbody id="attendanceTableBody" class="divide-y divide-slate-100 text-sm">
+              <!-- JS Populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- TAB 3: COACHING RESULTS -->
+    <!-- ============================================================== -->
+    <section id="tab-result" class="tab-pane hidden space-y-6">
+      <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-4 no-print">
+        <div>
+          <h2 class="text-2xl font-black text-brand-900 flex items-center gap-2">
+            <i data-lucide="award" class="w-6 h-6 text-nova-500"></i> কোচিং ফলাফল ও মার্কশিট
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-500">শ্রেণি এবং রোল নম্বর দিয়ে তাৎক্ষণিক মূল্যায়ন ও নম্বরপত্র দেখুন</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 border-t border-slate-100">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">শ্রেণি নির্বাচন করুন</label>
+            <select id="resultClassSelect" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-sm font-semibold">
+              <option value="5">Class 5</option>
+              <option value="6">Class 6</option>
+              <option value="7" selected>Class 7</option>
+              <option value="8">Class 8</option>
+              <option value="9">Class 9</option>
+              <option value="10">Class 10</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">শিক্ষার্থীর রোল নম্বর</label>
+            <input type="number" id="resultRollInput" value="1" placeholder="যেমন: 1, 2, 5..." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-sm font-semibold">
           </div>
 
           <div class="flex items-end">
-            <button onclick="searchResult()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition shadow flex items-center justify-center gap-2">
+            <button onclick="searchResult()" class="w-full bg-gradient-to-r from-brand-700 to-brand-800 hover:from-brand-800 hover:to-brand-900 text-white font-bold py-2.5 px-4 rounded-xl text-sm shadow transition flex items-center justify-center gap-2">
               <i data-lucide="search" class="w-4 h-4"></i> রেজাল্ট খুঁজুন
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Marksheet Presentation Area -->
+      <!-- Marksheet Presentation -->
       <div id="marksheetContainer" class="hidden">
-        <div id="printableArea" class="bg-white p-8 rounded-3xl border border-slate-200 shadow-lg space-y-6 max-w-4xl mx-auto">
-          
-          <!-- Institute Header on Marksheet -->
-          <div class="text-center border-b-2 border-slate-800 pb-4 space-y-1">
-            <h2 class="text-3xl font-black text-brand-700 tracking-wide">শিক্ষানোভা কোচিং সেন্টার</h2>
-            <p class="text-xs uppercase tracking-widest font-bold text-slate-500">SikkhaNova Coaching Center • sikkhanova.com</p>
-            <p class="text-sm text-slate-600 font-medium">জুম্মাপাড়া, নীলফামারী সদর | মোবাইল: 01712592519</p>
-            <div class="inline-block mt-2 bg-slate-900 text-white text-xs font-bold px-4 py-1 rounded-full uppercase">
+        <div id="printableArea" class="bg-white p-6 sm:p-10 rounded-3xl border border-slate-200 shadow-xl space-y-6 max-w-4xl mx-auto">
+          <div class="text-center border-b-2 border-brand-800 pb-4 space-y-1">
+            <h2 class="text-3xl font-black text-brand-800">শিক্ষানোভা কোচিং সেন্টার</h2>
+            <p class="text-xs uppercase tracking-widest font-bold text-nova-600">SikkhaNova Coaching Center • sikkhanova.com</p>
+            <p class="text-xs sm:text-sm text-slate-600 font-medium">জুম্মাপাড়া, নীলফামারী সদর | মোবাইল: ০১৭১২৫৯২৫১৯</p>
+            <div class="inline-block mt-2 bg-brand-800 text-white text-xs font-bold px-4 py-1 rounded-full uppercase">
               একাডেমিক মূল্যায়ন ও পরীক্ষার মার্কশিট
             </div>
           </div>
 
-          <!-- Student Profile Info Bar -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200 text-sm">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-brand-50/60 p-4 rounded-2xl border border-brand-200/80 text-sm">
             <div>
-              <span class="text-xs text-slate-400 block font-bold">শিক্ষার্থীর নাম:</span>
-              <strong id="marksheetName" class="text-slate-800 font-bold">রাকিবুল হাসান</strong>
+              <span class="text-xs text-slate-500 block font-bold">শিক্ষার্থীর নাম:</span>
+              <strong id="marksheetName" class="text-slate-900 font-black">রাকিবুল হাসান</strong>
             </div>
             <div>
-              <span class="text-xs text-slate-400 block font-bold">শ্রেণি (Class):</span>
+              <span class="text-xs text-slate-500 block font-bold">শ্রেণি:</span>
               <strong id="marksheetClass" class="text-slate-800 font-bold">Class 7</strong>
             </div>
             <div>
-              <span class="text-xs text-slate-400 block font-bold">রোল নম্বর:</span>
-              <strong id="marksheetRoll" class="text-brand-700 font-black">০১ (Roll 1)</strong>
+              <span class="text-xs text-slate-500 block font-bold">রোল নম্বর:</span>
+              <strong id="marksheetRoll" class="text-nova-600 font-black">রোল ১</strong>
             </div>
             <div>
-              <span class="text-xs text-slate-400 block font-bold">পরীক্ষার নাম:</span>
-              <strong id="marksheetExam" class="text-slate-800 font-bold">মাসিক মূল্যায়ন পরীক্ষা</strong>
+              <span class="text-xs text-slate-500 block font-bold">পরীক্ষার নাম:</span>
+              <strong class="text-slate-800 font-bold">মাসিক মূল্যায়ন পরীক্ষা</strong>
             </div>
           </div>
 
-          <!-- Marksheet Table -->
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse border border-slate-300">
               <thead>
                 <tr class="bg-slate-100 text-xs font-bold uppercase text-slate-800 border-b border-slate-300">
-                  <th class="py-2.5 px-4 border border-slate-300">বিষয় (Subject)</th>
-                  <th class="py-2.5 px-4 border border-slate-300 text-center">পূর্ণমান (Full Marks)</th>
-                  <th class="py-2.5 px-4 border border-slate-300 text-center">প্রাপ্ত নম্বর (Marks)</th>
-                  <th class="py-2.5 px-4 border border-slate-300 text-center">লেটার গ্রেড (Grade)</th>
-                  <th class="py-2.5 px-4 border border-slate-300 text-center">জিপিএ (GPA)</th>
+                  <th class="py-2.5 px-4 border border-slate-300">বিষয়</th>
+                  <th class="py-2.5 px-4 border border-slate-300 text-center">পূর্ণমান</th>
+                  <th class="py-2.5 px-4 border border-slate-300 text-center">প্রাপ্ত নম্বর</th>
+                  <th class="py-2.5 px-4 border border-slate-300 text-center">গ্রেড</th>
+                  <th class="py-2.5 px-4 border border-slate-300 text-center">জিপিএ</th>
                 </tr>
               </thead>
-              <tbody id="marksheetTableBody" class="text-sm divide-y divide-slate-200">
-                <!-- Injected via JS -->
-              </tbody>
+              <tbody id="marksheetTableBody" class="text-sm divide-y divide-slate-200"></tbody>
               <tfoot>
-                <tr class="bg-slate-50 font-bold text-slate-800 border-t-2 border-slate-400">
+                <tr class="bg-brand-50/80 font-bold text-slate-800 border-t-2 border-slate-400">
                   <td class="py-3 px-4 border border-slate-300">সর্বমোট (Total)</td>
                   <td class="py-3 px-4 border border-slate-300 text-center" id="marksheetTotalFull">৪০০</td>
                   <td class="py-3 px-4 border border-slate-300 text-center text-brand-700 font-black" id="marksheetTotalObtained">৩৬৮</td>
-                  <td class="py-3 px-4 border border-slate-300 text-center text-emerald-700" id="marksheetFinalGrade">A+</td>
-                  <td class="py-3 px-4 border border-slate-300 text-center text-emerald-700" id="marksheetFinalGPA">5.00</td>
+                  <td class="py-3 px-4 border border-slate-300 text-center text-emerald-700 font-black" id="marksheetFinalGrade">A+</td>
+                  <td class="py-3 px-4 border border-slate-300 text-center text-emerald-700 font-black" id="marksheetFinalGPA">5.00</td>
                 </tr>
               </tfoot>
             </table>
           </div>
 
-          <!-- Signature & Remarks -->
-          <div class="pt-10 flex justify-between items-end text-center text-xs font-bold text-slate-700">
+          <div class="pt-8 flex justify-between items-end text-center text-xs font-bold text-slate-700">
             <div class="space-y-1">
-              <div class="w-40 border-b border-slate-400"></div>
+              <div class="w-36 border-b border-slate-400"></div>
               <p>অভিভাবকের স্বাক্ষর</p>
             </div>
             <div class="space-y-1">
-              <div class="w-40 border-b border-slate-400"></div>
+              <div class="w-36 border-b border-slate-400"></div>
               <p>শ্রেণি শিক্ষকের স্বাক্ষর</p>
             </div>
             <div class="space-y-1">
-              <div class="w-40 border-b border-slate-900"></div>
+              <div class="w-40 border-b-2 border-slate-800"></div>
               <p>সেন্টার প্রধান / পরিচালক</p>
               <p class="text-[10px] text-slate-500 font-normal">শিক্ষানোভা, নীলফামারী সদর</p>
             </div>
           </div>
 
-          <!-- Action Buttons -->
-          <div class="pt-6 border-t border-slate-200 flex justify-end gap-3 no-print">
-            <button onclick="window.print()" class="px-5 py-2.5 bg-slate-900 hover:bg-black text-white font-bold text-sm rounded-xl shadow transition flex items-center gap-2">
-              <i data-lucide="printer" class="w-4 h-4"></i> মার্কশিট প্রিন্ট / PDF সেভ
+          <div class="pt-4 border-t border-slate-200 flex justify-end gap-3 no-print">
+            <button onclick="window.print()" class="px-5 py-2.5 bg-slate-900 hover:bg-black text-white font-bold text-xs rounded-xl shadow transition flex items-center gap-2">
+              <i data-lucide="printer" class="w-4 h-4"></i> মার্কশিট প্রিন্ট / PDF সংরক্ষণ
             </button>
           </div>
-
         </div>
       </div>
 
-      <!-- If Result Not Found Placeholder -->
-      <div id="noResultPlaceholder" class="p-12 text-center bg-white rounded-2xl border border-dashed border-slate-300">
-        <i data-lucide="file-question" class="w-12 h-12 text-slate-400 mx-auto mb-3"></i>
+      <div id="noResultPlaceholder" class="p-12 text-center bg-white rounded-3xl border border-dashed border-slate-300">
+        <i data-lucide="award" class="w-12 h-12 text-slate-300 mx-auto mb-2"></i>
         <h4 class="text-base font-bold text-slate-700">উপরে শ্রেণি এবং রোল দিয়ে রেজাল্ট সার্চ করুন</h4>
-        <p class="text-xs text-slate-400 mt-1">উদাহরণস্বরূপ: Class 7 এবং রোল নম্বর 1 দিয়ে দেখুন</p>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- TAB 4: PDF MATERIALS (MANUAL TRXID PAYMENT) -->
+    <!-- ============================================================== -->
+    <section id="tab-pdfs" class="tab-pane hidden space-y-8">
+      
+      <!-- PDF Top Banner -->
+      <div class="bg-gradient-to-r from-brand-900 via-brand-800 to-indigo-950 text-white p-6 sm:p-10 rounded-3xl shadow-xl space-y-4 border border-brand-700/60">
+        <div class="flex items-center gap-2">
+          <span class="bg-nova-500 text-white text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">
+            বিকাশ ও নগদ ম্যানুয়াল পেমেন্ট
+          </span>
+          <span class="text-xs text-blue-200">ক্লাস ৫ থেকে ১০ম শ্রেণি</span>
+        </div>
+
+        <h2 class="text-2xl sm:text-3xl font-black">পিডিএফ শিট ও এক্সক্লুসিভ হ্যান্ডনোট সংগ্রহ</h2>
+        <p class="text-xs sm:text-sm text-blue-100 max-w-2xl leading-relaxed">
+          যেকোনো বিষয়ের প্রিমিয়াম নোট পেতে আমাদের বিকাশ বা নগদ নম্বরে সেন্ড মানি করুন। তারপর "TrxID দিন" বাটনে ক্লিক করে ট্রানজ্যাকশন আইডি ও ফোন নম্বর সাবমিট করুন। অ্যাডমিন অনুমোদন দিলেই ডাউনলোড বাটন সক্রিয় হবে।
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 max-w-md">
+          <div class="bg-white/10 backdrop-blur-md border border-white/20 p-3.5 rounded-2xl flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-lg bg-bkash text-white font-black text-xs flex items-center justify-center">বিকাশ</span>
+              <div>
+                <p class="text-[11px] text-slate-300 font-bold">bKash Personal</p>
+                <p class="text-sm font-black font-mono">01712592519</p>
+              </div>
+            </div>
+            <span class="text-[10px] bg-emerald-500/30 text-emerald-300 px-2 py-0.5 rounded-full font-bold">Send Money</span>
+          </div>
+
+          <div class="bg-white/10 backdrop-blur-md border border-white/20 p-3.5 rounded-2xl flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-lg bg-nagad text-white font-black text-xs flex items-center justify-center">নগদ</span>
+              <div>
+                <p class="text-[11px] text-slate-300 font-bold">Nagad Personal</p>
+                <p class="text-sm font-black font-mono">01712592519</p>
+              </div>
+            </div>
+            <span class="text-[10px] bg-emerald-500/30 text-emerald-300 px-2 py-0.5 rounded-full font-bold">Send Money</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PDF Class Filter -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-2">
+        <span class="text-xs font-bold text-slate-500 whitespace-nowrap">শ্রেণি ফিল্টার:</span>
+        <button onclick="renderPdfsList('all')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-brand-700 text-white">সব ক্লাস</button>
+        <button onclick="renderPdfsList('5')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">Class 5</button>
+        <button onclick="renderPdfsList('6')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">Class 6</button>
+        <button onclick="renderPdfsList('7')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">Class 7</button>
+        <button onclick="renderPdfsList('8')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">Class 8</button>
+        <button onclick="renderPdfsList('9')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">Class 9</button>
+        <button onclick="renderPdfsList('10')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">Class 10</button>
+      </div>
+
+      <!-- PDF Grid -->
+      <div id="pdfCatalogGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+      <!-- TrxID Submission Modal -->
+      <div id="pdfPurchaseModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white max-w-md w-full rounded-3xl p-6 sm:p-8 shadow-2xl space-y-4 relative">
+          <button onclick="closePdfModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600">✕</button>
+
+          <div class="space-y-1">
+            <span class="text-[11px] font-bold text-nova-600 bg-nova-50 px-2 py-0.5 rounded">পিডিএফ অর্ডার</span>
+            <h3 id="modalPdfTitle" class="text-base font-black text-slate-800">গণিত ১ম সাময়িক স্পেশাল হ্যান্ডনোট</h3>
+            <p class="text-xs text-slate-500">
+              নির্ধারিত ফি: <strong id="modalPdfPrice" class="text-brand-700 font-black text-sm">৳৫০</strong>
+            </p>
+          </div>
+
+          <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 text-xs text-slate-600 space-y-1">
+            <p class="font-bold text-slate-800">পেমেন্ট করার নিয়ম:</p>
+            <p>বিকাশ বা নগদে পার্সোনাল নম্বর <strong class="text-slate-900 font-mono">01712592519</strong> এ সেন্ড মানি করে প্রাপ্ত TrxID নিচে লিখুন।</p>
+          </div>
+
+          <form onsubmit="submitTrxPayment(event)" class="space-y-3.5 text-xs">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">যে নম্বর থেকে টাকা পাঠিয়েছেন (Sender Phone)</label>
+              <input type="text" id="senderPhoneInput" required placeholder="01XXXXXXXXX" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono">
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">ট্রানজ্যাকশন আইডি (Transaction ID / TrxID)</label>
+              <input type="text" id="trxIdInput" required placeholder="যেমন: 9J72AKL89Q" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono uppercase font-bold">
+            </div>
+
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs shadow transition">
+              TrxID সাবমিট করুন ও অনুমোদন চান
+            </button>
+          </form>
+        </div>
       </div>
 
     </section>
 
     <!-- ============================================================== -->
-    <!-- TAB 4: YOUTUBE VIDEO LESSONS (@RABIUL@20) -->
+    <!-- TAB 5: VIDEOS (@ShikkhaNova) -->
     <!-- ============================================================== -->
     <section id="tab-videos" class="tab-pane hidden space-y-6">
-      
-      <!-- Video Channel Header -->
-      <div class="bg-gradient-to-r from-red-600 via-rose-600 to-red-700 text-white p-6 rounded-2xl shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div class="bg-gradient-to-r from-red-600 via-rose-600 to-red-700 text-white p-6 sm:p-10 rounded-3xl shadow-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
         <div class="flex items-center gap-4">
-          <div class="w-14 h-14 bg-white text-red-600 rounded-2xl flex items-center justify-center shadow-lg font-black text-2xl">
+          <div class="w-16 h-16 bg-white text-red-600 rounded-2xl flex items-center justify-center text-3xl shadow-lg flex-shrink-0">
             <i data-lucide="youtube" class="w-8 h-8"></i>
           </div>
-          <div>
+          <div class="space-y-1">
             <div class="flex items-center gap-2">
-              <h2 class="text-2xl font-extrabold">ভিডিও কনটেন্ট ও অনলাইন ক্লাস</h2>
-              <span class="bg-black/30 text-white text-xs px-2 py-0.5 rounded-full font-mono">@RABIUL@20</span>
+              <h2 class="text-2xl font-black">ইউটিউব ভিডিও ক্লাস</h2>
+              <span class="bg-black/30 text-white text-xs px-2.5 py-0.5 rounded-full font-mono">@ShikkhaNova</span>
             </div>
-            <p class="text-xs sm:text-sm text-red-100 mt-0.5">
-              শিক্ষানোভার অফিসিয়াল ইউটিউব চ্যানেল থেকে ক্লাস ৫ থেকে ১০ পর্যন্ত অধ্যায়ভিত্তিক ভিডিও লেকচার
+            <p class="text-xs sm:text-sm text-red-100">
+              ৫ম থেকে ১০ম শ্রেণি পর্যন্ত প্রতিটি বিষয়ের অধ্যায়ভিত্তিক ভিডিও লেকচার সরাসরি ইউটিউব চ্যানেল থেকে সংযুক্ত।
             </p>
           </div>
         </div>
-        <a href="https://www.youtube.com/@RABIUL@20" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-white text-red-700 hover:bg-red-50 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold shadow transition">
-          <i data-lucide="external-link" class="w-4 h-4"></i> চ্যানেলটি সাবস্ক্রাইব করুন
+
+        <a href="https://youtube.com/@ShikkhaNova" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-white text-red-700 hover:bg-red-50 font-bold px-5 py-3 rounded-2xl text-xs sm:text-sm shadow transition">
+          <span>চ্যানেল সাবস্ক্রাইব করুন</span>
+          <i data-lucide="external-link" class="w-4 h-4"></i>
         </a>
       </div>
 
-      <!-- Class Filter for Videos -->
-      <div class="flex items-center gap-2 overflow-x-auto pb-2">
-        <span class="text-xs font-bold text-slate-500 whitespace-nowrap">ক্লাস ফিল্টার:</span>
-        <button onclick="filterVideosByClass('all')" class="video-class-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-brand-600 text-white transition whitespace-nowrap" data-vclass="all">সকল ক্লাস</button>
-        <button onclick="filterVideosByClass(5)" class="video-class-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-200 text-slate-700 hover:bg-slate-300 transition whitespace-nowrap" data-vclass="5">Class 5</button>
-        <button onclick="filterVideosByClass(6)" class="video-class-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-200 text-slate-700 hover:bg-slate-300 transition whitespace-nowrap" data-vclass="6">Class 6</button>
-        <button onclick="filterVideosByClass(7)" class="video-class-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-200 text-slate-700 hover:bg-slate-300 transition whitespace-nowrap" data-vclass="7">Class 7</button>
-        <button onclick="filterVideosByClass(8)" class="video-class-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-200 text-slate-700 hover:bg-slate-300 transition whitespace-nowrap" data-vclass="8">Class 8</button>
-        <button onclick="filterVideosByClass(9)" class="video-class-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-200 text-slate-700 hover:bg-slate-300 transition whitespace-nowrap" data-vclass="9">Class 9</button>
-        <button onclick="filterVideosByClass(10)" class="video-class-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-200 text-slate-700 hover:bg-slate-300 transition whitespace-nowrap" data-vclass="10">Class 10</button>
-      </div>
-
-      <!-- Video Grid -->
-      <div id="videoGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Videos will be rendered here by JS -->
-      </div>
-
-    </section>
-
-    <!-- ============================================================== -->
-    <!-- TAB 5: PAYMENT MODULE (bKash & Nagad) -->
-    <!-- ============================================================== -->
-    <section id="tab-payment" class="tab-pane hidden space-y-6">
-      
-      <!-- Payment Banner -->
-      <div class="bg-gradient-to-r from-emerald-700 via-teal-700 to-slate-800 text-white p-6 sm:p-8 rounded-2xl shadow-lg space-y-2">
-        <span class="bg-white/20 text-white text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider">সরাসরি পেমেন্ট পোর্টাল</span>
-        <h2 class="text-3xl font-extrabold">অ্যাপ সাবস্ক্রিপশন ও কোচিং ফি পেমেন্ট</h2>
-        <p class="text-sm text-emerald-100 max-w-2xl">
-          বিকাশ (bKash) ও নগদ (Nagad) এর মাধ্যমে অ্যাপ অ্যাক্সেস কেনা অথবা মাসিক কোচিং ফি পরিশোধ করুন। ট্রানজ্যাকশন সাবমিটের সাথে সাথে ডিজিটাল ইনভয়েস পেয়ে যাবেন।
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        <!-- Left: Choose Package & Method -->
-        <div class="lg:col-span-7 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
-          <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-            <span class="w-7 h-7 bg-brand-100 text-brand-700 rounded-full flex items-center justify-center text-xs font-bold">১</span>
-            ফি বা প্যাকেজ নির্বাচন করুন
-          </h3>
-
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <label class="cursor-pointer border-2 border-brand-500 bg-brand-50/50 p-4 rounded-xl flex flex-col justify-between transition package-option">
-              <input type="radio" name="paymentPackage" value="500" checked class="hidden" onchange="updatePayAmount(500, 'অ্যাপ অ্যাক্সেস ফি (৬ মাস)')">
-              <div>
-                <span class="text-xs font-bold text-brand-700 uppercase">ফুল অ্যাক্সেস</span>
-                <h4 class="text-base font-bold text-slate-800 mt-1">অ্যাপ সাবস্ক্রিপশন</h4>
-                <p class="text-xs text-slate-500 mt-0.5">ক্লাস ৫-১০ সব ফিচার</p>
-              </div>
-              <div class="mt-4">
-                <span class="text-2xl font-black text-brand-700">৳৫০০</span>
-                <span class="text-xs text-slate-400">/ ৬ মাস</span>
-              </div>
-            </label>
-
-            <label class="cursor-pointer border-2 border-slate-200 hover:border-brand-400 p-4 rounded-xl flex flex-col justify-between transition package-option">
-              <input type="radio" name="paymentPackage" value="800" class="hidden" onchange="updatePayAmount(800, 'মাসিক কোচিং ফি (রেগুলার)')">
-              <div>
-                <span class="text-xs font-bold text-slate-500 uppercase">মাসিক ফি</span>
-                <h4 class="text-base font-bold text-slate-800 mt-1">কোচিং টিউশন ফি</h4>
-                <p class="text-xs text-slate-500 mt-0.5">উপস্থিতি + পরীক্ষা</p>
-              </div>
-              <div class="mt-4">
-                <span class="text-2xl font-black text-slate-800">৳৮০০</span>
-                <span class="text-xs text-slate-400">/ মাস</span>
-              </div>
-            </label>
-
-            <label class="cursor-pointer border-2 border-slate-200 hover:border-brand-400 p-4 rounded-xl flex flex-col justify-between transition package-option">
-              <input type="radio" name="paymentPackage" value="300" class="hidden" onchange="updatePayAmount(300, 'মডেল টেস্ট ও শিট ফি')">
-              <div>
-                <span class="text-xs font-bold text-slate-500 uppercase">পরীক্ষা</span>
-                <h4 class="text-base font-bold text-slate-800 mt-1">মডেল টেস্ট ফি</h4>
-                <p class="text-xs text-slate-500 mt-0.5">রেজাল্ট ও প্রশ্নব্যাংক</p>
-              </div>
-              <div class="mt-4">
-                <span class="text-2xl font-black text-slate-800">৳৩০০</span>
-                <span class="text-xs text-slate-400">/ সেশন</span>
-              </div>
-            </label>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm p-4 space-y-3">
+          <div class="aspect-video bg-slate-900 rounded-2xl flex items-center justify-center text-white">
+            <i data-lucide="play-circle" class="w-12 h-12 text-red-600"></i>
           </div>
-
-          <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2 pt-3">
-            <span class="w-7 h-7 bg-brand-100 text-brand-700 rounded-full flex items-center justify-center text-xs font-bold">২</span>
-            পেমেন্ট মাধ্যম বেছে নিন (bKash / Nagad)
-          </h3>
-
-          <div class="grid grid-cols-2 gap-4">
-            <!-- bKash -->
-            <label class="cursor-pointer border-2 border-bkash bg-pink-50/40 p-4 rounded-2xl flex items-center justify-between transition payment-method-card">
-              <input type="radio" name="paymentMethod" value="bKash" checked class="hidden" onchange="selectPaymentMethod('bKash')">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-bkash text-white flex items-center justify-center font-black text-xs">
-                  বিকাশ
-                </div>
-                <div>
-                  <h5 class="text-sm font-bold text-slate-800">bKash Personal</h5>
-                  <p class="text-xs font-mono text-slate-500">01712592519</p>
-                </div>
-              </div>
-              <i data-lucide="check-circle-2" class="w-5 h-5 text-bkash method-check"></i>
-            </label>
-
-            <!-- Nagad -->
-            <label class="cursor-pointer border-2 border-slate-200 hover:border-nagad p-4 rounded-2xl flex items-center justify-between transition payment-method-card">
-              <input type="radio" name="paymentMethod" value="Nagad" class="hidden" onchange="selectPaymentMethod('Nagad')">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-nagad text-white flex items-center justify-center font-black text-xs">
-                  নগদ
-                </div>
-                <div>
-                  <h5 class="text-sm font-bold text-slate-800">Nagad Personal</h5>
-                  <p class="text-xs font-mono text-slate-500">01712592519</p>
-                </div>
-              </div>
-              <i data-lucide="circle" class="w-5 h-5 text-slate-300 method-check"></i>
-            </label>
-          </div>
-
-          <!-- Step Instructions -->
-          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs text-slate-600 space-y-1.5">
-            <p class="font-bold text-slate-800">টাকা পাঠানোর নিয়মাবলি:</p>
-            <ol class="list-decimal pl-4 space-y-1">
-              <li>আপনার <span id="methodNameLabel" class="font-bold text-bkash">bKash</span> অ্যাপ বা ডায়াল কোড ব্যবহার করুন।</li>
-              <li><strong>Send Money</strong> অপশনে যান এবং পার্সোনাল নম্বর: <strong class="text-slate-900 font-mono">01712592519</strong> টাইপ করুন।</li>
-              <li>নির্দিষ্ট পরিমাণ (<strong id="instructionAmount">৳৫০০</strong>) টাকা পাঠান।</li>
-              <li>সফল ট্রানজ্যাকশন শেষে পাওয়া <strong>TrxID</strong> এবং আপনার মোবাইল নম্বর নিচে ফর্মটিতে দিয়ে কনফার্ম করুন।</li>
-            </ol>
-          </div>
+          <span class="text-xs font-bold text-brand-700 bg-brand-50 px-2 py-0.5 rounded">Class 7 • গণিত</span>
+          <h4 class="text-sm font-bold text-slate-800">মূলদ ও অমূলদ সংখ্যা সম্পূর্ণ বেসিক ক্লাস</h4>
         </div>
 
-        <!-- Right: Submission Form -->
-        <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between space-y-4">
-          <div class="space-y-4">
-            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-              <span class="w-7 h-7 bg-brand-100 text-brand-700 rounded-full flex items-center justify-center text-xs font-bold">৩</span>
-              পেমেন্ট তথ্য সাবমিট করুন
-            </h3>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1">শিক্ষার্থীর নাম</label>
-              <input type="text" id="payStudentName" placeholder="শিক্ষার্থীর পুরো নাম" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block text-xs font-bold text-slate-600 mb-1">শ্রেণি</label>
-                <select id="payStudentClass" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm font-semibold">
-                  <option value="5">Class 5</option>
-                  <option value="6">Class 6</option>
-                  <option value="7" selected>Class 7</option>
-                  <option value="8">Class 8</option>
-                  <option value="9">Class 9</option>
-                  <option value="10">Class 10</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-slate-600 mb-1">রোল নম্বর</label>
-                <input type="number" id="payStudentRoll" placeholder="রোল" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1">যে নম্বর থেকে টাকা পাঠানো হয়েছে (Sender Phone)</label>
-              <input type="text" id="paySenderPhone" placeholder="01XXXXXXXXX" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1">ট্রানজ্যাকশন আইডি (Transaction ID / TrxID)</label>
-              <input type="text" id="payTrxId" placeholder="যেমন: 9J72AKL..." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm font-mono uppercase focus:ring-2 focus:ring-brand-500 focus:outline-none">
-            </div>
+        <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm p-4 space-y-3">
+          <div class="aspect-video bg-slate-900 rounded-2xl flex items-center justify-center text-white">
+            <i data-lucide="play-circle" class="w-12 h-12 text-red-600"></i>
           </div>
-
-          <div class="pt-4 border-t border-slate-100">
-            <div class="flex justify-between items-center mb-3">
-              <span class="text-sm font-medium text-slate-500">পরিশোধযোগ্য টাকা:</span>
-              <span id="displayTotalAmount" class="text-2xl font-black text-brand-700">৳৫০০</span>
-            </div>
-            <button onclick="submitPayment()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2">
-              <i data-lucide="check-circle" class="w-5 h-5"></i> পেমেন্ট নিশ্চিত করুন ও রসিদ নিন
-            </button>
-          </div>
+          <span class="text-xs font-bold text-brand-700 bg-brand-50 px-2 py-0.5 rounded">Class 9 • পদার্থবিজ্ঞান</span>
+          <h4 class="text-sm font-bold text-slate-800">গতি ও বলের সমীকরণ গাণিতিক সমাধান</h4>
         </div>
 
-      </div>
-
-      <!-- Recent Payments Receipt Modal / Area -->
-      <div id="receiptModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white max-w-md w-full rounded-3xl p-6 shadow-2xl space-y-4">
-          <div class="text-center space-y-1">
-            <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-2">
-              <i data-lucide="badge-check" class="w-7 h-7"></i>
-            </div>
-            <h3 class="text-xl font-black text-slate-800">পেমেন্ট সফলভাবে সংরক্ষিত!</h3>
-            <p class="text-xs text-slate-500">শিক্ষানোভা ডিজিটাল রসিদ (SikkhaNova Receipt)</p>
+        <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm p-4 space-y-3">
+          <div class="aspect-video bg-slate-900 rounded-2xl flex items-center justify-center text-white">
+            <i data-lucide="play-circle" class="w-12 h-12 text-red-600"></i>
           </div>
-
-          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs space-y-2 font-medium">
-            <div class="flex justify-between">
-              <span class="text-slate-500">রসিদ নম্বর:</span>
-              <span id="receiptId" class="font-mono font-bold text-slate-800">SN-20261108</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-slate-500">শিক্ষার্থীর নাম:</span>
-              <span id="receiptName" class="font-bold text-slate-800">-</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-slate-500">শ্রেণি ও রোল:</span>
-              <span id="receiptClassRoll" class="text-slate-800 font-bold">-</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-slate-500">প্যাকেজ / বিবরণ:</span>
-              <span id="receiptPackage" class="text-slate-800">-</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-slate-500">পেমেন্ট মেথড:</span>
-              <span id="receiptMethod" class="font-bold text-emerald-700">-</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-slate-500">ট্রানজ্যাকশন আইডি:</span>
-              <span id="receiptTrx" class="font-mono font-bold text-brand-700">-</span>
-            </div>
-            <div class="flex justify-between border-t border-slate-200 pt-2 text-sm">
-              <span class="font-bold text-slate-800">পরিশোধিত টাকা:</span>
-              <span id="receiptAmount" class="font-black text-emerald-700 text-base">৳৫০০</span>
-            </div>
-          </div>
-
-          <div class="text-center text-[11px] text-slate-400">
-            যোগাযোগ: ০১৭১২৫৯২৫১৯ | জুম্মাপাড়া, নীলফামারী সদর
-          </div>
-
-          <div class="flex gap-2">
-            <button onclick="closeReceiptModal()" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition">
-              বন্ধ করুন
-            </button>
-            <button onclick="window.print()" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5">
-              <i data-lucide="printer" class="w-4 h-4"></i> রসিদ প্রিন্ট
-            </button>
-          </div>
-        </div>
-      </div>
-
-    </section>
-
-    <!-- ============================================================== -->
-    <!-- TAB 6: CONTACT & CENTER DETAILS -->
-    <!-- ============================================================== -->
-    <section id="tab-contact" class="tab-pane hidden space-y-6">
-      <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm max-w-4xl mx-auto space-y-6">
-        <div class="text-center space-y-2">
-          <span class="text-xs font-bold text-brand-600 uppercase tracking-widest bg-brand-50 px-3 py-1 rounded-full">সেন্টার পরিচিতি</span>
-          <h2 class="text-3xl font-extrabold text-slate-800">শিক্ষানোভা (SikkhaNova) একাডেমি</h2>
-          <p class="text-sm text-slate-500">৫ম-১০ম শ্রেণি পর্যন্ত গুণগত মানের পাঠদান ও ডিজিটাল মূল্যায়ন সেবা</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-          <div class="space-y-4">
-            <div class="flex items-start gap-3.5 p-4 rounded-2xl bg-slate-50 border border-slate-100">
-              <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center flex-shrink-0">
-                <i data-lucide="map-pin" class="w-5 h-5"></i>
-              </div>
-              <div>
-                <h4 class="text-sm font-bold text-slate-800">ঠিকানা ও লোকেশন</h4>
-                <p class="text-sm text-slate-600 mt-0.5">জুম্মাপাড়া, নীলফামারী সদর, নীলফামারী।</p>
-              </div>
-            </div>
-
-            <div class="flex items-start gap-3.5 p-4 rounded-2xl bg-slate-50 border border-slate-100">
-              <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0">
-                <i data-lucide="phone" class="w-5 h-5"></i>
-              </div>
-              <div>
-                <h4 class="text-sm font-bold text-slate-800">অফিশিয়াল মোবাইল নম্বর</h4>
-                <p class="text-sm font-mono font-bold text-slate-700 mt-0.5">01712592519</p>
-                <p class="text-xs text-slate-400">সকাল ৯টা - রাত ৯টা (কল ও হোয়াটসঅ্যাপ)</p>
-              </div>
-            </div>
-
-            <div class="flex items-start gap-3.5 p-4 rounded-2xl bg-slate-50 border border-slate-100">
-              <div class="w-10 h-10 rounded-xl bg-blue-100 text-brand-700 flex items-center justify-center flex-shrink-0">
-                <i data-lucide="mail" class="w-5 h-5"></i>
-              </div>
-              <div>
-                <h4 class="text-sm font-bold text-slate-800">ইমেইল ঠিকানা</h4>
-                <p class="text-sm font-mono text-slate-700 mt-0.5">robiulnil101@gmail.com</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="space-y-4">
-            <div class="flex items-start gap-3.5 p-4 rounded-2xl bg-slate-50 border border-slate-100">
-              <div class="w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center flex-shrink-0">
-                <i data-lucide="youtube" class="w-5 h-5"></i>
-              </div>
-              <div>
-                <h4 class="text-sm font-bold text-slate-800">ইউটিউব চ্যানেল</h4>
-                <p class="text-sm font-bold text-slate-700 mt-0.5">@RABIUL@20</p>
-                <p class="text-xs text-slate-400">প্রতিটি বিষয়ের ভিডিও সমাধান ও টিপস</p>
-              </div>
-            </div>
-
-            <div class="flex items-start gap-3.5 p-4 rounded-2xl bg-slate-50 border border-slate-100">
-              <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center flex-shrink-0">
-                <i data-lucide="globe" class="w-5 h-5"></i>
-              </div>
-              <div>
-                <h4 class="text-sm font-bold text-slate-800">ওয়েবসাইট ডোমেইন</h4>
-                <p class="text-sm font-mono font-bold text-brand-600 mt-0.5">sikkhanova.com</p>
-              </div>
-            </div>
-
-            <div class="flex items-start gap-3.5 p-4 rounded-2xl bg-slate-50 border border-slate-100">
-              <div class="w-10 h-10 rounded-xl bg-pink-100 text-pink-700 flex items-center justify-center flex-shrink-0">
-                <i data-lucide="credit-card" class="w-5 h-5"></i>
-              </div>
-              <div>
-                <h4 class="text-sm font-bold text-slate-800">পেমেন্ট পদ্ধতি</h4>
-                <p class="text-sm text-slate-700 mt-0.5">বিকাশ (bKash) ও নগদ (Nagad)</p>
-              </div>
-            </div>
-          </div>
+          <span class="text-xs font-bold text-brand-700 bg-brand-50 px-2 py-0.5 rounded">Class 10 • ইংরেজি</span>
+          <h4 class="text-sm font-bold text-slate-800">এসএসসি ইংরেজি ২য় পত্র গ্রামার শর্টকাট</h4>
         </div>
       </div>
     </section>
@@ -931,25 +721,171 @@
   </main>
 
   <!-- Footer -->
-  <footer class="bg-white border-t border-slate-200 mt-auto py-6 no-print">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-500">
-      <div class="flex items-center gap-2">
-        <span class="font-bold text-slate-700">শিক্ষানোভা (SikkhaNova)</span>
-        <span>•</span>
-        <span>জুম্মাপাড়া, নীলফামারী সদর</span>
-        <span>•</span>
-        <span class="font-mono">sikkhanova.com</span>
+  <footer class="bg-gradient-to-b from-slate-900 via-brand-950 to-slate-950 text-slate-300 pt-16 pb-10 border-t border-slate-800/80 mt-auto no-print relative overflow-hidden">
+    
+    <!-- Subtle Background Glows -->
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-nova-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 relative z-10">
+      
+      <!-- Top Helpline & WhatsApp Callout Banner -->
+      <div class="bg-gradient-to-r from-brand-800/80 via-brand-700/80 to-indigo-900/80 rounded-3xl p-6 sm:p-8 border border-brand-500/30 backdrop-blur-md shadow-2xl flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+        <div class="space-y-1.5 max-w-xl">
+          <span class="inline-flex items-center gap-1.5 text-xs font-extrabold text-nova-300 bg-black/30 px-3 py-1 rounded-full uppercase tracking-wider">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-nova-400"></i>
+            ২৪/৭ শিক্ষার্থী ও অভিভাবক সহায়তা
+          </span>
+          <h3 class="text-xl sm:text-2xl font-black text-white">
+            যেকোনো প্রশ্ন বা তথ্যের জন্য সরাসরি কথা বলুন
+          </h3>
+          <p class="text-xs sm:text-sm text-blue-100">
+            জুম্মাপাড়া, নীলফামারী সদর | সকাল ৮:০০ টা থেকে রাত ১০:০০ টা পর্যন্ত কল বা হোয়াটসঅ্যাপ করুন
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-3">
+          <a href="tel:01712592519" class="inline-flex items-center gap-2 bg-white text-brand-900 hover:bg-blue-50 font-black px-5 py-3 rounded-2xl text-xs sm:text-sm shadow-lg transition transform hover:-translate-y-0.5">
+            <i data-lucide="phone" class="w-4 h-4 text-emerald-600"></i>
+            <span>০১৭১২৫৯২৫১৯</span>
+          </a>
+          <a href="https://wa.me/8801712592519" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black px-5 py-3 rounded-2xl text-xs sm:text-sm shadow-lg transition transform hover:-translate-y-0.5">
+            <i data-lucide="message-circle" class="w-4 h-4 text-white"></i>
+            <span>হোয়াটসঅ্যাপ মেসেজ</span>
+          </a>
+        </div>
       </div>
-      <div class="flex items-center gap-4 font-medium">
-        <span>ফোন: 01712592519</span>
-        <span>ইমেইল: robiulnil101@gmail.com</span>
-        <span>চ্যানেল: @RABIUL@20</span>
+
+      <!-- 4 Columns Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10 pt-4">
+        
+        <!-- Col 1: Brand Logo & Details -->
+        <div class="lg:col-span-4 space-y-5">
+          <a href="#home" onclick="switchTab('home')" class="inline-block group">
+            <div class="bg-white rounded-2xl p-3 inline-flex items-center shadow-md border border-white/20 group-hover:scale-102 transition-transform duration-200">
+              <img
+                src="logo.png"
+                alt="Shikkha Nova - শিখবো, জিতবো"
+                class="h-10 sm:h-12 w-auto object-contain"
+                onerror="this.onerror=null; this.src='logo.svg';"
+              />
+            </div>
+          </a>
+          
+          <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            ৫ম থেকে ১০ম শ্রেণির শিক্ষার্থীদের জন্য নির্ভরযোগ্য ডিজিটাল শিক্ষা প্ল্যাটফর্ম। প্রতিদিনের রোল ভিত্তিক হাজিরা, নির্ভুল ফলাফল ও মার্কশিট, এক্সক্লুসিভ পিডিএফ শিট ও ইউটিউব ভিডিও সমাধান।
+          </p>
+
+          <div class="flex items-center gap-2.5 pt-1">
+            <span class="text-xs font-bold text-slate-400">যুক্ত থাকুন:</span>
+            <a href="https://facebook.com/ShikkhaNova" target="_blank" rel="noopener noreferrer" class="w-9 h-9 rounded-xl bg-blue-600/90 hover:bg-blue-600 text-white flex items-center justify-center hover:scale-110 transition shadow" title="Facebook Page">
+              <i data-lucide="facebook" class="w-4 h-4"></i>
+            </a>
+            <a href="https://youtube.com/@ShikkhaNova" target="_blank" rel="noopener noreferrer" class="w-9 h-9 rounded-xl bg-red-600/90 hover:bg-red-600 text-white flex items-center justify-center hover:scale-110 transition shadow" title="YouTube Channel">
+              <i data-lucide="youtube" class="w-4 h-4"></i>
+            </a>
+            <a href="tel:01712592519" class="w-9 h-9 rounded-xl bg-emerald-600/90 hover:bg-emerald-600 text-white flex items-center justify-center hover:scale-110 transition shadow" title="Call 01712592519">
+              <i data-lucide="phone" class="w-4 h-4"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Col 2: Navigation Links -->
+        <div class="lg:col-span-3 space-y-4">
+          <h4 class="text-sm font-black text-white uppercase tracking-wider border-b border-slate-800 pb-2.5 flex items-center gap-2">
+            <i data-lucide="graduation-cap" class="w-4 h-4 text-nova-500"></i> নেভিগেশন ও ফিচার
+          </h4>
+          <ul class="space-y-2.5 text-xs font-semibold">
+            <li>
+              <button onclick="switchTab('attendance')" class="hover:text-nova-400 transition flex items-center gap-2">
+                <i data-lucide="user-check" class="w-3.5 h-3.5 text-brand-400"></i> রোল উপস্থিতি (Class 5 - 10)
+              </button>
+            </li>
+            <li>
+              <button onclick="switchTab('result')" class="hover:text-nova-400 transition flex items-center gap-2">
+                <i data-lucide="award" class="w-3.5 h-3.5 text-nova-400"></i> কোচিং রেজাল্ট ও মার্কশিট
+              </button>
+            </li>
+            <li>
+              <button onclick="switchTab('pdfs')" class="hover:text-nova-400 transition flex items-center gap-2">
+                <i data-lucide="file-text" class="w-3.5 h-3.5 text-slogan-500"></i> পিডিএফ হ্যান্ডনোট ও সাজেশন
+              </button>
+            </li>
+            <li>
+              <button onclick="switchTab('videos')" class="hover:text-nova-400 transition flex items-center gap-2">
+                <i data-lucide="youtube" class="w-3.5 h-3.5 text-red-500"></i> ইউটিউব ভিডিও ক্লাস
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Fee Payment Numbers -->
+        <div class="lg:col-span-2 space-y-4">
+          <h4 class="text-sm font-black text-white uppercase tracking-wider border-b border-slate-800 pb-2.5 flex items-center gap-2">
+            <i data-lucide="credit-card" class="w-4 h-4 text-emerald-400"></i> ফি পেমেন্ট
+          </h4>
+          <p class="text-[11px] text-slate-400 leading-snug">
+            পিডিএফ হ্যান্ডনোট কিনতে নিচের পার্সোনাল নম্বরে সেন্ড মানি করে TrxID সাবমিট করুন:
+          </p>
+          <div class="bg-slate-800/80 p-3 rounded-2xl border border-slate-700/80 space-y-2 text-xs font-mono">
+            <div>
+              <span class="text-[10px] font-bold text-bkash bg-pink-950/60 px-1.5 py-0.5 rounded">bKash Personal</span>
+              <p class="text-white font-bold mt-0.5 text-xs">01712592519</p>
+            </div>
+            <div class="pt-1.5 border-t border-slate-700/60">
+              <span class="text-[10px] font-bold text-nagad bg-orange-950/60 px-1.5 py-0.5 rounded">Nagad Personal</span>
+              <p class="text-white font-bold mt-0.5 text-xs">01712592519</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Col 4: Address & Contact -->
+        <div class="lg:col-span-3 space-y-4">
+          <h4 class="text-sm font-black text-white uppercase tracking-wider border-b border-slate-800 pb-2.5 flex items-center gap-2">
+            <i data-lucide="map-pin" class="w-4 h-4 text-nova-500"></i> যোগাযোগের ঠিকানা
+          </h4>
+          <div class="space-y-3 text-xs text-slate-400">
+            <div class="flex items-start gap-2.5">
+              <i data-lucide="map-pin" class="w-4 h-4 text-nova-500 mt-1 flex-shrink-0"></i>
+              <span class="leading-snug">জুম্মাপাড়া, নীলফামারী সদর, নীলফামারী।</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <i data-lucide="phone" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i>
+              <a href="tel:01712592519" class="hover:text-white transition font-mono font-bold">01712592519</a>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <i data-lucide="mail" class="w-4 h-4 text-blue-400 flex-shrink-0"></i>
+              <a href="mailto:robiulnil101@gmail.com" class="hover:text-white transition font-mono">robiulnil101@gmail.com</a>
+            </div>
+            <div class="pt-1">
+              <span class="inline-flex items-center gap-1.5 bg-brand-900/80 text-brand-200 text-xs font-mono font-bold px-3 py-1.5 rounded-xl border border-brand-700">
+                🌐 sikkhanova.com
+              </span>
+            </div>
+          </div>
+        </div>
+
       </div>
+
+      <!-- Bottom Copyright & Slogan Bar -->
+      <div class="pt-8 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+        <div>
+          © 2026 <strong class="text-slate-200 font-bold">শিক্ষানোভা (SikkhaNova)</strong> — সর্বস্বত্ব সংরক্ষিত।
+        </div>
+        <div class="flex items-center gap-2 text-slate-400">
+          <span>অফিসিয়াল স্লোগান:</span>
+          <span class="text-slogan-500 font-black bg-slogan-500/10 px-2 py-0.5 rounded-full border border-slogan-500/20">
+            "শিখবো, জিতবো"
+          </span>
+          <span class="hidden sm:inline">•</span>
+          <span class="hidden sm:inline">জুম্মাপাড়া, নীলফামারী সদর</span>
+        </div>
+      </div>
+
     </div>
   </footer>
 
-  <!-- Core Script with Logic & Mock DB -->
+  <!-- Scripts -->
   <script src="app.js"></script>
 </body>
 </html>
-
