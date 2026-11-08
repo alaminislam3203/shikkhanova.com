@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import { v2 as cloudinary } from 'cloudinary';
 
 /**
  * Checks whether Cloudinary credentials have been configured in .env
@@ -22,7 +22,7 @@ export function isCloudinaryConfigured(): boolean {
 }
 
 /**
- * Uploads an image buffer or base64 data URI to Cloudinary
+ * Uploads an image buffer or base64 data URI to Cloudinary via official SDK
  * Returns the secure HTTPS Cloudinary URL
  */
 export async function uploadToCloudinary(
@@ -35,28 +35,16 @@ export async function uploadToCloudinary(
   const apiSecret = process.env.CLOUDINARY_API_SECRET?.trim();
 
   if (!cloudName || !apiKey || !apiSecret) {
-    throw new Error('Cloudinary এনভায়রনমেন্ট ভেরিয়েবল (CLOUD_NAME, API_KEY, API_SECRET) পাওয়া যায়নি');
+    throw new Error('Cloudinary এনভায়রনমেন্ট ভেরিয়েবল (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET) পাওয়া যায়নি');
   }
 
-  const timestamp = Math.floor(Date.now() / 1000).toString();
+  cloudinary.config({
+    cloud_name: cloudName,
+    api_key: apiKey,
+    api_secret: apiSecret,
+    secure: true,
+  });
 
-  // Prepare parameters to sign
-  const paramsToSign: Record<string, string> = {
-    folder,
-    timestamp,
-  };
-
-  if (publicIdPrefix) {
-    const cleanPrefix = publicIdPrefix.replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 40);
-    paramsToSign.public_id = `${cleanPrefix}-${Date.now()}`;
-  }
-
-  // Sort keys alphabetically as required by Cloudinary signing specification
-  const sortedKeys = Object.keys(paramsToSign).sort();
-  const stringToSign = sortedKeys.map((k) => `${k}=${paramsToSign[k]}`).join('&') + apiSecret;
-  const signature = crypto.createHash('sha1').update(stringToSign).digest('hex');
-
-  // Convert buffer to data URI if Buffer was passed
   let fileData: string;
   if (Buffer.isBuffer(fileInput)) {
     fileData = `data:image/jpeg;base64,${fileInput.toString('base64')}`;
@@ -64,28 +52,28 @@ export async function uploadToCloudinary(
     fileData = fileInput;
   }
 
-  const formData = new FormData();
-  formData.append('file', fileData);
-  formData.append('api_key', apiKey);
-  formData.append('timestamp', timestamp);
-  formData.append('folder', folder);
-  formData.append('signature', signature);
-  if (paramsToSign.public_id) {
-    formData.append('public_id', paramsToSign.public_id);
+  const cleanPublicId = publicIdPrefix
+    ? `${publicIdPrefix.replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 40)}-${Date.now()}`
+    : undefined;
+
+  const uploadOptions: Record<string, any> = {
+    folder,
+    resource_type: 'image',
+  };
+
+  if (cleanPublicId) {
+    uploadOptions.public_id = cleanPublicId;
   }
 
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-    method: 'POST',
-    body: formData,
-  });
-
-  const data = await res.json();
-
-  if (!res.ok) {
-    const errorDetail = data?.error?.message || 'Cloudinary আপলোড ব্যর্থ হয়েছে';
-    throw new Error(`Cloudinary Error: ${errorDetail}`);
+  try {
+    const result = await cloudinary.uploader.upload(fileData, uploadOptions);
+    if (!result || !result.secure_url) {
+      throw new Error('Cloudinary secure URL পাওয়া যায়নি');
+    }
+    return result.secure_url;
+  } catch (error: any) {
+    console.error('Cloudinary upload error:', error);
+    throw new Error(`Cloudinary আপলোড ব্যর্থ হয়েছে: ${error.message || 'অজানা সমস্যা'}`);
   }
-
-  return data.secure_url;
 }
 
