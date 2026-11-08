@@ -65,6 +65,7 @@ export const authOptions: NextAuthOptions = {
             classGrade: user.classGrade,
             rollNumber: user.rollNumber,
             phone: user.phone,
+            image: user.image,
           };
         } catch (error: any) {
           console.error('Auth error:', error);
@@ -74,12 +75,16 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.role = user.role;
         token.classGrade = user.classGrade;
         token.rollNumber = user.rollNumber;
+        token.picture = (user as any).image;
+      }
+      if (trigger === 'update' && session?.user?.image) {
+        token.picture = session.user.image;
       }
       return token;
     },
@@ -89,6 +94,9 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role as Role;
         session.user.classGrade = token.classGrade as number | null;
         session.user.rollNumber = token.rollNumber as number | null;
+        if (token.picture) {
+          session.user.image = token.picture as string;
+        }
       }
       return session;
     },

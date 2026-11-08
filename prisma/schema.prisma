@@ -35,6 +35,7 @@ model User {
   name          String
   email         String         @unique
   password      String
+  image         String?        // Profile Photo URL or path
   phone         String?
   role          Role           @default(STUDENT)
   classGrade    Int?           // 5 to 10
