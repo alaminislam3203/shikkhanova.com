@@ -259,7 +259,7 @@ export default function Navbar() {
                           onClick={() => setDropdownOpen(false)}
                           className="block px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold text-slate-700 hover:text-brand-700 hover:bg-brand-50/70 transition"
                         >
-                          <p className="leading-tight">প্রোফাইল সেটিংস ও ছবি</p>
+                          <p className="leading-tight">একাউন্ট</p>
                           <p className="text-[10px] text-slate-400 font-normal mt-0.5">ছবি, তথ্য ও পাসওয়ার্ড পরিবর্তন</p>
                         </Link>
 
@@ -392,7 +392,7 @@ export default function Navbar() {
                     onClick={() => setMobileOpen(false)}
                     className="block px-4 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-100"
                   >
-                    প্রোফাইল সেটিংস ও ছবি পরিবর্তন
+                  একাউন্ট
                   </Link>
 
                   {session.user.role === 'STUDENT' && (

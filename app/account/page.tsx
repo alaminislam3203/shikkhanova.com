@@ -143,7 +143,7 @@ export default function AccountPage() {
       setProfile((prev) => ({ ...prev, image: data.imageUrl }));
       setMsg({
         text: data.isCloudinary
-          ? 'ছবি সফলভাবে Cloudinary ক্লাউডে আপলোড ও সংরক্ষিত হয়েছে! ☁️'
+          ? 'ছবি সফলভাবে আপলোড ও সংরক্ষিত হয়েছে! ☁️'
           : 'প্রোফাইল ছবি সফলভাবে আপলোড হয়েছে!',
         type: 'success',
       });
@@ -520,9 +520,7 @@ export default function AccountPage() {
                     <p className="text-xs text-slate-500 mt-0.5">
                       JPG, PNG বা WebP ফরম্যাট (সর্বোচ্চ ৫ মেগাবাইট)
                     </p>
-                    <p className="text-[10px] text-emerald-600 font-semibold mt-0.5">
-                      ☁️ Cloudinary ক্লাউড স্টোরেজে স্বয়ংক্রিয়ভাবে সংরক্ষিত হয়
-                    </p>
+                 
                   </div>
                 </div>
 

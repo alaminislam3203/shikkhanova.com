@@ -1,47 +1,56 @@
 const fs = require('fs');
 const path = require('path');
 
-// Auto-sync assets into public root and public/assets/
-const publicDir = path.join(__dirname, 'public');
-const rootLogo = path.join(__dirname, 'logo.png');
-const publicLogo = path.join(publicDir, 'logo.png');
-const assetsLogoDir = path.join(publicDir, 'assets', 'logos');
-const assetsLogo = path.join(assetsLogoDir, 'logo.png');
-
+// Auto clean and maintain assets in their proper standard locations
 try {
-  if (!fs.existsSync(publicDir)) {
-    fs.mkdirSync(publicDir, { recursive: true });
-  }
+  const rootDir = __dirname;
+  const publicDir = path.join(rootDir, 'public');
+  const imagesDir = path.join(publicDir, 'assets', 'images');
+  const avatarsDir = path.join(publicDir, 'uploads', 'avatars');
 
-  // 1. Sync logo.png
+  if (!fs.existsSync(imagesDir)) fs.mkdirSync(imagesDir, { recursive: true });
+  if (!fs.existsSync(avatarsDir)) fs.mkdirSync(avatarsDir, { recursive: true });
+
+  // 1. Move root logo.png -> public/logo.png
+  const rootLogo = path.join(rootDir, 'logo.png');
+  const targetLogo = path.join(publicDir, 'logo.png');
+  const targetAssetsLogo = path.join(imagesDir, 'logo.png');
+
   if (fs.existsSync(rootLogo)) {
-    if (!fs.existsSync(assetsLogoDir)) {
-      fs.mkdirSync(assetsLogoDir, { recursive: true });
+    fs.copyFileSync(rootLogo, targetLogo);
+    fs.copyFileSync(rootLogo, targetAssetsLogo);
+    try { fs.unlinkSync(rootLogo); } catch {}
+  } else if (fs.existsSync(targetLogo)) {
+    if (!fs.existsSync(targetAssetsLogo)) {
+      fs.copyFileSync(targetLogo, targetAssetsLogo);
     }
-    fs.copyFileSync(rootLogo, publicLogo);
-    fs.copyFileSync(rootLogo, assetsLogo);
-    console.log('✅ Logo synced successfully to public/ and public/assets/logos/');
   }
 
-  // 2. Sync bkash.png and nagad.png to /public root and /public/assets/icons
-  const bkashImg = path.join(publicDir, 'assets', 'images', 'bkash.png');
-  const nagadImg = path.join(publicDir, 'assets', 'images', 'nagad.png');
-  const iconsDir = path.join(publicDir, 'assets', 'icons');
-  if (!fs.existsSync(iconsDir)) {
-    fs.mkdirSync(iconsDir, { recursive: true });
-  }
+  // 2. Remove redundant duplicates
+  const redundantFiles = [
+    path.join(publicDir, 'bkash.png'),
+    path.join(publicDir, 'nagad.png'),
+    path.join(rootDir, 'index.html'),
+    path.join(rootDir, 'app.js'),
+  ];
+  redundantFiles.forEach((file) => {
+    if (fs.existsSync(file)) {
+      try { fs.unlinkSync(file); } catch {}
+    }
+  });
 
-  if (fs.existsSync(bkashImg)) {
-    fs.copyFileSync(bkashImg, path.join(publicDir, 'bkash.png'));
-    fs.copyFileSync(bkashImg, path.join(iconsDir, 'bkash.png'));
-  }
-  if (fs.existsSync(nagadImg)) {
-    fs.copyFileSync(nagadImg, path.join(publicDir, 'nagad.png'));
-    fs.copyFileSync(nagadImg, path.join(iconsDir, 'nagad.png'));
-  }
-  console.log('✅ bKash and Nagad icons synced to public root & assets/icons/');
+  // 3. Remove redundant empty directories
+  const redundantDirs = [
+    path.join(publicDir, 'assets', 'logos'),
+    path.join(publicDir, 'assets', 'icons'),
+  ];
+  redundantDirs.forEach((dir) => {
+    if (fs.existsSync(dir)) {
+      try { fs.rmSync(dir, { recursive: true, force: true }); } catch {}
+    }
+  });
 } catch (err) {
-  console.error('Error syncing assets:', err);
+  // Silent cleanup fallback
 }
 
 /** @type {import('next').NextConfig} */

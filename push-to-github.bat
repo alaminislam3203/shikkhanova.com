@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul
 echo ========================================================
-echo  🚀 শিক্ষানোভা (SikkhaNova) - GitHub Push & Large File Fix
+echo  🚀 শিক্ষানোভা (SikkhaNova) - GitHub Push & Asset Organizer
 echo ========================================================
 echo.
 
@@ -10,26 +10,14 @@ cd /d "%~dp0"
 echo [1/5] Resetting local commits back to origin/main (Keeping all code files safe)...
 git reset origin/main
 
-echo [2/5] Ensuring logos and bkash/nagad icons are synced to public folders...
-if exist logo.png (
-  copy /y logo.png public\logo.png >nul
-  if not exist public\assets\logos mkdir public\assets\logos
-  copy /y logo.png public\assets\logos\logo.png >nul
-)
-if exist public\assets\images\bkash.png (
-  copy /y public\assets\images\bkash.png public\bkash.png >nul
-)
-if exist public\assets\images\nagad.png (
-  copy /y public\assets\images\nagad.png public\nagad.png >nul
-)
-if exist index.html del /f /q index.html >nul 2>&1
-if exist app.js del /f /q app.js >nul 2>&1
+echo [2/5] Cleaning and organizing assets in their proper locations...
+call node scripts/clean-assets.js
 
 echo [3/5] Staging only clean project source code (node_modules is strictly ignored)...
 git add .
 
 echo [4/5] Creating a clean single commit...
-git commit -m "feat: clean profile dropdown icons retaining only logout icon, and UI polish"
+git commit -m "chore: organize assets into proper directories and remove redundant duplicate files"
 
 echo [5/5] Pushing to origin main (GitHub)...
 git push origin main
@@ -41,4 +29,3 @@ echo  🌐 Repo: https://github.com/alaminislam3203/shikkhanova.com.git
 echo ========================================================
 echo.
 pause
-
