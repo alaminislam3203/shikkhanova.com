@@ -162,7 +162,7 @@ export default function PdfCard({ pdf, onBuyClick }: PdfCardProps) {
             className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-brand-700 via-brand-800 to-indigo-900 hover:from-brand-800 hover:to-indigo-950 text-white font-bold py-3 rounded-2xl text-xs sm:text-sm shadow-brand hover:shadow-xl transition-all duration-300 transform active:scale-95 group-hover:from-nova-600 group-hover:to-brand-800"
           >
             <FaFilePdf className="w-4 h-4 text-nova-300" />
-            <span>শিটটি সংগ্রহ করুন (TrxID দিন)</span>
+            <span>শিটটি সংগ্রহ করুন </span>
           </button>
         )}
       </div>
