@@ -175,7 +175,7 @@ export default function AdminSidebar({
           <Link
             href="/account"
             className="flex items-center gap-2.5 p-2.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 transition group"
-            title="প্রোফাইল সেটিংস ও ছবি পরিবর্তন"
+            title="একাউন্ট"
           >
             <div className="w-8 h-8 rounded-xl bg-brand-500/30 border border-brand-400/40 flex items-center justify-center font-bold text-xs text-white shrink-0 group-hover:scale-105 transition-transform">
               ⚙️

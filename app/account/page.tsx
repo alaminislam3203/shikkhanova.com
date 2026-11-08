@@ -258,7 +258,7 @@ export default function AccountPage() {
   const sidebarTabs = [
     {
       id: 'profile' as AccountTab,
-      label: 'প্রোফাইল তথ্য ও ছবি',
+      label: 'একাউন্ট',
       sublabel: 'ছবি, নাম, মোবাইল ও রোল',
       icon: FaUser,
     },

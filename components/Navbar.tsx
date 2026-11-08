@@ -272,7 +272,7 @@ export default function Navbar() {
                             <FaGear className="w-3.5 h-3.5" />
                           </div>
                           <div>
-                            <p className="leading-tight">প্রোফাইল সেটিংস ও ছবি</p>
+                            <p className="leading-tight">একাউন্ট</p>
                             <p className="text-[10px] text-slate-400 font-normal">ছবি, তথ্য ও পাসওয়ার্ড পরিবর্তন</p>
                           </div>
                         </Link>
@@ -411,7 +411,7 @@ export default function Navbar() {
                     onClick={() => setMobileOpen(false)}
                     className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-100"
                   >
-                    <FaGear className="text-slate-500" /> প্রোফাইল সেটিংস ও ছবি পরিবর্তন
+                    <FaGear className="text-slate-500" />একাউন্ট
                   </Link>
 
                   {session.user.role === 'STUDENT' && (
