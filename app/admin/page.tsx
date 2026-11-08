@@ -3,31 +3,39 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import Logo from '@/components/common/Logo';
+import Link from 'next/link';
+import AdminSidebar, { AdminTab } from '@/components/admin/AdminSidebar';
 import PurchasesTable from '@/components/admin/PurchasesTable';
 import AddResultForm from '@/components/admin/AddResultForm';
 import AddPdfForm from '@/components/admin/AddPdfForm';
 import { PurchaseRecord } from '@/types';
 import {
-  FaUserShield,
-  FaFilePdf,
+  FaBars,
   FaAward,
+  FaFilePdf,
+  FaUsers,
   FaClock,
+  FaCircleCheck,
+  FaPhone,
+  FaLocationDot,
+  FaArrowRight,
 } from 'react-icons/fa6';
 import { TbCashBanknote } from 'react-icons/tb';
+import { HiSparkles } from 'react-icons/hi2';
 
 export default function AdminPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const [activeTab, setActiveTab] = useState<'purchases' | 'addResult' | 'addPdf'>('purchases');
+  const [activeTab, setActiveTab] = useState<AdminTab>('purchases');
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [purchases, setPurchases] = useState<PurchaseRecord[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [msg, setMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
   // Add Result State
   const [resultForm, setResultForm] = useState({
-    examTitle: 'মাসিক মূল্যায়ন ও মডেল টেস্ট',
+    examTitle: '১ম সাময়িক মূল্যায়ন পরীক্ষা ২০২৬',
     classGrade: 7,
     rollNumber: '',
     studentName: '',
@@ -44,7 +52,7 @@ export default function AdminPage() {
     classGrade: 7,
     subject: 'সাধারণ গণিত',
     price: '50',
-    fileUrl: '/assets/pdfs/demo.pdf',
+    fileUrl: '/assets/pdfs/class-7-math.pdf',
   });
 
   useEffect(() => {
@@ -150,7 +158,7 @@ export default function AdminPage() {
 
       setMsg({ text: 'নতুন ফলাফল সফলভাবে আপলোড হয়েছে!', type: 'success' });
       setResultForm({
-        examTitle: 'মাসিক মূল্যায়ন ও মডেল টেস্ট',
+        examTitle: '১ম সাময়িক মূল্যায়ন পরীক্ষা ২০২৬',
         classGrade: 7,
         rollNumber: '',
         studentName: '',
@@ -187,115 +195,188 @@ export default function AdminPage() {
     }
   };
 
+  const pendingPurchases = purchases.filter((p) => p.status === 'PENDING');
+  const approvedPurchases = purchases.filter((p) => p.status === 'APPROVED');
+  const totalRevenue = approvedPurchases.reduce((acc, curr) => acc + curr.amount, 0);
+
   return (
-    <div className="space-y-6">
-      {/* Admin Header */}
-      <div
-        style={{
-          background: 'linear-gradient(135deg, #020D24 0%, #082C6D 50%, #001A4D 100%)',
-        }}
-        className="text-white p-6 sm:p-8 rounded-3xl shadow-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border border-brand-700/50"
-      >
-        <div className="flex items-center gap-4">
-          <div className="bg-white rounded-2xl p-2 shadow-md flex items-center justify-center">
-            <Logo size="sm" clickable={false} />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-black">অ্যাডমিন কন্ট্রোল পোর্টাল</h1>
-              <span className="bg-nova-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full uppercase">Master Admin</span>
+    <div className="flex flex-col lg:flex-row gap-6 items-start">
+      
+      {/* Side Menu Navigation */}
+      <AdminSidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        pendingCount={pendingPurchases.length}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
+
+      {/* Main Content Area */}
+      <div className="flex-1 w-full space-y-6">
+        
+        {/* Top Navbar / Header Bar */}
+        <div className="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200/90 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition"
+              title="মেন্যু খুলুন"
+            >
+              <FaBars className="w-5 h-5" />
+            </button>
+
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">অ্যাডমিন ড্যাশবোর্ড</span>
+                <span className="text-slate-300">•</span>
+                <span className="text-xs font-bold text-brand-700">
+                  {activeTab === 'purchases' && 'পেমেন্ট রিকোয়েস্ট যাচাই'}
+                  {activeTab === 'addResult' && 'কোচিং পরীক্ষার রেজাল্ট আপলোড'}
+                  {activeTab === 'addPdf' && 'পিডিএফ হ্যান্ডনোট পাবলিশ'}
+                  {activeTab === 'students' && 'শিক্ষার্থী ও উপস্থিতি'}
+                  {activeTab === 'settings' && 'সেন্টার সেটিংস'}
+                </span>
+              </div>
+              <h1 className="text-xl sm:text-2xl font-black text-slate-800 leading-tight">
+                {activeTab === 'purchases' && 'বিকাশ ও নগদ পেমেন্ট অনুমোদন'}
+                {activeTab === 'addResult' && 'নতুন পরীক্ষার ফলাফল সংরক্ষণ'}
+                {activeTab === 'addPdf' && 'নতুন পিডিএফ শিট বা সাজেশন যুক্ত করুন'}
+                {activeTab === 'students' && 'শিক্ষার্থী ও হাজিরা ব্যবস্থাপনা'}
+                {activeTab === 'settings' && 'সেন্টার পরিচিতি ও সেটিংস'}
+              </h1>
             </div>
-            <p className="text-xs text-blue-200">
-              শিক্ষানোভা একাডেমি • জুম্মাপাড়া, নীলফামারী সদর | হেল্পলাইন: ০১৭১২৫৯২৫১৯
-            </p>
+          </div>
+
+          {/* Quick Stats Pills */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="bg-amber-50 border border-amber-200/80 px-3.5 py-1.5 rounded-2xl flex items-center gap-2 text-xs font-bold text-amber-800">
+              <FaClock className="text-amber-600" />
+              <span>{pendingPurchases.length}টি অপেক্ষমাণ</span>
+            </div>
+
+            <div className="bg-emerald-50 border border-emerald-200/80 px-3.5 py-1.5 rounded-2xl flex items-center gap-2 text-xs font-bold text-emerald-800">
+              <FaCircleCheck className="text-emerald-600" />
+              <span>মোট আয়: ৳{totalRevenue}</span>
+            </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-mono bg-white/10 border border-white/20 px-3 py-1 rounded-full text-white font-bold">
-            robiulnil101@gmail.com
-          </span>
-        </div>
+        {/* Message Banner */}
+        {msg && (
+          <div
+            className={`p-4 rounded-2xl text-xs sm:text-sm font-bold transition flex items-center justify-between shadow-sm ${
+              msg.type === 'success'
+                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                : 'bg-rose-50 text-rose-800 border border-rose-200'
+            }`}
+          >
+            <span>{msg.text}</span>
+            <button onClick={() => setMsg(null)} className="text-xs opacity-70 hover:opacity-100">✕</button>
+          </div>
+        )}
+
+        {/* TAB 1: Review Purchases */}
+        {activeTab === 'purchases' && (
+          <div className="space-y-4">
+            <div className="flex justify-between items-center text-xs text-slate-500 font-semibold px-1">
+              <span>শিক্ষার্থীদের পাঠানো TrxID বিকাশ/নগদ স্টেটমেন্টের সাথে মিলিয়ে Approve বাটনে চাপুন।</span>
+            </div>
+            <PurchasesTable
+              purchases={purchases}
+              loading={loading}
+              onUpdateStatus={updatePurchaseStatus}
+            />
+          </div>
+        )}
+
+        {/* TAB 2: Upload Result */}
+        {activeTab === 'addResult' && (
+          <AddResultForm
+            formData={resultForm}
+            onChange={setResultForm}
+            onSubmit={handleResultSubmit}
+          />
+        )}
+
+        {/* TAB 3: Add PDF Material */}
+        {activeTab === 'addPdf' && (
+          <AddPdfForm
+            formData={pdfForm}
+            onChange={setPdfForm}
+            onSubmit={handlePdfSubmit}
+          />
+        )}
+
+        {/* TAB 4: Students & Attendance Quick Directory */}
+        {activeTab === 'students' && (
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+              <div>
+                <h3 className="text-lg font-black text-slate-800">শ্রেণি ৫ থেকে ১০ শিক্ষার্থী উপস্থিতি</h3>
+                <p className="text-xs text-slate-500">প্রতিদিনের উপস্থিতি গ্রহণ করতে সরাসরি উপস্থিতি মডিউলে যান।</p>
+              </div>
+              <Link
+                href="/attendance"
+                className="inline-flex items-center gap-2 bg-brand-700 hover:bg-brand-800 text-white font-bold px-4 py-2 rounded-xl text-xs shadow transition"
+              >
+                <span>উপস্থিতি গ্রহণ করুন</span>
+                <FaArrowRight className="w-3 h-3" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+              {[5, 6, 7, 8, 9, 10].map((cls) => (
+                <Link
+                  key={cls}
+                  href={`/attendance?class=${cls}`}
+                  className="bg-slate-50 hover:bg-brand-50 border border-slate-200 hover:border-brand-300 p-4 rounded-2xl text-center space-y-1 transition group"
+                >
+                  <span className="text-xs font-bold text-slate-400 group-hover:text-brand-600 block">শ্রেণি</span>
+                  <strong className="text-xl font-black text-slate-800 group-hover:text-brand-800 block">Class {cls}</strong>
+                  <span className="text-[10px] bg-white px-2 py-0.5 rounded-full border border-slate-200 text-slate-600 font-semibold inline-block">২০ শিক্ষার্থী</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* TAB 5: Center Settings & Details */}
+        {activeTab === 'settings' && (
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+            <div>
+              <h3 className="text-lg font-black text-slate-800">শিক্ষানোভা একাডেমি পরিচিতি ও তথ্য</h3>
+              <p className="text-xs text-slate-500">প্রতিষ্ঠানের সার্বিক অফিশিয়াল তথ্য</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-1">
+                <span className="text-slate-400 text-xs font-bold">প্রতিষ্ঠানের নাম</span>
+                <p className="font-black text-slate-800 text-base">শিক্ষানোভা (SikkhaNova)</p>
+                <p className="text-xs text-nova-600 font-bold">"শিখবো, জিতবো"</p>
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-1">
+                <span className="text-slate-400 text-xs font-bold">অফিসের ঠিকানা</span>
+                <p className="font-bold text-slate-800">জুম্মাপাড়া, নীলফামারী সদর, নীলফামারী</p>
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-1">
+                <span className="text-slate-400 text-xs font-bold">বিকাশ ও নগদ হেল্পলাইন</span>
+                <p className="font-black font-mono text-brand-700 text-base">01712592519</p>
+                <p className="text-[11px] text-slate-500">বিকাশ ও নগদ পার্সোনাল নম্বর</p>
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-1">
+                <span className="text-slate-400 text-xs font-bold">মাস্টার অ্যাডমিন ক্রেডেনশিয়াল</span>
+                <p className="font-mono font-bold text-slate-800">ইমেইল: robiulnil101@gmail.com</p>
+                <p className="font-mono text-slate-500 text-xs">পাসওয়ার্ড: RABIUL@20</p>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
 
-      {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
-        <button
-          onClick={() => setActiveTab('purchases')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 ${
-            activeTab === 'purchases'
-              ? 'bg-brand-700 text-white shadow-brand'
-              : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
-          }`}
-        >
-          <TbCashBanknote className="w-4 h-4" />
-          <span>পেমেন্ট অনুমোদন ({purchases.filter((p) => p.status === 'PENDING').length})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('addResult')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 ${
-            activeTab === 'addResult'
-              ? 'bg-brand-700 text-white shadow-brand'
-              : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
-          }`}
-        >
-          <FaAward className="w-4 h-4" />
-          <span>রেজাল্ট আপলোড</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('addPdf')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 ${
-            activeTab === 'addPdf'
-              ? 'bg-brand-700 text-white shadow-brand'
-              : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
-          }`}
-        >
-          <FaFilePdf className="w-4 h-4" />
-          <span>পিডিএফ পাবলিশ</span>
-        </button>
-      </div>
-
-      {/* Notification Message */}
-      {msg && (
-        <div
-          className={`p-4 rounded-2xl text-xs sm:text-sm font-bold transition ${
-            msg.type === 'success'
-              ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-              : 'bg-rose-50 text-rose-800 border border-rose-200'
-          }`}
-        >
-          {msg.text}
-        </div>
-      )}
-
-      {/* TAB 1: Review Purchases */}
-      {activeTab === 'purchases' && (
-        <PurchasesTable
-          purchases={purchases}
-          loading={loading}
-          onUpdateStatus={updatePurchaseStatus}
-        />
-      )}
-
-      {/* TAB 2: Upload Result */}
-      {activeTab === 'addResult' && (
-        <AddResultForm
-          formData={resultForm}
-          onChange={setResultForm}
-          onSubmit={handleResultSubmit}
-        />
-      )}
-
-      {/* TAB 3: Add PDF Material */}
-      {activeTab === 'addPdf' && (
-        <AddPdfForm
-          formData={pdfForm}
-          onChange={setPdfForm}
-          onSubmit={handlePdfSubmit}
-        />
-      )}
     </div>
   );
 }

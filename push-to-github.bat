@@ -29,7 +29,7 @@ echo [3/5] Staging only clean project source code (node_modules is strictly igno
 git add .
 
 echo [4/5] Creating a clean single commit...
-git commit -m "feat: complete SikkhaNova platform with official logos, OpenGraph SEO, and clean UI"
+git commit -m "feat: implement modern SaaS sidebar navigation system for admin panel"
 
 echo [5/5] Pushing to origin main (GitHub)...
 git push origin main
