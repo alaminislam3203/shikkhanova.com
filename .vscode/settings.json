@@ -1,0 +1,14 @@
+{
+  "path-intellisense.mappings": {
+    "/": "${workspaceFolder}/public",
+    "@": "${workspaceFolder}",
+    "@public": "${workspaceFolder}/public"
+  },
+  "path-autocomplete.pathMappings": {
+    "/": "${workspaceFolder}/public",
+    "@": "${workspaceFolder}",
+    "@public": "${workspaceFolder}/public"
+  },
+  "typescript.preferences.importModuleSpecifier": "non-relative"
+}
+

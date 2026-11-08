@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   description:
     'শিক্ষানোভা - জুম্মাপাড়া, নীলফামারী সদর। ৫ম থেকে ১০ম শ্রেণির রোল ভিত্তিক হাজিরা, কোচিং পরীক্ষার ফলাফল, প্রিমিয়াম পিডিএফ শিট এবং ইউটিউব ভিডিও ক্লাস প্ল্যাটফর্ম।',
   icons: {
-    icon: '/logo.png',
-    apple: '/logo.png',
+    icon: '/assets/icon.png',
+    apple: '/assets/icon.png',
   },
   openGraph: {
     title: 'শিক্ষানোভা (SikkhaNova) - শিখবো, জিতবো',
