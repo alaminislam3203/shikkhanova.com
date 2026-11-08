@@ -152,13 +152,17 @@ export default function Footer() {
               পিডিএফ হ্যান্ডনোট কিনতে নিচের পার্সোনাল নম্বরে সেন্ড মানি করে TrxID সাবমিট করুন:
             </p>
             <div className="bg-slate-800/80 p-3 rounded-2xl border border-slate-700/80 space-y-2 text-xs font-mono">
-              <div>
-                <span className="text-[10px] font-bold text-bkash bg-pink-950/60 px-1.5 py-0.5 rounded">bKash Personal</span>
-                <p className="text-white font-bold mt-0.5 text-xs">01712592519</p>
+              <div className="flex items-center justify-between gap-2">
+                <div className="bg-white px-1.5 py-0.5 rounded shadow-sm flex items-center">
+                  <img src="/assets/images/bkash.png" alt="bKash" className="h-3.5 w-auto object-contain" />
+                </div>
+                <p className="text-white font-bold text-xs tracking-wider">01712592519</p>
               </div>
-              <div className="pt-1.5 border-t border-slate-700/60">
-                <span className="text-[10px] font-bold text-nagad bg-orange-950/60 px-1.5 py-0.5 rounded">Nagad Personal</span>
-                <p className="text-white font-bold mt-0.5 text-xs">01712592519</p>
+              <div className="pt-2 border-t border-slate-700/60 flex items-center justify-between gap-2">
+                <div className="bg-white px-1.5 py-0.5 rounded shadow-sm flex items-center">
+                  <img src="/assets/images/nagad.png" alt="Nagad" className="h-3.5 w-auto object-contain" />
+                </div>
+                <p className="text-white font-bold text-xs tracking-wider">01712592519</p>
               </div>
             </div>
           </div>
