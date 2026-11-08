@@ -30,8 +30,8 @@ export default function Navbar() {
 
   const navLinks = [
     { href: '/', label: 'হোম' },
-    { href: '/attendance', label: 'রোল উপস্থিতি (৫-১০)' },
-    { href: '/results', label: 'কোচিং রেজাল্ট' },
+    { href: '/attendance', label: 'উপস্থিতি' },
+    { href: '/results', label: 'রেজাল্ট' },
     { href: '/pdfs', label: 'পিডিএফ শিট ও নোট', icon: FaFilePdf },
     { href: '/videos', label: 'ভিডিও ক্লাস', icon: FaYoutube, color: 'text-red-500' },
   ];
