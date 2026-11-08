@@ -29,7 +29,7 @@ echo [3/5] Staging only clean project source code (node_modules is strictly igno
 git add .
 
 echo [4/5] Creating a clean single commit...
-git commit -m "feat: isolate admin panel to dedicated full-screen layout without public navbar and footer"
+git commit -m "feat: add user account profile photo upload, dedicated admin layout, and UI polish"
 
 echo [5/5] Pushing to origin main (GitHub)...
 git push origin main

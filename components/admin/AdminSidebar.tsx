@@ -172,6 +172,20 @@ export default function AdminSidebar({
 
         {/* Sidebar Footer */}
         <div className="pt-4 border-t border-white/10 space-y-3">
+          <Link
+            href="/account"
+            className="flex items-center gap-2.5 p-2.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 transition group"
+            title="প্রোফাইল সেটিংস ও ছবি পরিবর্তন"
+          >
+            <div className="w-8 h-8 rounded-xl bg-brand-500/30 border border-brand-400/40 flex items-center justify-center font-bold text-xs text-white shrink-0 group-hover:scale-105 transition-transform">
+              ⚙️
+            </div>
+            <div className="overflow-hidden">
+              <p className="text-xs font-bold text-white truncate">প্রোফাইল সেটিংস ও ফটো</p>
+              <p className="text-[10px] text-nova-400">/account এ যান</p>
+            </div>
+          </Link>
+
           <div className="bg-white/5 p-3 rounded-2xl border border-white/10 text-[11px] text-slate-300 space-y-1">
             <div className="flex items-center gap-2 text-nova-400 font-bold">
               <FaPhone className="w-3 h-3" /> হেল্পলাইন নম্বর

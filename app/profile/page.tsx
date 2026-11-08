@@ -112,14 +112,18 @@ export default function ProfilePage() {
 
         <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-brand-600 to-nova-500 text-white flex items-center justify-center font-black text-2xl sm:text-3xl shadow-lg border-2 border-white/20">
-              {session.user.name ? session.user.name.charAt(0) : '🎓'}
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-brand-600 to-nova-500 text-white flex items-center justify-center font-black text-2xl sm:text-3xl shadow-lg border-2 border-white/20 overflow-hidden shrink-0">
+              {session.user.image ? (
+                <img src={session.user.image} alt={session.user.name || 'User'} className="w-full h-full object-cover" />
+              ) : (
+                <span>{session.user.name ? session.user.name.charAt(0) : '🎓'}</span>
+              )}
             </div>
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <h1 className="text-xl sm:text-2xl font-black">{session.user.name}</h1>
                 <span className="bg-nova-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full uppercase">
-                  {session.user.role}
+                  {session.user.role === 'ADMIN' ? 'অ্যাডমিন' : session.user.role === 'TEACHER' ? 'শিক্ষক' : 'শিক্ষার্থী'}
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-blue-200">
@@ -139,6 +143,12 @@ export default function ProfilePage() {
                 <span className="inline-flex items-center gap-1 bg-white/10 px-2.5 py-0.5 rounded-md font-mono text-[11px]">
                   <FaEnvelope className="text-nova-400" /> {session.user.email}
                 </span>
+                <Link
+                  href="/account"
+                  className="inline-flex items-center gap-1 bg-brand-500/30 hover:bg-brand-500/50 text-white px-2.5 py-0.5 rounded-md font-semibold border border-white/20 transition text-[11px]"
+                >
+                  ছবি ও প্রোফাইল পরিবর্তন ⚙️
+                </Link>
               </div>
             </div>
           </div>

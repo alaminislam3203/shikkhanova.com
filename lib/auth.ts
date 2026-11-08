@@ -31,6 +31,12 @@ export const authOptions: NextAuthOptions = {
         const adminPassword = process.env.ADMIN_PASSWORD || 'RABIUL@20';
 
         if (email === adminEmail && password === adminPassword) {
+          let adminImage: string | null = null;
+          try {
+            const dbAdmin = await prisma.user.findUnique({ where: { email: adminEmail } });
+            if (dbAdmin?.image) adminImage = dbAdmin.image;
+          } catch {}
+
           return {
             id: 'admin-master-id',
             name: 'শিক্ষানোভা অ্যাডমিন (SikkhaNova Admin)',
@@ -39,6 +45,7 @@ export const authOptions: NextAuthOptions = {
             classGrade: null,
             rollNumber: null,
             phone: '01712592519',
+            image: adminImage,
           };
         }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import Logo from '@/components/common/Logo';
@@ -12,14 +12,15 @@ import {
   FaFacebook,
   FaPhone,
   FaLocationDot,
-  FaUserCheck,
-  FaAward,
   FaFilePdf,
   FaRightToBracket,
   FaUserShield,
   FaBars,
   FaXmark,
   FaArrowRightFromBracket,
+  FaChevronDown,
+  FaGear,
+  FaUser,
 } from 'react-icons/fa6';
 import { HiSparkles } from 'react-icons/hi2';
 
@@ -27,11 +28,32 @@ export default function Navbar() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Close menus on route navigation
+  useEffect(() => {
+    setDropdownOpen(false);
+    setMobileOpen(false);
+  }, [pathname]);
 
   const navLinks = [
     { href: '/', label: 'হোম' },
-    { href: '/attendance', label: 'উপস্থিতি' },
-    { href: '/results', label: 'রেজাল্ট' },
+    { href: '/attendance', label: 'রোল উপস্থিতি' },
+    { href: '/results', label: 'কোচিং রেজাল্ট' },
     { href: '/pdfs', label: 'পিডিএফ শিট ও নোট', icon: FaFilePdf },
     { href: '/videos', label: 'ভিডিও ক্লাস', icon: FaYoutube, color: 'text-red-500' },
   ];
@@ -123,30 +145,53 @@ export default function Navbar() {
             <div className="flex items-center gap-2 sm:gap-3">
               
               {session?.user ? (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 sm:gap-3">
                   {session.user.role === 'ADMIN' && (
                     <Link
                       href="/admin"
                       className="inline-flex items-center gap-1.5 bg-brand-700 hover:bg-brand-800 text-white text-xs sm:text-sm font-bold px-3 py-2 rounded-xl shadow-md transition"
                     >
-                      <FaUserShield /> অ্যাডমিন প্যানেল
+                      <FaUserShield /> <span className="hidden md:inline">অ্যাডমিন প্যানেল</span>
                     </Link>
                   )}
                   {session.user.role === 'STUDENT' && (
                     <Link
                       href="/profile"
-                      className="inline-flex items-center gap-1.5 bg-nova-500 hover:bg-nova-600 text-white text-xs sm:text-sm font-bold px-3 py-2 rounded-xl shadow-md transition"
+                      className="hidden md:inline-flex items-center gap-1.5 bg-nova-500 hover:bg-nova-600 text-white text-xs sm:text-sm font-bold px-3 py-2 rounded-xl shadow-md transition"
                     >
-                      <FaGraduationCap /> আমার প্রোফাইল
+                      <FaGraduationCap /> শিট ও রেজাল্ট
                     </Link>
                   )}
+
+                  {/* Profile Avatar & Account Link */}
                   <Link
-                    href={session.user.role === 'ADMIN' ? '/admin' : '/profile'}
-                    className="hidden sm:flex flex-col text-right hover:opacity-80 transition"
+                    href="/account"
+                    className="flex items-center gap-2 p-1.5 rounded-2xl hover:bg-slate-100 transition border border-slate-200/60 bg-slate-50/80 group"
+                    title="প্রোফাইল সেটিংস ও ফটো পরিবর্তন"
                   >
-                    <span className="text-xs font-bold text-slate-800">{session.user.name}</span>
-                    <span className="text-[10px] font-semibold text-brand-600">{session.user.role}</span>
+                    <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-brand-600 bg-brand-50 flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                      {session.user.image ? (
+                        <img
+                          src={session.user.image}
+                          alt={session.user.name || 'User'}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-xs font-black text-brand-700">
+                          {session.user.name?.charAt(0) || 'U'}
+                        </span>
+                      )}
+                    </div>
+                    <div className="hidden sm:flex flex-col text-left pr-1">
+                      <span className="text-xs font-bold text-slate-800 leading-tight group-hover:text-brand-700 transition">
+                        {session.user.name?.split(' ')[0] || session.user.name}
+                      </span>
+                      <span className="text-[10px] font-semibold text-brand-600 leading-none mt-0.5">
+                        {session.user.role === 'ADMIN' ? 'অ্যাডমিন' : session.user.role === 'TEACHER' ? 'শিক্ষক' : 'শিক্ষার্থী'}
+                      </span>
+                    </div>
                   </Link>
+
                   <button
                     onClick={() => signOut({ callbackUrl: '/' })}
                     className="p-2 text-slate-500 hover:text-slogan-600 hover:bg-slate-100 rounded-xl transition"
@@ -213,6 +258,25 @@ export default function Navbar() {
                   </Link>
                 );
               })}
+
+              {session?.user && (
+                <Link
+                  href="/account"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-800 bg-slate-100/80 hover:bg-slate-200/80 transition"
+                >
+                  <div className="w-7 h-7 rounded-full overflow-hidden border border-brand-500 bg-brand-50 flex items-center justify-center shrink-0">
+                    {session.user.image ? (
+                      <img src={session.user.image} alt="Avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-xs font-black text-brand-700">
+                        {session.user.name?.charAt(0) || 'U'}
+                      </span>
+                    )}
+                  </div>
+                  <span>প্রোফাইল সেটিংস ও ছবি পরিবর্তন (/account)</span>
+                </Link>
+              )}
 
               {session?.user?.role === 'ADMIN' && (
                 <Link
