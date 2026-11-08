@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import AuthProvider from '@/components/AuthProvider';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import AppLayout from '@/components/common/AppLayout';
 
 export const metadata: Metadata = {
   title: 'শিক্ষানোভা (SikkhaNova) - শিখবো, জিতবো | শ্রেণি ৫-১০ শিক্ষা ব্যবস্থাপনা',
@@ -38,13 +37,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="bn" className="scroll-smooth">
-      <body className="min-h-screen flex flex-col bg-slate-50 text-slate-800 antialiased selection:bg-nova-500 selection:text-white">
+      <body className="min-h-screen bg-slate-50 text-slate-800 antialiased selection:bg-nova-500 selection:text-white">
         <AuthProvider>
-          <Navbar />
-          <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-            {children}
-          </main>
-          <Footer />
+          <AppLayout>{children}</AppLayout>
         </AuthProvider>
       </body>
     </html>
