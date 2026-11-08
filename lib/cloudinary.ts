@@ -88,3 +88,4 @@ export async function uploadToCloudinary(
 
   return data.secure_url;
 }
+

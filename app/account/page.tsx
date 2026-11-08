@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -19,15 +19,25 @@ import {
   FaFilePdf,
   FaAward,
   FaArrowRight,
-  FaTrashCan,
+  FaArrowRightFromBracket,
+  FaShieldHalved,
+  FaUserShield,
+  FaBars,
+  FaCloudArrowUp,
+  FaGear,
+  FaBookOpen,
+  FaUserCheck,
 } from 'react-icons/fa6';
 import { HiSparkles } from 'react-icons/hi2';
+
+type AccountTab = 'profile' | 'security' | 'activity';
 
 export default function AccountPage() {
   const { data: session, status, update } = useSession();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [activeTab, setActiveTab] = useState<AccountTab>('profile');
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
@@ -98,7 +108,7 @@ export default function AccountPage() {
     }
   };
 
-  // Handle Photo Upload
+  // Handle Photo Upload (Cloudinary with Local Fallback)
   const handlePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -164,17 +174,17 @@ export default function AccountPage() {
         body: JSON.stringify({
           name: profile.name,
           phone: profile.phone,
-          classGrade: profile.classGrade,
-          rollNumber: profile.rollNumber,
+          classGrade: parseInt(profile.classGrade),
+          rollNumber: profile.rollNumber ? parseInt(profile.rollNumber) : null,
         }),
       });
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || 'প্রোফাইল আপডেট ব্যর্থ হয়েছে');
+        throw new Error(data.error || 'তথ্য সংরক্ষণ করা যায়নি');
       }
 
-      setMsg({ text: 'আপনার তথ্য সফলভাবে সংরক্ষিত হয়েছে!', type: 'success' });
+      setMsg({ text: 'প্রোফাইল তথ্য সফলভাবে আপডেট হয়েছে!', type: 'success' });
 
       if (update) {
         await update({
@@ -182,12 +192,12 @@ export default function AccountPage() {
             name: profile.name,
             phone: profile.phone,
             classGrade: parseInt(profile.classGrade),
-            rollNumber: parseInt(profile.rollNumber),
+            rollNumber: profile.rollNumber ? parseInt(profile.rollNumber) : null,
           },
         });
       }
     } catch (err: any) {
-      setMsg({ text: err.message || 'তথ্য সংরক্ষণ করা যায়নি', type: 'error' });
+      setMsg({ text: err.message || 'সমস্যা হয়েছে', type: 'error' });
     } finally {
       setSavingProfile(false);
     }
@@ -245,107 +255,132 @@ export default function AccountPage() {
 
   if (!session?.user) return null;
 
+  const sidebarTabs = [
+    {
+      id: 'profile' as AccountTab,
+      label: 'প্রোফাইল তথ্য ও ছবি',
+      sublabel: 'ছবি, নাম, মোবাইল ও রোল',
+      icon: FaUser,
+    },
+    {
+      id: 'security' as AccountTab,
+      label: 'নিরাপত্তা ও পাসওয়ার্ড',
+      sublabel: 'পাসওয়ার্ড ও নিরাপত্তা',
+      icon: FaShieldHalved,
+    },
+    {
+      id: 'activity' as AccountTab,
+      label: 'আমার শিট ও ফলাফল',
+      sublabel: 'ডাউনলোড ও মার্কশিট',
+      icon: FaBookOpen,
+    },
+  ];
+
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-6">
       
-      {/* Top Welcome Card */}
+      {/* Top Banner with Compact Profile Header */}
       <div
         style={{
           background: 'linear-gradient(135deg, #020D24 0%, #082C6D 50%, #001A4D 100%)',
         }}
-        className="rounded-3xl p-6 sm:p-10 text-white shadow-premium border border-brand-800/60 relative overflow-hidden"
+        className="rounded-3xl p-6 sm:p-8 text-white shadow-premium border border-brand-800/60 relative overflow-hidden"
       >
         <div className="absolute right-0 top-0 w-80 h-80 bg-nova-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-        <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
-          
-          {/* Avatar with Camera Overlay */}
-          <div className="relative group shrink-0">
-            <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl overflow-hidden bg-gradient-to-tr from-brand-700 to-nova-500 p-1 shadow-2xl border-2 border-white/30">
-              <div className="w-full h-full rounded-[22px] overflow-hidden bg-slate-900 flex items-center justify-center relative">
-                {profile.image ? (
-                  <img
-                    src={profile.image}
-                    alt={profile.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <span className="text-4xl sm:text-5xl font-black text-white">
-                    {profile.name ? profile.name.charAt(0) : '🎓'}
-                  </span>
-                )}
+        <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 text-center sm:text-left">
+          <div className="flex flex-col sm:flex-row items-center gap-5">
+            {/* Avatar with Camera Icon */}
+            <div className="relative group shrink-0">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl overflow-hidden bg-gradient-to-tr from-brand-700 to-nova-500 p-1 shadow-2xl border-2 border-white/30">
+                <div className="w-full h-full rounded-[20px] overflow-hidden bg-slate-900 flex items-center justify-center relative">
+                  {profile.image ? (
+                    <img
+                      src={profile.image}
+                      alt={profile.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-3xl sm:text-4xl font-black text-white">
+                      {profile.name ? profile.name.charAt(0) : '🎓'}
+                    </span>
+                  )}
 
-                {/* Loading overlay */}
-                {uploading && (
-                  <div className="absolute inset-0 bg-black/70 flex items-center justify-center text-white">
-                    <FaClock className="w-6 h-6 animate-spin text-nova-400" />
-                  </div>
-                )}
+                  {uploading && (
+                    <div className="absolute inset-0 bg-black/70 flex items-center justify-center text-white">
+                      <FaClock className="w-5 h-5 animate-spin text-nova-400" />
+                    </div>
+                  )}
+                </div>
               </div>
+
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="absolute -bottom-1.5 -right-1.5 w-8 h-8 rounded-xl bg-nova-500 hover:bg-nova-600 text-white flex items-center justify-center shadow-lg border-2 border-white transition transform hover:scale-110 active:scale-95"
+                title="নতুন ছবি আপলোড করুন"
+              >
+                <FaCamera className="w-3.5 h-3.5" />
+              </button>
+
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handlePhotoSelect}
+                accept="image/jpeg,image/png,image/webp"
+                className="hidden"
+              />
             </div>
 
-            {/* Camera Button */}
+            {/* Profile Brief Info */}
+            <div className="space-y-1.5">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                <h1 className="text-xl sm:text-2xl font-black text-white">{profile.name}</h1>
+                <span className="bg-nova-500 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                  {profile.role === 'ADMIN' ? 'অ্যাডমিন' : profile.role === 'TEACHER' ? 'শিক্ষক' : 'শিক্ষার্থী'}
+                </span>
+              </div>
+              <p className="text-xs text-blue-200">
+                শিক্ষানোভা একাডেমি • জুম্মাপাড়া, নীলফামারী সদর
+              </p>
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1 text-xs text-slate-300">
+                {profile.classGrade && (
+                  <span className="inline-flex items-center gap-1 bg-white/10 px-2.5 py-0.5 rounded-lg font-bold border border-white/10">
+                    <FaGraduationCap className="text-nova-400" /> শ্রেণি {profile.classGrade}
+                  </span>
+                )}
+                {profile.rollNumber && (
+                  <span className="inline-flex items-center gap-1 bg-white/10 px-2.5 py-0.5 rounded-lg font-bold border border-white/10">
+                    <FaHashtag className="text-nova-400" /> রোল {profile.rollNumber}
+                  </span>
+                )}
+                <span className="inline-flex items-center gap-1 bg-white/10 px-2.5 py-0.5 rounded-lg font-mono text-[11px] border border-white/10">
+                  <FaEnvelope className="text-nova-400" /> {profile.email}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Photo Upload Trigger Button */}
+          <div className="shrink-0 flex items-center gap-2">
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
-              className="absolute -bottom-2 -right-2 w-10 h-10 rounded-2xl bg-nova-500 hover:bg-nova-600 text-white flex items-center justify-center shadow-lg border-2 border-white transition transform hover:scale-110 active:scale-95"
-              title="নতুন প্রোফাইল ছবি আপলোড করুন"
+              className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-4 py-2.5 rounded-2xl border border-white/20 transition backdrop-blur-md shadow-sm"
             >
-              <FaCamera className="w-4 h-4" />
+              <FaCloudArrowUp className="text-nova-400 w-4 h-4" />
+              <span>{uploading ? 'আপলোড হচ্ছে...' : 'নতুন ছবি আপলোড'}</span>
             </button>
-
-            {/* Hidden File Input */}
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handlePhotoSelect}
-              accept="image/jpeg,image/png,image/webp"
-              className="hidden"
-            />
           </div>
-
-          {/* User Basic Info */}
-          <div className="space-y-2 flex-1">
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-              <h1 className="text-2xl sm:text-3xl font-black text-white">{profile.name}</h1>
-              <span className="bg-nova-500 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                {profile.role}
-              </span>
-            </div>
-
-            <p className="text-xs sm:text-sm text-blue-200">
-              শিক্ষানোভা একাডেমি • জুম্মাপাড়া, নীলফামারী সদর
-            </p>
-
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1 text-xs text-slate-300">
-              {profile.classGrade && (
-                <span className="inline-flex items-center gap-1 bg-white/10 px-3 py-1 rounded-xl font-bold border border-white/10">
-                  <FaGraduationCap className="text-nova-400" /> শ্রেণি {profile.classGrade}
-                </span>
-              )}
-              {profile.rollNumber && (
-                <span className="inline-flex items-center gap-1 bg-white/10 px-3 py-1 rounded-xl font-bold border border-white/10">
-                  <FaHashtag className="text-nova-400" /> রোল {profile.rollNumber}
-                </span>
-              )}
-              <span className="inline-flex items-center gap-1 bg-white/10 px-3 py-1 rounded-xl font-mono text-[11px] border border-white/10">
-                <FaEnvelope className="text-nova-400" /> {profile.email}
-              </span>
-            </div>
-
-            <p className="text-[11px] text-blue-200/80 pt-1">
-              💡 প্রোফাইল ছবির ক্যামেরায় ক্লিক করে যেকোনো সময় আপনার ছবি পরিবর্তন করতে পারেন।
-            </p>
-          </div>
-
         </div>
       </div>
 
       {/* Alert Message */}
       {msg && (
         <div
-          className={`p-4 rounded-2xl text-xs sm:text-sm font-bold transition flex items-center justify-between shadow-sm ${
+          className={`p-4 rounded-2xl text-xs sm:text-sm font-bold transition flex items-center justify-between shadow-sm animate-in fade-in duration-200 ${
             msg.type === 'success'
               ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
               : 'bg-rose-50 text-rose-800 border border-rose-200'
@@ -353,9 +388,9 @@ export default function AccountPage() {
         >
           <div className="flex items-center gap-2">
             {msg.type === 'success' ? (
-              <FaCircleCheck className="text-emerald-600 shrink-0" />
+              <FaCircleCheck className="text-emerald-600 shrink-0 w-4 h-4" />
             ) : (
-              <FaCircleExclamation className="text-rose-600 shrink-0" />
+              <FaCircleExclamation className="text-rose-600 shrink-0 w-4 h-4" />
             )}
             <span>{msg.text}</span>
           </div>
@@ -363,193 +398,429 @@ export default function AccountPage() {
         </div>
       )}
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      {/* Main Layout: Left Sidebar + Right Content Area */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        {/* Left Form: Edit Profile (7 Cols) */}
-        <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5">
-          <div className="border-b border-slate-100 pb-3">
-            <h2 className="text-lg font-black text-slate-800">ব্যক্তিগত ও একাডেমিক তথ্য</h2>
-            <p className="text-xs text-slate-500">আপনার নাম, মোবাইল নম্বর এবং শ্রেণি-রোল আপডেট করুন।</p>
-          </div>
-
-          <form onSubmit={handleProfileSubmit} className="space-y-4 text-xs sm:text-sm">
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">শিক্ষার্থীর পূর্ণ নাম</label>
-              <input
-                type="text"
-                required
-                value={profile.name}
-                onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500"
-              />
-            </div>
-
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">ইমেইল ঠিকানা (পরিবর্তনযোগ্য নয়)</label>
-              <input
-                type="email"
-                disabled
-                value={profile.email}
-                className="w-full bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-500 font-mono cursor-not-allowed"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">শ্রেণি (Class 5 - 10)</label>
-                <select
-                  value={profile.classGrade}
-                  onChange={(e) => setProfile({ ...profile, classGrade: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500"
-                >
-                  <option value="5">Class 5 (৫ম)</option>
-                  <option value="6">Class 6 (৬ষ্ঠ)</option>
-                  <option value="7">Class 7 (৭ম)</option>
-                  <option value="8">Class 8 (৮ম)</option>
-                  <option value="9">Class 9 (৯ম)</option>
-                  <option value="10">Class 10 (১০ম)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">রোল নম্বর</label>
-                <input
-                  type="number"
-                  value={profile.rollNumber}
-                  onChange={(e) => setProfile({ ...profile, rollNumber: e.target.value })}
-                  placeholder="যেমন: 1, 5"
-                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">মোবাইল নম্বর (অভিভাবক / শিক্ষার্থী)</label>
-              <input
-                type="tel"
-                value={profile.phone}
-                onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                placeholder="01XXXXXXXXX"
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-mono font-bold text-slate-800 focus:outline-none focus:border-brand-500"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={savingProfile}
-              className="w-full bg-brand-700 hover:bg-brand-800 text-white font-bold py-3 rounded-xl shadow-brand transition active:scale-[0.99] flex items-center justify-center gap-2"
-            >
-              {savingProfile ? (
-                <>
-                  <FaClock className="w-4 h-4 animate-spin" />
-                  <span>সংরক্ষণ করা হচ্ছে...</span>
-                </>
-              ) : (
-                <>
-                  <FaCheck className="w-4 h-4" />
-                  <span>তথ্য সংরক্ষণ করুন</span>
-                </>
-              )}
-            </button>
-          </form>
-        </div>
-
-        {/* Right Column: Password & Shortcuts (5 Cols) */}
-        <div className="lg:col-span-5 space-y-6">
+        {/* ================= LEFT SIDEBAR (4 Cols) ================= */}
+        <aside className="lg:col-span-4 bg-white rounded-3xl p-5 border border-slate-200/90 shadow-sm space-y-4 lg:sticky lg:top-28">
           
-          {/* Change Password Card */}
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
-            <div className="border-b border-slate-100 pb-3">
-              <h2 className="text-base font-black text-slate-800 flex items-center gap-2">
-                <FaLock className="text-nova-500" /> পাসওয়ার্ড পরিবর্তন
-              </h2>
-              <p className="text-xs text-slate-500">আপনার অ্যাকাউন্টের নিরাপত্তা নিশ্চিত করতে নিয়মিত পাসওয়ার্ড পরিবর্তন করুন।</p>
-            </div>
-
-            <form onSubmit={handlePasswordSubmit} className="space-y-3 text-xs sm:text-sm">
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">বর্তমান পাসওয়ার্ড</label>
-                <input
-                  type="password"
-                  required
-                  value={passwords.currentPassword}
-                  onChange={(e) => setPasswords({ ...passwords, currentPassword: e.target.value })}
-                  placeholder="বর্তমান পাসওয়ার্ড দিন"
-                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2"
-                />
-              </div>
-
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">নতুন পাসওয়ার্ড</label>
-                <input
-                  type="password"
-                  required
-                  value={passwords.newPassword}
-                  onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
-                  placeholder="কমপক্ষে ৬ অক্ষর"
-                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2"
-                />
-              </div>
-
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">নতুন পাসওয়ার্ড নিশ্চিত করুন</label>
-                <input
-                  type="password"
-                  required
-                  value={passwords.confirmPassword}
-                  onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
-                  placeholder="পুনরায় নতুন পাসওয়ার্ড দিন"
-                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={changingPassword}
-                className="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-xl shadow transition text-xs"
-              >
-                {changingPassword ? 'আপডেট হচ্ছে...' : 'পাসওয়ার্ড আপডেট করুন'}
-              </button>
-            </form>
+          <div className="pb-3 border-b border-slate-100">
+            <h2 className="text-xs font-black text-slate-400 uppercase tracking-wider">অ্যাকাউন্ট মেনু</h2>
           </div>
 
-          {/* Quick Shortcuts */}
-          <div className="bg-gradient-to-br from-brand-50 to-indigo-50/50 rounded-3xl p-6 border border-brand-200/80 space-y-3 text-xs sm:text-sm">
-            <h3 className="font-bold text-brand-900 flex items-center gap-2">
-              <HiSparkles className="text-nova-500" /> গুরুত্বপূর্ণ লিংকসমূহ
-            </h3>
+          {/* Sidebar Navigation Tabs */}
+          <nav className="space-y-1.5">
+            {sidebarTabs.map((tab) => {
+              const Icon = tab.icon;
+              const active = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`w-full text-left p-3 rounded-2xl text-xs font-bold transition-all flex items-center gap-3 group ${
+                    active
+                      ? 'bg-gradient-to-r from-brand-700 to-brand-800 text-white shadow-brand scale-101 border border-brand-600'
+                      : 'text-slate-700 hover:bg-slate-100/80 hover:text-brand-700'
+                  }`}
+                >
+                  <div
+                    className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition ${
+                      active
+                        ? 'bg-white/20 text-white shadow-inner'
+                        : 'bg-slate-100 text-slate-500 group-hover:bg-brand-50 group-hover:text-brand-700'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-bold leading-tight truncate">{tab.label}</p>
+                    <p className={`text-[10px] font-normal leading-tight mt-0.5 truncate ${
+                      active ? 'text-blue-200' : 'text-slate-400'
+                    }`}>
+                      {tab.sublabel}
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
+          </nav>
 
-            <div className="space-y-2">
+          {/* Additional Quick Action Links */}
+          <div className="pt-3 border-t border-slate-100 space-y-1.5">
+            
+            {/* If Admin: Direct shortcut to Admin Panel */}
+            {session.user.role === 'ADMIN' && (
               <Link
-                href="/profile"
-                className="w-full bg-white p-3 rounded-2xl border border-brand-100 flex items-center justify-between font-bold text-slate-800 hover:text-brand-700 hover:border-brand-300 transition shadow-xs"
+                href="/admin"
+                className="w-full p-3 rounded-2xl text-xs font-bold text-brand-800 bg-brand-50 hover:bg-brand-100/80 border border-brand-200/60 transition flex items-center gap-3 group"
               >
-                <div className="flex items-center gap-2.5">
-                  <FaFilePdf className="text-slogan-600" />
-                  <span>আমার সংগৃহীত পিডিএফ হ্যান্ডনোট</span>
+                <div className="w-9 h-9 rounded-xl bg-brand-700 text-white flex items-center justify-center shrink-0 shadow-sm">
+                  <FaUserShield className="w-4 h-4" />
                 </div>
-                <FaArrowRight className="w-3 h-3 text-slate-400" />
+                <div>
+                  <p className="leading-tight">অ্যাডমিন কন্ট্রোল প্যানেল</p>
+                  <p className="text-[10px] text-brand-600 font-normal mt-0.5">ম্যানেজমেন্ট ড্যাশবোর্ড</p>
+                </div>
               </Link>
+            )}
 
-              <Link
-                href="/results"
-                className="w-full bg-white p-3 rounded-2xl border border-brand-100 flex items-center justify-between font-bold text-slate-800 hover:text-brand-700 hover:border-brand-300 transition shadow-xs"
-              >
-                <div className="flex items-center gap-2.5">
-                  <FaAward className="text-nova-500" />
-                  <span>কোচিং পরীক্ষার ফলাফল ও মার্কশিট</span>
-                </div>
-                <FaArrowRight className="w-3 h-3 text-slate-400" />
-              </Link>
-            </div>
+            {/* Logout Button */}
+            <button
+              type="button"
+              onClick={() => signOut({ callbackUrl: '/' })}
+              className="w-full p-3 rounded-2xl text-xs font-bold text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition flex items-center gap-3 text-left group"
+            >
+              <div className="w-9 h-9 rounded-xl bg-rose-100/80 text-rose-600 flex items-center justify-center shrink-0">
+                <FaArrowRightFromBracket className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="leading-tight">লগআউট করুন</p>
+                <p className="text-[10px] text-rose-400 font-normal mt-0.5">অ্যাকাউন্ট থেকে প্রস্থান</p>
+              </div>
+            </button>
+
           </div>
 
-        </div>
+          {/* Center Info Box */}
+          <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 text-[11px] text-slate-500 space-y-1">
+            <p className="font-bold text-slate-700">সহায়তা কেন্দ্র:</p>
+            <p className="font-mono text-brand-800 font-bold">০১৭১২৫৯২৫১৯</p>
+            <p className="text-[10px]">জুম্মাপাড়া, নীলফামারী সদর</p>
+          </div>
+
+        </aside>
+
+        {/* ================= RIGHT CONTENT AREA (8 Cols) ================= */}
+        <main className="lg:col-span-8 space-y-6">
+          
+          {/* TAB 1: Profile & Photo */}
+          {activeTab === 'profile' && (
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6 animate-in fade-in duration-150">
+              
+              <div className="border-b border-slate-100 pb-4">
+                <h2 className="text-lg font-black text-slate-800">ব্যক্তিগত ও একাডেমিক তথ্য</h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  আপনার ছবি, পুরো নাম, মোবাইল নম্বর এবং শ্রেণি-রোল আপডেট করুন।
+                </p>
+              </div>
+
+              {/* Photo Upload Card Section */}
+              <div className="p-4 sm:p-5 bg-gradient-to-r from-slate-50 to-blue-50/40 rounded-2xl border border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-4 text-center sm:text-left">
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-brand-600 bg-brand-50 flex items-center justify-center shadow-md shrink-0">
+                    {profile.image ? (
+                      <img src={profile.image} alt={profile.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-2xl font-black text-brand-700">{profile.name?.charAt(0) || 'U'}</span>
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black text-slate-800">প্রোফাইল ছবি</h3>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      JPG, PNG বা WebP ফরম্যাট (সর্বোচ্চ ৫ মেগাবাইট)
+                    </p>
+                    <p className="text-[10px] text-emerald-600 font-semibold mt-0.5">
+                      ☁️ Cloudinary ক্লাউড স্টোরেজে স্বয়ংক্রিয়ভাবে সংরক্ষিত হয়
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-brand transition flex items-center gap-2 shrink-0"
+                >
+                  <FaCamera className="w-3.5 h-3.5" />
+                  <span>{uploading ? 'আপলোড হচ্ছে...' : 'ছবি পরিবর্তন'}</span>
+                </button>
+              </div>
+
+              {/* Profile Details Form */}
+              <form onSubmit={handleProfileSubmit} className="space-y-4 text-xs sm:text-sm">
+                
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">শিক্ষার্থীর পূর্ণ নাম</label>
+                  <input
+                    type="text"
+                    required
+                    value={profile.name}
+                    onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">
+                    ইমেইল ঠিকানা <span className="text-slate-400 font-normal">(অপরিবর্তনযোগ্য)</span>
+                  </label>
+                  <input
+                    type="email"
+                    disabled
+                    value={profile.email}
+                    className="w-full bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-500 font-mono cursor-not-allowed"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">শ্রেণি (Class 5 - 10)</label>
+                    <select
+                      value={profile.classGrade}
+                      onChange={(e) => setProfile({ ...profile, classGrade: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition"
+                    >
+                      <option value="5">Class 5 (৫ম শ্রেণি)</option>
+                      <option value="6">Class 6 (৬ষ্ঠ শ্রেণি)</option>
+                      <option value="7">Class 7 (৭ম শ্রেণি)</option>
+                      <option value="8">Class 8 (৮ম শ্রেণি)</option>
+                      <option value="9">Class 9 (৯ম শ্রেণি)</option>
+                      <option value="10">Class 10 (১০ম শ্রেণি)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">রোল নম্বর</label>
+                    <input
+                      type="number"
+                      value={profile.rollNumber}
+                      onChange={(e) => setProfile({ ...profile, rollNumber: e.target.value })}
+                      placeholder="যেমন: 1, 5"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">মোবাইল নম্বর (অভিভাবক / শিক্ষার্থী)</label>
+                  <input
+                    type="tel"
+                    value={profile.phone}
+                    onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                    placeholder="01XXXXXXXXX"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-mono font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition"
+                  />
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={savingProfile}
+                    className="w-full sm:w-auto bg-brand-700 hover:bg-brand-800 text-white font-bold px-8 py-3 rounded-xl shadow-brand transition active:scale-[0.99] flex items-center justify-center gap-2"
+                  >
+                    {savingProfile ? (
+                      <>
+                        <FaClock className="w-4 h-4 animate-spin" />
+                        <span>সংরক্ষণ করা হচ্ছে...</span>
+                      </>
+                    ) : (
+                      <>
+                        <FaCheck className="w-4 h-4" />
+                        <span>তথ্য সংরক্ষণ করুন</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+              </form>
+
+            </div>
+          )}
+
+          {/* TAB 2: Security & Password */}
+          {activeTab === 'security' && (
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6 animate-in fade-in duration-150">
+              
+              <div className="border-b border-slate-100 pb-4">
+                <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
+                  <FaShieldHalved className="text-brand-700" /> অ্যাকাউন্ট নিরাপত্তা ও পাসওয়ার্ড পরিবর্তন
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  আপনার অ্যাকাউন্টের নিরাপত্তা সুনিশ্চিত রাখতে শক্তিশালী পাসওয়ার্ড ব্যবহার করুন।
+                </p>
+              </div>
+
+              <form onSubmit={handlePasswordSubmit} className="space-y-4 max-w-lg text-xs sm:text-sm">
+                
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">বর্তমান পাসওয়ার্ড</label>
+                  <input
+                    type="password"
+                    required
+                    value={passwords.currentPassword}
+                    onChange={(e) => setPasswords({ ...passwords, currentPassword: e.target.value })}
+                    placeholder="আপনার বর্তমান পাসওয়ার্ড দিন"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-brand-500 focus:bg-white transition"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">নতুন পাসওয়ার্ড</label>
+                  <input
+                    type="password"
+                    required
+                    value={passwords.newPassword}
+                    onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
+                    placeholder="কমপক্ষে ৬ অক্ষরের পাসওয়ার্ড দিন"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-brand-500 focus:bg-white transition"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">নতুন পাসওয়ার্ড নিশ্চিত করুন</label>
+                  <input
+                    type="password"
+                    required
+                    value={passwords.confirmPassword}
+                    onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
+                    placeholder="পুনরায় নতুন পাসওয়ার্ড লিখুন"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-brand-500 focus:bg-white transition"
+                  />
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={changingPassword}
+                    className="w-full sm:w-auto bg-slate-900 hover:bg-black text-white font-bold px-8 py-3 rounded-xl shadow transition active:scale-[0.99] flex items-center justify-center gap-2"
+                  >
+                    {changingPassword ? (
+                      <>
+                        <FaClock className="w-4 h-4 animate-spin" />
+                        <span>আপডেট হচ্ছে...</span>
+                      </>
+                    ) : (
+                      <>
+                        <FaLock className="w-4 h-4" />
+                        <span>পাসওয়ার্ড আপডেট করুন</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+              </form>
+
+              <div className="bg-amber-50 p-4 rounded-2xl border border-amber-200/80 text-xs text-amber-900 space-y-1">
+                <p className="font-bold flex items-center gap-1.5">
+                  <HiSparkles className="text-amber-600" /> নিরাপত্তা টিপস:
+                </p>
+                <p>পাসওয়ার্ডে ইংরেজি বড়-ছোট অক্ষর ও সংখ্যা ব্যবহার করুন। আপনার পাসওয়ার্ড অন্য কারো সাথে শেয়ার করবেন না।</p>
+              </div>
+
+            </div>
+          )}
+
+          {/* TAB 3: Activity & Shortcuts */}
+          {activeTab === 'activity' && (
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6 animate-in fade-in duration-150">
+              
+              <div className="border-b border-slate-100 pb-4">
+                <h2 className="text-lg font-black text-slate-800">আমার একাডেমিক কার্যক্রম ও শিটসমূহ</h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  আপনার সংগৃহীত পিডিএফ হ্যান্ডনোট, পরীক্ষার রেজাল্ট ও দৈনিক উপস্থিতি চেক করুন।
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                
+                {/* PDF Materials Shortcut */}
+                <Link
+                  href="/profile"
+                  className="p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50/60 hover:bg-white transition shadow-xs hover:shadow-md group flex flex-col justify-between space-y-4"
+                >
+                  <div className="space-y-2">
+                    <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center">
+                      <FaFilePdf className="w-5 h-5" />
+                    </div>
+                    <h3 className="font-black text-slate-800 group-hover:text-brand-700 transition">
+                      সংগৃহীত পিডিএফ নোট
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      আপনার বিকাশ বা নগদ পেমেন্টে অনুমোদিত সকল শিট ও হ্যান্ডনোট ডাউনলোড করুন।
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-brand-700 pt-2 border-t border-slate-100">
+                    <span>ডাউনলোড পেইজে যান</span>
+                    <FaArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
+
+                {/* Exam Result Shortcut */}
+                <Link
+                  href="/results"
+                  className="p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50/60 hover:bg-white transition shadow-xs hover:shadow-md group flex flex-col justify-between space-y-4"
+                >
+                  <div className="space-y-2">
+                    <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
+                      <FaAward className="w-5 h-5" />
+                    </div>
+                    <h3 className="font-black text-slate-800 group-hover:text-brand-700 transition">
+                      কোচিং রেজাল্ট ও মার্কশিট
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      ক্লাস ও রোল নম্বর দিয়ে অফিশিয়াল গ্রেডশিট, জিপিএ ও সাবজেক্ট মার্কস দেখুন।
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-brand-700 pt-2 border-t border-slate-100">
+                    <span>মার্কশিট দেখুন</span>
+                    <FaArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
+
+                {/* Daily Attendance Shortcut */}
+                <Link
+                  href="/attendance"
+                  className="p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50/60 hover:bg-white transition shadow-xs hover:shadow-md group flex flex-col justify-between space-y-4"
+                >
+                  <div className="space-y-2">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                      <FaUserCheck className="w-5 h-5" />
+                    </div>
+                    <h3 className="font-black text-slate-800 group-hover:text-brand-700 transition">
+                      দৈনিক রোল উপস্থিতি
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      ৫ম থেকে ১০ম শ্রেণি পর্যন্ত তারিখ অনুযায়ী ক্লাসের উপস্থিতি ও অনুপস্থিতি দেখুন।
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-brand-700 pt-2 border-t border-slate-100">
+                    <span>হাজিরা চেক করুন</span>
+                    <FaArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
+
+                {/* PDFs Shop Shortcut */}
+                <Link
+                  href="/pdfs"
+                  className="p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50/60 hover:bg-white transition shadow-xs hover:shadow-md group flex flex-col justify-between space-y-4"
+                >
+                  <div className="space-y-2">
+                    <div className="w-10 h-10 rounded-xl bg-blue-100 text-brand-700 flex items-center justify-center">
+                      <HiSparkles className="w-5 h-5" />
+                    </div>
+                    <h3 className="font-black text-slate-800 group-hover:text-brand-700 transition">
+                      নতুন সাজেশন ও নোট কিনুন
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      অভিজ্ঞ শিক্ষকদের তৈরি ১০০% কমন উপযোগী রঙিন অধ্যায়ভিত্তিক হ্যান্ডনোট।
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-brand-700 pt-2 border-t border-slate-100">
+                    <span>নোট শপে যান</span>
+                    <FaArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
+
+              </div>
+
+            </div>
+          )}
+
+        </main>
 
       </div>
 
     </div>
   );
 }
-

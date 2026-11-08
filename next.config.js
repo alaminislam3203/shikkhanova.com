@@ -48,7 +48,7 @@ try {
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['img.youtube.com', 'images.unsplash.com'],
+    domains: ['img.youtube.com', 'images.unsplash.com', 'res.cloudinary.com'],
   },
 };
 

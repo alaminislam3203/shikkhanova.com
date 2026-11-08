@@ -29,7 +29,7 @@ echo [3/5] Staging only clean project source code (node_modules is strictly igno
 git add .
 
 echo [4/5] Creating a clean single commit...
-git commit -m "feat: add Cloudinary image upload, navbar profile dropdown, and UI polish"
+git commit -m "feat: redesign /account with modern SaaS sidebar layout, Cloudinary integration, and UI polish"
 
 echo [5/5] Pushing to origin main (GitHub)...
 git push origin main
@@ -41,3 +41,4 @@ echo  🌐 Repo: https://github.com/alaminislam3203/shikkhanova.com.git
 echo ========================================================
 echo.
 pause
+
