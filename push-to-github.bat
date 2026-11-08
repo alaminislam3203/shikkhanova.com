@@ -29,7 +29,7 @@ echo [3/5] Staging only clean project source code (node_modules is strictly igno
 git add .
 
 echo [4/5] Creating a clean single commit...
-git commit -m "feat: implement modern SaaS sidebar navigation system for admin panel"
+git commit -m "refactor: polish footer UI, remove redundant icons, and streamline contact section"
 
 echo [5/5] Pushing to origin main (GitHub)...
 git push origin main
