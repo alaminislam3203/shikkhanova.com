@@ -24,6 +24,15 @@ interface AdminSidebarProps {
   onClose: () => void;
 }
 
+interface MenuItem {
+  id: AdminTab;
+  label: string;
+  sublabel: string;
+  icon: any;
+  badge?: string;
+  badgeColor?: string;
+}
+
 export default function AdminSidebar({
   activeTab,
   setActiveTab,
@@ -31,7 +40,7 @@ export default function AdminSidebar({
   isOpen,
   onClose,
 }: AdminSidebarProps) {
-  const menuItems = [
+  const menuItems: MenuItem[] = [
     {
       id: 'purchases' as AdminTab,
       label: 'পেমেন্ট রিকোয়েস্ট (TrxID)',

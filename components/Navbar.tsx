@@ -46,7 +46,15 @@ export default function Navbar() {
     setMobileOpen(false);
   }, [pathname]);
 
-  const navLinks = [
+  interface NavLinkItem {
+    href: string;
+    label: string;
+    icon?: any;
+    color?: string;
+    badge?: string;
+  }
+
+  const navLinks: NavLinkItem[] = [
     { href: '/', label: 'হোম' },
     { href: '/attendance', label: 'রোল উপস্থিতি' },
     { href: '/results', label: 'কোচিং রেজাল্ট' },
