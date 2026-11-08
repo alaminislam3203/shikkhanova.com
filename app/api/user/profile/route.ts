@@ -28,24 +28,25 @@ export async function GET() {
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        phone: true,
-        classGrade: true,
-        rollNumber: true,
-        image: true,
-        createdAt: true,
-      },
     });
 
     if (!user) {
       return NextResponse.json({ error: 'ব্যবহারকারী পাওয়া যায়নি' }, { status: 404 });
     }
 
-    return NextResponse.json({ user });
+    return NextResponse.json({
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        phone: user.phone,
+        classGrade: user.classGrade,
+        rollNumber: user.rollNumber,
+        image: (user as any).image || null,
+        createdAt: user.createdAt,
+      },
+    });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
