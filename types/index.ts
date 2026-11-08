@@ -5,7 +5,7 @@ export type AttendanceStatus = 'PRESENT' | 'ABSENT' | 'LATE';
 export interface StudentRollItem {
   rollNumber: number;
   studentName: string;
-  classGrade: ClassGrade;
+  classGrade?: number;
   phone?: string;
   status: AttendanceStatus;
 }

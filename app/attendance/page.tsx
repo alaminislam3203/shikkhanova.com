@@ -47,14 +47,16 @@ export default function AttendancePage() {
           data.records.map((r: any) => ({
             rollNumber: r.rollNumber,
             studentName: r.studentName || `শিক্ষার্থী রোল ${r.rollNumber}`,
+            classGrade: r.classGrade || selectedClass,
             status: r.status,
           }))
         );
       } else {
-        // Generate default roll list 1 to 25 for demonstration
+        // Generate default roll list 1 to 20 for demonstration
         const defaultList: StudentRollItem[] = Array.from({ length: 20 }, (_, i) => ({
           rollNumber: i + 1,
           studentName: getBengaliName(i + 1, selectedClass),
+          classGrade: selectedClass,
           status: 'PRESENT',
         }));
         setStudents(defaultList);
@@ -64,6 +66,7 @@ export default function AttendancePage() {
       const defaultList: StudentRollItem[] = Array.from({ length: 20 }, (_, i) => ({
         rollNumber: i + 1,
         studentName: getBengaliName(i + 1, selectedClass),
+        classGrade: selectedClass,
         status: 'PRESENT',
       }));
       setStudents(defaultList);
