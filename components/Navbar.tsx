@@ -7,20 +7,16 @@ import Logo from '@/components/common/Logo';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import {
-  FaGraduationCap,
   FaYoutube,
   FaFacebook,
   FaPhone,
   FaLocationDot,
   FaFilePdf,
   FaRightToBracket,
-  FaUserShield,
   FaBars,
   FaXmark,
   FaArrowRightFromBracket,
   FaChevronDown,
-  FaGear,
-  FaUser,
 } from 'react-icons/fa6';
 import { HiSparkles } from 'react-icons/hi2';
 
@@ -250,15 +246,10 @@ export default function Navbar() {
                           <Link
                             href="/admin"
                             onClick={() => setDropdownOpen(false)}
-                            className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-brand-700 to-brand-800 hover:from-brand-800 hover:to-brand-900 shadow-md transition group"
+                            className="block px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-brand-700 to-brand-800 hover:from-brand-800 hover:to-brand-900 shadow-md transition"
                           >
-                            <div className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center text-white">
-                              <FaUserShield className="w-3.5 h-3.5" />
-                            </div>
-                            <div>
-                              <p className="leading-tight">অ্যাডমিন প্যানেল</p>
-                              <p className="text-[10px] text-blue-200 font-normal">ম্যানেজমেন্ট ড্যাশবোর্ড</p>
-                            </div>
+                            <p className="leading-tight">অ্যাডমিন প্যানেল</p>
+                            <p className="text-[10px] text-blue-200 font-normal mt-0.5">ম্যানেজমেন্ট ড্যাশবোর্ড</p>
                           </Link>
                         )}
 
@@ -266,15 +257,10 @@ export default function Navbar() {
                         <Link
                           href="/account"
                           onClick={() => setDropdownOpen(false)}
-                          className="flex items-center gap-3 px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-bold text-slate-700 hover:text-brand-700 hover:bg-brand-50/70 transition"
+                          className="block px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold text-slate-700 hover:text-brand-700 hover:bg-brand-50/70 transition"
                         >
-                          <div className="w-7 h-7 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center">
-                            <FaGear className="w-3.5 h-3.5" />
-                          </div>
-                          <div>
-                            <p className="leading-tight">একাউন্ট</p>
-                            <p className="text-[10px] text-slate-400 font-normal">ছবি, তথ্য ও পাসওয়ার্ড পরিবর্তন</p>
-                          </div>
+                          <p className="leading-tight">প্রোফাইল সেটিংস ও ছবি</p>
+                          <p className="text-[10px] text-slate-400 font-normal mt-0.5">ছবি, তথ্য ও পাসওয়ার্ড পরিবর্তন</p>
                         </Link>
 
                         {/* Student Dashboard Shortcut */}
@@ -282,21 +268,16 @@ export default function Navbar() {
                           <Link
                             href="/profile"
                             onClick={() => setDropdownOpen(false)}
-                            className="flex items-center gap-3 px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-bold text-slate-700 hover:text-nova-600 hover:bg-nova-50/70 transition"
+                            className="block px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold text-slate-700 hover:text-nova-600 hover:bg-nova-50/70 transition"
                           >
-                            <div className="w-7 h-7 rounded-xl bg-nova-50 text-nova-600 flex items-center justify-center">
-                              <FaGraduationCap className="w-3.5 h-3.5" />
-                            </div>
-                            <div>
-                              <p className="leading-tight">আমার ড্যাশবোর্ড</p>
-                              <p className="text-[10px] text-slate-400 font-normal">সংগৃহীত শিট ও ফলাফল</p>
-                            </div>
+                            <p className="leading-tight">আমার ড্যাশবোর্ড</p>
+                            <p className="text-[10px] text-slate-400 font-normal mt-0.5">সংগৃহীত শিট ও ফলাফল</p>
                           </Link>
                         )}
 
                       </div>
 
-                      {/* Logout Action */}
+                      {/* Logout Action (Keeping Logout Icon) */}
                       <div className="px-2 pt-2 border-t border-slate-100">
                         <button
                           type="button"
@@ -304,9 +285,9 @@ export default function Navbar() {
                             setDropdownOpen(false);
                             signOut({ callbackUrl: '/' });
                           }}
-                          className="w-full flex items-center gap-3 px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-bold text-rose-600 hover:bg-rose-50 transition text-left"
+                          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold text-rose-600 hover:bg-rose-50 transition text-left"
                         >
-                          <div className="w-7 h-7 rounded-xl bg-rose-100/80 text-rose-600 flex items-center justify-center">
+                          <div className="w-7 h-7 rounded-xl bg-rose-100/80 text-rose-600 flex items-center justify-center shrink-0">
                             <FaArrowRightFromBracket className="w-3.5 h-3.5" />
                           </div>
                           <div>
@@ -400,27 +381,27 @@ export default function Navbar() {
                     <Link
                       href="/admin"
                       onClick={() => setMobileOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-brand-700 hover:bg-brand-800"
+                      className="block px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-brand-700 hover:bg-brand-800"
                     >
-                      <FaUserShield /> অ্যাডমিন প্যানেল
+                      অ্যাডমিন প্যানেল
                     </Link>
                   )}
 
                   <Link
                     href="/account"
                     onClick={() => setMobileOpen(false)}
-                    className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-100"
+                    className="block px-4 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-100"
                   >
-                    <FaGear className="text-slate-500" />একাউন্ট
+                    প্রোফাইল সেটিংস ও ছবি পরিবর্তন
                   </Link>
 
                   {session.user.role === 'STUDENT' && (
                     <Link
                       href="/profile"
                       onClick={() => setMobileOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-bold text-nova-600 hover:bg-nova-50"
+                      className="block px-4 py-2.5 rounded-xl text-sm font-bold text-nova-600 hover:bg-nova-50"
                     >
-                      <FaGraduationCap className="text-nova-600" /> আমার ড্যাশবোর্ড ও শিটসমূহ
+                      আমার ড্যাশবোর্ড ও শিটসমূহ
                     </Link>
                   )}
 

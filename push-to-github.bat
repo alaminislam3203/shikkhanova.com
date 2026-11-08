@@ -29,7 +29,7 @@ echo [3/5] Staging only clean project source code (node_modules is strictly igno
 git add .
 
 echo [4/5] Creating a clean single commit...
-git commit -m "feat: redesign /account with modern SaaS sidebar layout, Cloudinary integration, and UI polish"
+git commit -m "feat: clean profile dropdown icons retaining only logout icon, and UI polish"
 
 echo [5/5] Pushing to origin main (GitHub)...
 git push origin main
