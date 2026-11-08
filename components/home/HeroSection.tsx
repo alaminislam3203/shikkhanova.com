@@ -16,7 +16,12 @@ import Logo from '@/components/common/Logo';
 
 export default function HeroSection() {
   return (
-    <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-950 via-brand-800 to-indigo-950 text-white p-6 sm:p-12 lg:p-16 shadow-premium border border-brand-700/50">
+    <section
+      style={{
+        background: 'linear-gradient(135deg, #020D24 0%, #082C6D 50%, #001A4D 100%)',
+      }}
+      className="relative overflow-hidden rounded-3xl text-white p-6 sm:p-12 lg:p-16 shadow-premium border border-brand-700/50"
+    >
       
       {/* Decorative Glow Elements */}
       <div className="absolute -right-20 -top-20 w-96 h-96 rounded-full bg-nova-500/20 blur-3xl pointer-events-none"></div>

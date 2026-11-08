@@ -102,7 +102,12 @@ export default function ProfilePage() {
   return (
     <div className="space-y-8 max-w-5xl mx-auto">
       {/* Student Welcome Banner */}
-      <div className="bg-gradient-to-r from-brand-950 via-brand-900 to-indigo-950 text-white rounded-3xl p-6 sm:p-10 shadow-premium border border-brand-800/60 relative overflow-hidden">
+      <div
+        style={{
+          background: 'linear-gradient(135deg, #020D24 0%, #082C6D 50%, #001A4D 100%)',
+        }}
+        className="text-white rounded-3xl p-6 sm:p-10 shadow-premium border border-brand-800/60 relative overflow-hidden"
+      >
         <div className="absolute right-0 top-0 w-80 h-80 bg-nova-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">

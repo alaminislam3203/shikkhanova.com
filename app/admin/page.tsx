@@ -190,7 +190,12 @@ export default function AdminPage() {
   return (
     <div className="space-y-6">
       {/* Admin Header */}
-      <div className="bg-gradient-to-r from-brand-950 via-brand-900 to-indigo-950 text-white p-6 sm:p-8 rounded-3xl shadow-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border border-brand-700/50">
+      <div
+        style={{
+          background: 'linear-gradient(135deg, #020D24 0%, #082C6D 50%, #001A4D 100%)',
+        }}
+        className="text-white p-6 sm:p-8 rounded-3xl shadow-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border border-brand-700/50"
+      >
         <div className="flex items-center gap-4">
           <div className="bg-white rounded-2xl p-2 shadow-md flex items-center justify-center">
             <Logo size="sm" clickable={false} />

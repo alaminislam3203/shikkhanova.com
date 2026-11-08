@@ -23,7 +23,7 @@ echo [3/5] Staging only clean project source code (node_modules is strictly igno
 git add .
 
 echo [4/5] Creating a clean single commit...
-git commit -m "feat: complete SikkhaNova platform with Next.js, PostgreSQL, NextAuth, and manual PDF payment"
+git commit -m "fix: resolve PDF banner contrast, add subject gradient cards, and polish UI"
 
 echo [5/5] Pushing to origin main (GitHub)...
 git push origin main

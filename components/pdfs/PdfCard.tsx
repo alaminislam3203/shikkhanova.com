@@ -1,7 +1,14 @@
 'use client';
 
 import React from 'react';
-import { FaFilePdf, FaDownload, FaClock, FaBookOpen } from 'react-icons/fa6';
+import {
+  FaFilePdf,
+  FaDownload,
+  FaClock,
+  FaCheck,
+  FaLayerGroup,
+} from 'react-icons/fa6';
+import { HiSparkles } from 'react-icons/hi2';
 import { PdfItem } from '@/types';
 
 interface PdfCardProps {
@@ -10,54 +17,156 @@ interface PdfCardProps {
 }
 
 export default function PdfCard({ pdf, onBuyClick }: PdfCardProps) {
+  // Theme colors depending on subject
+  const getSubjectTheme = (subj: string) => {
+    if (subj.includes('গণিত') || subj.includes('Math')) {
+      return {
+        gradient: 'linear-gradient(135deg, #1D63D8 0%, #003893 50%, #041A42 100%)',
+        textColor: 'text-blue-100',
+      };
+    }
+    if (subj.includes('বিজ্ঞান') || subj.includes('Science') || subj.includes('পদার্থ')) {
+      return {
+        gradient: 'linear-gradient(135deg, #059669 0%, #047857 50%, #022c22 100%)',
+        textColor: 'text-emerald-100',
+      };
+    }
+    if (subj.includes('ইংরেজি') || subj.includes('English')) {
+      return {
+        gradient: 'linear-gradient(135deg, #E11D48 0%, #BE123C 50%, #4C0519 100%)',
+        textColor: 'text-rose-100',
+      };
+    }
+    return {
+      gradient: 'linear-gradient(135deg, #0C4CB8 0%, #003893 50%, #020D24 100%)',
+      textColor: 'text-blue-100',
+    };
+  };
+
+  const theme = getSubjectTheme(pdf.subject);
+  const regularPrice = Math.round(pdf.price * 1.5);
+
   return (
-    <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover:shadow-premium transition flex flex-col justify-between space-y-4">
-      <div className="space-y-3">
-        <div className="flex justify-between items-start gap-2">
-          <span className="inline-flex items-center gap-1 bg-brand-50 text-brand-700 text-xs font-bold px-2.5 py-1 rounded-lg">
-            <FaBookOpen className="w-3 h-3" /> Class {pdf.classGrade} • {pdf.subject}
-          </span>
-          <span className="text-lg font-black text-nova-600 bg-nova-50 px-2.5 py-0.5 rounded-xl border border-nova-200">
-            ৳{pdf.price}
-          </span>
+    <div className="group bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-2xl hover:border-brand-500/50 transition-all duration-300 flex flex-col justify-between overflow-hidden relative transform hover:-translate-y-1">
+      
+      {/* Top Banner & Visual Cover */}
+      <div>
+        <div
+          style={{ background: theme.gradient }}
+          className="relative text-white p-5 sm:p-6 overflow-hidden"
+        >
+          {/* Subtle geometric circles */}
+          <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+          <div className="absolute top-2 right-2 w-16 h-16 bg-nova-500/20 rounded-full blur-lg pointer-events-none"></div>
+
+          {/* Badges on Cover */}
+          <div className="relative z-10 flex justify-between items-start gap-2">
+            <span className="inline-flex items-center gap-1.5 bg-black/40 backdrop-blur-md text-white text-[11px] font-extrabold px-3 py-1 rounded-full border border-white/20 shadow-sm">
+              <FaLayerGroup className="w-3 h-3 text-nova-400" />
+              শ্রেণি {pdf.classGrade}
+            </span>
+
+            <span className="inline-flex items-center gap-1 bg-nova-500 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
+              <HiSparkles /> ১০০% কমন সাজেশন
+            </span>
+          </div>
+
+          {/* Book Icon & Subject Header */}
+          <div className="relative z-10 mt-4 flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 shadow-inner group-hover:scale-105 transition-transform">
+              <FaFilePdf className="w-6 h-6 text-rose-300 drop-shadow" />
+            </div>
+            <div>
+              <span className={`text-xs font-semibold ${theme.textColor} uppercase tracking-wide block`}>
+                {pdf.subject}
+              </span>
+              <span className="text-white font-black text-sm sm:text-base leading-tight block">
+                প্রিমিয়াম হ্যান্ডনোট
+              </span>
+            </div>
+          </div>
         </div>
 
-        <h3 className="text-base font-bold text-slate-800 leading-snug">
-          {pdf.title}
-        </h3>
+        {/* Card Body Content */}
+        <div className="p-5 sm:p-6 space-y-4">
+          <div className="space-y-2">
+            <h3 className="text-base font-black text-slate-800 group-hover:text-brand-700 transition-colors leading-snug">
+              {pdf.title}
+            </h3>
 
-        <p className="text-xs text-slate-500 leading-relaxed">
-          {pdf.description}
-        </p>
+            <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">
+              {pdf.description}
+            </p>
+          </div>
+
+          {/* Value Bullet Points */}
+          <div className="space-y-1.5 pt-2 border-t border-slate-100 text-[11px] text-slate-600 font-medium">
+            <div className="flex items-center gap-2">
+              <FaCheck className="w-3 h-3 text-emerald-500 shrink-0" />
+              <span>অধ্যায়ভিত্তিক সৃজনশীল ও বহুনির্বাচনী সমাধান</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <FaCheck className="w-3 h-3 text-emerald-500 shrink-0" />
+              <span>উচ্চমানের রঙিন ও স্পষ্ট A4 প্রিন্ট উপযোগী PDF</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <FaCheck className="w-3 h-3 text-emerald-500 shrink-0" />
+              <span>বিকাশ / নগদ পেমেন্টে তাৎক্ষণিক সংগ্রহ</span>
+            </div>
+          </div>
+
+          {/* Price & Discount Tag */}
+          <div className="bg-slate-50 rounded-2xl p-3 border border-slate-100 flex items-center justify-between">
+            <div>
+              <span className="text-[10px] text-slate-400 font-semibold block uppercase">নির্ধারিত ফি</span>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-black text-brand-800">৳{pdf.price}</span>
+                <span className="text-xs text-slate-400 line-through font-semibold">৳{regularPrice}</span>
+              </div>
+            </div>
+
+            <div className="text-right">
+              <span className="text-[10px] bg-rose-100 text-rose-700 font-extrabold px-2 py-0.5 rounded-full inline-block mb-1">
+                বিশেষ ছাড়
+              </span>
+              <div className="flex items-center justify-end gap-1">
+                <span className="w-3.5 h-3.5 rounded-full bg-[#E2136E] inline-block" title="bKash"></span>
+                <span className="w-3.5 h-3.5 rounded-full bg-[#F7941D] inline-block" title="Nagad"></span>
+                <span className="text-[10px] text-slate-500 font-bold ml-1">bKash/Nagad</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="pt-3 border-t border-slate-100">
+      {/* Card Footer Action Button */}
+      <div className="p-5 sm:p-6 pt-0">
         {pdf.purchaseStatus === 'APPROVED' ? (
           <a
             href={pdf.fileUrl}
             download
-            className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition"
+            className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-2xl text-xs sm:text-sm shadow-md transition transform active:scale-95"
           >
-            <FaDownload className="w-3.5 h-3.5" />
-            <span>অনুমোদিত - ডাউনলোড করুন</span>
+            <FaDownload className="w-4 h-4" />
+            <span>অনুমোদিত - এখনই ডাউনলোড করুন</span>
           </a>
         ) : pdf.purchaseStatus === 'PENDING' ? (
-          <div className="w-full text-center py-2.5 px-3 bg-amber-50 border border-amber-200 rounded-xl text-xs font-bold text-amber-800 flex items-center justify-center gap-2">
-            <FaClock className="w-3.5 h-3.5 text-amber-600 animate-spin" />
-            <span>TrxID যাচাই করা হচ্ছে...</span>
+          <div className="w-full text-center py-3 px-3 bg-amber-50 border border-amber-200 rounded-2xl text-xs font-bold text-amber-800 flex items-center justify-center gap-2">
+            <FaClock className="w-4 h-4 text-amber-600 animate-spin" />
+            <span>TrxID যাচাই করা হচ্ছে (অপেক্ষা করুন)...</span>
           </div>
         ) : (
           <button
             type="button"
             onClick={() => onBuyClick(pdf)}
-            className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-brand-700 to-brand-800 hover:from-brand-800 hover:to-brand-900 text-white font-bold py-2.5 rounded-xl text-xs shadow-brand transition transform hover:-translate-y-0.5"
+            className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-brand-700 via-brand-800 to-indigo-900 hover:from-brand-800 hover:to-indigo-950 text-white font-bold py-3 rounded-2xl text-xs sm:text-sm shadow-brand hover:shadow-xl transition-all duration-300 transform active:scale-95 group-hover:from-nova-600 group-hover:to-brand-800"
           >
-            <FaFilePdf className="w-3.5 h-3.5 text-nova-400" />
-            <span>৳{pdf.price} দিয়ে কিনুন (TrxID দিন)</span>
+            <FaFilePdf className="w-4 h-4 text-nova-300" />
+            <span>শিটটি সংগ্রহ করুন (TrxID দিন)</span>
           </button>
         )}
       </div>
+
     </div>
   );
 }
-

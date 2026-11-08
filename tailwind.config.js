@@ -20,6 +20,7 @@ module.exports = {
           700: '#003893', // Exact 'Shikkha' Royal Navy Blue
           800: '#082C6D',
           900: '#041A42',
+          950: '#020D24',
         },
         nova: {
           50: '#FFF8F0',
@@ -30,6 +31,9 @@ module.exports = {
           500: '#FF7300', // Exact 'Nova' Warm Energy Orange
           600: '#EA580C',
           700: '#C2410C',
+          800: '#9A3412',
+          900: '#7C2D12',
+          950: '#431407',
         },
         slogan: {
           50: '#FFF1F4',
@@ -37,6 +41,9 @@ module.exports = {
           500: '#F43F5E',
           600: '#E11D48', // Exact "শিখবো, জিতবো" Slogan Crimson Red
           700: '#BE123C',
+          800: '#9F1239',
+          900: '#881337',
+          950: '#4C0519',
         },
         bkash: '#E2136E',
         nagad: '#F7941D',
@@ -45,9 +52,9 @@ module.exports = {
         sans: ['"Hind Siliguri"', 'Inter', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        'brand': '0 10px 30px -5px rgba(0, 56, 147, 0.15)',
-        'nova': '0 10px 30px -5px rgba(255, 115, 0, 0.2)',
-        'premium': '0 20px 40px -15px rgba(0, 56, 147, 0.08), 0 0 1px 1px rgba(0, 56, 147, 0.05)',
+        'brand': '0 10px 30px -5px rgba(0, 56, 147, 0.25)',
+        'nova': '0 10px 30px -5px rgba(255, 115, 0, 0.25)',
+        'premium': '0 20px 40px -15px rgba(0, 56, 147, 0.12), 0 0 1px 1px rgba(0, 56, 147, 0.08)',
       },
       borderRadius: {
         '4xl': '2rem',

@@ -130,10 +130,21 @@ export default function Navbar() {
                       <FaUserShield /> অ্যাডমিন প্যানেল
                     </Link>
                   )}
-                  <div className="hidden sm:flex flex-col text-right">
+                  {session.user.role === 'STUDENT' && (
+                    <Link
+                      href="/profile"
+                      className="inline-flex items-center gap-1.5 bg-nova-500 hover:bg-nova-600 text-white text-xs sm:text-sm font-bold px-3 py-2 rounded-xl shadow-md transition"
+                    >
+                      <FaGraduationCap /> আমার প্রোফাইল
+                    </Link>
+                  )}
+                  <Link
+                    href={session.user.role === 'ADMIN' ? '/admin' : '/profile'}
+                    className="hidden sm:flex flex-col text-right hover:opacity-80 transition"
+                  >
                     <span className="text-xs font-bold text-slate-800">{session.user.name}</span>
                     <span className="text-[10px] font-semibold text-brand-600">{session.user.role}</span>
-                  </div>
+                  </Link>
                   <button
                     onClick={() => signOut({ callbackUrl: '/' })}
                     className="p-2 text-slate-500 hover:text-slogan-600 hover:bg-slate-100 rounded-xl transition"
@@ -208,6 +219,16 @@ export default function Navbar() {
                   className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-bold text-brand-700 bg-brand-100/60"
                 >
                   <FaUserShield className="text-brand-700" /> অ্যাডমিন প্যানেল
+                </Link>
+              )}
+
+              {session?.user?.role === 'STUDENT' && (
+                <Link
+                  href="/profile"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-bold text-nova-600 bg-nova-50"
+                >
+                  <FaGraduationCap className="text-nova-600" /> আমার প্রোফাইল ও শিটসমূহ
                 </Link>
               )}
             </div>
