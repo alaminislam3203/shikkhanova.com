@@ -131,7 +131,12 @@ export default function AccountPage() {
       }
 
       setProfile((prev) => ({ ...prev, image: data.imageUrl }));
-      setMsg({ text: 'প্রোফাইল ছবি সফলভাবে আপলোড হয়েছে!', type: 'success' });
+      setMsg({
+        text: data.isCloudinary
+          ? 'ছবি সফলভাবে Cloudinary ক্লাউডে আপলোড ও সংরক্ষিত হয়েছে! ☁️'
+          : 'প্রোফাইল ছবি সফলভাবে আপলোড হয়েছে!',
+        type: 'success',
+      });
 
       // Update NextAuth session in real-time
       if (update) {

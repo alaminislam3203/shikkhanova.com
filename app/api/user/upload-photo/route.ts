@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import fs from 'fs';
 import path from 'path';
+import { uploadToCloudinary, isCloudinaryConfigured } from '@/lib/cloudinary';
 
 export async function POST(req: Request) {
   try {
@@ -14,14 +15,10 @@ export async function POST(req: Request) {
 
     const userEmail = session.user.email;
     const contentType = req.headers.get('content-type') || '';
+    const safePrefix = userEmail.replace(/[^a-zA-Z0-9]/g, '-').slice(0, 30);
 
-    // Create target directory if it doesn't exist
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'avatars');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-
-    let relativeFilePath = '';
+    let finalImageUrl = '';
+    let isCloudinary = false;
 
     if (contentType.includes('multipart/form-data')) {
       const formData = await req.formData();
@@ -39,34 +36,70 @@ export async function POST(req: Request) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
 
-      const ext = path.extname(file.name) || '.jpg';
-      const cleanExt = ['.jpg', '.jpeg', '.png', '.webp'].includes(ext.toLowerCase()) ? ext : '.jpg';
-      const safePrefix = userEmail.replace(/[^a-zA-Z0-9]/g, '-');
-      const filename = `avatar-${safePrefix}-${Date.now()}${cleanExt}`;
-      const filePath = path.join(uploadDir, filename);
+      // 1. Try uploading to Cloudinary first if configured
+      if (isCloudinaryConfigured()) {
+        try {
+          finalImageUrl = await uploadToCloudinary(buffer, 'shikkha_nova/avatars', `avatar-${safePrefix}`);
+          isCloudinary = true;
+        } catch (cloudinaryErr: any) {
+          console.warn('Cloudinary upload warning:', cloudinaryErr.message);
+          // Fallback to local storage if Cloudinary fails
+        }
+      }
 
-      fs.writeFileSync(filePath, buffer);
-      relativeFilePath = `/uploads/avatars/${filename}`;
+      // 2. Fallback to Local Public Storage if Cloudinary is not configured or failed
+      if (!finalImageUrl) {
+        const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'avatars');
+        if (!fs.existsSync(uploadDir)) {
+          fs.mkdirSync(uploadDir, { recursive: true });
+        }
+
+        const ext = path.extname(file.name) || '.jpg';
+        const cleanExt = ['.jpg', '.jpeg', '.png', '.webp'].includes(ext.toLowerCase()) ? ext : '.jpg';
+        const filename = `avatar-${safePrefix}-${Date.now()}${cleanExt}`;
+        const filePath = path.join(uploadDir, filename);
+
+        fs.writeFileSync(filePath, buffer);
+        finalImageUrl = `/uploads/avatars/${filename}`;
+      }
+
     } else if (contentType.includes('application/json')) {
       const body = await req.json();
       const { imageBase64, imageUrl } = body;
 
       if (imageUrl && !imageBase64) {
-        relativeFilePath = imageUrl;
+        finalImageUrl = imageUrl;
       } else if (imageBase64) {
-        const matches = imageBase64.match(/^data:image\/([a-zA-Z0-9]+);base64,(.+)$/);
-        if (!matches || matches.length !== 3) {
-          return NextResponse.json({ error: 'সঠিক বেস-৬৪ ছবি নয়' }, { status: 400 });
+        // 1. Try uploading to Cloudinary
+        if (isCloudinaryConfigured()) {
+          try {
+            finalImageUrl = await uploadToCloudinary(imageBase64, 'shikkha_nova/avatars', `avatar-${safePrefix}`);
+            isCloudinary = true;
+          } catch (cloudinaryErr: any) {
+            console.warn('Cloudinary upload warning:', cloudinaryErr.message);
+          }
         }
 
-        const ext = `.${matches[1].toLowerCase()}`;
-        const buffer = Buffer.from(matches[2], 'base64');
-        const safePrefix = userEmail.replace(/[^a-zA-Z0-9]/g, '-');
-        const filename = `avatar-${safePrefix}-${Date.now()}${ext}`;
-        const filePath = path.join(uploadDir, filename);
+        // 2. Fallback to Local Public Storage
+        if (!finalImageUrl) {
+          const matches = imageBase64.match(/^data:image\/([a-zA-Z0-9]+);base64,(.+)$/);
+          if (!matches || matches.length !== 3) {
+            return NextResponse.json({ error: 'সঠিক বেস-৬৪ ছবি নয়' }, { status: 400 });
+          }
 
-        fs.writeFileSync(filePath, buffer);
-        relativeFilePath = `/uploads/avatars/${filename}`;
+          const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'avatars');
+          if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+          }
+
+          const ext = `.${matches[1].toLowerCase()}`;
+          const buffer = Buffer.from(matches[2], 'base64');
+          const filename = `avatar-${safePrefix}-${Date.now()}${ext}`;
+          const filePath = path.join(uploadDir, filename);
+
+          fs.writeFileSync(filePath, buffer);
+          finalImageUrl = `/uploads/avatars/${filename}`;
+        }
       } else {
         return NextResponse.json({ error: 'ছবির ডেটা পাওয়া যায়নি' }, { status: 400 });
       }
@@ -78,13 +111,13 @@ export async function POST(req: Request) {
     try {
       await prisma.user.upsert({
         where: { email: userEmail },
-        update: { image: relativeFilePath },
+        update: { image: finalImageUrl },
         create: {
           name: session.user.name || 'ব্যবহারকারী',
           email: userEmail,
           password: 'managed_account',
           role: session.user.role || 'STUDENT',
-          image: relativeFilePath,
+          image: finalImageUrl,
           phone: session.user.phone || '',
         },
       });
@@ -94,8 +127,11 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      message: 'প্রোফাইল ছবি সফলভাবে আপলোড হয়েছে',
-      imageUrl: relativeFilePath,
+      message: isCloudinary
+        ? 'ছবি সফলভাবে Cloudinary ক্লাউডে আপলোড হয়েছে!'
+        : 'প্রোফাইল ছবি সফলভাবে আপলোড হয়েছে',
+      imageUrl: finalImageUrl,
+      isCloudinary,
     });
   } catch (error: any) {
     console.error('Error uploading avatar:', error);
