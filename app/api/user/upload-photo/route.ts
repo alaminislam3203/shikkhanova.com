@@ -8,11 +8,11 @@ import path from 'path';
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || !session.user) {
+    if (!session || !session.user || !session.user.email) {
       return NextResponse.json({ error: 'লগইন করা আবশ্যক' }, { status: 401 });
     }
 
-    const userId = session.user.id;
+    const userEmail = session.user.email;
     const contentType = req.headers.get('content-type') || '';
 
     // Create target directory if it doesn't exist
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 
     if (contentType.includes('multipart/form-data')) {
       const formData = await req.formData();
-      const file = formData.get('photo') as File | null || formData.get('file') as File | null;
+      const file = (formData.get('photo') as File | null) || (formData.get('file') as File | null);
 
       if (!file) {
         return NextResponse.json({ error: 'কোনো ছবি পাওয়া যায়নি' }, { status: 400 });
@@ -41,7 +41,8 @@ export async function POST(req: Request) {
 
       const ext = path.extname(file.name) || '.jpg';
       const cleanExt = ['.jpg', '.jpeg', '.png', '.webp'].includes(ext.toLowerCase()) ? ext : '.jpg';
-      const filename = `avatar-${userId}-${Date.now()}${cleanExt}`;
+      const safePrefix = userEmail.replace(/[^a-zA-Z0-9]/g, '-');
+      const filename = `avatar-${safePrefix}-${Date.now()}${cleanExt}`;
       const filePath = path.join(uploadDir, filename);
 
       fs.writeFileSync(filePath, buffer);
@@ -60,7 +61,8 @@ export async function POST(req: Request) {
 
         const ext = `.${matches[1].toLowerCase()}`;
         const buffer = Buffer.from(matches[2], 'base64');
-        const filename = `avatar-${userId}-${Date.now()}${ext}`;
+        const safePrefix = userEmail.replace(/[^a-zA-Z0-9]/g, '-');
+        const filename = `avatar-${safePrefix}-${Date.now()}${ext}`;
         const filePath = path.join(uploadDir, filename);
 
         fs.writeFileSync(filePath, buffer);
@@ -72,17 +74,27 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'অসমর্থিত কনটেন্ট টাইপ' }, { status: 400 });
     }
 
-    // Update user in database
-    if (userId !== 'admin-master-id') {
-      await prisma.user.update({
-        where: { id: userId },
-        data: { image: relativeFilePath },
+    // Update user by email in database (Works for Student, Teacher, and Admin)
+    try {
+      await prisma.user.upsert({
+        where: { email: userEmail },
+        update: { image: relativeFilePath },
+        create: {
+          name: session.user.name || 'ব্যবহারকারী',
+          email: userEmail,
+          password: 'managed_account',
+          role: session.user.role || 'STUDENT',
+          image: relativeFilePath,
+          phone: session.user.phone || '',
+        },
       });
+    } catch (dbErr) {
+      console.warn('DB update warning:', dbErr);
     }
 
     return NextResponse.json({
       success: true,
-      message: 'প্রোফাইল ছবি সফলভাবে আপডেট হয়েছে',
+      message: 'প্রোফাইল ছবি সফলভাবে আপলোড হয়েছে',
       imageUrl: relativeFilePath,
     });
   } catch (error: any) {
