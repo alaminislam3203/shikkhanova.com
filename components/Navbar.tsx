@@ -29,10 +29,10 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navLinks = [
-    { href: '/', label: 'হোম', icon: FaGraduationCap },
-    { href: '/attendance', label: 'রোল উপস্থিতি (৫-১০)', icon: FaUserCheck },
-    { href: '/results', label: 'কোচিং রেজাল্ট', icon: FaAward },
-    { href: '/pdfs', label: 'পিডিএফ শিট ও নোট', icon: FaFilePdf, badge: 'ফি দিয়ে নিন' },
+    { href: '/', label: 'হোম' },
+    { href: '/attendance', label: 'রোল উপস্থিতি (৫-১০)' },
+    { href: '/results', label: 'কোচিং রেজাল্ট' },
+    { href: '/pdfs', label: 'পিডিএফ শিট ও নোট', icon: FaFilePdf },
     { href: '/videos', label: 'ভিডিও ক্লাস', icon: FaYoutube, color: 'text-red-500' },
   ];
 
@@ -105,7 +105,9 @@ export default function Navbar() {
                         : 'text-slate-600 hover:text-brand-700 hover:bg-slate-50'
                     }`}
                   >
-                    <Icon className={`w-4 h-4 ${link.color || (active ? 'text-brand-700' : 'text-slate-500')}`} />
+                    {Icon && (
+                      <Icon className={`w-4 h-4 ${link.color || (active ? 'text-brand-700' : 'text-slate-500')}`} />
+                    )}
                     <span>{link.label}</span>
                     {link.badge && (
                       <span className="text-[10px] bg-nova-500 text-white px-1.5 py-0.5 rounded-full font-bold">
@@ -200,7 +202,7 @@ export default function Navbar() {
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
-                      <Icon className={`w-4 h-4 ${link.color || 'text-slate-500'}`} />
+                      {Icon && <Icon className={`w-4 h-4 ${link.color || 'text-slate-500'}`} />}
                       <span>{link.label}</span>
                     </div>
                     {link.badge && (
