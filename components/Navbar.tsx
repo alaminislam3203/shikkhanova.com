@@ -16,7 +16,6 @@ import {
   FaBars,
   FaXmark,
   FaArrowRightFromBracket,
-  FaChevronDown,
 } from 'react-icons/fa6';
 import { HiSparkles } from 'react-icons/hi2';
 
@@ -151,20 +150,21 @@ export default function Navbar() {
               {session?.user ? (
                 <div className="relative" ref={dropdownRef}>
                   
-                  {/* Profile Trigger Button */}
+                  {/* Profile Trigger Button - Avatar Only */}
                   <button
                     type="button"
                     onClick={() => setDropdownOpen(!dropdownOpen)}
-                    className={`flex items-center gap-2 sm:gap-2.5 p-1.5 sm:px-3 sm:py-1.5 rounded-2xl transition border group focus:outline-none ${
+                    className={`rounded-full p-0.5 transition-all focus:outline-none ${
                       dropdownOpen
-                        ? 'bg-brand-50 border-brand-300 shadow-sm ring-2 ring-brand-500/20'
-                        : 'bg-white hover:bg-slate-50 border-slate-200/90 shadow-xs'
+                        ? 'ring-2 ring-brand-600 ring-offset-2 ring-offset-white'
+                        : 'hover:ring-2 hover:ring-brand-500/50 hover:ring-offset-1'
                     }`}
                     aria-expanded={dropdownOpen}
                     aria-label="ইউজার মেনু"
+                    title={session.user.name || 'প্রোফাইল মেনু'}
                   >
-                    {/* User Avatar */}
-                    <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-brand-600 bg-brand-50 flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                    {/* User Avatar Only */}
+                    <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-brand-600 bg-brand-50 flex items-center justify-center shrink-0 shadow-sm transition-transform hover:scale-105 active:scale-95">
                       {session.user.image ? (
                         <img
                           src={session.user.image}
@@ -172,32 +172,11 @@ export default function Navbar() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <span className="text-xs font-black text-brand-700">
+                        <span className="text-sm font-black text-brand-700">
                           {session.user.name?.charAt(0) || 'U'}
                         </span>
                       )}
                     </div>
-
-                    {/* Name & Role Text */}
-                    <div className="hidden sm:flex flex-col text-left">
-                      <span className="text-xs font-black text-slate-800 leading-tight group-hover:text-brand-700 transition">
-                        {session.user.name?.split(' ')[0] || session.user.name}
-                      </span>
-                      <span className="text-[10px] font-bold text-brand-600 leading-none mt-0.5">
-                        {session.user.role === 'ADMIN'
-                          ? 'অ্যাডমিন'
-                          : session.user.role === 'TEACHER'
-                          ? 'শিক্ষক'
-                          : 'শিক্ষার্থী'}
-                      </span>
-                    </div>
-
-                    {/* Dropdown Chevron */}
-                    <FaChevronDown
-                      className={`w-3 h-3 text-slate-400 group-hover:text-brand-600 transition-transform duration-200 ${
-                        dropdownOpen ? 'rotate-180 text-brand-600' : ''
-                      }`}
-                    />
                   </button>
 
                   {/* Profile Dropdown Popup Menu */}
