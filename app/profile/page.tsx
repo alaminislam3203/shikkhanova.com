@@ -233,8 +233,18 @@ export default function ProfilePage() {
                     {pur.pdf.title}
                   </h3>
 
-                  <div className="text-xs text-slate-500 space-y-0.5 font-mono">
-                    <div>পেমেন্ট: {pur.paymentMethod} • ৳{pur.amount}</div>
+                  <div className="text-xs text-slate-500 space-y-1 font-mono">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[11px] font-sans">পেমেন্ট:</span>
+                      <div className="bg-white px-1.5 py-0.5 rounded border border-slate-200 inline-flex items-center shadow-xs">
+                        <img
+                          src={pur.paymentMethod === 'BKASH' ? '/assets/images/bkash.png' : '/assets/images/nagad.png'}
+                          alt={pur.paymentMethod}
+                          className="h-3.5 w-auto object-contain"
+                        />
+                      </div>
+                      <span className="font-bold text-slate-800">৳{pur.amount}</span>
+                    </div>
                     <div className="text-[11px] text-slate-400">TrxID: {pur.trxId}</div>
                   </div>
                 </div>
