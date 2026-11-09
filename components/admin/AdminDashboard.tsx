@@ -57,18 +57,30 @@ export default function AdminDashboard({
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   useEffect(() => {
+    try {
+      const cached = sessionStorage.getItem('sn_admin_stats_v1');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed && parsed.kpis) {
+          setData(parsed);
+          setLoading(false);
+        }
+      }
+    } catch {}
     fetchDashboardStats();
   }, []);
 
   const fetchDashboardStats = async (isManual = false) => {
     if (isManual) setRefreshing(true);
-    else setLoading(true);
 
     try {
       const res = await fetch('/api/admin/stats', { cache: 'no-store' });
       const json = await res.json();
       if (res.ok && json.kpis) {
         setData(json);
+        try {
+          sessionStorage.setItem('sn_admin_stats_v1', JSON.stringify(json));
+        } catch {}
       }
     } catch (err) {
       console.error('Error loading dashboard stats:', err);

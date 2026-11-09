@@ -25,38 +25,48 @@ export default function PdfsPage() {
   const [activePdf, setActivePdf] = useState<PdfItem | null>(null);
 
   useEffect(() => {
+    try {
+      const cached = sessionStorage.getItem('sn_pdfs_cache_v1');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setPdfs(parsed);
+          setLoading(false);
+        }
+      }
+    } catch {}
     fetchPdfs();
   }, [session?.user?.id]);
 
   const fetchPdfs = async () => {
-    setLoading(true);
     try {
       const res = await fetch('/api/pdfs', { cache: 'no-store' });
       const data = await res.json();
 
       if (data.pdfs && Array.isArray(data.pdfs)) {
-        setPdfs(
-          data.pdfs.map((p: any) => ({
-            id: p.id,
-            title: p.title,
-            description: p.description || '',
-            classGrade: p.classGrade,
-            subject: p.subject,
-            price: p.price,
-            fileUrl: p.fileUrl,
-            isFree: Boolean(p.isFree) || Number(p.price) <= 0,
-            purchaseStatus:
-              p.purchases && p.purchases.length > 0
-                ? p.purchases[0].status
-                : 'NONE',
-          }))
-        );
+        const formatted = data.pdfs.map((p: any) => ({
+          id: p.id,
+          title: p.title,
+          description: p.description || '',
+          classGrade: p.classGrade,
+          subject: p.subject,
+          price: p.price,
+          fileUrl: p.fileUrl,
+          isFree: Boolean(p.isFree) || Number(p.price) <= 0,
+          purchaseStatus:
+            p.purchases && p.purchases.length > 0
+              ? p.purchases[0].status
+              : 'NONE',
+        }));
+        setPdfs(formatted);
+        try {
+          sessionStorage.setItem('sn_pdfs_cache_v1', JSON.stringify(formatted));
+        } catch {}
       } else {
         setPdfs([]);
       }
     } catch (err) {
       console.error('Error fetching PDFs:', err);
-      setPdfs([]);
     } finally {
       setLoading(false);
     }
