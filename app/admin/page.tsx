@@ -461,6 +461,9 @@ export default function AdminPage() {
           />
         )}
 
+        {/* TAB 0.5: Hero Banner Slider Manager */}
+        {activeTab === 'banners' && <AdminBannersManager />}
+
         {/* TAB 1: Review Purchases */}
         {activeTab === 'purchases' && (
           <div className="space-y-4">
