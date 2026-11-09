@@ -55,6 +55,7 @@ export default function AddPdfForm({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [pdfs, setPdfs] = useState<PdfItem[]>([]);
+  const [classSubjects, setClassSubjects] = useState<string[]>(SUBJECT_PRESETS);
   const [loadingList, setLoadingList] = useState<boolean>(true);
   const [filterClass, setFilterClass] = useState<string>('all');
 
@@ -75,6 +76,26 @@ export default function AddPdfForm({
   useEffect(() => {
     fetchPublishedPdfs();
   }, []);
+
+  useEffect(() => {
+    const loadClassSubjects = async () => {
+      try {
+        const res = await fetch(
+          `/api/subjects?classGrade=${formData.classGrade}`,
+          { cache: 'no-store' }
+        );
+        const data = await res.json();
+        if (data.subjects && Array.isArray(data.subjects) && data.subjects.length > 0) {
+          setClassSubjects(data.subjects.map((s: any) => s.subjectName));
+        } else {
+          setClassSubjects(SUBJECT_PRESETS);
+        }
+      } catch {
+        setClassSubjects(SUBJECT_PRESETS);
+      }
+    };
+    loadClassSubjects();
+  }, [formData.classGrade]);
 
   const fetchPublishedPdfs = async () => {
     setLoadingList(true);
