@@ -26,6 +26,7 @@ import { TbCashBanknote } from 'react-icons/tb';
 export type AdminTab =
   | 'dashboard'
   | 'banners'
+  | 'achievers'
   | 'purchases'
   | 'addResult'
   | 'addPdf'
@@ -106,6 +107,12 @@ export default function AdminSidebar({
       label: 'হিরো ব্যানার স্লাইডার',
       sublabel: 'হোমপেজ ব্যানার আপলোড ও ম্যানেজ',
       icon: FaImages,
+    },
+    {
+      id: 'achievers',
+      label: 'আমাদের সাফল্য গাঁথা',
+      sublabel: '৬ষ্ঠ-১০ম কৃতী শিক্ষার্থী ম্যানেজ',
+      icon: FaAward,
     },
     {
       id: 'purchases',
