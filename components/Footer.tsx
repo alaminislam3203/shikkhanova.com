@@ -142,12 +142,12 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/results" className="hover:text-amber-400 transition-colors inline-block">
-                  কোচিং ফলাফল
+                 ফলাফল
                 </Link>
               </li>
               <li>
                 <Link href="/pdfs" className="hover:text-amber-400 transition-colors inline-block">
-                  পিডিএফ শিট ও নোট
+                শিট ও নোট
                 </Link>
               </li>
               <li>

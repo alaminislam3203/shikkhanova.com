@@ -223,7 +223,7 @@ export default function Navbar() {
     { href: '/', label: 'হোম' },
     { href: '/attendance', label: 'রোল উপস্থিতি' },
     { href: '/results', label: 'কোচিং রেজাল্ট' },
-    { href: '/pdfs', label: 'পিডিএফ শিট ও নোট', icon: FaFilePdf },
+    { href: '/pdfs', label: 'শিট ও নোট', icon: FaFilePdf },
     { href: '/videos', label: 'ভিডিও ক্লাস', icon: FaYoutube, color: 'text-red-500' },
   ];
 
