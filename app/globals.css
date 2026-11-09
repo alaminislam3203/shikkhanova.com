@@ -3,12 +3,13 @@
 @tailwind utilities;
 
 :root {
-  --font-noto-bn: 'Noto Sans Bengali', 'SolaimanLipi', 'Kalpurush', sans-serif;
-  --font-poppins: 'Poppins', sans-serif;
+  --font-bn: var(--font-hind-siliguri), sans-serif;
+  --font-en: var(--font-exo2), sans-serif;
 }
 
 body {
-  font-family: var(--font-noto-bn), 'SolaimanLipi', 'Kalpurush', var(--font-poppins), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* Exo 2 renders all English/Latin text; Hind Siliguri automatically renders all Bangla text */
+  font-family: var(--font-exo2), var(--font-hind-siliguri), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: #F4F6F9;
   color: #1A202C;
   line-height: 1.65;
@@ -16,13 +17,21 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-noto-bn), 'SolaimanLipi', 'Kalpurush', var(--font-poppins), sans-serif;
+  font-family: var(--font-exo2), var(--font-hind-siliguri), sans-serif;
   letter-spacing: -0.01em;
 }
 
-/* Normal Bangla font utility */
+/* Font utility classes */
+.font-bn {
+  font-family: var(--font-hind-siliguri), sans-serif !important;
+}
+
+.font-en {
+  font-family: var(--font-exo2), sans-serif !important;
+}
+
 .font-bn-normal {
-  font-family: var(--font-noto-bn), 'SolaimanLipi', 'Kalpurush', 'Nirmala UI', sans-serif !important;
+  font-family: var(--font-hind-siliguri), 'Noto Sans Bengali', 'SolaimanLipi', 'Kalpurush', sans-serif !important;
   letter-spacing: 0.02em;
 }
 

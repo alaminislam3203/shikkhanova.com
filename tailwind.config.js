@@ -50,13 +50,22 @@ module.exports = {
       },
       fontFamily: {
         sans: [
-          'var(--font-noto-bn)',
-          '"Noto Sans Bengali"',
-          '"SolaimanLipi"',
-          '"Kalpurush"',
-          'var(--font-poppins)',
+          'var(--font-exo2)',
+          'var(--font-hind-siliguri)',
           'system-ui',
           'sans-serif',
+        ],
+        bn: [
+          'var(--font-hind-siliguri)',
+          'sans-serif',
+        ],
+        en: [
+          'var(--font-exo2)',
+          'sans-serif',
+        ],
+        mono: [
+          'var(--font-exo2)',
+          'monospace',
         ],
       },
       boxShadow: {
