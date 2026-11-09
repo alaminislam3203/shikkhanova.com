@@ -78,7 +78,17 @@ export default function AdminPage() {
       const tabParam = params.get('tab') as AdminTab | null;
       if (
         tabParam &&
-        ['dashboard', 'purchases', 'addResult', 'addPdf', 'notices', 'students', 'settings'].includes(tabParam)
+        [
+          'dashboard',
+          'purchases',
+          'addResult',
+          'addPdf',
+          'notices',
+          'students',
+          'subjects',
+          'attendance',
+          'settings',
+        ].includes(tabParam)
       ) {
         setActiveTab(tabParam);
       }
@@ -340,7 +350,10 @@ export default function AdminPage() {
                   {activeTab === 'purchases' && 'পেমেন্ট রিকোয়েস্ট যাচাই'}
                   {activeTab === 'addPdf' && 'পিডিএফ শিট ও কার্ড ম্যানেজমেন্ট'}
                   {activeTab === 'addResult' && 'কোচিং পরীক্ষার রেজাল্ট আপলোড'}
-                  {activeTab === 'students' && 'শিক্ষার্থী ও উপস্থিতি'}
+                  {activeTab === 'notices' && 'নোটিশ বোর্ড ম্যানেজমেন্ট'}
+                  {activeTab === 'students' && 'শিক্ষার্থী ম্যানেজ ও ভর্তি'}
+                  {activeTab === 'subjects' && 'শ্রেণিভিত্তিক বিষয় ও NCTB বই'}
+                  {activeTab === 'attendance' && 'রোল উপস্থিতি শিট'}
                   {activeTab === 'settings' && 'প্রোফাইল ও সেন্টার সেটিংস'}
                 </span>
               </div>
@@ -349,7 +362,10 @@ export default function AdminPage() {
                 {activeTab === 'purchases' && 'বিকাশ ও নগদ পেমেন্ট অনুমোদন'}
                 {activeTab === 'addPdf' && 'পিডিএফ শিট আপলোড ও কার্ড কাস্টমাইজেশন'}
                 {activeTab === 'addResult' && 'নতুন পরীক্ষার ফলাফল সংরক্ষণ'}
-                {activeTab === 'students' && 'শিক্ষার্থী ও হাজিরা ব্যবস্থাপনা'}
+                {activeTab === 'notices' && 'ডায়নামিক নোটিশ প্রকাশ ও সম্পাদনা'}
+                {activeTab === 'students' && 'শিক্ষার্থী ভর্তি, তালিকা ও হাজিরা ব্যবস্থাপনা'}
+                {activeTab === 'subjects' && 'শ্রেণি ৫-১০ বিষয় ও NCTB পাঠ্যবই ম্যানেজমেন্ট'}
+                {activeTab === 'attendance' && 'রোল উপস্থিতি ও প্রতিদিনের হাজিরা গ্রহণ'}
                 {activeTab === 'settings' && 'অ্যাডমিন প্রোফাইল ও সেন্টার সেটিংস'}
               </h1>
             </div>
@@ -486,8 +502,14 @@ export default function AdminPage() {
         {/* TAB 3.5: Manage Notices */}
         {activeTab === 'notices' && <AdminNoticesManager />}
 
-        {/* TAB 4: Admin Roll Attendance Manager */}
-        {activeTab === 'students' && <AdminAttendanceManager />}
+        {/* TAB 4: Manage & Add Students */}
+        {activeTab === 'students' && <AdminStudentsManager />}
+
+        {/* TAB 4.5: Manage Class-wise Subjects & NCTB Books */}
+        {activeTab === 'subjects' && <AdminSubjectsManager />}
+
+        {/* TAB 4.8: Admin Roll Attendance Manager */}
+        {activeTab === 'attendance' && <AdminAttendanceManager />}
 
         {/* TAB 5: Admin Profile Photo & Center Settings */}
         {activeTab === 'settings' && (

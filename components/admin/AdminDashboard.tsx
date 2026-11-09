@@ -302,20 +302,29 @@ export default function AdminDashboard({
           <div className="flex flex-wrap items-center gap-2.5 shrink-0">
             <button
               type="button"
-              onClick={() => onNavigateTab('addPdf')}
+              onClick={() => onNavigateTab('students')}
               className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-4 py-2.5 rounded-2xl text-xs shadow-lg transition transform hover:-translate-y-0.5"
             >
               <FaPlus className="w-3.5 h-3.5" />
-              <span>নতুন PDF শিট আপলোড</span>
+              <span>নতুন শিক্ষার্থী যোগ</span>
             </button>
 
             <button
               type="button"
-              onClick={() => onNavigateTab('addResult')}
+              onClick={() => onNavigateTab('subjects')}
               className="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 text-white font-bold px-4 py-2.5 rounded-2xl text-xs border border-white/20 transition"
             >
-              <FaAward className="w-3.5 h-3.5 text-amber-300" />
-              <span>রেজাল্ট যুক্ত করুন</span>
+              <FaLayerGroup className="w-3.5 h-3.5 text-amber-300" />
+              <span>NCTB বই ও বিষয়</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onNavigateTab('addPdf')}
+              className="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 text-white font-bold px-4 py-2.5 rounded-2xl text-xs border border-white/20 transition"
+            >
+              <FaFilePdf className="w-3.5 h-3.5 text-rose-300" />
+              <span>PDF শিট আপলোড</span>
             </button>
 
             <button
@@ -471,9 +480,9 @@ export default function AdminDashboard({
         </div>
 
         {/* KPI 6: Today's Attendance */}
-        <Link
-          href="/attendance"
-          className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/90 shadow-xs hover:shadow-md hover:border-teal-300 transition flex flex-col justify-between space-y-4"
+        <div
+          onClick={() => onNavigateTab('attendance')}
+          className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/90 shadow-xs hover:shadow-md hover:border-teal-300 transition cursor-pointer flex flex-col justify-between space-y-4"
         >
           <div className="flex items-start justify-between gap-3">
             <div>
@@ -493,7 +502,7 @@ export default function AdminDashboard({
             <span>আজ মোট এন্ট্রি: <strong className="text-slate-800">{toBn(kpis.todayAttendance.total)}</strong></span>
             <span className="text-teal-700 font-bold">সর্বমোট: {toBn(kpis.totalAttendanceCount)}</span>
           </div>
-        </Link>
+        </div>
 
       </div>
 
@@ -508,13 +517,14 @@ export default function AdminDashboard({
               প্রতিটি শ্রেণির শিক্ষার্থী, প্রকাশিত পিডিএফ নোট, রেজাল্ট ও আজকের উপস্থিতির লাইভ হিসাব
             </p>
           </div>
-          <Link
-            href="/attendance"
+          <button
+            type="button"
+            onClick={() => onNavigateTab('attendance')}
             className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-700 hover:underline"
           >
             <span>হাজিরা শিটে যান</span>
             <FaArrowRight className="w-3 h-3" />
-          </Link>
+          </button>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3.5">
