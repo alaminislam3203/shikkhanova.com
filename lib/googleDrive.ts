@@ -62,26 +62,36 @@ export function isGoogleDriveConfigured(): boolean {
  */
 async function getGoogleDriveAccessToken(): Promise<string> {
   // 1. OAuth2 Refresh Token flow (Personal Gmail / Google Drive)
-  if (
-    process.env.GOOGLE_DRIVE_CLIENT_ID &&
-    process.env.GOOGLE_DRIVE_CLIENT_SECRET &&
-    process.env.GOOGLE_DRIVE_REFRESH_TOKEN
-  ) {
+  const clientId = process.env.GOOGLE_DRIVE_CLIENT_ID?.trim();
+  const clientSecret = process.env.GOOGLE_DRIVE_CLIENT_SECRET?.trim();
+  const refreshToken = process.env.GOOGLE_DRIVE_REFRESH_TOKEN?.trim();
+
+  if (clientId && clientSecret && refreshToken) {
     const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
-        client_id: process.env.GOOGLE_DRIVE_CLIENT_ID,
-        client_secret: process.env.GOOGLE_DRIVE_CLIENT_SECRET,
-        refresh_token: process.env.GOOGLE_DRIVE_REFRESH_TOKEN,
+        client_id: clientId,
+        client_secret: clientSecret,
+        refresh_token: refreshToken,
         grant_type: 'refresh_token',
       }),
     });
 
     const tokenData = await tokenRes.json();
     if (!tokenRes.ok || !tokenData.access_token) {
+      if (
+        tokenData?.error === 'unauthorized_client' ||
+        tokenData?.error_description === 'Unauthorized'
+      ) {
+        throw new Error(
+          'Google Drive OAuth Unauthorized: OAuth Playground-এ প্রথমে ⚙️ Settings থেকে "Use your own OAuth credentials" টিক দিয়ে Client ID ও Secret বসিয়ে তারপর নতুন করে "Authorize APIs" ক্লিক করে নতুন Refresh Token নিন।'
+        );
+      }
       throw new Error(
-        tokenData?.error_description || 'Google Drive OAuth টোকেন তৈরি করা যায়নি'
+        tokenData?.error_description ||
+          tokenData?.error ||
+          'Google Drive OAuth টোকেন তৈরি করা যায়নি'
       );
     }
     return tokenData.access_token;
@@ -141,46 +151,55 @@ export async function uploadPdfToGoogleDrive(
 ): Promise<{ fileId: string; downloadUrl: string; viewUrl: string }> {
   const accessToken = await getGoogleDriveAccessToken();
   const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID?.trim();
+  const cleanName = fileName.endsWith('.pdf') ? fileName : `${fileName}.pdf`;
 
-  const metadata: Record<string, any> = {
-    name: fileName.endsWith('.pdf') ? fileName : `${fileName}.pdf`,
-    mimeType: 'application/pdf',
+  const tryMultipartUpload = async (targetFolderId?: string) => {
+    const metadata: Record<string, any> = {
+      name: cleanName,
+      mimeType: 'application/pdf',
+    };
+    if (targetFolderId) {
+      metadata.parents = [targetFolderId];
+    }
+
+    const boundary = `-------shikkhanova_drive_${Date.now()}`;
+    const metaPart = Buffer.from(
+      `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(
+        metadata
+      )}\r\n--${boundary}\r\nContent-Type: application/pdf\r\n\r\n`,
+      'utf-8'
+    );
+    const endPart = Buffer.from(`\r\n--${boundary}--`, 'utf-8');
+    const multipartBody = Buffer.concat([metaPart, buffer, endPart]);
+
+    const res = await fetch(
+      'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': `multipart/related; boundary=${boundary}`,
+        },
+        body: multipartBody,
+      }
+    );
+    const data = await res.json();
+    return { ok: res.ok, status: res.status, data };
   };
 
-  if (folderId) {
-    metadata.parents = [folderId];
+  // First try with GOOGLE_DRIVE_FOLDER_ID; if scope is drive.file (which can't see manual folders), retry in root Drive
+  let result = await tryMultipartUpload(folderId);
+  if (!result.ok && folderId && (result.status === 404 || result.status === 403)) {
+    result = await tryMultipartUpload(undefined);
   }
 
-  const boundary = `-------shikkhanova_drive_${Date.now()}`;
-  const metaPart = Buffer.from(
-    `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(
-      metadata
-    )}\r\n--${boundary}\r\nContent-Type: application/pdf\r\n\r\n`,
-    'utf-8'
-  );
-  const endPart = Buffer.from(`\r\n--${boundary}--`, 'utf-8');
-  const multipartBody = Buffer.concat([metaPart, buffer, endPart]);
-
-  const uploadRes = await fetch(
-    'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink',
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': `multipart/related; boundary=${boundary}`,
-      },
-      body: multipartBody,
-    }
-  );
-
-  const uploadData = await uploadRes.json();
-  if (!uploadRes.ok || !uploadData.id) {
+  if (!result.ok || !result.data?.id) {
     throw new Error(
-      uploadData?.error?.message || 'Google Drive-এ পিডিএফ আপলোড ব্যর্থ হয়েছে'
+      result.data?.error?.message || 'Google Drive-এ পিডিএফ আপলোড ব্যর্থ হয়েছে'
     );
   }
 
-  const fileId = uploadData.id as string;
+  const fileId = result.data.id as string;
 
   // Set file permission to "anyone with link can read" so approved students can download
   await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}/permissions`, {

@@ -46,25 +46,35 @@ export async function POST(req: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // 1. If PDF and Google Drive API is configured in .env, upload directly to Google Drive!
+    // 1. If PDF and Google Drive API is configured in .env, try uploading directly to Google Drive!
+    let driveErrorMsg: string | null = null;
     if (isPdf && isGoogleDriveConfigured()) {
-      const driveResult = await uploadPdfToGoogleDrive(buffer, file.name);
-      return NextResponse.json({
-        success: true,
-        url: driveResult.viewUrl,
-        downloadUrl: driveResult.downloadUrl,
-        driveFileId: driveResult.fileId,
-        fileName: file.name,
-        fileSize: file.size,
-        isPdf: true,
-        isGoogleDrive: true,
-      });
+      try {
+        const driveResult = await uploadPdfToGoogleDrive(buffer, file.name);
+        return NextResponse.json({
+          success: true,
+          url: driveResult.viewUrl,
+          downloadUrl: driveResult.downloadUrl,
+          driveFileId: driveResult.fileId,
+          fileName: file.name,
+          fileSize: file.size,
+          isPdf: true,
+          isGoogleDrive: true,
+        });
+      } catch (driveErr: any) {
+        driveErrorMsg = driveErr?.message || 'Google Drive আপলোডে সমস্যা হয়েছে';
+        console.warn('Google Drive upload failed, checking Cloudinary fallback:', driveErrorMsg);
+        // If Cloudinary is not configured, return the Google Drive error directly
+        if (!isCloudinaryConfigured()) {
+          return NextResponse.json({ error: driveErrorMsg }, { status: 400 });
+        }
+      }
     }
 
-    // 2. Otherwise upload to Cloudinary
+    // 2. Otherwise upload to Cloudinary (or fallback if Google Drive token was unauthorized)
     if (!isCloudinaryConfigured()) {
       return NextResponse.json(
-        { error: 'Google Drive অথবা Cloudinary ক্রেডেনশিয়াল (.env) সেটআপ করা নেই।' },
+        { error: driveErrorMsg || 'Google Drive অথবা Cloudinary ক্রেডেনশিয়াল (.env) সেটআপ করা নেই।' },
         { status: 500 }
       );
     }
@@ -87,6 +97,7 @@ export async function POST(req: Request) {
       fileSize: file.size,
       isPdf,
       isCloudinary: true,
+      driveWarning: driveErrorMsg,
     });
   } catch (error: any) {
     console.error('Upload API error:', error);
