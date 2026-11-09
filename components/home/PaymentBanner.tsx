@@ -6,9 +6,14 @@ import { TbFileDownload } from 'react-icons/tb';
 
 export default function PaymentBanner() {
   return (
-    <section className="bg-gradient-to-r from-brand-900 via-brand-800 to-indigo-950 rounded-3xl p-6 sm:p-10 text-white shadow-xl flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 border border-brand-700/60">
+    <section
+      style={{
+        background: 'linear-gradient(135deg, #071426 0%, #0A1E3C 55%, #2A0B1E 100%)',
+      }}
+      className="rounded-3xl p-6 sm:p-10 text-white shadow-xl flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 border-b-4 border-[#C8102E]"
+    >
       <div className="space-y-2 max-w-xl">
-        <span className="bg-nova-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+        <span className="bg-[#C8102E] text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
           বিকাশ ও নগদ ম্যানুয়াল পেমেন্ট
         </span>
         <h2 className="text-2xl sm:text-3xl font-black">
