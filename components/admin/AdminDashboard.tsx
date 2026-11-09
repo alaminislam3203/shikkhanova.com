@@ -302,10 +302,19 @@ export default function AdminDashboard({
           <div className="flex flex-wrap items-center gap-2.5 shrink-0">
             <button
               type="button"
-              onClick={() => onNavigateTab('students')}
+              onClick={() => onNavigateTab('banners')}
               className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-4 py-2.5 rounded-2xl text-xs shadow-lg transition transform hover:-translate-y-0.5"
             >
               <FaPlus className="w-3.5 h-3.5" />
+              <span>হিরো ব্যানার আপলোড</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onNavigateTab('students')}
+              className="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 text-white font-bold px-4 py-2.5 rounded-2xl text-xs border border-white/20 transition"
+            >
+              <FaUsers className="w-3.5 h-3.5 text-emerald-300" />
               <span>নতুন শিক্ষার্থী যোগ</span>
             </button>
 
