@@ -4,14 +4,28 @@
 
 :root {
   --font-hind: 'Hind Siliguri', sans-serif;
+  --font-noto-bn: 'Noto Sans Bengali', sans-serif;
   --font-inter: 'Inter', sans-serif;
 }
 
+/* Override Bengali digits (০-৯: U+09E6-09EF) so '১' is always rendered in normal clear Bangla instead of Hind Siliguri's stylized '১' */
+@font-face {
+  font-family: 'BanglaNormalDigits';
+  src: local('Noto Sans Bengali'), local('SolaimanLipi'), local('Kalpurush'), local('Nirmala UI'), local('Vrinda');
+  unicode-range: U+09E6-09EF;
+}
+
 body {
-  font-family: var(--font-hind), var(--font-inter), sans-serif;
+  font-family: 'BanglaNormalDigits', var(--font-hind), var(--font-inter), sans-serif;
   background-color: #f8fafc;
   color: #1e293b;
   overflow-x: hidden;
+}
+
+/* Normal Bangla font utility for phone numbers (০১৭১২৫৯২৫১৯) and Bangla numeric labels */
+.font-bn-normal {
+  font-family: var(--font-noto-bn), 'SolaimanLipi', 'Kalpurush', 'Nirmala UI', sans-serif !important;
+  letter-spacing: 0.02em;
 }
 
 /* Custom Gradient Utilities Matching logo.png */

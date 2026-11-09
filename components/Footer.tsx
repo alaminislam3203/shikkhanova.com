@@ -57,7 +57,7 @@ export default function Footer() {
               className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-5 py-3 rounded-2xl text-xs sm:text-sm shadow-xl transition transform hover:-translate-y-0.5 active:scale-95"
             >
               <FaPhone className="w-3.5 h-3.5 text-slate-950" />
-              <span>০১৭১২৫৯২৫১৯</span>
+              <span className="font-bn-normal">০১৭১২৫৯২৫১৯</span>
             </a>
             <a
               href="https://wa.me/8801712592519"
@@ -182,7 +182,7 @@ export default function Footer() {
                 <div className="w-7 h-7 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20">
                   <FaPhone className="w-3.5 h-3.5" />
                 </div>
-                <a href="tel:01712592519" className="hover:text-amber-400 font-mono font-bold text-slate-200 transition">
+                <a href="tel:01712592519" className="hover:text-amber-400 font-bn-normal font-bold text-slate-200 transition">
                   ০১৭১২৫৯২৫১৯
                 </a>
               </div>
@@ -255,8 +255,8 @@ export default function Footer() {
                     <img src="/assets/images/nagad.png" alt="Nagad" className="h-3.5 w-auto object-contain" />
                   </div>
                 </div>
-                <span className="font-mono font-bold text-amber-400 text-xs tracking-wider">
-                  01712592519
+                <span className="font-bn-normal font-bold text-amber-400 text-xs tracking-wider">
+                  ০১৭১২৫৯২৫১৯
                 </span>
               </div>
             </div>

@@ -15,7 +15,7 @@ export default function PaymentBanner() {
           পিডিএফ শিট পেতে বিকাশ বা নগদে ফি পাঠান
         </h2>
         <p className="text-xs sm:text-sm text-blue-100 leading-relaxed">
-          পার্সোনাল নম্বর: <strong className="font-mono text-white text-base">01712592519</strong> এ সেন্ড মানি করুন। তারপর পিডিএফ পেজে গিয়ে আপনার TrxID দিয়ে সাবমিট করুন। অ্যাডমিন ভেরিফাই করে ডাউনলোড লিংক ওপেন করে দেবে।
+          পার্সোনাল নম্বর: <strong className="font-bn-normal text-white text-base">০১৭১২৫৯২৫১৯</strong> এ সেন্ড মানি করুন। তারপর পিডিএফ পেজে গিয়ে আপনার TrxID দিয়ে সাবমিট করুন। অ্যাডমিন ভেরিফাই করে ডাউনলোড লিংক ওপেন করে দেবে।
         </p>
       </div>
 
@@ -25,7 +25,7 @@ export default function PaymentBanner() {
             <img src="/assets/images/bkash.png" alt="bKash" className="h-5 w-auto object-contain" />
           </div>
           <p className="text-[10px] text-blue-200 font-bold uppercase tracking-wider">bKash Personal</p>
-          <p className="text-base font-black font-mono text-white">01712592519</p>
+          <p className="text-base font-black font-bn-normal text-white">০১৭১২৫৯২৫১৯</p>
         </div>
 
         <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl text-center space-y-1.5 w-full sm:w-auto min-w-[170px] shadow-md">
@@ -33,7 +33,7 @@ export default function PaymentBanner() {
             <img src="/assets/images/nagad.png" alt="Nagad" className="h-5 w-auto object-contain" />
           </div>
           <p className="text-[10px] text-blue-200 font-bold uppercase tracking-wider">Nagad Personal</p>
-          <p className="text-base font-black font-mono text-white">01712592519</p>
+          <p className="text-base font-black font-bn-normal text-white">০১৭১২৫৯২৫১৯</p>
         </div>
 
         <Link

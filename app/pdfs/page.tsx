@@ -162,7 +162,7 @@ export default function PdfsPage() {
                 </div>
                 <div>
                   <p className="text-[10px] text-blue-200 font-bold uppercase tracking-wider">বিকাশ পার্সোনাল</p>
-                  <p className="text-base font-black font-mono text-white tracking-wider">01712592519</p>
+                  <p className="text-base font-black font-bn-normal text-white tracking-wider">০১৭১২৫৯২৫১৯</p>
                 </div>
               </div>
               <span className="text-[10px] bg-emerald-500/30 text-emerald-300 px-3 py-1 rounded-full font-bold border border-emerald-400/30">
@@ -177,7 +177,7 @@ export default function PdfsPage() {
                 </div>
                 <div>
                   <p className="text-[10px] text-blue-200 font-bold uppercase tracking-wider">নগদ পার্সোনাল</p>
-                  <p className="text-base font-black font-mono text-white tracking-wider">01712592519</p>
+                  <p className="text-base font-black font-bn-normal text-white tracking-wider">০১৭১২৫৯২৫১৯</p>
                 </div>
               </div>
               <span className="text-[10px] bg-emerald-500/30 text-emerald-300 px-3 py-1 rounded-full font-bold border border-emerald-400/30">

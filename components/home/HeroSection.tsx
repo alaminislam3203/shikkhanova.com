@@ -108,7 +108,7 @@ export default function HeroSection() {
                 <span className="flex items-center gap-1.5">
                   <FaPhone className="text-emerald-600" /> হেল্পলাইন:
                 </span>
-                <span className="font-mono font-bold">01712592519</span>
+                <span className="font-bn-normal font-bold">০১৭১২৫৯২৫১৯</span>
               </div>
 
               <div className="flex items-center justify-between p-2.5 rounded-xl bg-rose-50 text-rose-900 font-bold border border-rose-100">

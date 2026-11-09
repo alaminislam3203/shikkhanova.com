@@ -485,7 +485,7 @@ export default function AccountPage() {
           {/* Center Info Box */}
           <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 text-[11px] text-slate-500 space-y-1">
             <p className="font-bold text-slate-700">সহায়তা কেন্দ্র:</p>
-            <p className="font-mono text-brand-800 font-bold">০১৭১২৫৯২৫১৯</p>
+            <p className="font-bn-normal text-brand-800 font-bold">০১৭১২৫৯২৫১৯</p>
             <p className="text-[10px]">জুম্মাপাড়া, নীলফামারী সদর</p>
           </div>
 

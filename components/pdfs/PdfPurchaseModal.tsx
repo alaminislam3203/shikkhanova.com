@@ -127,7 +127,7 @@ export default function PdfPurchaseModal({
                 </div>
                 <div>
                   <p className="text-xs font-bold text-slate-800">bKash Personal</p>
-                  <p className="text-[11px] font-mono text-slate-500">01712592519</p>
+                  <p className="text-[11px] font-bn-normal font-bold text-slate-600">০১৭১২৫৯২৫১৯</p>
                 </div>
               </button>
 
@@ -145,7 +145,7 @@ export default function PdfPurchaseModal({
                 </div>
                 <div>
                   <p className="text-xs font-bold text-slate-800">Nagad Personal</p>
-                  <p className="text-[11px] font-mono text-slate-500">01712592519</p>
+                  <p className="text-[11px] font-bn-normal font-bold text-slate-600">০১৭১২৫৯২৫১৯</p>
                 </div>
               </button>
             </div>
@@ -154,7 +154,7 @@ export default function PdfPurchaseModal({
           <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 text-[11px] text-slate-600 space-y-1">
             <p className="font-bold text-slate-800">টাকা পাঠানোর নির্দেশিকা:</p>
             <p>
-              আপনার {paymentMethod === 'BKASH' ? 'বিকাশ' : 'নগদ'} থেকে <strong className="font-mono text-slate-900">01712592519</strong> নম্বরে সেন্ড মানি করে <strong>৳{pdf.price}</strong> টাকা পাঠান। এরপর নিচের ফর্মে TrxID ও ফোন দিয়ে সাবমিট করুন।
+              আপনার {paymentMethod === 'BKASH' ? 'বিকাশ' : 'নগদ'} থেকে <strong className="font-bn-normal text-slate-900">০১৭১২৫৯২৫১৯</strong> নম্বরে সেন্ড মানি করে <strong>৳{pdf.price}</strong> টাকা পাঠান। এরপর নিচের ফর্মে TrxID ও ফোন দিয়ে সাবমিট করুন।
             </p>
           </div>
 

@@ -239,9 +239,9 @@ export default function Navbar() {
               জুম্মাপাড়া, নীলফামারী সদর
             </span>
             <span className="hidden md:inline text-brand-400">•</span>
-            <a href="tel:01712592519" className="inline-flex items-center gap-1.5 text-slate-200 hover:text-white transition">
+            <a href="tel:01712592519" className="inline-flex items-center gap-1.5 text-slate-200 hover:text-white transition font-bn-normal font-bold">
               <FaPhone className="text-emerald-400" />
-              ০১৭১২৫৯২৫১৯
+              <span>০১৭১২৫৯২৫১৯</span>
             </a>
             <span className="hidden md:inline text-brand-400">•</span>
             <span className="text-slogan-600 font-bold bg-white/10 px-2 py-0.5 rounded-full inline-flex items-center gap-1">

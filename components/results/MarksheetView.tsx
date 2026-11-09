@@ -40,7 +40,7 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
           </div>
 
           <p className="text-xs sm:text-sm text-slate-600 font-semibold">
-            জুম্মাপাড়া, নীলফামারী সদর, নীলফামারী | হেল্পলাইন: 01712592519
+            জুম্মাপাড়া, নীলফামারী সদর, নীলফামারী | হেল্পলাইন: <span className="font-bn-normal font-bold">০১৭১২৫৯২৫১৯</span>
           </p>
 
           <div className="inline-block mt-2 bg-gradient-to-r from-brand-800 via-brand-700 to-indigo-900 text-white text-xs font-bold px-5 py-1.5 rounded-full uppercase shadow-sm">

@@ -22,7 +22,7 @@ export default function ContactCards() {
         </div>
         <div>
           <h4 className="text-sm font-bold text-slate-800">হেল্পলাইন ও যোগাযোগ</h4>
-          <p className="text-xs font-mono text-slate-500">01712592519 (কল ও হোয়াটসঅ্যাপ)</p>
+          <p className="text-xs text-slate-500"><span className="font-bn-normal font-bold text-slate-700">০১৭১২৫৯২৫১৯</span> (কল ও হোয়াটসঅ্যাপ)</p>
         </div>
       </div>
 
