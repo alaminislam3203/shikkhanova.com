@@ -366,6 +366,7 @@ export default function AdminPage() {
               <h1 className="text-lg sm:text-2xl font-black text-slate-800 leading-tight">
                 {activeTab === 'dashboard' && 'লাইভ ড্যাশবোর্ড ও একাডেমিক পরিসংখ্যান'}
                 {activeTab === 'banners' && 'ফুল-উইডথ হিরো ব্যানার আপলোড ও ম্যানেজমেন্ট'}
+                {activeTab === 'achievers' && 'আমাদের সাফল্য গাঁথা (৬ষ্ঠ - ১০ম শ্রেণি)'}
                 {activeTab === 'purchases' && 'বিকাশ ও নগদ পেমেন্ট অনুমোদন'}
                 {activeTab === 'addPdf' && 'পিডিএফ শিট আপলোড ও কার্ড কাস্টমাইজেশন'}
                 {activeTab === 'addResult' && 'নতুন পরীক্ষার ফলাফল সংরক্ষণ'}
@@ -466,6 +467,9 @@ export default function AdminPage() {
 
         {/* TAB 0.5: Hero Banner Slider Manager */}
         {activeTab === 'banners' && <AdminBannersManager />}
+
+        {/* TAB 0.8: Success Stories / Achievers Manager */}
+        {activeTab === 'achievers' && <AdminAchieversManager />}
 
         {/* TAB 1: Review Purchases */}
         {activeTab === 'purchases' && (
