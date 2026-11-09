@@ -22,13 +22,14 @@ export function isCloudinaryConfigured(): boolean {
 }
 
 /**
- * Uploads an image buffer or base64 data URI to Cloudinary via REST API using Node's built-in crypto
+ * Uploads an image or PDF buffer / base64 data URI to Cloudinary via REST API using Node's built-in crypto
  * Returns the secure HTTPS Cloudinary URL
  */
 export async function uploadToCloudinary(
   fileInput: Buffer | string,
   folder = 'shikkha_nova/avatars',
-  publicIdPrefix?: string
+  publicIdPrefix?: string,
+  options?: { isPdf?: boolean }
 ): Promise<string> {
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME?.trim();
   const apiKey = process.env.CLOUDINARY_API_KEY?.trim();
@@ -38,6 +39,7 @@ export async function uploadToCloudinary(
     throw new Error('Cloudinary এনভায়রনমেন্ট ভেরিয়েবল (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET) পাওয়া যায়নি');
   }
 
+  const isPdf = Boolean(options?.isPdf);
   const timestamp = Math.floor(Date.now() / 1000).toString();
 
   // Parameters to sign in alphabetical order
@@ -48,7 +50,11 @@ export async function uploadToCloudinary(
 
   let cleanPublicId: string | undefined;
   if (publicIdPrefix) {
-    cleanPublicId = `${publicIdPrefix.replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 40)}-${Date.now()}`;
+    const baseId = `${publicIdPrefix.replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 40)}-${Date.now()}`;
+    cleanPublicId = isPdf ? `${baseId}.pdf` : baseId;
+    paramsToSign.public_id = cleanPublicId;
+  } else if (isPdf) {
+    cleanPublicId = `pdf-${Date.now()}.pdf`;
     paramsToSign.public_id = cleanPublicId;
   }
 
@@ -59,13 +65,14 @@ export async function uploadToCloudinary(
   const signature = crypto.createHash('sha1').update(stringToSign).digest('hex');
 
   // Prepare file data URI
+  const defaultMime = isPdf ? 'application/pdf' : 'image/jpeg';
   let fileData: string;
   if (Buffer.isBuffer(fileInput)) {
-    fileData = `data:image/jpeg;base64,${fileInput.toString('base64')}`;
+    fileData = `data:${defaultMime};base64,${fileInput.toString('base64')}`;
   } else if (fileInput.startsWith('data:')) {
     fileData = fileInput;
   } else {
-    fileData = `data:image/jpeg;base64,${fileInput}`;
+    fileData = `data:${defaultMime};base64,${fileInput}`;
   }
 
   // Payload for Cloudinary REST API
@@ -81,7 +88,10 @@ export async function uploadToCloudinary(
     payload.public_id = cleanPublicId;
   }
 
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+  // Use 'raw' endpoint for PDFs so Cloudinary never blocks public PDF delivery
+  const resourceType = isPdf ? 'raw' : 'image';
+
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

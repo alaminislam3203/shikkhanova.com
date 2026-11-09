@@ -10,20 +10,21 @@ export async function GET(req: Request) {
     const session = await getServerSession(authOptions);
 
     const where: any = {};
-    if (classGrade) {
+    if (classGrade && classGrade !== 'all') {
       where.classGrade = parseInt(classGrade);
     }
 
     const pdfs = await prisma.pdfMaterial.findMany({
       where,
       include: {
-        purchases: session?.user?.id
-          ? {
-              where: {
-                studentId: session.user.id,
-              },
-            }
-          : false,
+        purchases:
+          session?.user?.id && session.user.id !== 'admin-master-id'
+            ? {
+                where: {
+                  studentId: session.user.id,
+                },
+              }
+            : false,
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -44,19 +45,103 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { title, description, classGrade, subject, price, fileUrl, isFree } = body;
 
+    if (!title || !subject || !fileUrl) {
+      return NextResponse.json(
+        { error: 'পিডিএফ টাইটেল, বিষয় এবং ফাইল লিংক প্রদান করা আবশ্যক' },
+        { status: 400 }
+      );
+    }
+
+    const numericPrice = isFree ? 0 : parseFloat(price || '0');
+    const freeFlag = Boolean(isFree) || numericPrice <= 0;
+
     const newPdf = await prisma.pdfMaterial.create({
       data: {
-        title,
-        description,
-        classGrade: parseInt(classGrade),
-        subject,
-        price: parseFloat(price || '50'),
-        fileUrl,
-        isFree: Boolean(isFree),
+        title: title.trim(),
+        description: description ? description.trim() : '',
+        classGrade: parseInt(classGrade?.toString() || '7'),
+        subject: subject.trim(),
+        price: freeFlag ? 0 : numericPrice,
+        fileUrl: fileUrl.trim(),
+        isFree: freeFlag,
       },
     });
 
-    return NextResponse.json({ message: 'পিডিএফ সফলভাবে যোগ করা হয়েছে', pdf: newPdf });
+    return NextResponse.json({ message: 'নতুন পিডিএফ কার্ড সফলভাবে প্রকাশিত হয়েছে!', pdf: newPdf });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+export async function PUT(req: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'শুধুমাত্র অ্যাডমিন পিডিএফ শিট এডিট করতে পারবেন' }, { status: 403 });
+    }
+
+    const body = await req.json();
+    const { id, title, description, classGrade, subject, price, fileUrl, isFree } = body;
+
+    if (!id) {
+      return NextResponse.json({ error: 'পিডিএফ আইডি পাওয়া যায়নি' }, { status: 400 });
+    }
+
+    if (!title || !subject || !fileUrl) {
+      return NextResponse.json(
+        { error: 'পিডিএফ টাইটেল, বিষয় এবং ফাইল লিংক প্রদান করা আবশ্যক' },
+        { status: 400 }
+      );
+    }
+
+    const numericPrice = isFree ? 0 : parseFloat(price || '0');
+    const freeFlag = Boolean(isFree) || numericPrice <= 0;
+
+    const updatedPdf = await prisma.pdfMaterial.update({
+      where: { id },
+      data: {
+        title: title.trim(),
+        description: description ? description.trim() : '',
+        classGrade: parseInt(classGrade?.toString() || '7'),
+        subject: subject.trim(),
+        price: freeFlag ? 0 : numericPrice,
+        fileUrl: fileUrl.trim(),
+        isFree: freeFlag,
+      },
+    });
+
+    return NextResponse.json({ message: 'পিডিএফ কার্ড সফলভাবে আপডেট হয়েছে!', pdf: updatedPdf });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'শুধুমাত্র অ্যাডমিন পিডিএফ শিট ডিলিট করতে পারবেন' }, { status: 403 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    let id = searchParams.get('id');
+
+    if (!id) {
+      try {
+        const body = await req.json();
+        id = body.id;
+      } catch {}
+    }
+
+    if (!id) {
+      return NextResponse.json({ error: 'ডিলিট করার জন্য পিডিএফ আইডি প্রয়োজন' }, { status: 400 });
+    }
+
+    await prisma.pdfMaterial.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ message: 'পিডিএফ কার্ড সফলভাবে মুছে ফেলা হয়েছে!' });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

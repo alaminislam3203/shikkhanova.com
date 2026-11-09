@@ -18,27 +18,56 @@ export async function POST(req: Request) {
 
     if (!isCloudinaryConfigured()) {
       return NextResponse.json(
-        { error: 'Cloudinary সেটআপ করা নেই' },
+        { error: 'Cloudinary সেটআপ করা নেই। দয়া করে .env ফাইলে Cloudinary কী যুক্ত করুন।' },
         { status: 500 }
       );
     }
 
     const formData = await req.formData();
-    const file = (formData.get('file') as File | null) || (formData.get('image') as File | null);
-    const folder = (formData.get('folder') as string | null) || 'shikkha_nova/general';
+    const file =
+      (formData.get('file') as File | null) ||
+      (formData.get('pdf') as File | null) ||
+      (formData.get('image') as File | null);
 
     if (!file) {
       return NextResponse.json({ error: 'কোনো ফাইল পাওয়া যায়নি' }, { status: 400 });
     }
 
+    const isPdf =
+      file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+
+    // Max 15MB for PDFs, 5MB for images
+    const maxSize = isPdf ? 15 * 1024 * 1024 : 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      return NextResponse.json(
+        {
+          error: isPdf
+            ? 'পিডিএফ ফাইলের সাইজ সর্বোচ্চ ১৫ মেগাবাইট হতে পারবে'
+            : 'ছবির সাইজ সর্বোচ্চ ৫ মেগাবাইট হতে পারবে',
+        },
+        { status: 400 }
+      );
+    }
+
+    const defaultFolder = isPdf ? 'shikkha_nova/pdfs' : 'shikkha_nova/general';
+    const folder = (formData.get('folder') as string | null) || defaultFolder;
+
+    const baseName = file.name
+      .replace(/\.[^/.]+$/, '')
+      .replace(/[^a-zA-Z0-9_-]/g, '-')
+      .slice(0, 35) || 'material';
+
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const finalUrl = await uploadToCloudinary(buffer, folder);
+    const finalUrl = await uploadToCloudinary(buffer, folder, baseName, { isPdf });
 
     return NextResponse.json({
       success: true,
       url: finalUrl,
+      fileName: file.name,
+      fileSize: file.size,
+      isPdf,
       isCloudinary: true,
     });
   } catch (error: any) {
