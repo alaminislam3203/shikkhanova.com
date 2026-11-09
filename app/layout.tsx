@@ -40,47 +40,47 @@ const hindSiliguri = localFont({
 const exo2 = localFont({
   src: [
     {
-      path: './fonts/Exo_2/Exo2-Thin.otf',
+      path: './fonts/exo_2/Exo2-Thin.otf',
       weight: '100',
       style: 'normal',
     },
     {
-      path: './fonts/Exo_2/Exo2-ExtraLight.otf',
+      path: './fonts/exo_2/Exo2-ExtraLight.otf',
       weight: '200',
       style: 'normal',
     },
     {
-      path: './fonts/Exo_2/Exo2-Light.otf',
+      path: './fonts/exo_2/Exo2-Light.otf',
       weight: '300',
       style: 'normal',
     },
     {
-      path: './fonts/Exo_2/Exo2-Regular.otf',
+      path: './fonts/exo_2/Exo2-Regular.otf',
       weight: '400',
       style: 'normal',
     },
     {
-      path: './fonts/Exo_2/Exo2-Medium.otf',
+      path: './fonts/exo_2/Exo2-Medium.otf',
       weight: '500',
       style: 'normal',
     },
     {
-      path: './fonts/Exo_2/Exo2-SemiBold.otf',
+      path: './fonts/exo_2/Exo2-SemiBold.otf',
       weight: '600',
       style: 'normal',
     },
     {
-      path: './fonts/Exo_2/Exo2-Bold.otf',
+      path: './fonts/exo_2/Exo2-Bold.otf',
       weight: '700',
       style: 'normal',
     },
     {
-      path: './fonts/Exo_2/Exo2-ExtraBold.otf',
+      path: './fonts/exo_2/Exo2-ExtraBold.otf',
       weight: '800',
       style: 'normal',
     },
     {
-      path: './fonts/Exo_2/Exo2-Black.otf',
+      path: './fonts/exo_2/Exo2-Black.otf',
       weight: '900',
       style: 'normal',
     },
