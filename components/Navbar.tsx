@@ -89,7 +89,7 @@ const INSTANT_SITE_INDEX = [
   },
   {
     id: 'cls-5',
-    title: '৫ম শ্রেণি (Class 5) — হাজিরা, শিট ও রেজাল্ট',
+    title: '৫ম শ্রেণি — হাজিরা, শিট ও রেজাল্ট',
     subtitle: '৫ম শ্রেণির সকল হ্যান্ডনোট, উপস্থিতি ও ফলাফল',
     categoryLabel: '৫ম শ্রেণি',
     href: '/pdfs',
@@ -97,7 +97,7 @@ const INSTANT_SITE_INDEX = [
   },
   {
     id: 'cls-6',
-    title: '৬ষ্ঠ শ্রেণি (Class 6) — হাজিরা, শিট ও রেজাল্ট',
+    title: '৬ষ্ঠ শ্রেণি — হাজিরা, শিট ও রেজাল্ট',
     subtitle: '৬ষ্ঠ শ্রেণির সকল হ্যান্ডনোট, উপস্থিতি ও ফলাফল',
     categoryLabel: '৬ষ্ঠ শ্রেণি',
     href: '/pdfs',

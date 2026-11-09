@@ -57,7 +57,7 @@ export const DEFAULT_NOTICES: NoticeItem[] = [
     category: 'general',
     categoryLabel: 'হ্যান্ডনোট ও শিট',
     targetClass: '৯ম - ১০ম শ্রেণি',
-    isPinned: false,
+    isPinned: true,
     summary:
       'বোর্ড পরীক্ষার সর্বশেষ সিলেবাস অনুযায়ী অধ্যায়ভিত্তিক রঙিন হ্যান্ডনোট ও চূড়ান্ত সাজেশন এখন পিডিএফ শপে পাওয়া যাচ্ছে।',
     details:
