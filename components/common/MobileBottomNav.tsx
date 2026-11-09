@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import {
   FaHouse,
-  FaUserCheck,
+  FaBell,
   FaAward,
   FaFilePdf,
   FaUser,
@@ -30,9 +30,9 @@ export default function MobileBottomNav() {
       exact: true,
     },
     {
-      href: '/attendance',
-      label: 'হাজিরা',
-      icon: FaUserCheck,
+      href: '/notices',
+      label: 'নোটিশ',
+      icon: FaBell,
       exact: false,
     },
     {

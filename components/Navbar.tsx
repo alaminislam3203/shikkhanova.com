@@ -271,8 +271,8 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Top Header Bar - Style Deep Academic Navy & Crimson Red Accent */}
-      <div className="bg-[#0A1E3C] text-white text-xs py-2 px-4 shadow-sm border-b-2 border-[#C8102E]">
+      {/* Top Header Bar - Style Deep Academic Navy & Crimson Red Accent (Hidden on Mobile) */}
+      <div className="hidden sm:block bg-[#0A1E3C] text-white text-xs py-2 px-4 shadow-sm border-b-2 border-[#C8102E]">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
           
           <div className="flex items-center gap-4 flex-wrap justify-center sm:justify-start">
