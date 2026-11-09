@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import PdfCard from '@/components/pdfs/PdfCard';
 import PdfPurchaseModal from '@/components/pdfs/PdfPurchaseModal';
@@ -8,9 +9,9 @@ import { PdfItem } from '@/types';
 import {
   FaFilePdf,
   FaMagnifyingGlass,
-  FaPhone,
   FaCircleCheck,
-  FaShieldHalved,
+  FaClock,
+  FaPlus,
 } from 'react-icons/fa6';
 import { HiSparkles } from 'react-icons/hi2';
 
@@ -19,20 +20,21 @@ export default function PdfsPage() {
   const [selectedClass, setSelectedClass] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [pdfs, setPdfs] = useState<PdfItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [activePdf, setActivePdf] = useState<PdfItem | null>(null);
 
   useEffect(() => {
     fetchPdfs();
-  }, [selectedClass]);
+  }, [session?.user?.id]);
 
   const fetchPdfs = async () => {
+    setLoading(true);
     try {
-      const url = selectedClass === 'all' ? '/api/pdfs' : `/api/pdfs?classGrade=${selectedClass}`;
-      const res = await fetch(url);
+      const res = await fetch('/api/pdfs', { cache: 'no-store' });
       const data = await res.json();
 
-      if (data.pdfs && data.pdfs.length > 0) {
+      if (data.pdfs && Array.isArray(data.pdfs)) {
         setPdfs(
           data.pdfs.map((p: any) => ({
             id: p.id,
@@ -42,7 +44,7 @@ export default function PdfsPage() {
             subject: p.subject,
             price: p.price,
             fileUrl: p.fileUrl,
-            isFree: p.isFree,
+            isFree: Boolean(p.isFree) || Number(p.price) <= 0,
             purchaseStatus:
               p.purchases && p.purchases.length > 0
                 ? p.purchases[0].status
@@ -50,69 +52,15 @@ export default function PdfsPage() {
           }))
         );
       } else {
-        setPdfs(getDefaultPdfs());
+        setPdfs([]);
       }
-    } catch {
-      setPdfs(getDefaultPdfs());
+    } catch (err) {
+      console.error('Error fetching PDFs:', err);
+      setPdfs([]);
+    } finally {
+      setLoading(false);
     }
   };
-
-  const getDefaultPdfs = (): PdfItem[] => [
-    {
-      id: 'pdf-1',
-      title: '৭ম শ্রেণি গণিত ১ম সাময়িক স্পেশাল হ্যান্ডনোট ও সূত্রাবলি',
-      description: 'বীজগণিতীয় রাশি, জ্যামিতির মৌলিক নিয়মাবলি ও ১০০% কমন উপযোগী অধ্যায়ভিত্তিক সৃজনশীল সমাধান।',
-      classGrade: 7,
-      subject: 'গণিত (Mathematics)',
-      price: 50,
-      fileUrl: '/assets/pdfs/class-7-math-special.pdf',
-    },
-    {
-      id: 'pdf-2',
-      title: '৮ম শ্রেণি সাধারণ বিজ্ঞান ফাইনাল মডেল টেস্ট ও সাজেশন',
-      description: 'পদার্থের প্রকৃতি, জীব ও পরিবেশ অধ্যায়ের পূর্ণাঙ্গ ব্যাখ্যাসহ ১০০% কমন উপযোগী প্রশ্নব্যাংক।',
-      classGrade: 8,
-      subject: 'বিজ্ঞান (Science)',
-      price: 60,
-      fileUrl: '/assets/pdfs/class-8-science.pdf',
-    },
-    {
-      id: 'pdf-3',
-      title: '৯ম-১০ম শ্রেণি পদার্থবিজ্ঞান গাণিতিক সমস্যার সহজ সমাধান',
-      description: 'গতি ও বল অধ্যায়ের সকল গাণিতিক সূত্র, মাত্রা ও শর্টকাট টেকনিকসহ শতভাগ কমন হ্যান্ডনোট।',
-      classGrade: 9,
-      subject: 'পদার্থবিজ্ঞান (Physics)',
-      price: 80,
-      fileUrl: '/assets/pdfs/class-9-physics.pdf',
-    },
-    {
-      id: 'pdf-4',
-      title: '১০ম শ্রেণি এসএসসি ইংরেজি ২য় পত্র গ্রামার শর্ট সাজেশন',
-      description: 'Right form of verbs, Tag questions, Completing sentences ও প্যাসেজ ন্যারেশন সহজ নিয়মাবলি।',
-      classGrade: 10,
-      subject: 'ইংরেজি (English)',
-      price: 100,
-      fileUrl: '/assets/pdfs/class-10-english.pdf',
-    },
-    {
-      id: 'pdf-5',
-      title: '৫ম শ্রেণি প্রাথমিক গণিত ভগ্নাংশ ও দশমিক বেসিক নোট',
-      description: 'সহজ ভাষায় ব্যাখ্যাসহ প্রাথমিক সমাপনী প্রস্তুতির জন্য রঙিন ও আকর্ষণীয় অনুশীলন শিট।',
-      classGrade: 5,
-      subject: 'গণিত (Mathematics)',
-      price: 40,
-      fileUrl: '/assets/pdfs/class-5-math.pdf',
-    },
-    {
-      id: 'pdf-6',
-      title: '৬ষ্ঠ শ্রেণি তথ্য ও যোগাযোগ প্রযুক্তি (ICT) সম্পূর্ণ শিট',
-      description: 'আইসিটি ১ম থেকে ৫ম অধ্যায়ের সকল গুরুত্বপূর্ণ সংক্ষিপ্ত ও বর্ণনামূলক প্রশ্নোত্তর।',
-      classGrade: 6,
-      subject: 'আইসিটি (ICT)',
-      price: 40,
-      fileUrl: '/assets/pdfs/class-6-ict.pdf',
-    },
-  ];
 
   const openPurchaseModal = (pdf: PdfItem) => {
     setActivePdf(pdf);
@@ -181,6 +129,18 @@ export default function PdfsPage() {
                 <FaCircleCheck className="text-emerald-400" /> ম্যানুয়াল বিকাশ/নগদ ভেরিফিকেশন
               </span>
             </div>
+
+            {session?.user?.role === 'ADMIN' && (
+              <div className="pt-2">
+                <Link
+                  href="/admin?tab=addPdf"
+                  className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-4 py-2.5 rounded-2xl text-xs shadow-lg transition transform hover:-translate-y-0.5"
+                >
+                  <FaPlus className="w-3.5 h-3.5" />
+                  <span>অ্যাডমিন প্যানেল থেকে পিডিএফ শিট আপলোড ও ম্যানেজ করুন</span>
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Right: Payment Quick Numbers */}
@@ -236,7 +196,7 @@ export default function PdfsPage() {
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
-              সকল শ্রেণি
+              সকল শ্রেণি ({pdfs.length})
             </button>
             {[5, 6, 7, 8, 9, 10].map((cls) => (
               <button
@@ -278,15 +238,33 @@ export default function PdfsPage() {
       </div>
 
       {/* PDF Cards Grid */}
-      {filteredPdfs.length === 0 ? (
-        <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 space-y-3">
+      {loading ? (
+        <div className="bg-white rounded-3xl p-16 text-center border border-slate-200 space-y-3">
+          <FaClock className="w-8 h-8 text-brand-600 animate-spin mx-auto" />
+          <p className="text-sm font-bold text-slate-600">হ্যান্ডনোট ও সাজেশন লোড হচ্ছে...</p>
+        </div>
+      ) : filteredPdfs.length === 0 ? (
+        <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 space-y-4">
           <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto text-2xl text-slate-400">
-            📄
+            <FaFilePdf className="w-7 h-7 text-rose-500" />
           </div>
-          <h3 className="text-base font-bold text-slate-800">কোনো হ্যান্ডনোট পাওয়া যায়নি</h3>
-          <p className="text-xs text-slate-500">
-            অন্য কোনো শ্রেণি সিলেক্ট করুন অথবা সার্চ কি-ওয়ার্ড পরিবর্তন করুন।
-          </p>
+          <div className="space-y-1">
+            <h3 className="text-base font-bold text-slate-800">কোনো হ্যান্ডনোট পাওয়া যায়নি</h3>
+            <p className="text-xs text-slate-500">
+              {pdfs.length === 0
+                ? 'অ্যাডমিন প্যানেল থেকে নতুন পিডিএফ শিট পাবলিশ করলে তা এখানে প্রদর্শিত হবে।'
+                : 'অন্য কোনো শ্রেণি সিলেক্ট করুন অথবা সার্চ কি-ওয়ার্ড পরিবর্তন করুন।'}
+            </p>
+          </div>
+          {session?.user?.role === 'ADMIN' && (
+            <Link
+              href="/admin?tab=addPdf"
+              className="inline-flex items-center gap-2 bg-brand-700 hover:bg-brand-800 text-white font-bold px-5 py-2.5 rounded-xl text-xs shadow transition"
+            >
+              <FaPlus className="w-3.5 h-3.5" />
+              <span>নতুন পিডিএফ শিট যুক্ত করুন</span>
+            </Link>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">

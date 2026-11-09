@@ -1,37 +1,46 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import AdminSidebar, { AdminTab } from '@/components/admin/AdminSidebar';
+import AdminSidebar, { AdminTab, AdminProfileInfo } from '@/components/admin/AdminSidebar';
 import PurchasesTable from '@/components/admin/PurchasesTable';
 import AddResultForm from '@/components/admin/AddResultForm';
-import AddPdfForm from '@/components/admin/AddPdfForm';
+import AddPdfForm, { PdfFormData } from '@/components/admin/AddPdfForm';
 import { PurchaseRecord } from '@/types';
 import {
   FaBars,
-  FaAward,
   FaFilePdf,
-  FaUsers,
   FaClock,
   FaCircleCheck,
-  FaPhone,
-  FaLocationDot,
+  FaCircleExclamation,
   FaArrowRight,
+  FaCamera,
+  FaCloudArrowUp,
+  FaCheck,
+  FaUserShield,
 } from 'react-icons/fa6';
-import { TbCashBanknote } from 'react-icons/tb';
-import { HiSparkles } from 'react-icons/hi2';
 
 export default function AdminPage() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
+  const { data: session, update } = useSession();
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
   const [activeTab, setActiveTab] = useState<AdminTab>('purchases');
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [purchases, setPurchases] = useState<PurchaseRecord[]>([]);
+  const [pdfCount, setPdfCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
+  const [uploadingPhoto, setUploadingPhoto] = useState<boolean>(false);
+  const [savingAdminProfile, setSavingAdminProfile] = useState<boolean>(false);
   const [msg, setMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+
+  // Admin Profile State (Synced with DB & Cloudinary)
+  const [adminProfile, setAdminProfile] = useState<AdminProfileInfo>({
+    name: 'রবিউল ইসলাম (পরিচালক)',
+    email: 'robiulnil101@gmail.com',
+    image: '',
+    phone: '01712592519',
+  });
 
   // Add Result State
   const [resultForm, setResultForm] = useState({
@@ -46,82 +55,177 @@ export default function AdminPage() {
   });
 
   // Add PDF State
-  const [pdfForm, setPdfForm] = useState({
+  const [pdfForm, setPdfForm] = useState<PdfFormData>({
     title: '',
     description: '',
     classGrade: 7,
-    subject: 'সাধারণ গণিত',
+    subject: 'গণিত (Mathematics)',
     price: '50',
-    fileUrl: '/assets/pdfs/class-7-math.pdf',
+    fileUrl: '',
+    isFree: false,
   });
 
+  // Check URL query param ?tab=addPdf on mount
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab') as AdminTab | null;
+      if (
+        tabParam &&
+        ['purchases', 'addResult', 'addPdf', 'students', 'settings'].includes(tabParam)
+      ) {
+        setActiveTab(tabParam);
+      }
+    }
     fetchPurchases();
+    fetchAdminProfile();
+    fetchPdfCount();
   }, []);
+
+  // Sync session user image if loaded
+  useEffect(() => {
+    if (session?.user) {
+      setAdminProfile((prev) => ({
+        name: prev.name || session.user.name || 'রবিউল ইসলাম (পরিচালক)',
+        email: session.user.email || prev.email,
+        image: prev.image || session.user.image || '',
+        phone: session.user.phone || prev.phone,
+      }));
+    }
+  }, [session]);
+
+  const fetchAdminProfile = async () => {
+    try {
+      const res = await fetch('/api/user/profile', { cache: 'no-store' });
+      const data = await res.json();
+      if (data.user) {
+        setAdminProfile({
+          name: data.user.name || 'রবিউল ইসলাম (পরিচালক)',
+          email: data.user.email || 'robiulnil101@gmail.com',
+          image: data.user.image || session?.user?.image || '',
+          phone: data.user.phone || '01712592519',
+        });
+      }
+    } catch {}
+  };
+
+  const fetchPdfCount = async () => {
+    try {
+      const res = await fetch('/api/pdfs', { cache: 'no-store' });
+      const data = await res.json();
+      if (data.pdfs && Array.isArray(data.pdfs)) {
+        setPdfCount(data.pdfs.length);
+      }
+    } catch {}
+  };
 
   const fetchPurchases = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/purchases');
+      const res = await fetch('/api/admin/purchases', { cache: 'no-store' });
       const data = await res.json();
-      if (data.purchases) {
+      if (data.purchases && Array.isArray(data.purchases)) {
         setPurchases(data.purchases);
       } else {
-        setPurchases(getDemoPurchases());
+        setPurchases([]);
       }
     } catch {
-      setPurchases(getDemoPurchases());
+      setPurchases([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const getDemoPurchases = (): PurchaseRecord[] => [
-    {
-      id: 'pur-1',
-      amount: 50,
-      paymentMethod: 'BKASH',
-      senderPhone: '01711223344',
-      trxId: '9J72AKL89Q',
-      status: 'PENDING',
-      createdAt: new Date().toISOString(),
-      student: {
-        name: 'রাকিবুল হাসান',
-        email: 'rakibul@gmail.com',
-        phone: '01711223344',
-        classGrade: 7,
-        rollNumber: 1,
-      },
-      pdf: {
-        title: '৭ম শ্রেণি গণিত ১ম সাময়িক স্পেশাল হ্যান্ডনোট',
-        classGrade: 7,
-        subject: 'গণিত',
-        price: 50,
-      },
-    },
-    {
-      id: 'pur-2',
-      amount: 80,
-      paymentMethod: 'NAGAD',
-      senderPhone: '01899887766',
-      trxId: 'NGD98234KL',
-      status: 'PENDING',
-      createdAt: new Date().toISOString(),
-      student: {
-        name: 'সাদিয়া সুলতানা',
-        email: 'sadia@gmail.com',
-        phone: '01899887766',
-        classGrade: 9,
-        rollNumber: 2,
-      },
-      pdf: {
-        title: '৯ম শ্রেণি পদার্থবিজ্ঞান গাণিতিক সমস্যা',
-        classGrade: 9,
-        subject: 'পদার্থবিজ্ঞান',
-        price: 80,
-      },
-    },
-  ];
+  // Handle Admin Profile Photo Upload (Cloudinary + DB)
+  const handleAdminPhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setMsg({ text: 'দয়া করে একটি সঠিক ছবি (JPG, PNG, WebP) নির্বাচন করুন', type: 'error' });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setMsg({ text: 'ছবির সাইজ ৫ মেগাবাইটের কম হতে হবে', type: 'error' });
+      return;
+    }
+
+    setUploadingPhoto(true);
+    setMsg(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('photo', file);
+
+      const res = await fetch('/api/user/upload-photo', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'ছবি আপলোড ব্যর্থ হয়েছে');
+      }
+
+      setAdminProfile((prev) => ({ ...prev, image: data.imageUrl }));
+      setMsg({
+        text: 'অ্যাডমিন প্রোফাইল ছবি সফলভাবে ক্লাউডে আপলোড ও সংরক্ষিত হয়েছে!',
+        type: 'success',
+      });
+
+      if (update) {
+        await update({
+          user: { image: data.imageUrl },
+        });
+      }
+    } catch (err: any) {
+      setMsg({ text: err.message || 'ছবি আপলোডে সমস্যা হয়েছে', type: 'error' });
+    } finally {
+      setUploadingPhoto(false);
+      if (photoInputRef.current) {
+        photoInputRef.current.value = '';
+      }
+    }
+  };
+
+  // Save Admin Name & Phone in Settings
+  const handleAdminProfileSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingAdminProfile(true);
+    setMsg(null);
+
+    try {
+      const res = await fetch('/api/user/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: adminProfile.name,
+          phone: adminProfile.phone,
+          image: adminProfile.image,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'তথ্য সংরক্ষণ করা যায়নি');
+      }
+
+      setMsg({ text: 'অ্যাডমিন প্রোফাইল তথ্য সফলভাবে আপডেট হয়েছে!', type: 'success' });
+      if (update) {
+        await update({
+          user: {
+            name: adminProfile.name,
+            phone: adminProfile.phone,
+          },
+        });
+      }
+    } catch (err: any) {
+      setMsg({ text: err.message || 'সমস্যা হয়েছে', type: 'error' });
+    } finally {
+      setSavingAdminProfile(false);
+    }
+  };
 
   const updatePurchaseStatus = async (purchaseId: string, newStatus: 'APPROVED' | 'REJECTED') => {
     try {
@@ -150,11 +254,16 @@ export default function AdminPage() {
   const handleResultSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await fetch('/api/results', {
+      const res = await fetch('/api/results', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(resultForm),
       });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || 'ফলাফল আপলোড ব্যর্থ হয়েছে');
+      }
 
       setMsg({ text: 'নতুন ফলাফল সফলভাবে আপলোড হয়েছে!', type: 'success' });
       setResultForm({
@@ -167,31 +276,8 @@ export default function AdminPage() {
         grade: 'A+',
         gpa: '5.00',
       });
-    } catch {
-      setMsg({ text: 'ফলাফল আপলোডে সমস্যা হয়েছে', type: 'error' });
-    }
-  };
-
-  const handlePdfSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await fetch('/api/pdfs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(pdfForm),
-      });
-
-      setMsg({ text: 'নতুন পিডিএফ নোট সফলভাবে যুক্ত হয়েছে!', type: 'success' });
-      setPdfForm({
-        title: '',
-        description: '',
-        classGrade: 7,
-        subject: 'সাধারণ গণিত',
-        price: '50',
-        fileUrl: '/assets/pdfs/demo.pdf',
-      });
-    } catch {
-      setMsg({ text: 'পিডিএফ যুক্ত করতে সমস্যা হয়েছে', type: 'error' });
+    } catch (err: any) {
+      setMsg({ text: err.message || 'ফলাফল আপলোডে সমস্যা হয়েছে', type: 'error' });
     }
   };
 
@@ -200,22 +286,34 @@ export default function AdminPage() {
   const totalRevenue = approvedPurchases.reduce((acc, curr) => acc + curr.amount, 0);
 
   return (
-    <div className="min-h-screen bg-slate-100/80 flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-slate-100/80 flex flex-col lg:flex-row items-start">
       
-      {/* Side Menu Navigation */}
+      {/* Hidden File Input for Quick Admin Photo Upload from Anywhere in Admin Panel */}
+      <input
+        type="file"
+        ref={photoInputRef}
+        onChange={handleAdminPhotoSelect}
+        accept="image/jpeg,image/png,image/webp"
+        className="hidden"
+      />
+
+      {/* Sticky Side Menu Navigation */}
       <AdminSidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         pendingCount={pendingPurchases.length}
+        pdfCount={pdfCount}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        adminProfile={adminProfile}
+        onTriggerPhotoUpload={() => photoInputRef.current?.click()}
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 space-y-6">
+      <div className="flex-1 w-full min-w-0 p-4 sm:p-6 lg:p-8 space-y-6">
         
-        {/* Top Navbar / Header Bar */}
-        <div className="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200/90 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        {/* Sticky Top Header Bar */}
+        <div className="sticky top-3 z-20 bg-white/95 backdrop-blur-md rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -227,50 +325,97 @@ export default function AdminPage() {
 
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">অ্যাডমিন ড্যাশবোর্ড</span>
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">অ্যাডমিন প্যানেল</span>
                 <span className="text-slate-300">•</span>
                 <span className="text-xs font-bold text-brand-700">
                   {activeTab === 'purchases' && 'পেমেন্ট রিকোয়েস্ট যাচাই'}
+                  {activeTab === 'addPdf' && 'পিডিএফ শিট ও কার্ড ম্যানেজমেন্ট'}
                   {activeTab === 'addResult' && 'কোচিং পরীক্ষার রেজাল্ট আপলোড'}
-                  {activeTab === 'addPdf' && 'পিডিএফ হ্যান্ডনোট পাবলিশ'}
                   {activeTab === 'students' && 'শিক্ষার্থী ও উপস্থিতি'}
-                  {activeTab === 'settings' && 'সেন্টার সেটিংস'}
+                  {activeTab === 'settings' && 'প্রোফাইল ও সেন্টার সেটিংস'}
                 </span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-black text-slate-800 leading-tight">
+              <h1 className="text-lg sm:text-2xl font-black text-slate-800 leading-tight">
                 {activeTab === 'purchases' && 'বিকাশ ও নগদ পেমেন্ট অনুমোদন'}
+                {activeTab === 'addPdf' && 'পিডিএফ শিট আপলোড ও কার্ড কাস্টমাইজেশন'}
                 {activeTab === 'addResult' && 'নতুন পরীক্ষার ফলাফল সংরক্ষণ'}
-                {activeTab === 'addPdf' && 'নতুন পিডিএফ শিট বা সাজেশন যুক্ত করুন'}
                 {activeTab === 'students' && 'শিক্ষার্থী ও হাজিরা ব্যবস্থাপনা'}
-                {activeTab === 'settings' && 'সেন্টার পরিচিতি ও সেটিংস'}
+                {activeTab === 'settings' && 'অ্যাডমিন প্রোফাইল ও সেন্টার সেটিংস'}
               </h1>
             </div>
           </div>
 
-          {/* Quick Stats Pills */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <div className="bg-amber-50 border border-amber-200/80 px-3.5 py-1.5 rounded-2xl flex items-center gap-2 text-xs font-bold text-amber-800">
-              <FaClock className="text-amber-600" />
-              <span>{pendingPurchases.length}টি অপেক্ষমাণ</span>
+          {/* Right: Quick Stats Pills & Admin Avatar */}
+          <div className="flex items-center gap-2.5 flex-wrap w-full sm:w-auto justify-between sm:justify-end">
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={() => setActiveTab('addPdf')}
+                className="bg-blue-50 hover:bg-blue-100 border border-blue-200/80 px-3 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs font-bold text-brand-800 transition"
+              >
+                <FaFilePdf className="text-brand-600" />
+                <span>{pdfCount}টি শিট</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('purchases')}
+                className="bg-amber-50 hover:bg-amber-100 border border-amber-200/80 px-3 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs font-bold text-amber-800 transition"
+              >
+                <FaClock className="text-amber-600" />
+                <span>{pendingPurchases.length}টি অপেক্ষমাণ</span>
+              </button>
+
+              <div className="bg-emerald-50 border border-emerald-200/80 px-3 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs font-bold text-emerald-800">
+                <FaCircleCheck className="text-emerald-600" />
+                <span>আয়: ৳{totalRevenue}</span>
+              </div>
             </div>
 
-            <div className="bg-emerald-50 border border-emerald-200/80 px-3.5 py-1.5 rounded-2xl flex items-center gap-2 text-xs font-bold text-emerald-800">
-              <FaCircleCheck className="text-emerald-600" />
-              <span>মোট আয়: ৳{totalRevenue}</span>
-            </div>
+            {/* Admin Profile Avatar Trigger in Header */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('settings')}
+              title="অ্যাডমিন প্রোফাইল ও ফটো সেটিংস"
+              className="w-10 h-10 rounded-full overflow-hidden border-2 border-brand-600 bg-brand-50 flex items-center justify-center shrink-0 shadow-sm hover:scale-105 transition-transform relative"
+            >
+              {adminProfile.image ? (
+                <img
+                  src={adminProfile.image}
+                  alt={adminProfile.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-xs font-black text-brand-700">
+                  {adminProfile.name.charAt(0) || 'A'}
+                </span>
+              )}
+              {uploadingPhoto && (
+                <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                  <FaClock className="w-3.5 h-3.5 text-white animate-spin" />
+                </div>
+              )}
+            </button>
           </div>
         </div>
 
         {/* Message Banner */}
         {msg && (
           <div
-            className={`p-4 rounded-2xl text-xs sm:text-sm font-bold transition flex items-center justify-between shadow-sm ${
+            className={`p-4 rounded-2xl text-xs sm:text-sm font-bold transition flex items-center justify-between shadow-sm animate-in fade-in ${
               msg.type === 'success'
                 ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
                 : 'bg-rose-50 text-rose-800 border border-rose-200'
             }`}
           >
-            <span>{msg.text}</span>
+            <div className="flex items-center gap-2">
+              {msg.type === 'success' ? (
+                <FaCircleCheck className="text-emerald-600 shrink-0 w-4 h-4" />
+              ) : (
+                <FaCircleExclamation className="text-rose-600 shrink-0 w-4 h-4" />
+              )}
+              <span>{msg.text}</span>
+            </div>
             <button onClick={() => setMsg(null)} className="text-xs opacity-70 hover:opacity-100">✕</button>
           </div>
         )}
@@ -278,8 +423,15 @@ export default function AdminPage() {
         {/* TAB 1: Review Purchases */}
         {activeTab === 'purchases' && (
           <div className="space-y-4">
-            <div className="flex justify-between items-center text-xs text-slate-500 font-semibold px-1">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-xs text-slate-500 font-semibold px-1">
               <span>শিক্ষার্থীদের পাঠানো TrxID বিকাশ/নগদ স্টেটমেন্টের সাথে মিলিয়ে Approve বাটনে চাপুন।</span>
+              <button
+                type="button"
+                onClick={fetchPurchases}
+                className="text-brand-700 hover:underline font-bold"
+              >
+                ↻ তালিকা রিফ্রেশ করুন
+              </button>
             </div>
             <PurchasesTable
               purchases={purchases}
@@ -289,21 +441,24 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* TAB 2: Upload Result */}
+        {/* TAB 2: Manage & Upload PDF Materials */}
+        {activeTab === 'addPdf' && (
+          <AddPdfForm
+            formData={pdfForm}
+            onChange={setPdfForm}
+            onNotify={(m) => {
+              setMsg(m);
+              fetchPdfCount();
+            }}
+          />
+        )}
+
+        {/* TAB 3: Upload Result */}
         {activeTab === 'addResult' && (
           <AddResultForm
             formData={resultForm}
             onChange={setResultForm}
             onSubmit={handleResultSubmit}
-          />
-        )}
-
-        {/* TAB 3: Add PDF Material */}
-        {activeTab === 'addPdf' && (
-          <AddPdfForm
-            formData={pdfForm}
-            onChange={setPdfForm}
-            onSubmit={handlePdfSubmit}
           />
         )}
 
@@ -317,7 +472,7 @@ export default function AdminPage() {
               </div>
               <Link
                 href="/attendance"
-                className="inline-flex items-center gap-2 bg-brand-700 hover:bg-brand-800 text-white font-bold px-4 py-2 rounded-xl text-xs shadow transition"
+                className="inline-flex items-center gap-2 bg-brand-700 hover:bg-brand-800 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow transition"
               >
                 <span>উপস্থিতি গ্রহণ করুন</span>
                 <FaArrowRight className="w-3 h-3" />
@@ -333,45 +488,149 @@ export default function AdminPage() {
                 >
                   <span className="text-xs font-bold text-slate-400 group-hover:text-brand-600 block">শ্রেণি</span>
                   <strong className="text-xl font-black text-slate-800 group-hover:text-brand-800 block">Class {cls}</strong>
-                  <span className="text-[10px] bg-white px-2 py-0.5 rounded-full border border-slate-200 text-slate-600 font-semibold inline-block">২০ শিক্ষার্থী</span>
+                  <span className="text-[10px] bg-white px-2 py-0.5 rounded-full border border-slate-200 text-slate-600 font-semibold inline-block">হাজিরা শিট</span>
                 </Link>
               ))}
             </div>
           </div>
         )}
 
-        {/* TAB 5: Center Settings & Details */}
+        {/* TAB 5: Admin Profile Photo & Center Settings */}
         {activeTab === 'settings' && (
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
-            <div>
-              <h3 className="text-lg font-black text-slate-800">শিক্ষানোভা একাডেমি পরিচিতি ও তথ্য</h3>
-              <p className="text-xs text-slate-500">প্রতিষ্ঠানের সার্বিক অফিশিয়াল তথ্য</p>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            {/* Left: Admin Profile & Photo Upload Card (7 Cols) */}
+            <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+              <div className="border-b border-slate-100 pb-4">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-brand-700 bg-brand-50 px-2.5 py-0.5 rounded-full mb-1">
+                  <FaUserShield /> মাস্টার অ্যাডমিন প্রোফাইল
+                </span>
+                <h3 className="text-lg font-black text-slate-800">
+                  অ্যাডমিন প্রোফাইল ছবি ও তথ্য পরিবর্তন
+                </h3>
+                <p className="text-xs text-slate-500">
+                  এখানে আপলোড করা ছবি সাইডবার, টপ ন্যাভবার এবং সব জায়গায় প্রদর্শিত হবে।
+                </p>
+              </div>
+
+              {/* Photo Upload Box */}
+              <div className="p-5 bg-gradient-to-r from-slate-50 via-blue-50/40 to-slate-50 rounded-2xl border border-slate-200/90 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="relative group shrink-0">
+                    <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-brand-600 bg-brand-50 flex items-center justify-center shadow-md">
+                      {adminProfile.image ? (
+                        <img
+                          src={adminProfile.image}
+                          alt={adminProfile.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-2xl font-black text-brand-700">
+                          {adminProfile.name.charAt(0) || 'A'}
+                        </span>
+                      )}
+                      {uploadingPhoto && (
+                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                          <FaClock className="w-5 h-5 text-white animate-spin" />
+                        </div>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => photoInputRef.current?.click()}
+                      className="absolute -bottom-1.5 -right-1.5 w-7 h-7 rounded-xl bg-nova-500 hover:bg-nova-600 text-white flex items-center justify-center shadow border-2 border-white"
+                      title="ছবি পরিবর্তন করুন"
+                    >
+                      <FaCamera className="w-3 h-3" />
+                    </button>
+                  </div>
+
+                  <div className="space-y-1">
+                    <h4 className="text-sm font-black text-slate-800">{adminProfile.name}</h4>
+                    <p className="text-xs font-mono text-slate-500">{adminProfile.email}</p>
+                    <span className="inline-block text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md">
+                      Cloudinary ক্লাউড সিঙ্ক সক্রিয়
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => photoInputRef.current?.click()}
+                  disabled={uploadingPhoto}
+                  className="inline-flex items-center gap-2 bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-brand transition shrink-0"
+                >
+                  <FaCloudArrowUp className="w-4 h-4" />
+                  <span>{uploadingPhoto ? 'আপলোড হচ্ছে...' : 'নতুন ছবি আপলোড'}</span>
+                </button>
+              </div>
+
+              {/* Admin Details Form */}
+              <form onSubmit={handleAdminProfileSave} className="space-y-4 text-xs sm:text-sm">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">অ্যাডমিনের নাম / পদবি</label>
+                  <input
+                    type="text"
+                    required
+                    value={adminProfile.name}
+                    onChange={(e) => setAdminProfile({ ...adminProfile, name: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">হেল্পলাইন ও যোগাযোগের নম্বর</label>
+                  <input
+                    type="text"
+                    required
+                    value={adminProfile.phone}
+                    onChange={(e) => setAdminProfile({ ...adminProfile, phone: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-mono font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={savingAdminProfile}
+                  className="bg-brand-700 hover:bg-brand-800 text-white font-bold px-6 py-3 rounded-xl shadow-brand transition flex items-center gap-2"
+                >
+                  <FaCheck className="w-3.5 h-3.5" />
+                  <span>{savingAdminProfile ? 'সংরক্ষণ হচ্ছে...' : 'প্রোফাইল তথ্য সেভ করুন'}</span>
+                </button>
+              </form>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
-              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-1">
-                <span className="text-slate-400 text-xs font-bold">প্রতিষ্ঠানের নাম</span>
-                <p className="font-black text-slate-800 text-base">শিক্ষানোভা (SikkhaNova)</p>
-                <p className="text-xs text-nova-600 font-bold">"শিখবো, জিতবো"</p>
+            {/* Right: Center Info & Quick Shortcuts (5 Cols) */}
+            <div className="lg:col-span-5 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5">
+              <div>
+                <h3 className="text-base font-black text-slate-800">শিক্ষানোভা একাডেমি তথ্য</h3>
+                <p className="text-xs text-slate-500">প্রতিষ্ঠানের সার্বিক অফিশিয়াল বিবরণ</p>
               </div>
 
-              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-1">
-                <span className="text-slate-400 text-xs font-bold">অফিসের ঠিকানা</span>
-                <p className="font-bold text-slate-800">জুম্মাপাড়া, নীলফামারী সদর, নীলফামারী</p>
-              </div>
+              <div className="space-y-3 text-xs sm:text-sm">
+                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-1">
+                  <span className="text-slate-400 text-xs font-bold">প্রতিষ্ঠানের নাম</span>
+                  <p className="font-black text-slate-800 text-base">শিক্ষানোভা (SikkhaNova)</p>
+                  <p className="text-xs text-nova-600 font-bold">"শিখবো, জিতবো"</p>
+                </div>
 
-              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-1">
-                <span className="text-slate-400 text-xs font-bold">বিকাশ ও নগদ হেল্পলাইন</span>
-                <p className="font-black font-mono text-brand-700 text-base">01712592519</p>
-                <p className="text-[11px] text-slate-500">বিকাশ ও নগদ পার্সোনাল নম্বর</p>
-              </div>
+                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-1">
+                  <span className="text-slate-400 text-xs font-bold">অফিসের ঠিকানা</span>
+                  <p className="font-bold text-slate-800">জুম্মাপাড়া, নীলফামারী সদর, নীলফামারী</p>
+                </div>
 
-              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-1">
-                <span className="text-slate-400 text-xs font-bold">মাস্টার অ্যাডমিন ক্রেডেনশিয়াল</span>
-                <p className="font-mono font-bold text-slate-800">ইমেইল: robiulnil101@gmail.com</p>
-                <p className="font-mono text-slate-500 text-xs">পাসওয়ার্ড: RABIUL@20</p>
+                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-1">
+                  <span className="text-slate-400 text-xs font-bold">বিকাশ ও নগদ পার্সোনাল নম্বর</span>
+                  <p className="font-black font-mono text-brand-700 text-base">01712592519</p>
+                </div>
+
+                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-1">
+                  <span className="text-slate-400 text-xs font-bold">লগইন ইমেইল</span>
+                  <p className="font-mono font-bold text-slate-800">{adminProfile.email}</p>
+                </div>
               </div>
             </div>
+
           </div>
         )}
 

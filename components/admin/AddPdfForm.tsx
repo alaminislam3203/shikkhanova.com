@@ -433,7 +433,7 @@ export default function AddPdfForm({
             {/* 3. Class & Subject */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">৩. শ্রেণি (Class)</label>
+                <label className="block font-bold text-slate-700 mb-1">৩. শ্রেণি</label>
                 <select
                   value={formData.classGrade}
                   onChange={(e) =>
@@ -441,17 +441,17 @@ export default function AddPdfForm({
                   }
                   className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition"
                 >
-                  <option value={5}>Class 5 (৫ম শ্রেণি)</option>
-                  <option value={6}>Class 6 (৬ষ্ঠ শ্রেণি)</option>
-                  <option value={7}>Class 7 (৭ম শ্রেণি)</option>
-                  <option value={8}>Class 8 (৮ম শ্রেণি)</option>
-                  <option value={9}>Class 9 (৯ম শ্রেণি)</option>
-                  <option value={10}>Class 10 (১০ম শ্রেণি)</option>
+                  <option value={5}>৫ম শ্রেণি</option>
+                  <option value={6}>৬ষ্ঠ শ্রেণি</option>
+                  <option value={7}>৭ম শ্রেণি</option>
+                  <option value={8}>৮ম শ্রেণি</option>
+                  <option value={9}>৯ম শ্রেণি</option>
+                  <option value={10}>১০ম শ্রেণি</option>
                 </select>
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">৪. বিষয় (Subject)</label>
+                <label className="block font-bold text-slate-700 mb-1">৪. বিষয়</label>
                 <input
                   type="text"
                   required
