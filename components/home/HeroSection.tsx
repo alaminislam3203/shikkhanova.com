@@ -153,12 +153,12 @@ export default function HeroSection() {
   };
 
   return (
-    <div className="space-y-4">
-      {/* 1. Smooth Vertical Swipe-Up Pinned Notice Board (Latest 3 Pinned Notices) */}
+    <div className="flex flex-col gap-4 sm:gap-5">
+      {/* 2. Smooth Vertical Swipe-Up Pinned Notice Board (Shown right after Hero Banner) */}
       <div
         onMouseEnter={() => setNoticePaused(true)}
         onMouseLeave={() => setNoticePaused(false)}
-        className="bg-white rounded-2xl border border-slate-200/95 shadow-sm px-2.5 py-2 sm:px-3.5 sm:py-2.5 flex items-center gap-2.5 sm:gap-3.5 overflow-hidden relative group"
+        className="order-2 bg-white rounded-2xl border border-slate-200/95 shadow-sm px-2.5 py-2 sm:px-3.5 sm:py-2.5 flex items-center gap-2.5 sm:gap-3.5 overflow-hidden relative group"
       >
         <Link
           href="/notices"
@@ -265,13 +265,13 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* 2. Full-Width Auto-Swiping Hero Banner Section (No Buttons, Proportional on Mobile & Desktop) */}
+      {/* 1. Full-Width Auto-Swiping Hero Banner (Directly Below Navbar, No Buttons) */}
       <section
         onTouchStart={(e) => handleTouchStart(e.touches[0].clientX)}
         onTouchEnd={(e) => handleTouchEnd(e.changedTouches[0].clientX)}
         onMouseDown={(e) => handleTouchStart(e.clientX)}
         onMouseUp={(e) => handleTouchEnd(e.clientX)}
-        className="w-screen relative left-1/2 -translate-x-1/2 overflow-hidden bg-[#061226] select-none shadow-md"
+        className="order-1 w-screen relative left-1/2 -translate-x-1/2 overflow-hidden bg-[#061226] select-none shadow-md"
       >
         <div
           style={{

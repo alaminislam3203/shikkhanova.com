@@ -19,11 +19,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
+  const isHome = pathname === '/';
+
   // Regular Website Layout: Sticky Navbar, Container, Premium Footer & Mobile Bottom Nav
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 antialiased overflow-x-hidden selection:bg-nova-500 selection:text-white">
       <Navbar />
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-24 lg:pb-8">
+      <main
+        className={`flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-24 lg:pb-8 ${
+          isHome ? 'pt-0' : 'py-6 sm:py-8'
+        }`}
+      >
         {children}
       </main>
       <Footer />
