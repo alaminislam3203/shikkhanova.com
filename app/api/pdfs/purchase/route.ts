@@ -33,6 +33,23 @@ export async function POST(req: Request) {
 
     let studentId = session?.user?.id;
 
+    // If Master Admin is testing purchase, resolve or create DB record by email
+    if (studentId === 'admin-master-id') {
+      const adminEmail = (session?.user?.email || 'robiulnil101@gmail.com').toLowerCase();
+      const adminUser = await prisma.user.upsert({
+        where: { email: adminEmail },
+        update: {},
+        create: {
+          name: session?.user?.name || 'শিক্ষানোভা অ্যাডমিন',
+          email: adminEmail,
+          password: 'master_admin_placeholder',
+          role: 'ADMIN',
+          phone: senderPhone || '01712592519',
+        },
+      });
+      studentId = adminUser.id;
+    }
+
     // If user is not logged in, find or create temporary student profile
     if (!studentId) {
       if (!guestEmail) {
