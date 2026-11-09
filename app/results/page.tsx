@@ -119,7 +119,7 @@ export default function ResultsPage() {
           </div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-black text-brand-900">
-              কোচিং রেজাল্ট ও মার্কশিট 
+              কোচিং রেজাল্ট ও মার্কশিট
             </h1>
             <p className="text-xs sm:text-sm text-slate-500">
               ৫ম থেকে ১০ম শ্রেণি - রোল নম্বর দিয়ে পরীক্ষার গ্রেড ও নম্বরপত্র বের করুন
