@@ -229,23 +229,23 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Top Header Bar */}
-      <div className="bg-gradient-to-r from-brand-800 via-brand-700 to-brand-900 text-white text-xs py-2 px-4 shadow-sm border-b border-brand-600/40">
+      {/* Top Header Bar - UCC Style Deep Academic Navy & Crimson Red Accent */}
+      <div className="bg-[#0A1E3C] text-white text-xs py-2 px-4 shadow-sm border-b-2 border-[#C8102E]">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
           
           <div className="flex items-center gap-4 flex-wrap justify-center sm:justify-start">
-            <span className="inline-flex items-center gap-1.5 font-medium text-slate-200">
-              <FaLocationDot className="text-nova-500" />
+            <span className="inline-flex items-center gap-1.5 font-medium text-slate-100">
+              <FaLocationDot className="text-[#EF5350]" />
               জুম্মাপাড়া, নীলফামারী সদর
             </span>
-            <span className="hidden md:inline text-brand-400">•</span>
-            <a href="tel:01712592519" className="inline-flex items-center gap-1.5 text-slate-200 hover:text-white transition font-bn-normal font-bold">
+            <span className="hidden md:inline text-slate-500">|</span>
+            <a href="tel:01712592519" className="inline-flex items-center gap-1.5 text-white hover:text-red-300 transition font-bn-normal font-bold">
               <FaPhone className="text-emerald-400" />
-              <span>০১৭১২৫৯২৫১৯</span>
+              <span>হেল্পলাইন: ০১৭১২৫৯২৫১৯</span>
             </a>
-            <span className="hidden md:inline text-brand-400">•</span>
-            <span className="text-slogan-600 font-bold bg-white/10 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
-              <HiSparkles className="text-nova-400" />
+            <span className="hidden md:inline text-slate-500">|</span>
+            <span className="text-white font-bold bg-[#C8102E] px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 shadow-xs">
+              <HiSparkles className="text-amber-300" />
               শিখবো, জিতবো
             </span>
           </div>
@@ -290,14 +290,14 @@ export default function Navbar() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 relative whitespace-nowrap ${
+                    className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 relative whitespace-nowrap ${
                       active
-                        ? 'text-brand-700 bg-brand-50 shadow-sm border border-brand-200/60 font-bold'
-                        : 'text-slate-600 hover:text-brand-700 hover:bg-slate-50'
+                        ? 'text-[#C8102E] bg-red-50/90 shadow-sm border border-red-200/80 font-bold'
+                        : 'text-[#0A1E3C] hover:text-[#C8102E] hover:bg-red-50/40'
                     }`}
                   >
                     {Icon && (
-                      <Icon className={`w-4 h-4 ${link.color || (active ? 'text-brand-700' : 'text-slate-500')}`} />
+                      <Icon className={`w-4 h-4 ${link.color || (active ? 'text-[#C8102E]' : 'text-slate-500')}`} />
                     )}
                     <span>{link.label}</span>
                     {link.badge && (
