@@ -52,12 +52,12 @@ export default function AddResultForm({
               }
               className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-semibold focus:outline-none focus:border-brand-500"
             >
-              <option value={5}>Class 5</option>
-              <option value={6}>Class 6</option>
-              <option value={7}>Class 7</option>
-              <option value={8}>Class 8</option>
-              <option value={9}>Class 9</option>
-              <option value={10}>Class 10</option>
+              <option value={5}>৫ম শ্রেণি </option>
+              <option value={6}>৬ষ্ঠ শ্রেণি</option>
+              <option value={7}>৭ম শ্রেণি</option>
+              <option value={8}>৮ম শ্রেণি </option>
+              <option value={9}>৯ম শ্রেণি </option>
+              <option value={10}>১০ম শ্রেণি</option>
             </select>
           </div>
 

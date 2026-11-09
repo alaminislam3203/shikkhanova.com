@@ -11,7 +11,6 @@ import {
   FaArrowUpRightFromSquare,
   FaGear,
   FaXmark,
-  FaPhone,
   FaCamera,
   FaArrowRightFromBracket,
   FaAnglesLeft,
@@ -134,6 +133,7 @@ export default function AdminSidebar({
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
+        {/* Top Section: Brand Header & Navigation Menu */}
         <div className="space-y-5">
           
           {/* Header & Collapse Button */}
@@ -171,67 +171,6 @@ export default function AdminSidebar({
             >
               <FaXmark className="w-5 h-5" />
             </button>
-          </div>
-
-          {/* Admin Profile Box (Adapts to Collapsed / Expanded) */}
-          <div
-            className={`bg-gradient-to-br from-slate-50 via-blue-50/50 to-slate-50 border border-slate-200/90 rounded-2xl transition group ${
-              isCollapsed
-                ? 'lg:p-2 lg:flex lg:justify-center p-3.5 flex items-center gap-3'
-                : 'p-3.5 flex items-center gap-3 shadow-xs'
-            }`}
-          >
-            <div className="relative shrink-0" title={displayName}>
-              <div
-                onClick={() => {
-                  if (isCollapsed) setActiveTab('settings');
-                }}
-                className={`${
-                  isCollapsed ? 'lg:w-11 lg:h-11 lg:cursor-pointer' : 'w-12 h-12'
-                } w-12 h-12 rounded-2xl overflow-hidden border-2 border-brand-600 bg-brand-50 flex items-center justify-center shadow-sm`}
-              >
-                {displayImage ? (
-                  <img
-                    src={displayImage}
-                    alt={displayName}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <span className="font-black text-base text-brand-700">
-                    {displayName.charAt(0) || 'A'}
-                  </span>
-                )}
-              </div>
-
-              {onTriggerPhotoUpload && (
-                <button
-                  type="button"
-                  onClick={onTriggerPhotoUpload}
-                  title="প্রোফাইল ছবি পরিবর্তন করুন"
-                  className="absolute -bottom-1 -right-1 w-5 h-5 rounded-lg bg-nova-500 hover:bg-nova-600 text-white flex items-center justify-center shadow border-2 border-white transition transform hover:scale-110"
-                >
-                  <FaCamera className="w-2.5 h-2.5" />
-                </button>
-              )}
-            </div>
-
-            <div className={`overflow-hidden flex-1 min-w-0 ${isCollapsed ? 'lg:hidden' : ''}`}>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                <p className="text-xs font-black text-slate-800 truncate">{displayName}</p>
-              </div>
-              <p className="text-[10px] text-slate-500 font-mono truncate mt-0.5">{displayEmail}</p>
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTab('settings');
-                  onClose();
-                }}
-                className="text-[10px] text-brand-700 hover:text-brand-800 font-bold mt-1 inline-block"
-              >
-                প্রোফাইল ও ফটো সেটিংস →
-              </button>
-            </div>
           </div>
 
           {/* Side Navigation Menu */}
@@ -322,21 +261,72 @@ export default function AdminSidebar({
           </nav>
         </div>
 
-        {/* Sidebar Footer */}
+        {/* Bottom Footer Section: Admin Profile & Email Card + Action Buttons */}
         <div className="pt-4 mt-4 border-t border-slate-100 space-y-2.5">
-          {/* Helpline Info (Hidden when Collapsed on Desktop) */}
+          
+          {/* Admin Profile & Email Box at the Bottom */}
           <div
-            className={`bg-slate-50 p-3 rounded-2xl border border-slate-200/80 text-[11px] text-slate-600 space-y-0.5 ${
-              isCollapsed ? 'lg:hidden' : ''
+            className={`bg-gradient-to-br from-slate-50 via-blue-50/50 to-slate-50 border border-slate-200/90 rounded-2xl transition group ${
+              isCollapsed
+                ? 'lg:p-2 lg:flex lg:justify-center p-3 flex items-center gap-3'
+                : 'p-3 flex items-center gap-3 shadow-xs'
             }`}
           >
-            <div className="flex items-center gap-1.5 text-brand-700 font-bold">
-              <FaPhone className="w-3 h-3 text-emerald-600" /> হেল্পলাইন ও পেমেন্ট নম্বর
+            <div className="relative shrink-0" title={displayName}>
+              <div
+                onClick={() => {
+                  setActiveTab('settings');
+                  onClose();
+                }}
+                className={`${
+                  isCollapsed ? 'lg:w-10 lg:h-10' : 'w-11 h-11'
+                } w-11 h-11 rounded-2xl overflow-hidden border-2 border-brand-600 bg-brand-50 flex items-center justify-center shadow-sm cursor-pointer`}
+              >
+                {displayImage ? (
+                  <img
+                    src={displayImage}
+                    alt={displayName}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="font-black text-sm text-brand-700">
+                    {displayName.charAt(0) || 'A'}
+                  </span>
+                )}
+              </div>
+
+              {onTriggerPhotoUpload && (
+                <button
+                  type="button"
+                  onClick={onTriggerPhotoUpload}
+                  title="প্রোফাইল ছবি পরিবর্তন করুন"
+                  className="absolute -bottom-1 -right-1 w-5 h-5 rounded-lg bg-nova-500 hover:bg-nova-600 text-white flex items-center justify-center shadow border-2 border-white transition transform hover:scale-110"
+                >
+                  <FaCamera className="w-2.5 h-2.5" />
+                </button>
+              )}
             </div>
-            <p className="font-mono font-black text-slate-800 text-xs">01712592519</p>
-            <p className="text-[10px] text-slate-400">জুম্মাপাড়া, নীলফামারী সদর</p>
+
+            <div className={`overflow-hidden flex-1 min-w-0 ${isCollapsed ? 'lg:hidden' : ''}`}>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                <p className="text-xs font-black text-slate-800 truncate">{displayName}</p>
+              </div>
+              <p className="text-[10px] text-slate-500 font-mono truncate mt-0.5">{displayEmail}</p>
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('settings');
+                  onClose();
+                }}
+                className="text-[10px] text-brand-700 hover:text-brand-800 font-bold mt-0.5 inline-block"
+              >
+                প্রোফাইল সেটিংস →
+              </button>
+            </div>
           </div>
 
+          {/* Website & Logout Buttons */}
           <div
             className={`grid gap-2 ${
               isCollapsed ? 'lg:grid-cols-1 grid-cols-2' : 'grid-cols-2'

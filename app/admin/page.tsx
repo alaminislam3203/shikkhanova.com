@@ -27,6 +27,7 @@ export default function AdminPage() {
 
   const [activeTab, setActiveTab] = useState<AdminTab>('purchases');
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
   const [purchases, setPurchases] = useState<PurchaseRecord[]>([]);
   const [pdfCount, setPdfCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
@@ -305,6 +306,8 @@ export default function AdminPage() {
         pdfCount={pdfCount}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={() => setSidebarCollapsed((prev) => !prev)}
         adminProfile={adminProfile}
         onTriggerPhotoUpload={() => photoInputRef.current?.click()}
       />

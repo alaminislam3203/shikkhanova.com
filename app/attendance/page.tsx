@@ -191,12 +191,12 @@ export default function AttendancePage() {
               onChange={(e) => setSelectedClass(parseInt(e.target.value))}
               className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-brand-500 focus:outline-none"
             >
-              <option value={5}>Class 5 (৫ম শ্রেণি)</option>
-              <option value={6}>Class 6 (৬ষ্ঠ শ্রেণি)</option>
-              <option value={7}>Class 7 (৭ম শ্রেণি)</option>
-              <option value={8}>Class 8 (৮ম শ্রেণি)</option>
-              <option value={9}>Class 9 (৯ম শ্রেণি)</option>
-              <option value={10}>Class 10 (১০ম শ্রেণি)</option>
+              <option value={5}>৫ম শ্রেণি</option>
+              <option value={6}>৬ষ্ঠ শ্রেণি</option>
+              <option value={7}>৭ম শ্রেণি</option>
+              <option value={8}>৮ম শ্রেণি</option>
+              <option value={9}>৯ম শ্রেণি</option>
+              <option value={10}>১০ম শ্রেণি</option>
             </select>
           </div>
 

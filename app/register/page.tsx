@@ -122,12 +122,12 @@ export default function RegisterPage() {
                   onChange={handleChange}
                   className="w-full bg-slate-50 border border-slate-300 rounded-xl pl-10 pr-3 py-2.5 text-sm font-semibold focus:ring-2 focus:ring-brand-500 focus:outline-none"
                 >
-                  <option value="5">Class 5 (৫ম)</option>
-                  <option value="6">Class 6 (৬ষ্ঠ)</option>
-                  <option value="7">Class 7 (৭ম)</option>
-                  <option value="8">Class 8 (৮ম)</option>
-                  <option value="9">Class 9 (৯ম)</option>
-                  <option value="10">Class 10 (১০ম)</option>
+                  <option value="5">৫ম</option>
+                  <option value="6">৬ষ্ঠ</option>
+                  <option value="7">৭ম</option>
+                  <option value="8">৮ম</option>
+                  <option value="9">৯ম</option>
+                  <option value="10">১০ম</option>
                 </select>
                 <FaGraduationCap className="w-3.5 h-3.5 text-slate-400 absolute left-3.5 top-3.5" />
               </div>
