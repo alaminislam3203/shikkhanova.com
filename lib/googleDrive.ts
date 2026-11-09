@@ -44,57 +44,103 @@ export function toGoogleDriveViewUrl(url: string): string {
  * Checks whether Google Drive API automatic upload credentials are set in .env
  */
 export function isGoogleDriveConfigured(): boolean {
-  const hasOAuth = Boolean(
-    process.env.GOOGLE_DRIVE_CLIENT_ID &&
-      process.env.GOOGLE_DRIVE_CLIENT_SECRET &&
-      process.env.GOOGLE_DRIVE_REFRESH_TOKEN
-  );
+  const hasRefreshToken = Boolean(process.env.GOOGLE_DRIVE_REFRESH_TOKEN?.trim());
 
   const hasServiceAccount = Boolean(
     process.env.GOOGLE_DRIVE_CLIENT_EMAIL && process.env.GOOGLE_DRIVE_PRIVATE_KEY
   );
 
-  return hasOAuth || hasServiceAccount;
+  return hasRefreshToken || hasServiceAccount;
 }
 
 /**
- * Obtains a Google Drive API Access Token using either OAuth2 Refresh Token or Service Account JWT
+ * Helper: Exchange OAuth Playground 1//04... refresh token via Google OAuth Playground's token endpoint
+ */
+async function refreshViaOAuthPlayground(refreshToken: string): Promise<string | null> {
+  try {
+    const res = await fetch(
+      'https://developers.google.com/oauthplayground/refreshAccessToken',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          token_uri: 'https://oauth2.googleapis.com/token',
+          refresh_token: refreshToken,
+        }),
+      }
+    );
+
+    const data = await res.json();
+    const token =
+      data?.access_token ||
+      data?.response?.access_token ||
+      (typeof data?.body === 'string'
+        ? (() => {
+            try {
+              return JSON.parse(data.body)?.access_token;
+            } catch {
+              return null;
+            }
+          })()
+        : data?.body?.access_token);
+
+    if (token && typeof token === 'string') {
+      return token;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Obtains a Google Drive API Access Token using OAuth2 Refresh Token, OAuth Playground Token, or Service Account JWT
  */
 async function getGoogleDriveAccessToken(): Promise<string> {
-  // 1. OAuth2 Refresh Token flow (Personal Gmail / Google Drive)
   const clientId = process.env.GOOGLE_DRIVE_CLIENT_ID?.trim();
   const clientSecret = process.env.GOOGLE_DRIVE_CLIENT_SECRET?.trim();
   const refreshToken = process.env.GOOGLE_DRIVE_REFRESH_TOKEN?.trim();
 
-  if (clientId && clientSecret && refreshToken) {
-    const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        client_id: clientId,
-        client_secret: clientSecret,
-        refresh_token: refreshToken,
-        grant_type: 'refresh_token',
-      }),
-    });
+  if (refreshToken) {
+    // 1A. If custom Client ID & Secret are provided, try direct Google OAuth2 token endpoint first
+    if (clientId && clientSecret) {
+      const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          client_id: clientId,
+          client_secret: clientSecret,
+          refresh_token: refreshToken,
+          grant_type: 'refresh_token',
+        }),
+      });
 
-    const tokenData = await tokenRes.json();
-    if (!tokenRes.ok || !tokenData.access_token) {
-      if (
-        tokenData?.error === 'unauthorized_client' ||
-        tokenData?.error_description === 'Unauthorized'
-      ) {
-        throw new Error(
-          'Google Drive OAuth Unauthorized: OAuth Playground-এ প্রথমে ⚙️ Settings থেকে "Use your own OAuth credentials" টিক দিয়ে Client ID ও Secret বসিয়ে তারপর নতুন করে "Authorize APIs" ক্লিক করে নতুন Refresh Token নিন।'
-        );
+      const tokenData = await tokenRes.json();
+      if (tokenRes.ok && tokenData?.access_token) {
+        return tokenData.access_token;
       }
+
+      // 1B. If the refresh token is an OAuth Playground token (1//04...), exchange via OAuth Playground endpoint
+      const playgroundToken = await refreshViaOAuthPlayground(refreshToken);
+      if (playgroundToken) {
+        return playgroundToken;
+      }
+
       throw new Error(
         tokenData?.error_description ||
           tokenData?.error ||
           'Google Drive OAuth টোকেন তৈরি করা যায়নি'
       );
     }
-    return tokenData.access_token;
+
+    // 1C. If only refresh token is provided, exchange via OAuth Playground
+    const playgroundToken = await refreshViaOAuthPlayground(refreshToken);
+    if (playgroundToken) {
+      return playgroundToken;
+    }
   }
 
   // 2. Service Account JWT flow

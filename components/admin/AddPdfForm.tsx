@@ -347,16 +347,16 @@ export default function AddPdfForm({
 
           <form onSubmit={handleSaveCard} className="space-y-4 text-xs sm:text-sm">
             
-            {/* 1. Direct PDF File Upload Box */}
+            {/* 1. Direct PDF File Upload Box (Google Drive) */}
             <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-blue-50/70 via-indigo-50/40 to-slate-50 border-2 border-dashed border-brand-300 space-y-3">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="space-y-0.5">
                   <label className="font-black text-slate-800 flex items-center gap-2 text-sm">
                     <FaFilePdf className="text-rose-600 w-4 h-4" />
-                    ১. পিডিএফ ফাইল আপলোড করুন (সরাসরি ক্লাউডে)
+                    ১. পিডিএফ ফাইল আপলোড করুন (সরাসরি Google Drive-এ)
                   </label>
                   <p className="text-[11px] text-slate-500">
-                    কম্পিউটার বা মোবাইল থেকে PDF সিলেক্ট করলে স্বয়ংক্রিয়ভাবে লিংক তৈরি হবে (সর্বোচ্চ ১৫MB)
+                    কম্পিউটার বা মোবাইল থেকে PDF সিলেক্ট করলে সরাসরি আপনার Google Drive ফোল্ডারে আপলোড হবে (সর্বোচ্চ ২৫MB)
                   </p>
                 </div>
 

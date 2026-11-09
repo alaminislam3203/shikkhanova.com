@@ -46,41 +46,37 @@ export async function POST(req: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // 1. If PDF and Google Drive API is configured in .env, try uploading directly to Google Drive!
-    let driveErrorMsg: string | null = null;
-    if (isPdf && isGoogleDriveConfigured()) {
-      try {
-        const driveResult = await uploadPdfToGoogleDrive(buffer, file.name);
-        return NextResponse.json({
-          success: true,
-          url: driveResult.viewUrl,
-          downloadUrl: driveResult.downloadUrl,
-          driveFileId: driveResult.fileId,
-          fileName: file.name,
-          fileSize: file.size,
-          isPdf: true,
-          isGoogleDrive: true,
-        });
-      } catch (driveErr: any) {
-        driveErrorMsg = driveErr?.message || 'Google Drive আপলোডে সমস্যা হয়েছে';
-        console.warn('Google Drive upload failed, checking Cloudinary fallback:', driveErrorMsg);
-        // If Cloudinary is not configured, return the Google Drive error directly
-        if (!isCloudinaryConfigured()) {
-          return NextResponse.json({ error: driveErrorMsg }, { status: 400 });
-        }
+    // 1. PDF files ALWAYS upload ONLY to Google Drive (never to Cloudinary)
+    if (isPdf) {
+      if (!isGoogleDriveConfigured()) {
+        return NextResponse.json(
+          { error: 'পিডিএফ আপলোডের জন্য .env ফাইলে Google Drive ক্রেডেনশিয়াল সেটআপ করা নেই।' },
+          { status: 500 }
+        );
       }
+
+      const driveResult = await uploadPdfToGoogleDrive(buffer, file.name);
+      return NextResponse.json({
+        success: true,
+        url: driveResult.viewUrl,
+        downloadUrl: driveResult.downloadUrl,
+        driveFileId: driveResult.fileId,
+        fileName: file.name,
+        fileSize: file.size,
+        isPdf: true,
+        isGoogleDrive: true,
+      });
     }
 
-    // 2. Otherwise upload to Cloudinary (or fallback if Google Drive token was unauthorized)
+    // 2. Non-PDF files (Images) upload to Cloudinary
     if (!isCloudinaryConfigured()) {
       return NextResponse.json(
-        { error: driveErrorMsg || 'Google Drive অথবা Cloudinary ক্রেডেনশিয়াল (.env) সেটআপ করা নেই।' },
+        { error: 'ছবি আপলোডের জন্য Cloudinary ক্রেডেনশিয়াল (.env) সেটআপ করা নেই।' },
         { status: 500 }
       );
     }
 
-    const defaultFolder = isPdf ? 'shikkha_nova/pdfs' : 'shikkha_nova/general';
-    const folder = (formData.get('folder') as string | null) || defaultFolder;
+    const folder = (formData.get('folder') as string | null) || 'shikkha_nova/general';
 
     const baseName =
       file.name
@@ -88,16 +84,15 @@ export async function POST(req: Request) {
         .replace(/[^a-zA-Z0-9_-]/g, '-')
         .slice(0, 35) || 'material';
 
-    const finalUrl = await uploadToCloudinary(buffer, folder, baseName, { isPdf });
+    const finalUrl = await uploadToCloudinary(buffer, folder, baseName, { isPdf: false });
 
     return NextResponse.json({
       success: true,
       url: finalUrl,
       fileName: file.name,
       fileSize: file.size,
-      isPdf,
+      isPdf: false,
       isCloudinary: true,
-      driveWarning: driveErrorMsg,
     });
   } catch (error: any) {
     console.error('Upload API error:', error);
