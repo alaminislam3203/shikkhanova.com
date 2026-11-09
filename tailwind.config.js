@@ -8,53 +8,61 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Theme derived directly from logo.png:
+        // UCC Group (uccgroup.com.bd) Inspired Academic Navy & Signature Crimson Red Theme:
         brand: {
-          50: '#F0F5FF',
-          100: '#E0EBFF',
-          200: '#C2D9FF',
-          300: '#94BCFF',
-          400: '#5494FF',
-          500: '#1D63D8',
-          600: '#0C4CB8',
-          700: '#003893', // Exact 'Shikkha' Royal Navy Blue
-          800: '#082C6D',
-          900: '#041A42',
-          950: '#020D24',
+          50: '#F0F4FA',
+          100: '#DCE6F5',
+          200: '#BDD0EB',
+          300: '#8FAEDF',
+          400: '#5B87CE',
+          500: '#2E62B8',
+          600: '#1B4996',
+          700: '#0F2C59', // UCC Academic Deep Navy Blue
+          800: '#0A1E3C',
+          900: '#061428',
+          950: '#030B17',
         },
         nova: {
-          50: '#FFF8F0',
-          100: '#FFEDD9',
-          200: '#FEDAB2',
-          300: '#FDBB7B',
-          400: '#FA963A',
-          500: '#FF7300', // Exact 'Nova' Warm Energy Orange
-          600: '#EA580C',
-          700: '#C2410C',
-          800: '#9A3412',
-          900: '#7C2D12',
-          950: '#431407',
+          50: '#FEF2F3',
+          100: '#FDE3E6',
+          200: '#FBCBD1',
+          300: '#F7A1AC',
+          400: '#F06A7C',
+          500: '#D32F2F', // UCC Signature Crimson Red
+          600: '#C8102E', // UCC Primary Corporate Red
+          700: '#A50D26',
+          800: '#880E22',
+          900: '#721020',
+          950: '#40040D',
         },
         slogan: {
-          50: '#FFF1F4',
-          100: '#FFE4E8',
-          500: '#F43F5E',
-          600: '#E11D48', // Exact "শিখবো, জিতবো" Slogan Crimson Red
-          700: '#BE123C',
-          800: '#9F1239',
-          900: '#881337',
-          950: '#4C0519',
+          50: '#FEF2F3',
+          100: '#FDE3E6',
+          500: '#E11D48',
+          600: '#C8102E', // UCC Crimson Red
+          700: '#A50D26',
+          800: '#880E22',
+          900: '#721020',
+          950: '#40040D',
         },
         bkash: '#E2136E',
         nagad: '#F7941D',
       },
       fontFamily: {
-        sans: ['"Hind Siliguri"', 'Inter', 'system-ui', 'sans-serif'],
+        sans: [
+          'var(--font-noto-bn)',
+          '"Noto Sans Bengali"',
+          '"SolaimanLipi"',
+          '"Kalpurush"',
+          'var(--font-poppins)',
+          'system-ui',
+          'sans-serif',
+        ],
       },
       boxShadow: {
-        'brand': '0 10px 30px -5px rgba(0, 56, 147, 0.25)',
-        'nova': '0 10px 30px -5px rgba(255, 115, 0, 0.25)',
-        'premium': '0 20px 40px -15px rgba(0, 56, 147, 0.12), 0 0 1px 1px rgba(0, 56, 147, 0.08)',
+        'brand': '0 10px 28px -6px rgba(15, 44, 89, 0.25)',
+        'nova': '0 10px 28px -6px rgba(200, 16, 46, 0.28)',
+        'premium': '0 18px 38px -12px rgba(10, 30, 60, 0.12), 0 0 1px 1px rgba(10, 30, 60, 0.06)',
       },
       borderRadius: {
         '4xl': '2rem',

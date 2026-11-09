@@ -1,28 +1,21 @@
 import type { Metadata } from 'next';
-import { Hind_Siliguri, Inter, Noto_Sans_Bengali } from 'next/font/google';
+import { Noto_Sans_Bengali, Poppins } from 'next/font/google';
 import './globals.css';
 import AuthProvider from '@/components/AuthProvider';
 import AppLayout from '@/components/common/AppLayout';
 import { Toaster } from 'react-hot-toast';
 
-const hindSiliguri = Hind_Siliguri({
-  subsets: ['bengali', 'latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-hind',
-  display: 'swap',
-});
-
 const notoSansBengali = Noto_Sans_Bengali({
-  subsets: ['bengali'],
+  subsets: ['bengali', 'latin'],
   weight: ['400', '500', '600', '700', '800'],
   variable: '--font-noto-bn',
   display: 'swap',
 });
 
-const inter = Inter({
+const poppins = Poppins({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
-  variable: '--font-inter',
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-poppins',
   display: 'swap',
 });
 
@@ -60,8 +53,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="bn" className={`scroll-smooth ${hindSiliguri.variable} ${notoSansBengali.variable} ${inter.variable}`}>
-      <body className="min-h-screen bg-slate-50 text-slate-800 antialiased selection:bg-nova-500 selection:text-white">
+    <html lang="bn" className={`scroll-smooth ${notoSansBengali.variable} ${poppins.variable}`}>
+      <body className="min-h-screen bg-[#F4F6F9] text-[#1E293B] antialiased selection:bg-[#C8102E] selection:text-white">
         <AuthProvider>
           <Toaster position="center" />
           <AppLayout>{children}</AppLayout>
