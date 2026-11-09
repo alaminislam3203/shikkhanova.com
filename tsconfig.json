@@ -19,7 +19,8 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "@public/*": ["./public/*"]
+      "@public/*": ["./public/*"],
+      "react-hot-toast": ["./lib/react-hot-toast.tsx"]
     }
   },
   "ts-node": {

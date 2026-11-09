@@ -3,6 +3,7 @@ import { Hind_Siliguri, Inter, Noto_Sans_Bengali } from 'next/font/google';
 import './globals.css';
 import AuthProvider from '@/components/AuthProvider';
 import AppLayout from '@/components/common/AppLayout';
+import { Toaster } from 'react-hot-toast';
 
 const hindSiliguri = Hind_Siliguri({
   subsets: ['bengali', 'latin'],
@@ -62,6 +63,7 @@ export default function RootLayout({
     <html lang="bn" className={`scroll-smooth ${hindSiliguri.variable} ${notoSansBengali.variable} ${inter.variable}`}>
       <body className="min-h-screen bg-slate-50 text-slate-800 antialiased selection:bg-nova-500 selection:text-white">
         <AuthProvider>
+          <Toaster position="top-center" />
           <AppLayout>{children}</AppLayout>
         </AuthProvider>
       </body>
