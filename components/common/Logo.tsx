@@ -126,26 +126,15 @@ export default function Logo({
       <div className="flex flex-col justify-center leading-none">
         <div className="flex items-baseline gap-1">
           <span className={`${sizeConfig.bnTitle} font-black tracking-tight text-[#0A1E3C]`}>
-            শিক্ষা<span className="text-[#C8102E]">নোভা</span>
+            শিক্ষা নোভা
           </span>
         </div>
 
-        <div className="flex items-center gap-1.5 mt-1">
-          <span className={`${sizeConfig.enSub} font-extrabold uppercase tracking-wider text-[#0A1E3C]`}>
-            Shikkha<span className="text-[#C8102E]">Nova</span>
-          </span>
-
-          {showSlogan && (
-            <>
-              <span className="w-1 h-1 rounded-full bg-[#C8102E]" />
-              <span
-                className={`${sizeConfig.slogan} font-extrabold text-white bg-[#C8102E] rounded-full leading-tight shadow-2xs`}
-              >
-                শিখবো, জিতবো
-              </span>
-            </>
-          )}
-        </div>
+       <span
+  className={`${sizeConfig.slogan} font-extrabold text-white bg-[#C8102E] rounded-sm leading-tight shadow-2xs`}
+>
+  শিখবো, জিতবো
+</span>
       </div>
     </div>
   );

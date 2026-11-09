@@ -1,156 +1,82 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 200" width="100%" height="100%">
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
   <defs>
-    <!-- UCC Deep Academic Navy Gradient -->
     <linearGradient id="uccNavyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#071426" />
-      <stop offset="55%" stop-color="#0A1E3C" />
-      <stop offset="100%" stop-color="#15325E" />
+      <stop offset="0%" stop-color="#071426"/>
+      <stop offset="55%" stop-color="#0A1E3C"/>
+      <stop offset="100%" stop-color="#15325E"/>
     </linearGradient>
 
-    <!-- UCC Signature Crimson Red Gradient -->
     <linearGradient id="uccRedGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#E51C39" />
-      <stop offset="50%" stop-color="#C8102E" />
-      <stop offset="100%" stop-color="#9B0A22" />
+      <stop offset="0%" stop-color="#E51C39"/>
+      <stop offset="50%" stop-color="#C8102E"/>
+      <stop offset="100%" stop-color="#9B0A22"/>
     </linearGradient>
 
-    <!-- Gold Accent Gradient -->
     <linearGradient id="goldAccent" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FDE047" />
-      <stop offset="100%" stop-color="#F59E0B" />
+      <stop offset="0%" stop-color="#FDE047"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
     </linearGradient>
 
     <filter id="dropShadow" x="-10%" y="-10%" width="125%" height="125%">
-      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#071426" flood-opacity="0.18" />
+      <feDropShadow dx="0" dy="3" stdDeviation="4"
+        flood-color="#071426" flood-opacity="0.18"/>
     </filter>
   </defs>
 
-  <!-- LEFT EMBLEM: Academic Crest + Mortarboard + Open Book (UCC Navy & Crimson Red) -->
-  <g filter="url(#dropShadow)" transform="translate(12, 10)">
-    <!-- Outer Academic Shield Base -->
+  <g filter="url(#dropShadow)" transform="translate(10,10)">
     <path
-      d="M 90,8 L 164,34 L 164,98 C 164,142 132,166 90,180 C 48,166 16,142 16,98 L 16,34 Z"
+      d="M90,8 L164,34 L164,98 C164,142 132,166 90,180 C48,166 16,142 16,98 L16,34 Z"
       fill="url(#uccNavyGrad)"
       stroke="#C8102E"
-      stroke-width="4"
-    />
+      stroke-width="4"/>
 
-    <!-- Inner Shield Rim -->
     <path
-      d="M 90,17 L 154,40 L 154,96 C 154,134 126,155 90,168 C 54,155 26,134 26,96 L 26,40 Z"
+      d="M90,17 L154,40 L154,96 C154,134 126,155 90,168 C54,155 26,134 26,96 L26,40 Z"
       fill="none"
       stroke="#FFFFFF"
       stroke-opacity="0.22"
-      stroke-width="1.5"
-    />
+      stroke-width="1.5"/>
 
-    <!-- Crimson Red Ribbon /Rising Sun Arc Inside Shield -->
-    <circle cx="90" cy="95" r="38" fill="url(#uccRedGrad)" opacity="0.95" />
+    <circle cx="90" cy="95" r="38"
+      fill="url(#uccRedGrad)" opacity="0.95"/>
 
-    <!-- Graduation Cap (Mortarboard) -->
-    <polygon points="90,28 148,54 90,78 32,54" fill="#FFFFFF" />
-    <polygon points="90,32 140,54 90,74 40,54" fill="url(#uccNavyGrad)" />
-    <path d="M 60,67 Q 90,84 120,67 L 120,79 Q 90,96 60,79 Z" fill="#FFFFFF" />
+    <polygon points="90,28 148,54 90,78 32,54"
+      fill="#FFFFFF"/>
 
-    <!-- Cap Center Gold Button & Tassel -->
-    <circle cx="90" cy="54" r="4.5" fill="url(#goldAccent)" />
-    <path
-      d="M 90,54 Q 120,58 128,84"
+    <polygon points="90,32 140,54 90,74 40,54"
+      fill="url(#uccNavyGrad)"/>
+
+    <path d="M60,67 Q90,84 120,67 L120,79 Q90,96 60,79 Z"
+      fill="#FFFFFF"/>
+
+    <circle cx="90" cy="54" r="4.5"
+      fill="url(#goldAccent)"/>
+
+    <path d="M90,54 Q120,58 128,84"
       stroke="url(#goldAccent)"
       stroke-width="3.5"
       fill="none"
-      stroke-linecap="round"
-    />
-    <polygon points="124,83 132,83 135,98 121,98" fill="url(#goldAccent)" />
+      stroke-linecap="round"/>
 
-    <!-- Rising Student Star / Torch Center -->
-    <circle cx="90" cy="96" r="9" fill="#FFFFFF" />
-    <path d="M 90,108 Q 76,122 62,134 Q 90,118 118,134 Q 104,122 90,108 Z" fill="#FFFFFF" />
+    <polygon points="124,83 132,83 135,98 121,98"
+      fill="url(#goldAccent)"/>
 
-    <!-- Open Book Upper Pages (White & Gold) -->
-    <path d="M 90,136 Q 60,116 34,128 Q 62,102 90,126 Z" fill="#FFFFFF" />
-    <path d="M 90,136 Q 120,116 146,128 Q 118,102 90,126 Z" fill="#FFFFFF" />
+    <circle cx="90" cy="96" r="9" fill="#FFFFFF"/>
 
-    <!-- Open Book Lower Wings (UCC Crimson Red) -->
-    <path d="M 90,148 Q 56,128 30,142 Q 58,118 90,138 Z" fill="url(#uccRedGrad)" />
-    <path d="M 90,148 Q 124,128 150,142 Q 122,118 90,138 Z" fill="url(#uccRedGrad)" />
-  </g>
+    <path d="M90,108 Q76,122 62,134 Q90,118 118,134 Q104,122 90,108 Z"
+      fill="#FFFFFF"/>
 
-  <!-- RIGHT TYPOGRAPHY: UCC Style Bold Bangla & English Brand Mark -->
-  <g transform="translate(202, 0)">
-    <!-- Top Pill Badge: Academic Tag -->
-    <rect x="2" y="22" width="168" height="24" rx="12" fill="url(#uccRedGrad)" />
-    <text
-      x="86"
-      y="38"
-      font-family="'Poppins', 'Noto Sans Bengali', sans-serif"
-      font-weight="800"
-      font-size="11"
-      fill="#FFFFFF"
-      letter-spacing="1.5"
-      text-anchor="middle"
-    >
-      SIKKHANOVA ACADEMY
-    </text>
+    <path d="M90,136 Q60,116 34,128 Q62,102 90,126 Z"
+      fill="#FFFFFF"/>
 
-    <!-- Primary Brand Name: শিক্ষানোভা / ShikkhaNova -->
-    <text
-      x="0"
-      y="104"
-      font-family="'Noto Sans Bengali', 'SolaimanLipi', 'Kalpurush', 'Poppins', sans-serif"
-      font-weight="900"
-      font-size="60"
-      fill="#0A1E3C"
-    >
-      শিক্ষা<tspan fill="#C8102E">নোভা</tspan>
-    </text>
+    <path d="M90,136 Q120,116 146,128 Q118,102 90,126 Z"
+      fill="#FFFFFF"/>
 
-    <!-- English Brand Subtitle -->
-    <text
-      x="4"
-      y="134"
-      font-family="'Poppins', sans-serif"
-      font-weight="800"
-      font-size="22"
-      fill="#0A1E3C"
-      letter-spacing="0.6"
-    >
-      Shikkha<tspan fill="#C8102E">Nova</tspan>
-    </text>
+    <path d="M90,148 Q56,128 30,142 Q58,118 90,138 Z"
+      fill="url(#uccRedGrad)"/>
 
-    <!-- Divider Dot -->
-    <circle cx="164" cy="126" r="3.5" fill="#C8102E" />
-
-    <!-- Official Slogan Pill: শিখবো, জিতবো -->
-    <g transform="translate(178, 111)">
-      <rect x="0" y="0" width="136" height="30" rx="8" fill="#FFF1F2" stroke="#FECDD3" stroke-width="1.5" />
-      <text
-        x="68"
-        y="21"
-        font-family="'Noto Sans Bengali', 'SolaimanLipi', 'Kalpurush', sans-serif"
-        font-weight="800"
-        font-size="17"
-        fill="#C8102E"
-        text-anchor="middle"
-      >
-        “শিখবো, জিতবো”
-      </text>
-    </g>
-
-    <!-- Bottom Accent Bar (UCC Navy + Crimson Red) -->
-    <rect x="4" y="152" width="190" height="5" rx="2.5" fill="#0A1E3C" />
-    <rect x="202" y="152" width="112" height="5" rx="2.5" fill="#C8102E" />
-
-    <!-- Location Line -->
-    <text
-      x="4"
-      y="174"
-      font-family="'Noto Sans Bengali', 'SolaimanLipi', sans-serif"
-      font-weight="700"
-      font-size="13"
-      fill="#475569"
-    >
-      ৫ম থেকে ১০ম শ্রেণি • জুম্মাপাড়া, নীলফামারী সদর
-    </text>
+    <path d="M90,148 Q124,128 150,142 Q122,118 90,138 Z"
+      fill="url(#uccRedGrad)"/>
   </g>
 </svg>
