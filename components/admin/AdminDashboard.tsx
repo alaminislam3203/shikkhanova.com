@@ -666,7 +666,13 @@ export default function AdminDashboard({
                         <button
                           type="button"
                           disabled={updatingId === pur.id}
-                          onClick={() => handleQuickPurchaseAction(pur.id, 'REJECTED')}
+                          onClick={async () => {
+                            await handleQuickPurchaseAction(pur.id, 'REJECTED');
+                            toast.error(
+                              `TrxID "${pur.trxId}" এর পেমেন্ট রিকোয়েস্টটি বাতিল (Rejected) করা হয়েছে।`,
+                              { position: 'center', duration: 3500 }
+                            );
+                          }}
                           className="inline-flex items-center gap-1 bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold px-2.5 py-1.5 rounded-xl transition disabled:opacity-50"
                         >
                           <FaXmark className="w-3 h-3" /> বাতিল

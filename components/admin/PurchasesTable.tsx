@@ -385,7 +385,13 @@ export default function PurchasesTable({
                           {pur.status !== 'REJECTED' && (
                             <button
                               type="button"
-                              onClick={() => onUpdateStatus(pur.id, 'REJECTED')}
+                              onClick={async () => {
+                                await onUpdateStatus(pur.id, 'REJECTED');
+                                toast.error(
+                                  `TrxID "${pur.trxId}" এর পেমেন্ট রিকোয়েস্টটি বাতিল (Rejected) করা হয়েছে।`,
+                                  { position: 'center', duration: 3500 }
+                                );
+                              }}
                               className="p-2 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition shadow-sm border border-rose-200"
                               title="বাতিল করুন (Reject)"
                             >

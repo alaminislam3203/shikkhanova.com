@@ -4,25 +4,29 @@ import React, { useEffect, useState } from 'react';
 
 export type ToastType = 'blank' | 'success' | 'error' | 'loading' | 'custom';
 
+export type ToastPosition =
+  | 'center'
+  | 'top-left'
+  | 'top-center'
+  | 'top-right'
+  | 'bottom-left'
+  | 'bottom-center'
+  | 'bottom-right';
+
 export interface Toast {
   id: string;
   type: ToastType;
   message: React.ReactNode | ((t: Toast) => React.ReactNode);
   visible: boolean;
   duration?: number;
+  position?: ToastPosition;
   createdAt: number;
 }
 
 export interface ToastOptions {
   id?: string;
   duration?: number;
-  position?:
-    | 'top-left'
-    | 'top-center'
-    | 'top-right'
-    | 'bottom-left'
-    | 'bottom-center'
-    | 'bottom-right';
+  position?: ToastPosition;
   style?: React.CSSProperties;
   className?: string;
 }
@@ -62,8 +66,10 @@ function upsertToast(
 ): string {
   const id = opts?.id || genId();
   const defaultDuration =
-    type === 'loading' || type === 'custom' ? Infinity : 4000;
+    type === 'loading' || type === 'custom' ? Infinity : 3500;
   const duration = opts?.duration ?? defaultDuration;
+  const position =
+    opts?.position ?? (type === 'custom' ? 'center' : undefined);
 
   const newToast: Toast = {
     id,
@@ -71,6 +77,7 @@ function upsertToast(
     message,
     visible: true,
     duration,
+    position,
     createdAt: Date.now(),
   };
 
@@ -80,7 +87,7 @@ function upsertToast(
       idx === existingIndex ? newToast : t
     );
   } else {
-    memoryToasts = [newToast, ...memoryToasts].slice(0, 6);
+    memoryToasts = [newToast, ...memoryToasts].slice(0, 5);
   }
 
   emit();
@@ -142,13 +149,7 @@ toast.dismiss = (toastId?: string) => dismissToast(toastId);
 toast.remove = (toastId?: string) => dismissToast(toastId);
 
 export interface ToasterProps {
-  position?:
-    | 'top-left'
-    | 'top-center'
-    | 'top-right'
-    | 'bottom-left'
-    | 'bottom-center'
-    | 'bottom-right';
+  position?: ToastPosition;
   reverseOrder?: boolean;
   gutter?: number;
   containerStyle?: React.CSSProperties;
@@ -157,7 +158,7 @@ export interface ToasterProps {
 }
 
 export function Toaster({
-  position = 'top-center',
+  position = 'center',
   containerStyle,
   containerClassName = '',
 }: ToasterProps) {
@@ -176,70 +177,148 @@ export function Toaster({
 
   if (toasts.length === 0) return null;
 
-  const posClasses: Record<string, string> = {
-    'top-left': 'top-4 left-4 items-start',
-    'top-center': 'top-4 left-1/2 -translate-x-1/2 items-center',
-    'top-right': 'top-4 right-4 items-end',
-    'bottom-left': 'bottom-4 left-4 items-start',
-    'bottom-center': 'bottom-4 left-1/2 -translate-x-1/2 items-center',
-    'bottom-right': 'bottom-4 right-4 items-end',
-  };
+  const centerToasts = toasts.filter(
+    (t) => (t.position || position) === 'center' || t.type === 'custom'
+  );
+  const topToasts = toasts.filter(
+    (t) => (t.position || position) !== 'center' && t.type !== 'custom'
+  );
 
   return (
-    <div
-      style={containerStyle}
-      className={`fixed z-[9999] flex flex-col gap-3 pointer-events-none max-w-[95vw] w-full sm:w-auto ${
-        posClasses[position] || posClasses['top-center']
-      } ${containerClassName}`}
-    >
-      {toasts.map((t) => {
-        const content =
-          typeof t.message === 'function' ? t.message(t) : t.message;
+    <>
+      {/* Screen-Centered Toasts (Confirmation Modals & Payment Success / Status Toasts) */}
+      {centerToasts.length > 0 && (
+        <div
+          style={containerStyle}
+          className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center p-4 bg-slate-900/50 backdrop-blur-[3px] animate-in fade-in duration-150 ${containerClassName}`}
+        >
+          <div className="flex flex-col items-center justify-center gap-3 w-full max-w-md pointer-events-auto">
+            {centerToasts.map((t) => {
+              const content =
+                typeof t.message === 'function' ? t.message(t) : t.message;
 
-        if (t.type === 'custom') {
-          return (
-            <div
-              key={t.id}
-              className="pointer-events-auto animate-in fade-in zoom-in-95 duration-200"
-            >
-              {content}
-            </div>
-          );
-        }
+              if (t.type === 'custom') {
+                return (
+                  <div
+                    key={t.id}
+                    className="w-full flex items-center justify-center animate-in zoom-in-95 duration-200"
+                  >
+                    {content}
+                  </div>
+                );
+              }
 
-        return (
-          <div
-            key={t.id}
-            className="pointer-events-auto bg-white text-slate-800 px-4 py-3 rounded-2xl shadow-2xl border border-slate-200/90 flex items-center gap-3 text-xs sm:text-sm font-bold max-w-md animate-in fade-in zoom-in-95 duration-150"
-          >
-            {t.type === 'success' && (
-              <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 text-xs font-black">
-                ✓
-              </span>
-            )}
-            {t.type === 'error' && (
-              <span className="w-6 h-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 text-xs font-black">
-                ✕
-              </span>
-            )}
-            {t.type === 'loading' && (
-              <span className="w-5 h-5 rounded-full border-2 border-brand-600 border-t-transparent animate-spin shrink-0" />
-            )}
-            <div className="flex-1 leading-snug">{content}</div>
-            <button
-              type="button"
-              onClick={() => toast.dismiss(t.id)}
-              className="text-slate-400 hover:text-slate-600 text-xs pl-1"
-            >
-              ✕
-            </button>
+              return (
+                <div
+                  key={t.id}
+                  className="w-full max-w-sm bg-white text-slate-800 p-6 rounded-3xl shadow-2xl border border-slate-200/90 flex flex-col items-center text-center gap-3.5 animate-in zoom-in-95 duration-200 relative"
+                >
+                  <button
+                    type="button"
+                    onClick={() => toast.dismiss(t.id)}
+                    className="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-xs font-bold transition"
+                  >
+                    ✕
+                  </button>
+
+                  {t.type === 'success' && (
+                    <div className="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl font-black shadow-inner border border-emerald-200">
+                      ✓
+                    </div>
+                  )}
+                  {t.type === 'error' && (
+                    <div className="w-14 h-14 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center text-2xl font-black shadow-inner border border-rose-200">
+                      ✕
+                    </div>
+                  )}
+                  {t.type === 'loading' && (
+                    <div className="w-12 h-12 rounded-full border-3 border-brand-600 border-t-transparent animate-spin" />
+                  )}
+                  {t.type === 'blank' && (
+                    <div className="w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-2xl font-black shadow-inner border border-amber-200">
+                      !
+                    </div>
+                  )}
+
+                  <div className="space-y-1">
+                    <h4
+                      className={`text-base font-black ${
+                        t.type === 'success'
+                          ? 'text-emerald-700'
+                          : t.type === 'error'
+                          ? 'text-rose-700'
+                          : 'text-slate-800'
+                      }`}
+                    >
+                      {t.type === 'success'
+                        ? 'সফল হয়েছে!'
+                        : t.type === 'error'
+                        ? 'সতর্কবার্তা'
+                        : 'বিজ্ঞপ্তি'}
+                    </h4>
+                    <div className="text-xs sm:text-sm font-semibold text-slate-600 leading-relaxed">
+                      {content}
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => toast.dismiss(t.id)}
+                    className={`w-full py-2.5 px-5 rounded-xl text-xs font-bold text-white shadow-md transition active:scale-95 ${
+                      t.type === 'success'
+                        ? 'bg-emerald-600 hover:bg-emerald-700'
+                        : t.type === 'error'
+                        ? 'bg-rose-600 hover:bg-rose-700'
+                        : 'bg-brand-700 hover:bg-brand-800'
+                    }`}
+                  >
+                    ঠিক আছে
+                  </button>
+                </div>
+              );
+            })}
           </div>
-        );
-      })}
-    </div>
+        </div>
+      )}
+
+      {/* Non-center Toasts (if explicitly set to top-right / top-center) */}
+      {topToasts.length > 0 && (
+        <div className="fixed top-5 inset-x-0 z-[9999] flex flex-col items-center gap-2.5 px-4 pointer-events-none">
+          {topToasts.map((t) => {
+            const content =
+              typeof t.message === 'function' ? t.message(t) : t.message;
+
+            return (
+              <div
+                key={t.id}
+                className="pointer-events-auto bg-white text-slate-800 px-4 py-3 rounded-2xl shadow-2xl border border-slate-200/90 flex items-center gap-3 text-xs sm:text-sm font-bold max-w-md w-full sm:w-auto animate-in fade-in duration-150"
+              >
+                {t.type === 'success' && (
+                  <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 text-xs font-black">
+                    ✓
+                  </span>
+                )}
+                {t.type === 'error' && (
+                  <span className="w-6 h-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 text-xs font-black">
+                    ✕
+                  </span>
+                )}
+                <div className="flex-1 leading-snug">{content}</div>
+                <button
+                  type="button"
+                  onClick={() => toast.dismiss(t.id)}
+                  className="text-slate-400 hover:text-slate-600 text-xs pl-1"
+                >
+                  ✕
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </>
   );
 }
 
 export { toast };
 export default toast;
-
