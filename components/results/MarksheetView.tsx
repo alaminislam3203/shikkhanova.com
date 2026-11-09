@@ -11,6 +11,16 @@ interface MarksheetViewProps {
 }
 
 export default function MarksheetView({ result }: MarksheetViewProps) {
+
+  const handlePrint = () => {
+    // Close any open dropdowns/menus before printing
+    document.body.click();
+    // Small delay to let menus close, then print
+    setTimeout(() => {
+      window.print();
+    }, 100);
+  };
+
   return (
     <div className="space-y-4">
       {/* Printable Sheet */}
@@ -41,7 +51,7 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
         </div>
 
         {/* Student Profile Info */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-brand-50/70 p-4 rounded-2xl border border-brand-200 text-xs sm:text-sm relative z-10">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl border text-xs sm:text-sm relative z-10" style={{ backgroundColor: '#EFF6FF', borderColor: '#BFDBFE' }}>
           <div>
             <span className="text-[11px] text-slate-500 block font-bold">শিক্ষার্থীর নাম:</span>
             <strong className="text-slate-900 text-base font-black">{result.studentName}</strong>
@@ -64,7 +74,7 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
         <div className="overflow-x-auto relative z-10">
           <table className="w-full text-left border-collapse border border-slate-300">
             <thead>
-              <tr className="bg-slate-100/90 text-slate-800 text-xs font-bold uppercase border-b border-slate-300">
+              <tr className="text-slate-800 text-xs font-bold uppercase border-b border-slate-300" style={{ backgroundColor: '#F1F5F9' }}>
                 <th className="py-3 px-4 border border-slate-300">বিষয় (Subject)</th>
                 <th className="py-3 px-4 border border-slate-300 text-center w-24">পূর্ণমান</th>
                 <th className="py-3 px-4 border border-slate-300 text-center w-28">প্রাপ্ত নম্বর</th>
@@ -94,7 +104,7 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
               ))}
             </tbody>
             <tfoot>
-              <tr className="bg-brand-50/90 font-bold text-slate-800 border-t-2 border-slate-400">
+              <tr className="font-bold text-slate-800 border-t-2 border-slate-400" style={{ backgroundColor: '#EFF6FF' }}>
                 <td className="py-3.5 px-4 border border-slate-300 text-base">সর্বমোট ফলাফল (Total)</td>
                 <td className="py-3.5 px-4 border border-slate-300 text-center">{result.totalMarks}</td>
                 <td className="py-3.5 px-4 border border-slate-300 text-center text-brand-800 font-black text-base">
@@ -112,7 +122,7 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
         </div>
 
         {/* Grading Scale & Legend */}
-        <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200 text-[10px] text-center font-semibold text-slate-600 relative z-10">
+        <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 p-3 rounded-xl border border-slate-200 text-[10px] text-center font-semibold text-slate-600 relative z-10" style={{ backgroundColor: '#F8FAFC' }}>
           <div>৮০-১০০ = <span className="font-bold text-emerald-700">A+ (5.00)</span></div>
           <div>৭০-৭৯ = <span className="font-bold text-emerald-600">A (4.00)</span></div>
           <div>৬০-৬৯ = <span className="font-bold text-blue-600">A- (3.50)</span></div>
@@ -142,7 +152,7 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
       {/* Print Button */}
       <div className="flex justify-end max-w-4xl mx-auto no-print">
         <button
-          onClick={() => window.print()}
+          onClick={handlePrint}
           className="px-6 py-3 bg-gradient-to-r from-brand-700 to-indigo-900 hover:from-brand-800 hover:to-black text-white font-bold text-xs sm:text-sm rounded-2xl shadow-brand hover:shadow-xl transition flex items-center gap-2 transform active:scale-95"
         >
           <FaPrint className="w-4 h-4 text-nova-300" />

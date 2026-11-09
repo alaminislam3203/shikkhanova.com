@@ -57,24 +57,86 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Print Only Utilities for Marksheets & Invoices */
 @media print {
+  /* ─── Step 1: Hide EVERYTHING on the page ─── */
+  body > *,
+  body * {
+    visibility: hidden;
+  }
+
+  /* ─── Step 2: Show ONLY the printable marksheet area ─── */
+  #printableArea,
+  #printableArea * {
+    visibility: visible;
+  }
+
+  /* ─── Step 3: Position marksheet to fill the printed page ─── */
+  #printableArea {
+    position: fixed !important;
+    inset: 0 !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 20px !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    background-color: #ffffff !important;
+    z-index: 9999 !important;
+  }
+
+  /* ─── Step 4: Ensure colours & backgrounds print correctly ─── */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* ─── Step 5: Paper size & margins ─── */
+  @page {
+    size: A4 portrait;
+    margin: 10mm 12mm;
+  }
+
+  /* ─── Step 6: Keep no-print elements gone ─── */
   .no-print {
     display: none !important;
+    visibility: hidden !important;
   }
-  .print-only {
-    display: block !important;
+
+  /* ─── Step 7: Responsive table fix for print width ─── */
+  #printableArea .overflow-x-auto {
+    overflow: visible !important;
   }
+
+  #printableArea table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  #printableArea table td,
+  #printableArea table th {
+    padding: 8px 12px !important;
+    font-size: 11pt !important;
+  }
+
+  /* ─── Step 8: Tailwind sm: breakpoint override for print ─── */
+  #printableArea .grid-cols-2 {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  #printableArea .sm\:grid-cols-6 {
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  }
+
+  /* Signature row spacing */
+  #printableArea .pt-10 {
+    padding-top: 32px !important;
+  }
+
   body {
     background-color: #ffffff !important;
     color: #000000 !important;
-  }
-  #printableArea {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    margin: 0;
-    padding: 20px;
-    box-shadow: none !important;
-    border: none !important;
   }
 }
