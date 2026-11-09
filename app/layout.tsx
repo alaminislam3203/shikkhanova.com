@@ -1,7 +1,22 @@
 import type { Metadata } from 'next';
+import { Hind_Siliguri, Inter } from 'next/font/google';
 import './globals.css';
 import AuthProvider from '@/components/AuthProvider';
 import AppLayout from '@/components/common/AppLayout';
+
+const hindSiliguri = Hind_Siliguri({
+  subsets: ['bengali', 'latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-hind',
+  display: 'swap',
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-inter',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXTAUTH_URL || 'https://shikkhanova.com'),
@@ -37,7 +52,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="bn" className="scroll-smooth">
+    <html lang="bn" className={`scroll-smooth ${hindSiliguri.variable} ${inter.variable}`}>
       <body className="min-h-screen bg-slate-50 text-slate-800 antialiased selection:bg-nova-500 selection:text-white">
         <AuthProvider>
           <AppLayout>{children}</AppLayout>
