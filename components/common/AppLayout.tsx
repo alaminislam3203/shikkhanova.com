@@ -23,7 +23,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   // Regular Website Layout: Sticky Navbar, Container, Premium Footer & Mobile Bottom Nav
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 antialiased overflow-x-hidden selection:bg-nova-500 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 antialiased overflow-x-clip selection:bg-nova-500 selection:text-white">
       <Navbar />
       <main
         className={`flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-24 lg:pb-8 ${

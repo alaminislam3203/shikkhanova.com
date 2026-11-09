@@ -17,6 +17,7 @@ import {
   FaArrowRightFromBracket,
   FaMagnifyingGlass,
   FaChevronDown,
+  FaBell,
 } from 'react-icons/fa6';
 import { HiSparkles } from 'react-icons/hi2';
 
@@ -159,9 +160,34 @@ export default function Navbar() {
   // Instant 0ms Global Website Search State
   const [searchQuery, setSearchQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [dbSearchItems, setDbSearchItems] = useState<any[]>([]);
   const dbFetchedRef = useRef(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const mobileSearchInputRef = useRef<HTMLInputElement>(null);
+  const mobileSearchContainerRef = useRef<HTMLDivElement>(null);
+
+  // Listen for mobile bottom nav search trigger event
+  useEffect(() => {
+    const handleOpenSearch = () => {
+      ensureDbIndexLoaded();
+      setMobileOpen(false);
+      setMobileSearchOpen((prev) => {
+        const next = !prev;
+        if (next) {
+          setTimeout(() => {
+            mobileSearchInputRef.current?.focus();
+          }, 150);
+        }
+        return next;
+      });
+    };
+
+    window.addEventListener('open-mobile-search', handleOpenSearch);
+    return () => {
+      window.removeEventListener('open-mobile-search', handleOpenSearch);
+    };
+  }, []);
 
   // Close dropdown & search on click outside
   useEffect(() => {
@@ -174,6 +200,15 @@ export default function Navbar() {
       }
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setSearchOpen(false);
+      }
+      if (
+        mobileSearchContainerRef.current &&
+        !mobileSearchContainerRef.current.contains(event.target as Node)
+      ) {
+        const target = event.target as HTMLElement;
+        if (!target.closest?.('[data-mobile-search-btn="true"]')) {
+          setMobileSearchOpen(false);
+        }
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -188,6 +223,7 @@ export default function Navbar() {
     setAboutMenuOpen(false);
     setMobileOpen(false);
     setSearchOpen(false);
+    setMobileSearchOpen(false);
   }, [pathname]);
 
   // Preload DB search items silently in the background once when search opens
@@ -239,6 +275,14 @@ export default function Navbar() {
     e.preventDefault();
     if (searchResults.length > 0) {
       setSearchOpen(false);
+      router.push(searchResults[0].href);
+    }
+  };
+
+  const handleMobileSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchResults.length > 0) {
+      setMobileSearchOpen(false);
       router.push(searchResults[0].href);
     }
   };
@@ -487,11 +531,25 @@ export default function Navbar() {
               </div>
             </nav>
 
-            {/* Right Side: Auth / Profile Dropdown */}
-            <div className="flex items-center gap-2 sm:gap-3">
+            {/* Right Side: Auth / Profile Dropdown & Mobile Icons */}
+            <div className="flex items-center gap-1.5 sm:gap-3">
               
+              {/* Mobile Notice Bell Icon (Notice replaces user profile on mobile per design) */}
+              <Link
+                href="/notices"
+                className="relative lg:hidden p-2 text-slate-700 hover:text-[#C8102E] hover:bg-red-50/60 rounded-xl transition flex items-center justify-center"
+                aria-label="অফিশিয়াল নোটিশ বোর্ড"
+                title="নোটিশ বোর্ড"
+              >
+                <FaBell className="w-5 h-5 text-[#0A1E3C]" />
+                <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C8102E] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#C8102E]"></span>
+                </span>
+              </Link>
+
               {session?.user ? (
-                <div className="relative" ref={dropdownRef}>
+                <div className="hidden lg:block relative" ref={dropdownRef}>
                   
                   {/* Profile Trigger Button - Avatar Only */}
                   <button
@@ -794,6 +852,91 @@ export default function Navbar() {
                   </button>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Mobile Animated Search Box (Opened directly beneath sticky navbar) */}
+          {mobileSearchOpen && (
+            <div
+              ref={mobileSearchContainerRef}
+              className="lg:hidden border-t border-slate-200/90 bg-white/98 backdrop-blur-md px-3 py-3 pb-4 shadow-xl transition-all duration-300 animate-in slide-in-from-top-3 fade-in"
+            >
+              <form onSubmit={handleMobileSearchSubmit} className="relative">
+                <div className="relative flex items-center">
+                  <FaMagnifyingGlass className="absolute left-3.5 text-slate-400 w-4 h-4 pointer-events-none" />
+                  <input
+                    ref={mobileSearchInputRef}
+                    type="search"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="ক্লাস, বিষয়, শিট, রেজাল্ট খুঁজুন..."
+                    className="w-full pl-10 pr-10 py-2.5 bg-slate-100 hover:bg-slate-100/80 focus:bg-white text-slate-900 placeholder-slate-400 text-sm font-semibold rounded-xl border border-slate-200 focus:border-[#C8102E] focus:outline-none focus:ring-2 focus:ring-[#C8102E]/20 transition-all shadow-inner"
+                  />
+                  {searchQuery ? (
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-3 p-1 text-slate-400 hover:text-slate-600 rounded-full"
+                      aria-label="ক্লিয়ার করুন"
+                    >
+                      <FaXmark className="w-4 h-4" />
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setMobileSearchOpen(false)}
+                      className="absolute right-2.5 p-1 text-slate-400 hover:text-[#C8102E] rounded-full"
+                      aria-label="সার্চ বন্ধ করুন"
+                    >
+                      <FaXmark className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </form>
+
+              {/* Instant Search Results Dropdown */}
+              <div className="mt-2.5 max-h-72 overflow-y-auto divide-y divide-slate-100 rounded-xl bg-slate-50 border border-slate-200 shadow-inner">
+                <div className="px-3 py-1.5 bg-slate-100/90 text-[10px] font-bold text-slate-500 uppercase tracking-wider flex justify-between items-center">
+                  <span>{searchQuery ? 'অনুসন্ধানের ফলাফল' : 'জনপ্রিয় অনুসন্ধান'}</span>
+                  <span className="text-[10px] text-slate-400 font-normal">ট্যাপ করে প্রবেশ করুন</span>
+                </div>
+                {searchResults.length === 0 ? (
+                  <div className="p-4 text-center text-xs text-slate-500">
+                    কোনো তথ্য পাওয়া যায়নি
+                  </div>
+                ) : (
+                  searchResults.map((item) => (
+                    <Link
+                      key={item.id}
+                      href={item.href}
+                      onClick={() => {
+                        setMobileSearchOpen(false);
+                        setSearchQuery('');
+                      }}
+                      className="px-3.5 py-2.5 hover:bg-red-50/80 flex items-start justify-between gap-2.5 transition active:bg-red-100/60"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-white text-[#C8102E] border border-red-200 shrink-0 shadow-2xs">
+                            {item.categoryLabel}
+                          </span>
+                          <p className="text-xs font-bold text-slate-800 truncate">
+                            {item.title}
+                          </p>
+                        </div>
+                        <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                          {item.subtitle}
+                        </p>
+                      </div>
+                      {item.badge && (
+                        <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                          {item.badge}
+                        </span>
+                      )}
+                    </Link>
+                  ))
+                )}
+              </div>
             </div>
           )}
 
