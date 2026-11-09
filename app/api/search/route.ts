@@ -204,3 +204,4 @@ export async function GET(req: Request) {
     return NextResponse.json({ results: STATIC_SITE_PAGES.slice(0, 5) });
   }
 }
+
