@@ -8,6 +8,7 @@ import AdminDashboard from '@/components/admin/AdminDashboard';
 import PurchasesTable from '@/components/admin/PurchasesTable';
 import AddResultForm from '@/components/admin/AddResultForm';
 import AddPdfForm, { PdfFormData } from '@/components/admin/AddPdfForm';
+import AdminAttendanceManager from '@/components/admin/AdminAttendanceManager';
 import { PurchaseRecord } from '@/types';
 import {
   FaBars,
@@ -479,38 +480,8 @@ export default function AdminPage() {
           />
         )}
 
-        {/* TAB 4: Students & Attendance Quick Directory */}
-        {activeTab === 'students' && (
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <div>
-                <h3 className="text-lg font-black text-slate-800">শ্রেণি ৫ থেকে ১০ শিক্ষার্থী উপস্থিতি</h3>
-                <p className="text-xs text-slate-500">প্রতিদিনের উপস্থিতি গ্রহণ করতে সরাসরি উপস্থিতি মডিউলে যান।</p>
-              </div>
-              <Link
-                href="/attendance"
-                className="inline-flex items-center gap-2 bg-brand-700 hover:bg-brand-800 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow transition"
-              >
-                <span>উপস্থিতি গ্রহণ করুন</span>
-                <FaArrowRight className="w-3 h-3" />
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-              {[5, 6, 7, 8, 9, 10].map((cls) => (
-                <Link
-                  key={cls}
-                  href={`/attendance?class=${cls}`}
-                  className="bg-slate-50 hover:bg-brand-50 border border-slate-200 hover:border-brand-300 p-4 rounded-2xl text-center space-y-1 transition group"
-                >
-                  <span className="text-xs font-bold text-slate-400 group-hover:text-brand-600 block">শ্রেণি</span>
-                  <strong className="text-xl font-black text-slate-800 group-hover:text-brand-800 block">Class {cls}</strong>
-                  <span className="text-[10px] bg-white px-2 py-0.5 rounded-full border border-slate-200 text-slate-600 font-semibold inline-block">হাজিরা শিট</span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* TAB 4: Admin Roll Attendance Manager */}
+        {activeTab === 'students' && <AdminAttendanceManager />}
 
         {/* TAB 5: Admin Profile Photo & Center Settings */}
         {activeTab === 'settings' && (

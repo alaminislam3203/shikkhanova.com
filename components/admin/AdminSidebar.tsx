@@ -116,8 +116,8 @@ export default function AdminSidebar({
     },
     {
       id: 'students',
-      label: 'শিক্ষার্থী ও উপস্থিতি',
-      sublabel: 'রোল তালিকা ও হাজিরা',
+      label: 'রোল উপস্থিতি (Attendance)',
+      sublabel: 'শ্রেণি ৫-১০ হাজিরা গ্রহণ',
       icon: FaUsers,
     },
     {

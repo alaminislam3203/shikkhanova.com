@@ -16,6 +16,7 @@ import {
   FaXmark,
   FaArrowRightFromBracket,
   FaMagnifyingGlass,
+  FaChevronDown,
 } from 'react-icons/fa6';
 import { HiSparkles } from 'react-icons/hi2';
 
@@ -27,6 +28,38 @@ const INSTANT_SITE_INDEX = [
     categoryLabel: 'পেইজ',
     href: '/',
     keywords: 'home হোম শিক্ষানোভা একাডেমি স্লোগান শিখবো জিতবো',
+  },
+  {
+    id: 'page-about',
+    title: 'শিক্ষা নোভা সম্পর্কে (আমাদের সম্পর্কে)',
+    subtitle: 'লক্ষ্য, রূপকল্প ও একাডেমিক বৈশিষ্ট্যসমূহ • জুম্মাপাড়া, নীলফামারী সদর',
+    categoryLabel: 'আমাদের সম্পর্কে',
+    href: '/about',
+    keywords: 'about আমাদের সম্পর্কে শিক্ষা নোভা সম্পর্কে লক্ষ্য উদ্দেশ্য',
+  },
+  {
+    id: 'page-chairman',
+    title: 'চেয়ারম্যানের বার্তা (রবিউল ইসলাম)',
+    subtitle: 'শিক্ষা নোভা একাডেমির চেয়ারম্যান ও পরিচালকের শুভেচ্ছা বার্তা',
+    categoryLabel: 'আমাদের সম্পর্কে',
+    href: '/chairman-message',
+    keywords: 'chairman director message চেয়ারম্যানের বার্তা পরিচালকের বার্তা রবিউল ইসলাম',
+  },
+  {
+    id: 'page-notices',
+    title: 'অফিশিয়াল নোটিশ বোর্ড',
+    subtitle: 'পরীক্ষার রুটিন, ভর্তি বিজ্ঞপ্তি ও একাডেমিক নোটিশসমূহ',
+    categoryLabel: 'নোটিশ',
+    href: '/notices',
+    keywords: 'notice নোটিশ বিজ্ঞপ্তি রুটিন পরীক্ষা ভর্তি',
+  },
+  {
+    id: 'page-gallery',
+    title: 'ফটো গ্যালারি (শিক্ষা নোভা একাডেমি)',
+    subtitle: 'ক্লাসরুম পাঠদান, পরীক্ষা ও পুরস্কার বিতরণী অনুষ্ঠানের ছবিসমূহ',
+    categoryLabel: 'গ্যালারি',
+    href: '/gallery',
+    keywords: 'photo gallery ফটো গ্যালারি ছবি ক্লাসরুম পুরস্কার',
   },
   {
     id: 'page-pdfs',
@@ -45,14 +78,6 @@ const INSTANT_SITE_INDEX = [
     href: '/results',
     badge: 'GPA 5.00',
     keywords: 'result marksheet gpa ফলাফল রেজাল্ট মার্কশিট গ্রেডশিট পরীক্ষা রোল',
-  },
-  {
-    id: 'page-attendance',
-    title: 'দৈনিক রোল উপস্থিতি ও হাজিরা শিট',
-    subtitle: '৫ম থেকে ১০ম শ্রেণির প্রতিদিনের ক্লাসের উপস্থিতি ও অনুপস্থিতি',
-    categoryLabel: 'হাজিরা',
-    href: '/attendance',
-    keywords: 'attendance roll present absent উপস্থিতি হাজিরা রোল ক্লাস',
   },
   {
     id: 'page-videos',
@@ -126,7 +151,10 @@ export default function Navbar() {
   const { data: session } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [aboutMenuOpen, setAboutMenuOpen] = useState(false);
+  const [mobileAboutOpen, setMobileAboutOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const aboutDropdownRef = useRef<HTMLDivElement>(null);
 
   // Instant 0ms Global Website Search State
   const [searchQuery, setSearchQuery] = useState('');
@@ -141,6 +169,9 @@ export default function Navbar() {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setDropdownOpen(false);
       }
+      if (aboutDropdownRef.current && !aboutDropdownRef.current.contains(event.target as Node)) {
+        setAboutMenuOpen(false);
+      }
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setSearchOpen(false);
       }
@@ -154,6 +185,7 @@ export default function Navbar() {
   // Close menus on route navigation
   useEffect(() => {
     setDropdownOpen(false);
+    setAboutMenuOpen(false);
     setMobileOpen(false);
     setSearchOpen(false);
   }, [pathname]);

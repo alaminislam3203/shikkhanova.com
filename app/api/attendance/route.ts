@@ -39,9 +39,9 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    // Allow admin or teacher to save attendance
-    if (!session || (session.user.role !== 'ADMIN' && session.user.role !== 'TEACHER')) {
-      return NextResponse.json({ error: 'শুধুমাত্র অ্যাডমিন বা শিক্ষক হাজিরা নিতে পারবেন' }, { status: 403 });
+    // Only ADMIN can save attendance
+    if (!session || session.user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'শুধুমাত্র অ্যাডমিন হাজিরা নিতে পারবেন' }, { status: 403 });
     }
 
     const body = await req.json();
