@@ -290,14 +290,14 @@ export default function Navbar() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 relative whitespace-nowrap ${
+                    className={`px-3.5 py-2 rounded-sm text-sm font-semibold transition-all flex items-center gap-2 relative whitespace-nowrap ${
                       active
-                        ? 'text-[#C8102E] bg-red-50/90 shadow-sm border border-red-200/80 font-bold'
-                        : 'text-[#0A1E3C] hover:text-[#C8102E] hover:bg-red-50/40'
+                        ? 'bg-[#C8102E] text-white shadow-sm font-bold'
+                        : 'text-[#0A1E3C] hover:text-[#C8102E] hover:bg-red-50/50'
                     }`}
                   >
                     {Icon && (
-                      <Icon className={`w-4 h-4 ${link.color || (active ? 'text-[#C8102E]' : 'text-slate-500')}`} />
+                      <Icon className={`w-4 h-4 ${active ? 'text-white' : (link.color || 'text-slate-500')}`} />
                     )}
                     <span>{link.label}</span>
                     {link.badge && (
@@ -577,14 +577,14 @@ export default function Navbar() {
                     key={link.href}
                     href={link.href}
                     onClick={() => setMobileOpen(false)}
-                    className={`flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-semibold ${
+                    className={`flex items-center justify-between px-4 py-2.5 rounded-sm text-sm font-semibold ${
                       active
-                        ? 'text-brand-700 bg-brand-50 font-bold'
+                        ? 'bg-[#C8102E] text-white font-bold shadow-xs'
                         : 'text-slate-700 hover:bg-slate-100'
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
-                      {Icon && <Icon className={`w-4 h-4 ${link.color || 'text-slate-500'}`} />}
+                      {Icon && <Icon className={`w-4 h-4 ${active ? 'text-white' : (link.color || 'text-slate-500')}`} />}
                       <span>{link.label}</span>
                     </div>
                     {link.badge && (

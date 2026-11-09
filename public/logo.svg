@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 200" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 510 185" width="100%" height="100%">
   <defs>
     <!-- UCC Deep Academic Navy Gradient -->
     <linearGradient id="uccNavyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -26,12 +26,12 @@
   </defs>
 
   <!-- LEFT EMBLEM: Academic Crest + Mortarboard + Open Book (UCC Navy & Crimson Red) -->
-  <g filter="url(#dropShadow)" transform="translate(12, 10)">
+  <g filter="url(#dropShadow)" transform="translate(4, 2)">
     <path
       d="M 90,8 L 164,34 L 164,98 C 164,142 132,166 90,180 C 48,166 16,142 16,98 L 16,34 Z"
       fill="url(#uccNavyGrad)"
       stroke="#C8102E"
-      stroke-width="4"
+      stroke-width="5"
     />
 
     <path
@@ -52,7 +52,7 @@
     <path
       d="M 90,54 Q 120,58 128,84"
       stroke="url(#goldAccent)"
-      stroke-width="3.5"
+      stroke-width="4"
       fill="none"
       stroke-linecap="round"
     />
@@ -69,14 +69,14 @@
   </g>
 
   <!-- RIGHT TYPOGRAPHY: Centered & Aligned "শিক্ষা নোভা" + "শিখবো, জিতবো" -->
-  <g transform="translate(200, 0)">
-    <!-- Primary Brand Name: শিক্ষা নোভা (Centered at x=155) -->
+  <g transform="translate(185, 0)">
+    <!-- Primary Brand Name: শিক্ষা নোভা (Centered at x=158) -->
     <text
-      x="155"
-      y="96"
-      font-family="'Hind Siliguri', sans-serif"
+      x="158"
+      y="92"
+      font-family="'Hind Siliguri', 'Noto Sans Bengali', 'SolaimanLipi', sans-serif"
       font-weight="700"
-      font-size="64"
+      font-size="66"
       fill="#0A1E3C"
       text-anchor="middle"
     >
@@ -84,13 +84,13 @@
     </text>
 
     <!-- Centered Crimson Slogan Bar: শিখবো, জিতবো -->
-    <rect x="10" y="114" width="290" height="44" rx="4" fill="#C8102E" />
+    <rect x="8" y="110" width="300" height="46" rx="6" fill="#C8102E" />
     <text
-      x="155"
-      y="144"
-      font-family="'Hind Siliguri', sans-serif"
+      x="158"
+      y="141"
+      font-family="'Hind Siliguri', 'Noto Sans Bengali', 'SolaimanLipi', sans-serif"
       font-weight="700"
-      font-size="26"
+      font-size="28"
       fill="#FFFFFF"
       text-anchor="middle"
     >
