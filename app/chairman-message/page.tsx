@@ -49,9 +49,13 @@ export default function ChairmanMessagePage() {
       <div className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Profile Column */}
         <div className="lg:col-span-4 bg-slate-50 rounded-2xl p-6 border border-slate-200/80 text-center space-y-4">
-          <div className="w-28 h-28 mx-auto rounded-2xl bg-gradient-to-br from-[#0A1E3C] to-[#C8102E] p-1 shadow-lg">
-            <div className="w-full h-full rounded-xl bg-white flex items-center justify-center text-3xl font-black text-[#0A1E3C]">
-              র
+          <div className="w-40 h-48 sm:w-44 sm:h-52 mx-auto rounded-2xl bg-gradient-to-br from-[#0A1E3C] to-[#C8102E] p-1 shadow-lg">
+            <div className="w-full h-full rounded-xl bg-white overflow-hidden">
+              <img
+                src="/chairman.png"
+                alt="রবিউল ইসলাম - চেয়ারম্যান ও পরিচালক, শিক্ষা নোভা একাডেমি"
+                className="w-full h-full object-cover object-top"
+              />
             </div>
           </div>
 
