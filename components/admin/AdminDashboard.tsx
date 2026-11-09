@@ -26,6 +26,27 @@ interface AdminDashboardProps {
   onStatusUpdated?: () => void;
 }
 
+const BENGALI_DIGITS = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+
+const toBn = (val: number | string | undefined | null): string => {
+  if (val === undefined || val === null) return '০';
+  return val
+    .toString()
+    .replace(/\d/g, (d) => BENGALI_DIGITS[Number(d)]);
+};
+
+const getBengaliClassLabel = (grade: number): string => {
+  const map: Record<number, string> = {
+    5: '৫ম শ্রেণি',
+    6: '৬ষ্ঠ শ্রেণি',
+    7: '৭ম শ্রেণি',
+    8: '৮ম শ্রেণি',
+    9: '৯ম শ্রেণি',
+    10: '১০ম শ্রেণি',
+  };
+  return map[grade] || `${toBn(grade)}ম শ্রেণি`;
+};
+
 export default function AdminDashboard({
   onNavigateTab,
   onStatusUpdated,
@@ -200,7 +221,7 @@ export default function AdminDashboard({
                 মোট অনুমোদিত আয়
               </span>
               <h3 className="text-2xl sm:text-3xl font-black text-slate-800 mt-1">
-                ৳{kpis.totalRevenue}
+                ৳{toBn(kpis.totalRevenue)}
               </h3>
             </div>
             <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-200/60 flex items-center justify-center shrink-0">
@@ -210,10 +231,10 @@ export default function AdminDashboard({
 
           <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
             <span className="font-bold text-pink-600 bg-pink-50 px-2.5 py-0.5 rounded-lg">
-              বিকাশ: ৳{kpis.bkashRevenue}
+              বিকাশ: ৳{toBn(kpis.bkashRevenue)}
             </span>
             <span className="font-bold text-orange-600 bg-orange-50 px-2.5 py-0.5 rounded-lg">
-              নগদ: ৳{kpis.nagadRevenue}
+              নগদ: ৳{toBn(kpis.nagadRevenue)}
             </span>
           </div>
         </div>
@@ -229,7 +250,7 @@ export default function AdminDashboard({
                 অপেক্ষমাণ পেমেন্ট (TrxID)
               </span>
               <h3 className="text-2xl sm:text-3xl font-black text-amber-600 mt-1">
-                {kpis.pendingPurchasesCount}টি রিকোয়েস্ট
+                {toBn(kpis.pendingPurchasesCount)}টি রিকোয়েস্ট
               </h3>
             </div>
             <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 border border-amber-200/60 flex items-center justify-center shrink-0">
@@ -238,9 +259,9 @@ export default function AdminDashboard({
           </div>
 
           <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-            <span>অপেক্ষমাণ অ্যামাউন্ট: <strong className="text-slate-800">৳{kpis.pendingRevenue}</strong></span>
+            <span>অপেক্ষমাণ অ্যামাউন্ট: <strong className="text-slate-800">৳{toBn(kpis.pendingRevenue)}</strong></span>
             <span className="text-emerald-600 font-bold">
-              অনুমোদিত: {kpis.approvedPurchasesCount}টি
+              অনুমোদিত: {toBn(kpis.approvedPurchasesCount)}টি
             </span>
           </div>
         </div>
@@ -256,7 +277,7 @@ export default function AdminDashboard({
                 প্রকাশিত পিডিএফ শিট
               </span>
               <h3 className="text-2xl sm:text-3xl font-black text-brand-700 mt-1">
-                {kpis.totalPdfs}টি কার্ড
+                {toBn(kpis.totalPdfs)}টি কার্ড
               </h3>
             </div>
             <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-700 border border-brand-200/60 flex items-center justify-center shrink-0">
@@ -266,10 +287,10 @@ export default function AdminDashboard({
 
           <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
             <span className="font-bold text-brand-700 bg-brand-50 px-2.5 py-0.5 rounded-lg">
-              পেইড: {kpis.paidPdfs}টি
+              পেইড: {toBn(kpis.paidPdfs)}টি
             </span>
             <span className="font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-lg">
-              ফ্রি শিট: {kpis.freePdfs}টি
+              ফ্রি শিট: {toBn(kpis.freePdfs)}টি
             </span>
           </div>
         </div>
@@ -285,7 +306,7 @@ export default function AdminDashboard({
                 নিবন্ধিত শিক্ষার্থী
               </span>
               <h3 className="text-2xl sm:text-3xl font-black text-slate-800 mt-1">
-                {kpis.totalStudents} জন
+                {toBn(kpis.totalStudents)} জন
               </h3>
             </div>
             <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 border border-blue-200/60 flex items-center justify-center shrink-0">
@@ -294,7 +315,7 @@ export default function AdminDashboard({
           </div>
 
           <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-            <span>মোট অ্যাকাউন্ট: <strong className="text-slate-800">{kpis.totalUsers}টি</strong></span>
+            <span>মোট অ্যাকাউন্ট: <strong className="text-slate-800">{toBn(kpis.totalUsers)}টি</strong></span>
             <span className="text-brand-700 font-bold">শ্রেণি ৫ - ১০</span>
           </div>
         </div>
@@ -310,7 +331,7 @@ export default function AdminDashboard({
                 প্রকাশিত পরীক্ষার রেজাল্ট
               </span>
               <h3 className="text-2xl sm:text-3xl font-black text-slate-800 mt-1">
-                {kpis.totalResults}টি মার্কশিট
+                {toBn(kpis.totalResults)}টি মার্কশিট
               </h3>
             </div>
             <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 border border-purple-200/60 flex items-center justify-center shrink-0">
@@ -335,7 +356,7 @@ export default function AdminDashboard({
                 আজকের হাজিরা সারাংশ
               </span>
               <h3 className="text-2xl sm:text-3xl font-black text-teal-700 mt-1">
-                {kpis.todayAttendance.present} জন উপস্থিত
+                {toBn(kpis.todayAttendance.present)} জন উপস্থিত
               </h3>
             </div>
             <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 border border-teal-200/60 flex items-center justify-center shrink-0">
@@ -344,8 +365,8 @@ export default function AdminDashboard({
           </div>
 
           <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-            <span>আজ মোট এন্ট্রি: <strong className="text-slate-800">{kpis.todayAttendance.total}</strong></span>
-            <span className="text-teal-700 font-bold">সর্বমোট: {kpis.totalAttendanceCount}</span>
+            <span>আজ মোট এন্ট্রি: <strong className="text-slate-800">{toBn(kpis.todayAttendance.total)}</strong></span>
+            <span className="text-teal-700 font-bold">সর্বমোট: {toBn(kpis.totalAttendanceCount)}</span>
           </div>
         </Link>
 
@@ -356,7 +377,7 @@ export default function AdminDashboard({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
           <div>
             <h3 className="text-lg font-black text-slate-800">
-              শ্রেণিভিত্তিক ডায়নামিক রিপোর্ট (Class 5 – Class 10)
+              শ্রেণিভিত্তিক ডায়নামিক রিপোর্ট (৫ম থেকে ১০ম শ্রেণি)
             </h3>
             <p className="text-xs text-slate-500">
               প্রতিটি শ্রেণির শিক্ষার্থী, প্রকাশিত পিডিএফ নোট, রেজাল্ট ও আজকের উপস্থিতির লাইভ হিসাব
@@ -381,28 +402,28 @@ export default function AdminDashboard({
                 <span className="inline-flex items-center gap-1 bg-brand-700 text-white text-xs font-black px-2.5 py-0.5 rounded-lg">
                   <FaLayerGroup className="w-3 h-3" /> Class {cls.classGrade}
                 </span>
-                <span className="text-[11px] font-bold text-slate-400">
-                  {cls.classGrade}ম শ্রেণি
+                <span className="text-[11px] font-bold text-slate-500">
+                  {getBengaliClassLabel(cls.classGrade)}
                 </span>
               </div>
 
               <div className="space-y-1.5 text-xs">
                 <div className="flex justify-between items-center">
                   <span className="text-slate-500">পিডিএফ শিট:</span>
-                  <strong className="text-brand-700 font-black">{cls.pdfs}টি</strong>
+                  <strong className="text-brand-700 font-black">{toBn(cls.pdfs)}টি</strong>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-slate-500">রেজাল্ট:</span>
-                  <strong className="text-purple-700 font-black">{cls.results}টি</strong>
+                  <strong className="text-purple-700 font-black">{toBn(cls.results)}টি</strong>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-slate-500">শিক্ষার্থী:</span>
-                  <strong className="text-slate-800 font-black">{cls.students} জন</strong>
+                  <strong className="text-slate-800 font-black">{toBn(cls.students)} জন</strong>
                 </div>
                 <div className="flex justify-between items-center pt-1 border-t border-slate-200/70">
                   <span className="text-slate-500">আজ উপস্থিত:</span>
                   <strong className="text-emerald-600 font-black">
-                    {cls.todayPresent}/{cls.todayTotal}
+                    {toBn(cls.todayPresent)}/{toBn(cls.todayTotal)}
                   </strong>
                 </div>
               </div>
