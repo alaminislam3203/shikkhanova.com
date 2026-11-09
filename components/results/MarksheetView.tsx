@@ -34,13 +34,13 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
                 শিক্ষানোভা কোচিং সেন্টার
               </h2>
               <p className="text-[11px] uppercase tracking-widest font-black text-nova-600">
-                SikkhaNova Coaching Center • sikkhanova.com
+                SikkhaNova Coaching Center
               </p>
             </div>
           </div>
 
           <p className="text-xs sm:text-sm text-slate-600 font-semibold">
-            জুম্মাপাড়া, নীলফামারী সদর, নীলফামারী | হেল্পলাইন: ০১৭১২৫৯২৫১৯
+            জুম্মাপাড়া, নীলফামারী সদর, নীলফামারী | হেল্পলাইন: 01712592519
           </p>
 
           <div className="inline-block mt-2 bg-gradient-to-r from-brand-800 via-brand-700 to-indigo-900 text-white text-xs font-bold px-5 py-1.5 rounded-full uppercase shadow-sm">
