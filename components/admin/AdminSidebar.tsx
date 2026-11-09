@@ -15,10 +15,17 @@ import {
   FaArrowRightFromBracket,
   FaAnglesLeft,
   FaAnglesRight,
+  FaChartPie,
 } from 'react-icons/fa6';
 import { TbCashBanknote } from 'react-icons/tb';
 
-export type AdminTab = 'purchases' | 'addResult' | 'addPdf' | 'students' | 'settings';
+export type AdminTab =
+  | 'dashboard'
+  | 'purchases'
+  | 'addResult'
+  | 'addPdf'
+  | 'students'
+  | 'settings';
 
 export interface AdminProfileInfo {
   name: string;
@@ -80,6 +87,12 @@ export default function AdminSidebar({
   const displayImage = adminProfile?.image || session?.user?.image || '';
 
   const menuItems: MenuItem[] = [
+    {
+      id: 'dashboard',
+      label: 'ড্যাশবোর্ড ওভারভিউ',
+      sublabel: 'লাইভ পরিসংখ্যান ও রিপোর্ট',
+      icon: FaChartPie,
+    },
     {
       id: 'purchases',
       label: 'পেমেন্ট রিকোয়েস্ট (TrxID)',

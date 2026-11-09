@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import AdminSidebar, { AdminTab, AdminProfileInfo } from '@/components/admin/AdminSidebar';
+import AdminDashboard from '@/components/admin/AdminDashboard';
 import PurchasesTable from '@/components/admin/PurchasesTable';
 import AddResultForm from '@/components/admin/AddResultForm';
 import AddPdfForm, { PdfFormData } from '@/components/admin/AddPdfForm';
@@ -25,7 +26,7 @@ export default function AdminPage() {
   const { data: session, update } = useSession();
   const photoInputRef = useRef<HTMLInputElement>(null);
 
-  const [activeTab, setActiveTab] = useState<AdminTab>('purchases');
+  const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
   const [purchases, setPurchases] = useState<PurchaseRecord[]>([]);
@@ -73,7 +74,7 @@ export default function AdminPage() {
       const tabParam = params.get('tab') as AdminTab | null;
       if (
         tabParam &&
-        ['purchases', 'addResult', 'addPdf', 'students', 'settings'].includes(tabParam)
+        ['dashboard', 'purchases', 'addResult', 'addPdf', 'students', 'settings'].includes(tabParam)
       ) {
         setActiveTab(tabParam);
       }
@@ -331,6 +332,7 @@ export default function AdminPage() {
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">অ্যাডমিন প্যানেল</span>
                 <span className="text-slate-300">•</span>
                 <span className="text-xs font-bold text-brand-700">
+                  {activeTab === 'dashboard' && 'ড্যাশবোর্ড ওভারভিউ'}
                   {activeTab === 'purchases' && 'পেমেন্ট রিকোয়েস্ট যাচাই'}
                   {activeTab === 'addPdf' && 'পিডিএফ শিট ও কার্ড ম্যানেজমেন্ট'}
                   {activeTab === 'addResult' && 'কোচিং পরীক্ষার রেজাল্ট আপলোড'}
@@ -339,6 +341,7 @@ export default function AdminPage() {
                 </span>
               </div>
               <h1 className="text-lg sm:text-2xl font-black text-slate-800 leading-tight">
+                {activeTab === 'dashboard' && 'লাইভ ড্যাশবোর্ড ও একাডেমিক পরিসংখ্যান'}
                 {activeTab === 'purchases' && 'বিকাশ ও নগদ পেমেন্ট অনুমোদন'}
                 {activeTab === 'addPdf' && 'পিডিএফ শিট আপলোড ও কার্ড কাস্টমাইজেশন'}
                 {activeTab === 'addResult' && 'নতুন পরীক্ষার ফলাফল সংরক্ষণ'}
@@ -421,6 +424,17 @@ export default function AdminPage() {
             </div>
             <button onClick={() => setMsg(null)} className="text-xs opacity-70 hover:opacity-100">✕</button>
           </div>
+        )}
+
+        {/* TAB 0: Dynamic Overview Dashboard */}
+        {activeTab === 'dashboard' && (
+          <AdminDashboard
+            onNavigateTab={setActiveTab}
+            onStatusUpdated={() => {
+              fetchPurchases();
+              fetchPdfCount();
+            }}
+          />
         )}
 
         {/* TAB 1: Review Purchases */}
