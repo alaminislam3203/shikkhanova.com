@@ -504,10 +504,12 @@ export default function AddPdfForm({
               </div>
             </div>
 
-            {/* Subject Quick-Select Pills */}
+            {/* Subject Quick-Select Pills (Dynamic NCTB Subjects per Class) */}
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-[11px] font-bold text-slate-400">দ্রুত বিষয় বাছাই:</span>
-              {SUBJECT_PRESETS.map((subj) => (
+              <span className="text-[11px] font-bold text-slate-400">
+                শ্রেণি {formData.classGrade}-এর NCTB বিষয়সমূহ:
+              </span>
+              {classSubjects.map((subj) => (
                 <button
                   key={subj}
                   type="button"
@@ -518,7 +520,7 @@ export default function AddPdfForm({
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border-slate-200'
                   }`}
                 >
-                  {subj.split(' ')[0]}
+                  {subj.split(' (')[0]}
                 </button>
               ))}
             </div>
