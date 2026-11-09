@@ -1,105 +1,51 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import {
   FaBell,
   FaCalendarDays,
   FaMagnifyingGlass,
-  FaFilePdf,
   FaEye,
   FaXmark,
   FaThumbtack,
   FaCircleCheck,
   FaArrowRight,
+  FaPlus,
 } from 'react-icons/fa6';
-import { HiSparkles } from 'react-icons/hi2';
-
-interface NoticeItem {
-  id: string;
-  title: string;
-  date: string;
-  category: 'exam' | 'routine' | 'admission' | 'general';
-  categoryLabel: string;
-  targetClass: string;
-  isPinned?: boolean;
-  summary: string;
-  details: string;
-  attachmentUrl?: string;
-}
-
-const NOTICES_DATA: NoticeItem[] = [
-  {
-    id: 'n-1',
-    title: '৫ম থেকে ১০ম শ্রেণির মাসিক মূল্যায়ন ও মডেল টেস্ট পরীক্ষার সময়সূচি প্রকাশ',
-    date: '১০ নভেম্বর, ২০২৬',
-    category: 'exam',
-    categoryLabel: 'পরীক্ষা ও ফলাফল',
-    targetClass: '৫ম - ১০ম শ্রেণি',
-    isPinned: true,
-    summary:
-      'আগামী সপ্তাহ থেকে ৫ম থেকে ১০ম শ্রেণির সকল ব্যাচের মাসিক মূল্যায়ন ও বিশেষ মডেল টেস্ট পরীক্ষা শুরু হতে যাচ্ছে।',
-    details:
-      'শিক্ষা নোভা একাডেমির ৫ম থেকে ১০ম শ্রেণির সকল শিক্ষার্থীদের অবগতির জন্য জানানো যাচ্ছে যে, আগামী সপ্তাহ থেকে মাসিক মূল্যায়ন ও মডেল টেস্ট পরীক্ষা অনুষ্ঠিত হবে। সকল শিক্ষার্থীকে নির্ধারিত সময়ের ১৫ মিনিট পূর্বে কেন্দ্রে উপস্থিত থাকার জন্য নির্দেশ দেওয়া হলো। পরীক্ষার ফলাফল ও ডিজিটাল মার্কশিট আমাদের ওয়েবসাইটের "কোচিং রেজাল্ট" পাতায় রোল নম্বর অনুযায়ী প্রকাশ করা হবে।',
-    attachmentUrl: '/results',
-  },
-  {
-    id: 'n-2',
-    title: 'নতুন শিক্ষাবর্ষে ৫ম থেকে ১০ম শ্রেণির স্পেশাল ব্যাচে ভর্তি চলছে',
-    date: '০৮ নভেম্বর, ২০২৬',
-    category: 'admission',
-    categoryLabel: 'ভর্তি বিজ্ঞপ্তি',
-    targetClass: 'সকল শ্রেণি',
-    isPinned: true,
-    summary:
-      'জুম্মাপাড়া, নীলফামারী সদর ক্যাম্পাসে সীমিত আসনে ৫ম থেকে ১০ম শ্রেণির নতুন ব্যাচে ভর্তি কার্যক্রম শুরু হয়েছে।',
-    details:
-      'অভিজ্ঞ শিক্ষক মণ্ডলী ও আধুনিক ডিজিটাল মনিটরিং ব্যবস্থায় পরিচালিত শিক্ষা নোভা একাডেমিতে ৫ম, ৬ষ্ঠ, ৭ম, ৮ম, ৯ম ও ১০ম শ্রেণির নতুন ব্যাচে ভর্তি চলছে। প্রতিদিন অধ্যায়ভিত্তিক লেকচার শিট, সাপ্তাহিক পরীক্ষা এবং দুর্বল শিক্ষার্থীদের জন্য আলাদা কেয়ার ক্লাসের ব্যবস্থা রয়েছে। বিস্তারিত জানতে যোগাযোগ করুন: ০১৭১২৫৯২৫১৯।',
-  },
-  {
-    id: 'n-3',
-    title: '৯ম ও ১০ম শ্রেণির পদার্থ, রসায়ন ও উচ্চতর গণিত প্রিমিয়াম হ্যান্ডনোট প্রকাশ',
-    date: '০৫ নভেম্বর, ২০২৬',
-    category: 'general',
-    categoryLabel: 'হ্যান্ডনোট ও শিট',
-    targetClass: '৯ম - ১০ম শ্রেণি',
-    summary:
-      'বোর্ড পরীক্ষার সর্বশেষ সিলেবাস অনুযায়ী অধ্যায়ভিত্তিক রঙিন হ্যান্ডনোট ও চূড়ান্ত সাজেশন এখন পিডিএফ শপে পাওয়া যাচ্ছে।',
-    details:
-      '৯ম ও ১০ম শ্রেণির বিজ্ঞান বিভাগের শিক্ষার্থীদের জন্য পদার্থবিজ্ঞান, রসায়ন, জীববিজ্ঞান ও উচ্চতর গণিতের বিশেষ হ্যান্ডনোট এবং সৃজনশীল ও বহুনির্বাচনি সাজেশন ওয়েবসাইটের "পিডিএফ শিট ও নোট" সেকশনে আপলোড করা হয়েছে। বিকাশ বা নগদে নির্ধারিত ফি পেমেন্ট করে TrxID ভেরিফিকেশনের মাধ্যমে সাথে সাথে ডাউনলোড করা যাবে।',
-    attachmentUrl: '/pdfs',
-  },
-  {
-    id: 'n-4',
-    title: '৭ম ও ৮ম শ্রেণির গণিত ও ইংরেজি বিশেষ রিভিশন ক্লাসের সময়সূচি',
-    date: '০২ নভেম্বর, ২০২৬',
-    category: 'routine',
-    categoryLabel: 'ক্লাস রুটিন',
-    targetClass: '৭ম - ৮ম শ্রেণি',
-    summary:
-      'আগামী শুক্রবার সকাল ৯:০০ ঘটিকায় ৭ম ও ৮ম শ্রেণির গণিত ও ইংরেজি বিষয়ের বিশেষ সমাধান ক্লাস অনুষ্ঠিত হবে।',
-    details:
-      '৭ম ও ৮ম শ্রেণির শিক্ষার্থীদের জ্যামিতি, বীজগণিত এবং ইংরেজি গ্রামারের গুরুত্বপূর্ণ টপিকগুলোর ওপর আগামী শুক্রবার সকাল ৯:০০ ঘটিকা হতে ১১:৩০ ঘটিকা পর্যন্ত বিশেষ রিভিশন ও ডাউট সলভিং ক্লাস অনুষ্ঠিত হবে। ক্লাস শেষে প্র্যাকটিস শিট প্রদান করা হবে।',
-  },
-  {
-    id: 'n-5',
-    title: 'সাপ্তাহিক মেধা যাচাই পরীক্ষার মেধাতালিকা ও পুরস্কার বিতরণী সংক্রান্ত বিজ্ঞপ্তি',
-    date: '২৮ অক্টোবর, ২০২৬',
-    category: 'exam',
-    categoryLabel: 'পরীক্ষা ও ফলাফল',
-    targetClass: '৫ম - ১০ম শ্রেণি',
-    summary:
-      'সাপ্তাহিক পরীক্ষায় প্রতিটি শ্রেণিতে ১ম, ২য় ও ৩য় স্থান অধিকারী কৃতি শিক্ষার্থীদের মাঝে বিশেষ শিক্ষাবৃত্তি ও ক্রেস্ট প্রদান।',
-    details:
-      'গত মাসের সাপ্তাহিক ও মাসিক পরীক্ষায় সর্বোচ্চ নম্বরপ্রাপ্ত কৃতি শিক্ষার্থীদের ফলাফল প্রকাশিত হয়েছে। ওয়েবসাইটের রেজাল্ট পেজ থেকে রোল নম্বর দিয়ে বিস্তারিত মার্কশিট ডাউনলোড করা যাবে। আগামী শনিবার কৃতি শিক্ষার্থীদের হাতে পুরস্কার তুলে দেওয়া হবে।',
-    attachmentUrl: '/results',
-  },
-];
+import { DEFAULT_NOTICES, NoticeItem } from '@/lib/defaultNotices';
 
 export default function NoticesPage() {
+  const { data: session } = useSession();
+  const [notices, setNotices] = useState<NoticeItem[]>(DEFAULT_NOTICES);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeNotice, setActiveNotice] = useState<NoticeItem | null>(null);
+
+  useEffect(() => {
+    try {
+      const cached = sessionStorage.getItem('sn_notices_cache_v1');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setNotices(parsed);
+        }
+      }
+    } catch {}
+
+    fetch('/api/notices', { cache: 'no-store' })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.notices && Array.isArray(data.notices) && data.notices.length > 0) {
+          setNotices(data.notices);
+          try {
+            sessionStorage.setItem('sn_notices_cache_v1', JSON.stringify(data.notices));
+          } catch {}
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const categories = [
     { id: 'all', label: 'সকল নোটিশ' },
@@ -109,7 +55,7 @@ export default function NoticesPage() {
     { id: 'general', label: 'হ্যান্ডনোট ও সাধারণ' },
   ];
 
-  const filteredNotices = NOTICES_DATA.filter((item) => {
+  const filteredNotices = notices.filter((item) => {
     const matchCategory = selectedCategory === 'all' || item.category === selectedCategory;
     const matchSearch =
       searchQuery.trim() === '' ||
@@ -141,6 +87,17 @@ export default function NoticesPage() {
             <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
               শিক্ষা নোভা একাডেমির ৫ম থেকে ১০ম শ্রেণির ক্লাস রুটিন, পরীক্ষার সময়সূচি, ফলাফল ও জরুরি বিজ্ঞপ্তিসমূহ নিয়মিত এখানে আপডেট করা হয়।
             </p>
+            {session?.user?.role === 'ADMIN' && (
+              <div className="pt-1">
+                <Link
+                  href="/admin?tab=notices"
+                  className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold px-4 py-2 rounded-sm text-xs shadow transition"
+                >
+                  <FaPlus className="w-3 h-3" />
+                  <span>অ্যাডমিন প্যানেল থেকে নোটিশ যুক্ত বা এডিট করুন</span>
+                </Link>
+              </div>
+            )}
           </div>
 
           <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-4 text-xs space-y-1.5 shrink-0">
@@ -314,4 +271,3 @@ export default function NoticesPage() {
     </div>
   );
 }
-
