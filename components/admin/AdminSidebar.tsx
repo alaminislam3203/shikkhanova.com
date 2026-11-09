@@ -17,6 +17,8 @@ import {
   FaAnglesRight,
   FaChartPie,
   FaBell,
+  FaBookOpen,
+  FaUserCheck,
 } from 'react-icons/fa6';
 import { TbCashBanknote } from 'react-icons/tb';
 
@@ -27,6 +29,8 @@ export type AdminTab =
   | 'addPdf'
   | 'notices'
   | 'students'
+  | 'subjects'
+  | 'attendance'
   | 'settings';
 
 export interface AdminProfileInfo {
@@ -117,16 +121,29 @@ export default function AdminSidebar({
       icon: FaAward,
     },
     {
+      id: 'students',
+      label: 'শিক্ষার্থী ম্যানেজ ও ভর্তি',
+      sublabel: 'নতুন শিক্ষার্থী যোগ ও তালিকা',
+      icon: FaUsers,
+    },
+    {
+      id: 'subjects',
+      label: 'বিষয় ও NCTB বই (৫ম-১০ম)',
+      sublabel: 'শ্রেণিভিত্তিক বিষয় ও বোর্ড বই',
+      icon: FaBookOpen,
+      badge: 'NCTB',
+    },
+    {
+      id: 'attendance',
+      label: 'রোল উপস্থিতি (Attendance)',
+      sublabel: 'শ্রেণি ৫-১০ হাজিরা গ্রহণ',
+      icon: FaUserCheck,
+    },
+    {
       id: 'notices',
       label: 'নোটিশ বোর্ড ম্যানেজ',
       sublabel: 'নোটিশ প্রকাশ, এডিট ও ডিলিট',
       icon: FaBell,
-    },
-    {
-      id: 'students',
-      label: 'রোল উপস্থিতি (Attendance)',
-      sublabel: 'শ্রেণি ৫-১০ হাজিরা গ্রহণ',
-      icon: FaUsers,
     },
     {
       id: 'settings',

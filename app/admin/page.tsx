@@ -10,6 +10,8 @@ import AddResultForm from '@/components/admin/AddResultForm';
 import AddPdfForm, { PdfFormData } from '@/components/admin/AddPdfForm';
 import AdminAttendanceManager from '@/components/admin/AdminAttendanceManager';
 import AdminNoticesManager from '@/components/admin/AdminNoticesManager';
+import AdminStudentsManager from '@/components/admin/AdminStudentsManager';
+import AdminSubjectsManager from '@/components/admin/AdminSubjectsManager';
 import { PurchaseRecord } from '@/types';
 import {
   FaBars,
