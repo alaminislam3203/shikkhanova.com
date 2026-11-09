@@ -249,13 +249,23 @@ export default function Navbar() {
     icon?: any;
     color?: string;
     badge?: string;
+    children?: { href: string; label: string }[];
   }
 
   const navLinks: NavLinkItem[] = [
     { href: '/', label: 'হোম' },
-    { href: '/attendance', label: 'রোল উপস্থিতি' },
-    { href: '/results', label: 'কোচিং রেজাল্ট' },
-    { href: '/pdfs', label: 'শিট ও নোট'},
+    {
+      href: '/about',
+      label: 'আমাদের সম্পর্কে',
+      children: [
+        { href: '/about', label: 'শিক্ষা নোভা সম্পর্কে' },
+        { href: '/chairman-message', label: 'চেয়ারম্যানের বার্তা' },
+      ],
+    },
+    { href: '/notices', label: 'নোটিশ' },
+    { href: '/results', label: 'রেজাল্ট' },
+    { href: '/pdfs', label: 'শিট ও নোট' },
+    { href: '/gallery', label: 'ফটো গ্যালারি' },
     { href: '/videos', label: 'ভিডিও ক্লাস', icon: FaYoutube, color: 'text-red-500' },
   ];
 
@@ -313,12 +323,67 @@ export default function Navbar() {
             <nav className="hidden lg:flex items-center gap-1">
               {navLinks.map((link) => {
                 const Icon = link.icon;
-                const active = pathname === link.href;
+                const isChildActive = link.children?.some((c) => pathname === c.href);
+                const active = pathname === link.href || Boolean(isChildActive);
+
+                if (link.children) {
+                  return (
+                    <div
+                      key={link.href}
+                      ref={aboutDropdownRef}
+                      onMouseEnter={() => setAboutMenuOpen(true)}
+                      onMouseLeave={() => setAboutMenuOpen(false)}
+                      className="relative"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => setAboutMenuOpen((prev) => !prev)}
+                        className={`px-3 py-2 rounded-sm text-sm font-semibold transition-all flex items-center gap-1.5 relative whitespace-nowrap ${
+                          active
+                            ? 'bg-[#C8102E] text-white shadow-sm font-bold'
+                            : 'text-[#0A1E3C] hover:text-[#C8102E] hover:bg-red-50/50'
+                        }`}
+                      >
+                        <span>{link.label}</span>
+                        <FaChevronDown
+                          className={`w-3 h-3 transition-transform duration-200 ${
+                            aboutMenuOpen ? 'rotate-180' : ''
+                          }`}
+                        />
+                      </button>
+
+                      {aboutMenuOpen && (
+                        <div className="absolute left-0 top-full pt-1.5 w-52 z-50">
+                          <div className="bg-white rounded-md shadow-xl border border-slate-200/90 py-2 overflow-hidden">
+                            {link.children.map((sub) => {
+                              const subActive = pathname === sub.href;
+                              return (
+                                <Link
+                                  key={sub.href}
+                                  href={sub.href}
+                                  onClick={() => setAboutMenuOpen(false)}
+                                  className={`block px-4 py-2.5 text-sm font-semibold transition ${
+                                    subActive
+                                      ? 'bg-[#C8102E] text-white font-bold'
+                                      : 'text-slate-700 hover:text-[#C8102E] hover:bg-red-50/60'
+                                  }`}
+                                >
+                                  {sub.label}
+                                </Link>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+
                 return (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`px-3.5 py-2 rounded-sm text-sm font-semibold transition-all flex items-center gap-2 relative whitespace-nowrap ${
+                    className={`px-3 py-2 rounded-sm text-sm font-semibold transition-all flex items-center gap-1.5 relative whitespace-nowrap ${
                       active
                         ? 'bg-[#C8102E] text-white shadow-sm font-bold'
                         : 'text-[#0A1E3C] hover:text-[#C8102E] hover:bg-red-50/50'
@@ -599,7 +664,54 @@ export default function Navbar() {
             <div className="lg:hidden py-4 border-t border-slate-200 space-y-1.5 animate-in slide-in-from-top-2 duration-200">
               {navLinks.map((link) => {
                 const Icon = link.icon;
-                const active = pathname === link.href;
+                const isChildActive = link.children?.some((c) => pathname === c.href);
+                const active = pathname === link.href || Boolean(isChildActive);
+
+                if (link.children) {
+                  return (
+                    <div key={link.href} className="space-y-1">
+                      <button
+                        type="button"
+                        onClick={() => setMobileAboutOpen((prev) => !prev)}
+                        className={`w-full flex items-center justify-between px-4 py-2.5 rounded-sm text-sm font-semibold ${
+                          active
+                            ? 'bg-[#C8102E] text-white font-bold shadow-xs'
+                            : 'text-slate-700 hover:bg-slate-100'
+                        }`}
+                      >
+                        <span>{link.label}</span>
+                        <FaChevronDown
+                          className={`w-3.5 h-3.5 transition-transform ${
+                            mobileAboutOpen ? 'rotate-180' : ''
+                          }`}
+                        />
+                      </button>
+
+                      {mobileAboutOpen && (
+                        <div className="pl-4 space-y-1 border-l-2 border-red-200 ml-4">
+                          {link.children.map((sub) => {
+                            const subActive = pathname === sub.href;
+                            return (
+                              <Link
+                                key={sub.href}
+                                href={sub.href}
+                                onClick={() => setMobileOpen(false)}
+                                className={`block px-3.5 py-2 rounded-sm text-xs font-semibold ${
+                                  subActive
+                                    ? 'bg-[#C8102E] text-white font-bold'
+                                    : 'text-slate-600 hover:bg-red-50 hover:text-[#C8102E]'
+                                }`}
+                              >
+                                {sub.label}
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+
                 return (
                   <Link
                     key={link.href}

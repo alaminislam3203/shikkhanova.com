@@ -34,7 +34,7 @@ export default function ClassSelector() {
         {classes.map((c) => (
           <Link
             key={c.grade}
-            href={`/attendance?classGrade=${c.grade}`}
+            href={`/pdfs?classGrade=${c.grade}`}
             className="group bg-white hover:bg-brand-50/60 border border-slate-200/80 hover:border-brand-300 p-5 rounded-2xl text-center shadow-sm hover:shadow-brand transition-all duration-200 flex flex-col justify-between"
           >
             <div className="space-y-1">
@@ -45,7 +45,7 @@ export default function ClassSelector() {
               <p className="text-[11px] font-medium text-slate-400">{c.rolls}</p>
             </div>
             <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-center gap-1 text-[11px] font-bold text-brand-700 group-hover:text-nova-600">
-              <span>হাজিরা দিন</span>
+              <span>শিট ও নোট</span>
               <FaArrowRight className="w-2.5 h-2.5 group-hover:translate-x-1 transition-transform" />
             </div>
           </Link>

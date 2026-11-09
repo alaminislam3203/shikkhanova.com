@@ -86,10 +86,10 @@ export default function HeroSection() {
             </Link>
 
             <Link
-              href="/attendance"
+              href="/notices"
               className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-bold px-6 py-3.5 rounded-2xl text-sm border border-white/20 transition transform hover:-translate-y-0.5"
             >
-              <FaUserCheck className="w-4 h-4 text-emerald-400" /> রোল উপস্থিতি দিন
+              <FaUserCheck className="w-4 h-4 text-emerald-400" /> নোটিশ বোর্ড দেখুন
             </Link>
           </div>
 

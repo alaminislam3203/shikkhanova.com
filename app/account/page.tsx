@@ -754,7 +754,7 @@ export default function AccountPage() {
                       <FaAward className="w-5 h-5" />
                     </div>
                     <h3 className="font-black text-slate-800 group-hover:text-brand-700 transition">
-                      কোচিং রেজাল্ট ও মার্কশিট
+                     রেজাল্ট ও মার্কশিট
                     </h3>
                     <p className="text-xs text-slate-500">
                       ক্লাস ও রোল নম্বর দিয়ে অফিশিয়াল গ্রেডশিট, জিপিএ ও সাবজেক্ট মার্কস দেখুন।

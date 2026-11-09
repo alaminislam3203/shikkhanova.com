@@ -14,22 +14,22 @@ export default function FeaturesGrid() {
   return (
     <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       
-      {/* Feature 1: Attendance */}
+      {/* Feature 1: Notices & Academic Updates */}
       <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4">
         <div className="space-y-3">
           <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-700 flex items-center justify-center text-xl shadow-inner">
             <FaUserCheck />
           </div>
-          <h3 className="text-lg font-bold text-slate-800">রোল ভিত্তিক উপস্থিতি</h3>
+          <h3 className="text-lg font-bold text-slate-800">অফিশিয়াল নোটিশ ও রুটিন</h3>
           <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-            ক্লাস ৫, ৬, ৭, ৮, ৯ ও ১০ম শ্রেণির প্রতিটি শিক্ষার্থীর রোল নম্বর অনুযায়ী দ্রুত উপস্থিত (Present), অনুপস্থিত (Absent) বা বিলম্ব (Late) মার্ক করুন।
+            ক্লাস ৫, ৬, ৭, ৮, ৯ ও ১০ম শ্রেণির সকল ব্যাচের পরীক্ষার সময়সূচি, ক্লাস রুটিন ও জরুরি একাডেমিক বিজ্ঞপ্তি দেখুন।
           </p>
         </div>
         <Link
-          href="/attendance"
+          href="/notices"
           className="inline-flex items-center gap-2 text-xs font-bold text-brand-700 hover:text-brand-800 pt-2"
         >
-          হাজিরা প্যানেলে যান <FaArrowRight className="w-3 h-3" />
+          নোটিশ বোর্ডে যান <FaArrowRight className="w-3 h-3" />
         </Link>
       </div>
 

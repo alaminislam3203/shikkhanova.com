@@ -136,8 +136,18 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/attendance" className="hover:text-amber-400 transition-colors inline-block">
-                  রোল উপস্থিতি
+                <Link href="/about" className="hover:text-amber-400 transition-colors inline-block">
+                  আমাদের সম্পর্কে
+                </Link>
+              </li>
+              <li>
+                <Link href="/notices" className="hover:text-amber-400 transition-colors inline-block">
+                  নোটিশ বোর্ড
+                </Link>
+              </li>
+              <li>
+                <Link href="/gallery" className="hover:text-amber-400 transition-colors inline-block">
+                  ফটো গ্যালারি
                 </Link>
               </li>
               <li>
