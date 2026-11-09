@@ -1,17 +1,19 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import PdfCard from '@/components/pdfs/PdfCard';
 import PdfPurchaseModal from '@/components/pdfs/PdfPurchaseModal';
 import { PdfItem } from '@/types';
+import toast from 'react-hot-toast';
 import {
   FaFilePdf,
   FaMagnifyingGlass,
   FaCircleCheck,
   FaClock,
   FaPlus,
+  FaKey,
 } from 'react-icons/fa6';
 import { HiSparkles } from 'react-icons/hi2';
 
@@ -23,6 +25,9 @@ export default function PdfsPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [activePdf, setActivePdf] = useState<PdfItem | null>(null);
+  const [quickTrxInput, setQuickTrxInput] = useState<string>('');
+  const [checkingTrx, setCheckingTrx] = useState<boolean>(false);
+  const prevStatusMapRef = useRef<Record<string, string>>({});
 
   useEffect(() => {
     try {
@@ -36,28 +41,69 @@ export default function PdfsPage() {
       }
     } catch {}
     fetchPdfs();
-  }, [session?.user?.id]);
+  }, [session?.user?.id, session?.user?.email]);
 
-  const fetchPdfs = async () => {
+  // Live Auto-Polling when any PDF is PENDING so the student's download unlocks dynamically as soon as Admin approves
+  useEffect(() => {
+    const hasPending = pdfs.some((p) => p.purchaseStatus === 'PENDING');
+    if (!hasPending) return;
+
+    const timer = setInterval(() => {
+      fetchPdfs(true);
+    }, 4000);
+
+    return () => clearInterval(timer);
+  }, [pdfs]);
+
+  const fetchPdfs = async (isSilentPoll = false) => {
     try {
-      const res = await fetch('/api/pdfs', { cache: 'no-store' });
+      let savedTrxParam = '';
+      try {
+        const savedTrx = JSON.parse(localStorage.getItem('sn_my_trx_ids') || '[]');
+        if (Array.isArray(savedTrx) && savedTrx.length > 0) {
+          savedTrxParam = `?trxIds=${encodeURIComponent(savedTrx.join(','))}`;
+        }
+      } catch {}
+
+      const res = await fetch(`/api/pdfs${savedTrxParam}`, { cache: 'no-store' });
       const data = await res.json();
 
       if (data.pdfs && Array.isArray(data.pdfs)) {
-        const formatted = data.pdfs.map((p: any) => ({
-          id: p.id,
-          title: p.title,
-          description: p.description || '',
-          classGrade: p.classGrade,
-          subject: p.subject,
-          price: p.price,
-          fileUrl: p.fileUrl,
-          isFree: Boolean(p.isFree) || Number(p.price) <= 0,
-          purchaseStatus:
-            p.purchases && p.purchases.length > 0
-              ? p.purchases[0].status
-              : 'NONE',
-        }));
+        const formatted: PdfItem[] = data.pdfs.map((p: any) => {
+          let resolvedStatus: 'NONE' | 'PENDING' | 'APPROVED' | 'REJECTED' = 'NONE';
+          if (Array.isArray(p.purchases) && p.purchases.length > 0) {
+            if (p.purchases.some((pur: any) => pur.status === 'APPROVED')) {
+              resolvedStatus = 'APPROVED';
+            } else if (p.purchases.some((pur: any) => pur.status === 'PENDING')) {
+              resolvedStatus = 'PENDING';
+            } else {
+              resolvedStatus = p.purchases[0].status;
+            }
+          }
+
+          // Detect live transition from PENDING -> APPROVED
+          const prevStatus = prevStatusMapRef.current[p.id];
+          if (isSilentPoll && prevStatus === 'PENDING' && resolvedStatus === 'APPROVED') {
+            toast.success(
+              `🎉 অভিনন্দন! "${p.title}" শিটের পেমেন্ট অনুমোদিত হয়েছে। এখনই ডাউনলোড করুন!`,
+              { duration: 6000 }
+            );
+          }
+          prevStatusMapRef.current[p.id] = resolvedStatus;
+
+          return {
+            id: p.id,
+            title: p.title,
+            description: p.description || '',
+            classGrade: p.classGrade,
+            subject: p.subject,
+            price: p.price,
+            fileUrl: p.fileUrl,
+            isFree: Boolean(p.isFree) || Number(p.price) <= 0,
+            purchaseStatus: resolvedStatus,
+          };
+        });
+
         setPdfs(formatted);
         try {
           sessionStorage.setItem('sn_pdfs_cache_v1', JSON.stringify(formatted));
@@ -72,15 +118,62 @@ export default function PdfsPage() {
     }
   };
 
+  // Allow any student to enter their TrxID to check status & dynamically unlock download
+  const handleQuickTrxVerify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const clean = quickTrxInput.trim().toUpperCase();
+    if (!clean) return;
+
+    setCheckingTrx(true);
+    try {
+      const res = await fetch(`/api/pdfs/purchase?trxId=${encodeURIComponent(clean)}`, {
+        cache: 'no-store',
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.purchase) {
+        toast.error(data.error || 'এই TrxID দিয়ে কোনো পেমেন্ট পাওয়া যায়নি');
+        return;
+      }
+
+      // Save TrxID in localStorage so card stays unlocked dynamically
+      try {
+        const prev = JSON.parse(localStorage.getItem('sn_my_trx_ids') || '[]');
+        if (Array.isArray(prev) && !prev.includes(clean)) {
+          localStorage.setItem('sn_my_trx_ids', JSON.stringify([...prev, clean]));
+        }
+      } catch {}
+
+      await fetchPdfs();
+
+      if (data.purchase.status === 'APPROVED') {
+        toast.success(
+          `পেমেন্ট সফল! "${data.purchase.pdf?.title || 'পিডিএফ শিট'}" এখন ডাউনলোডের জন্য প্রস্তুত।`
+        );
+        setQuickTrxInput('');
+      } else if (data.purchase.status === 'PENDING') {
+        toast('আপনার TrxID এখন অ্যাডমিন যাচাইয়ের অপেক্ষায় (Pending) রয়েছে। অনুমোদন হলেই ডাউনলোড চালু হবে।');
+      } else {
+        toast.error('এই TrxID পেমেন্ট রিকোয়েস্টটি বাতিল (Rejected) করা হয়েছে।');
+      }
+    } catch {
+      toast.error('TrxID যাচাই করতে সমস্যা হয়েছে');
+    } finally {
+      setCheckingTrx(false);
+    }
+  };
+
   const openPurchaseModal = (pdf: PdfItem) => {
     setActivePdf(pdf);
     setModalOpen(true);
   };
 
   const handlePurchaseSuccess = (pdfId: string) => {
+    prevStatusMapRef.current[pdfId] = 'PENDING';
     setPdfs((prev) =>
       prev.map((p) => (p.id === pdfId ? { ...p, purchaseStatus: 'PENDING' } : p))
     );
+    fetchPdfs();
   };
 
   const filteredPdfs = pdfs.filter((p) => {
@@ -245,6 +338,38 @@ export default function PdfsPage() {
 
         </div>
 
+        {/* Dynamic TrxID Lookup & Instant Download Unlocker Bar */}
+        <form
+          onSubmit={handleQuickTrxVerify}
+          className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5"
+        >
+          <div className="flex items-center gap-2 text-xs text-slate-600 font-semibold">
+            <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-200">
+              <FaKey className="w-3.5 h-3.5" />
+            </span>
+            <span>
+              পেমেন্ট করেছেন? আপনার <strong className="text-slate-800">TrxID</strong> দিয়ে ডাউনলোড আনলক বা স্ট্যাটাস চেক করুন:
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={quickTrxInput}
+              onChange={(e) => setQuickTrxInput(e.target.value.toUpperCase())}
+              placeholder="TrxID লিখুন (যেমন: 9J72AKL89Q)"
+              className="flex-1 sm:w-56 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-mono font-bold uppercase text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 focus:bg-white transition"
+            />
+            <button
+              type="submit"
+              disabled={checkingTrx || !quickTrxInput.trim()}
+              className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-sm transition whitespace-nowrap"
+            >
+              {checkingTrx ? 'চেক হচ্ছে...' : 'ডাউনলোড আনলক'}
+            </button>
+          </div>
+        </form>
+
       </div>
 
       {/* PDF Cards Grid */}
@@ -279,7 +404,15 @@ export default function PdfsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {filteredPdfs.map((pdf) => (
-            <PdfCard key={pdf.id} pdf={pdf} onBuyClick={openPurchaseModal} />
+            <PdfCard
+              key={pdf.id}
+              pdf={pdf}
+              onBuyClick={openPurchaseModal}
+              onRefreshStatus={() => {
+                fetchPdfs();
+                toast.success('পেমেন্ট স্ট্যাটাস আপডেট করা হয়েছে!');
+              }}
+            />
           ))}
         </div>
       )}
