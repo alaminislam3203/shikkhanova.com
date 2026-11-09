@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { AdminTab } from '@/components/admin/AdminSidebar';
+import toast from 'react-hot-toast';
 import {
   FaFilePdf,
   FaUsers,
@@ -17,6 +18,8 @@ import {
   FaXmark,
   FaLayerGroup,
   FaEye,
+  FaMagnifyingGlass,
+  FaBolt,
 } from 'react-icons/fa6';
 import { TbCashBanknote } from 'react-icons/tb';
 import { HiSparkles } from 'react-icons/hi2';
@@ -55,6 +58,8 @@ export default function AdminDashboard({
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [trxSearchQuery, setTrxSearchQuery] = useState<string>('');
+  const lastDashboardTrxPromptRef = useRef<string>('');
 
   useEffect(() => {
     try {
@@ -111,6 +116,114 @@ export default function AdminDashboard({
       setUpdatingId(null);
     }
   };
+
+  // react-hot-toast Confirmation Popup before Auto Payment Success
+  const triggerDashboardTrxConfirmation = (pur: any) => {
+    const toastId = `dash-confirm-trx-${pur.id}`;
+
+    toast.custom(
+      (t) => (
+        <div className="bg-white rounded-3xl shadow-2xl border-2 border-emerald-500/80 p-5 max-w-md w-full space-y-3.5 text-slate-800">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 shadow-inner">
+                <FaBolt className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="inline-block text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                  ⚡ TrxID মিলে গেছে!
+                </span>
+                <h4 className="text-sm font-black text-slate-900 mt-0.5">
+                  Auto Payment Success নিশ্চিত করবেন?
+                </h4>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => toast.dismiss(t.id)}
+              className="text-slate-400 hover:text-slate-600 p-1 text-xs"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div className="bg-slate-50 rounded-2xl p-3.5 border border-slate-200/90 space-y-1.5 text-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-slate-500 font-semibold">ট্রানজ্যাকশন আইডি (TrxID):</span>
+              <span className="font-mono font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                {pur.trxId}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-slate-500 font-semibold">শিক্ষার্থী:</span>
+              <span className="font-bold text-slate-800">{pur.student?.name}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-slate-500 font-semibold">প্রেরকের নম্বর:</span>
+              <span className="font-mono font-bold text-slate-800">
+                {pur.senderPhone} ({pur.paymentMethod})
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-slate-500 font-semibold">ফি ও শিট:</span>
+              <span className="font-black text-brand-700 truncate max-w-[180px]">
+                ৳{pur.amount} • {pur.pdf?.title}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5 pt-1">
+            <button
+              type="button"
+              onClick={async () => {
+                toast.dismiss(t.id);
+                await handleQuickPurchaseAction(pur.id, 'APPROVED');
+                toast.success(
+                  `পেমেন্ট সফল (TrxID: ${pur.trxId})! "${pur.student?.name}" এখন পিডিএফ ডাউনলোড করতে পারবে।`,
+                  { duration: 5000 }
+                );
+              }}
+              className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs shadow-md transition flex items-center justify-center gap-1.5 active:scale-95"
+            >
+              <FaCheck className="w-3.5 h-3.5" />
+              <span>হ্যাঁ, পেমেন্ট সফল করুন</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => toast.dismiss(t.id)}
+              className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-4 rounded-xl text-xs transition"
+            >
+              বাতিল
+            </button>
+          </div>
+        </div>
+      ),
+      { id: toastId, duration: Infinity }
+    );
+  };
+
+  useEffect(() => {
+    const cleanQuery = trxSearchQuery.trim().toUpperCase();
+    if (!cleanQuery) {
+      lastDashboardTrxPromptRef.current = '';
+      return;
+    }
+
+    const list = data?.recentPurchases || [];
+    const exactMatch = list.find(
+      (p: any) => p.trxId?.trim().toUpperCase() === cleanQuery
+    );
+
+    if (exactMatch && lastDashboardTrxPromptRef.current !== cleanQuery) {
+      lastDashboardTrxPromptRef.current = cleanQuery;
+      if (exactMatch.status !== 'APPROVED') {
+        triggerDashboardTrxConfirmation(exactMatch);
+      } else {
+        toast.success(`TrxID "${exactMatch.trxId}" ইতোমধ্যে অনুমোদিত রয়েছে!`);
+      }
+    }
+  }, [trxSearchQuery, data?.recentPurchases]);
 
   if (loading && !data) {
     return (
@@ -455,7 +568,7 @@ export default function AdminDashboard({
                 সাম্প্রতিক পেমেন্ট ও TrxID রিকোয়েস্ট
               </h3>
               <p className="text-xs text-slate-500">
-                ড্যাশবোর্ড থেকেই সরাসরি ১-ক্লিকে পেমেন্ট অনুমোদন বা বাতিল করুন
+                TrxID দিয়ে সার্চ করুন — মিলে গেলে অটো পেমেন্ট কনফার্মেশন পপআপ আসবে
               </p>
             </div>
             <button
@@ -467,6 +580,30 @@ export default function AdminDashboard({
             </button>
           </div>
 
+          {/* Dashboard TrxID Instant Search Box */}
+          <div className="relative">
+            <FaMagnifyingGlass className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5" />
+            <input
+              type="text"
+              value={trxSearchQuery}
+              onChange={(e) => setTrxSearchQuery(e.target.value)}
+              placeholder="এখানে TrxID পেস্ট বা টাইপ করুন (মিলে গেলে Auto Payment Success কনফার্মেশন চাইবে)..."
+              className="w-full bg-slate-50 border border-slate-300 rounded-2xl pl-9 pr-8 py-2.5 text-xs font-mono font-bold text-slate-800 placeholder:font-sans placeholder:font-medium placeholder:text-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white transition"
+            />
+            {trxSearchQuery && (
+              <button
+                type="button"
+                onClick={() => {
+                  setTrxSearchQuery('');
+                  lastDashboardTrxPromptRef.current = '';
+                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
           {recentPurchases.length === 0 ? (
             <div className="py-10 text-center text-xs text-slate-400 space-y-1">
               <p className="font-bold text-slate-600">কোনো পেমেন্ট রিকোয়েস্ট পাওয়া যায়নি</p>
@@ -474,7 +611,17 @@ export default function AdminDashboard({
             </div>
           ) : (
             <div className="space-y-3">
-              {recentPurchases.map((pur: any) => (
+              {recentPurchases
+                .filter((pur: any) => {
+                  const q = trxSearchQuery.trim().toLowerCase();
+                  if (!q) return true;
+                  return (
+                    pur.trxId?.toLowerCase().includes(q) ||
+                    pur.senderPhone?.toLowerCase().includes(q) ||
+                    pur.student?.name?.toLowerCase().includes(q)
+                  );
+                })
+                .map((pur: any) => (
                 <div
                   key={pur.id}
                   className="p-3.5 rounded-2xl border border-slate-200/80 bg-slate-50/50 hover:bg-white transition flex flex-col sm:flex-row sm:items-center justify-between gap-3"
@@ -511,7 +658,7 @@ export default function AdminDashboard({
                         <button
                           type="button"
                           disabled={updatingId === pur.id}
-                          onClick={() => handleQuickPurchaseAction(pur.id, 'APPROVED')}
+                          onClick={() => triggerDashboardTrxConfirmation(pur)}
                           className="inline-flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs transition disabled:opacity-50"
                         >
                           <FaCheck className="w-3 h-3" /> অনুমোদন
