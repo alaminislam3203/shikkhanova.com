@@ -22,22 +22,19 @@ export default function Logo({
     sm: {
       crest: 'w-9 h-9 sm:w-10 sm:h-10',
       bnTitle: 'text-lg sm:text-xl',
-      enSub: 'text-[9px] sm:text-[10px]',
-      slogan: 'text-[9px] sm:text-[10px] px-1.5 py-0.5',
+      slogan: 'text-[9px] sm:text-[10px] px-2 py-0.5',
       gap: 'gap-2',
     },
     md: {
       crest: 'w-11 h-11 sm:w-12 sm:h-12',
       bnTitle: 'text-xl sm:text-2xl',
-      enSub: 'text-[10px] sm:text-[11px]',
-      slogan: 'text-[10px] sm:text-[11px] px-2 py-0.5',
+      slogan: 'text-[10px] sm:text-[11px] px-2.5 py-0.5',
       gap: 'gap-2.5 sm:gap-3',
     },
     lg: {
       crest: 'w-14 h-14 sm:w-16 sm:h-16',
       bnTitle: 'text-2xl sm:text-3xl',
-      enSub: 'text-xs sm:text-sm',
-      slogan: 'text-[11px] sm:text-xs px-2.5 py-0.5',
+      slogan: 'text-[11px] sm:text-xs px-3 py-1',
       gap: 'gap-3 sm:gap-3.5',
     },
   }[size];
@@ -45,7 +42,7 @@ export default function Logo({
   const content = (
     <div className={`relative inline-flex items-center ${sizeConfig.gap} group select-none ${className}`}>
       {/* UCC Theme Academic Shield & Mortarboard Vector Crest */}
-      <div className={`${sizeConfig.crest} shrink-0 transition-transform duration-300 group-hover:scale-105`}>
+      <div className={`${sizeConfig.crest} shrink-0 flex items-center justify-center transition-transform duration-300 group-hover:scale-105`}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 180 185"
@@ -122,19 +119,21 @@ export default function Logo({
         </svg>
       </div>
 
-      {/* UCC Style Brand Typography (Noto Sans Bengali + Poppins) */}
-      <div className="flex flex-col justify-center leading-none">
-        <div className="flex items-baseline gap-1">
-          <span className={`${sizeConfig.bnTitle} font-black tracking-tight text-[#0A1E3C]`}>
-            শিক্ষা নোভা
-          </span>
-        </div>
+      {/* Aligned Brand Typography & Centered Slogan Span */}
+      <div className="flex flex-col items-center justify-center gap-1">
+        <span
+          className={`${sizeConfig.bnTitle} font-bn font-bold tracking-tight text-[#0A1E3C] leading-none text-center whitespace-nowrap`}
+        >
+          শিক্ষা নোভা
+        </span>
 
-       <span
-  className={`${sizeConfig.slogan} font-extrabold text-white bg-[#C8102E] rounded-sm leading-tight shadow-2xs`}
->
-  শিখবো, জিতবো
-</span>
+        {showSlogan && (
+          <span
+            className={`${sizeConfig.slogan} w-full inline-flex items-center justify-center text-center font-bn font-bold text-white bg-[#C8102E] rounded-sm leading-none shadow-2xs whitespace-nowrap`}
+          >
+            শিখবো, জিতবো
+          </span>
+        )}
       </div>
     </div>
   );
