@@ -1,82 +1,100 @@
-
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 200" width="100%" height="100%">
   <defs>
+    <!-- UCC Deep Academic Navy Gradient -->
     <linearGradient id="uccNavyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#071426"/>
-      <stop offset="55%" stop-color="#0A1E3C"/>
-      <stop offset="100%" stop-color="#15325E"/>
+      <stop offset="0%" stop-color="#071426" />
+      <stop offset="55%" stop-color="#0A1E3C" />
+      <stop offset="100%" stop-color="#15325E" />
     </linearGradient>
 
+    <!-- UCC Signature Crimson Red Gradient -->
     <linearGradient id="uccRedGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#E51C39"/>
-      <stop offset="50%" stop-color="#C8102E"/>
-      <stop offset="100%" stop-color="#9B0A22"/>
+      <stop offset="0%" stop-color="#E51C39" />
+      <stop offset="50%" stop-color="#C8102E" />
+      <stop offset="100%" stop-color="#9B0A22" />
     </linearGradient>
 
+    <!-- Gold Accent Gradient -->
     <linearGradient id="goldAccent" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FDE047"/>
-      <stop offset="100%" stop-color="#F59E0B"/>
+      <stop offset="0%" stop-color="#FDE047" />
+      <stop offset="100%" stop-color="#F59E0B" />
     </linearGradient>
 
     <filter id="dropShadow" x="-10%" y="-10%" width="125%" height="125%">
-      <feDropShadow dx="0" dy="3" stdDeviation="4"
-        flood-color="#071426" flood-opacity="0.18"/>
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#071426" flood-opacity="0.18" />
     </filter>
   </defs>
 
-  <g filter="url(#dropShadow)" transform="translate(10,10)">
+  <!-- LEFT EMBLEM: Academic Crest + Mortarboard + Open Book (UCC Navy & Crimson Red) -->
+  <g filter="url(#dropShadow)" transform="translate(12, 10)">
     <path
-      d="M90,8 L164,34 L164,98 C164,142 132,166 90,180 C48,166 16,142 16,98 L16,34 Z"
+      d="M 90,8 L 164,34 L 164,98 C 164,142 132,166 90,180 C 48,166 16,142 16,98 L 16,34 Z"
       fill="url(#uccNavyGrad)"
       stroke="#C8102E"
-      stroke-width="4"/>
+      stroke-width="4"
+    />
 
     <path
-      d="M90,17 L154,40 L154,96 C154,134 126,155 90,168 C54,155 26,134 26,96 L26,40 Z"
+      d="M 90,17 L 154,40 L 154,96 C 154,134 126,155 90,168 C 54,155 26,134 26,96 L 26,40 Z"
       fill="none"
       stroke="#FFFFFF"
       stroke-opacity="0.22"
-      stroke-width="1.5"/>
+      stroke-width="1.5"
+    />
 
-    <circle cx="90" cy="95" r="38"
-      fill="url(#uccRedGrad)" opacity="0.95"/>
+    <circle cx="90" cy="95" r="38" fill="url(#uccRedGrad)" opacity="0.95" />
 
-    <polygon points="90,28 148,54 90,78 32,54"
-      fill="#FFFFFF"/>
+    <polygon points="90,28 148,54 90,78 32,54" fill="#FFFFFF" />
+    <polygon points="90,32 140,54 90,74 40,54" fill="url(#uccNavyGrad)" />
+    <path d="M 60,67 Q 90,84 120,67 L 120,79 Q 90,96 60,79 Z" fill="#FFFFFF" />
 
-    <polygon points="90,32 140,54 90,74 40,54"
-      fill="url(#uccNavyGrad)"/>
-
-    <path d="M60,67 Q90,84 120,67 L120,79 Q90,96 60,79 Z"
-      fill="#FFFFFF"/>
-
-    <circle cx="90" cy="54" r="4.5"
-      fill="url(#goldAccent)"/>
-
-    <path d="M90,54 Q120,58 128,84"
+    <circle cx="90" cy="54" r="4.5" fill="url(#goldAccent)" />
+    <path
+      d="M 90,54 Q 120,58 128,84"
       stroke="url(#goldAccent)"
       stroke-width="3.5"
       fill="none"
-      stroke-linecap="round"/>
+      stroke-linecap="round"
+    />
+    <polygon points="124,83 132,83 135,98 121,98" fill="url(#goldAccent)" />
 
-    <polygon points="124,83 132,83 135,98 121,98"
-      fill="url(#goldAccent)"/>
+    <circle cx="90" cy="96" r="9" fill="#FFFFFF" />
+    <path d="M 90,108 Q 76,122 62,134 Q 90,118 118,134 Q 104,122 90,108 Z" fill="#FFFFFF" />
 
-    <circle cx="90" cy="96" r="9" fill="#FFFFFF"/>
+    <path d="M 90,136 Q 60,116 34,128 Q 62,102 90,126 Z" fill="#FFFFFF" />
+    <path d="M 90,136 Q 120,116 146,128 Q 118,102 90,126 Z" fill="#FFFFFF" />
 
-    <path d="M90,108 Q76,122 62,134 Q90,118 118,134 Q104,122 90,108 Z"
-      fill="#FFFFFF"/>
+    <path d="M 90,148 Q 56,128 30,142 Q 58,118 90,138 Z" fill="url(#uccRedGrad)" />
+    <path d="M 90,148 Q 124,128 150,142 Q 122,118 90,138 Z" fill="url(#uccRedGrad)" />
+  </g>
 
-    <path d="M90,136 Q60,116 34,128 Q62,102 90,126 Z"
-      fill="#FFFFFF"/>
+  <!-- RIGHT TYPOGRAPHY: Centered & Aligned "শিক্ষা নোভা" + "শিখবো, জিতবো" -->
+  <g transform="translate(200, 0)">
+    <!-- Primary Brand Name: শিক্ষা নোভা (Centered at x=155) -->
+    <text
+      x="155"
+      y="96"
+      font-family="'Hind Siliguri', sans-serif"
+      font-weight="700"
+      font-size="64"
+      fill="#0A1E3C"
+      text-anchor="middle"
+    >
+      শিক্ষা নোভা
+    </text>
 
-    <path d="M90,136 Q120,116 146,128 Q118,102 90,126 Z"
-      fill="#FFFFFF"/>
-
-    <path d="M90,148 Q56,128 30,142 Q58,118 90,138 Z"
-      fill="url(#uccRedGrad)"/>
-
-    <path d="M90,148 Q124,128 150,142 Q122,118 90,138 Z"
-      fill="url(#uccRedGrad)"/>
+    <!-- Centered Crimson Slogan Bar: শিখবো, জিতবো -->
+    <rect x="10" y="114" width="290" height="44" rx="4" fill="#C8102E" />
+    <text
+      x="155"
+      y="144"
+      font-family="'Hind Siliguri', sans-serif"
+      font-weight="700"
+      font-size="26"
+      fill="#FFFFFF"
+      text-anchor="middle"
+    >
+      শিখবো, জিতবো
+    </text>
   </g>
 </svg>
