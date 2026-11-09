@@ -29,24 +29,24 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-[#050C1D] text-slate-300 pt-16 pb-10 border-t border-slate-800/80 mt-auto relative overflow-hidden">
+    <footer className="bg-[#061224] text-slate-300 pt-16 pb-10 border-t-4 border-[#C8102E] mt-auto relative overflow-hidden">
       {/* Subtle Glow Accents */}
       <div className="absolute top-0 left-1/3 w-[500px] h-[300px] bg-brand-600/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[400px] h-[300px] bg-amber-500/5 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-[400px] h-[300px] bg-[#C8102E]/10 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 relative z-10">
         
-        {/* Pre-Footer Action Banner (Like the reference image) */}
-        <div className="rounded-3xl bg-gradient-to-r from-[#0B1E45] via-[#091A3E] to-[#07132F] border border-blue-900/60 p-6 sm:p-8 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+        {/* Pre-Footer Action Banner (UCC Group Style) */}
+        <div className="rounded-3xl bg-gradient-to-r from-[#0A1E3C] via-[#0F2C59] to-[#2A0B1E] border border-[#C8102E]/40 p-6 sm:p-8 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
           <div className="space-y-1.5 max-w-2xl">
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full uppercase tracking-wider border border-amber-400/20">
-              <HiSparkles className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-[#C8102E] px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">
+              <HiSparkles className="w-3.5 h-3.5 text-amber-300" />
               ২৪/৭ শিক্ষার্থী ও অভিভাবক সহায়তা
             </div>
             <h3 className="text-xl sm:text-2xl font-black text-white">
               ভর্তি, শিট বা রেজাল্ট সংক্রান্ত কোনো প্রশ্ন আছে?
             </h3>
-            <p className="text-xs sm:text-sm text-slate-300">
+            <p className="text-xs sm:text-sm text-slate-200">
               আমাদের টিম আপনাকে সাহায্য করার জন্য সবসময় প্রস্তুত। সরাসরি কল করুন অথবা হোয়াটসঅ্যাপে লিখুন।
             </p>
           </div>
@@ -54,9 +54,9 @@ export default function Footer() {
           <div className="flex flex-wrap items-center justify-center gap-3 shrink-0">
             <a
               href="tel:01712592519"
-              className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-5 py-3 rounded-2xl text-xs sm:text-sm shadow-xl transition transform hover:-translate-y-0.5 active:scale-95"
+              className="inline-flex items-center gap-2 bg-[#C8102E] hover:bg-[#A60D26] text-white font-black px-5 py-3 rounded-2xl text-xs sm:text-sm shadow-xl transition transform hover:-translate-y-0.5 active:scale-95"
             >
-              <FaPhone className="w-3.5 h-3.5 text-slate-950" />
+              <FaPhone className="w-3.5 h-3.5 text-white" />
               <span className="font-bn-normal">০১৭১২৫৯২৫১৯</span>
             </a>
             <a

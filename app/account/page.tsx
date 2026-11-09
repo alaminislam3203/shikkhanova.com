@@ -282,9 +282,9 @@ export default function AccountPage() {
       {/* Top Banner with Compact Profile Header */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #020D24 0%, #082C6D 50%, #001A4D 100%)',
+          background: 'linear-gradient(135deg, #071426 0%, #0A1E3C 55%, #2A0B1E 100%)',
         }}
-        className="rounded-3xl p-6 sm:p-8 text-white shadow-premium border border-brand-800/60 relative overflow-hidden"
+        className="rounded-3xl p-6 sm:p-8 text-white shadow-premium border-b-4 border-[#C8102E] relative overflow-hidden"
       >
         <div className="absolute right-0 top-0 w-80 h-80 bg-nova-500/10 rounded-full blur-3xl pointer-events-none"></div>
 

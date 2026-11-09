@@ -189,12 +189,12 @@ export default function PdfsPage() {
   return (
     <div className="space-y-8">
       
-      {/* Top Banner: Dark Navy Gradient with High Contrast White & Gold Text */}
+      {/* Top Banner: UCC Group Style Deep Academic Navy & Crimson Red */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #020D24 0%, #082C6D 50%, #001A4D 100%)',
+          background: 'linear-gradient(135deg, #071426 0%, #0A1E3C 55%, #2A0B1E 100%)',
         }}
-        className="relative overflow-hidden text-white p-6 sm:p-10 lg:p-12 rounded-3xl shadow-2xl space-y-6 border border-blue-900/60"
+        className="relative overflow-hidden text-white p-6 sm:p-10 lg:p-12 rounded-3xl shadow-2xl space-y-6 border-b-4 border-[#C8102E]"
       >
         {/* Glow Spheres */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-nova-500/10 rounded-full blur-3xl pointer-events-none"></div>

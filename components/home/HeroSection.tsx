@@ -137,7 +137,7 @@ export default function HeroSection() {
 
             <Link
               href="/login"
-              className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-brand-700 to-brand-900 hover:from-brand-800 hover:to-black text-white font-bold py-3 rounded-xl text-xs shadow-md transition"
+              className="w-full inline-flex items-center justify-center gap-2 bg-[#0A1E3C] hover:bg-[#C8102E] text-white font-bold py-3 rounded-xl text-xs shadow-md transition"
             >
               <span>স্টুডেন্ট ও টিচার পোর্টাল</span>
               <FaArrowRight className="w-3 h-3" />
@@ -148,7 +148,8 @@ export default function HeroSection() {
 
       </div>
 
-    </section>
+      </section>
+    </div>
   );
 }
 
