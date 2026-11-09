@@ -37,3 +37,4 @@ export const DEFAULT_BANNERS: BannerItem[] = [
     createdAt: '2026-11-09T08:00:00.000Z',
   },
 ];
+
