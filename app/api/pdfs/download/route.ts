@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { extractGoogleDriveFileId, toGoogleDriveDownloadUrl } from '@/lib/googleDrive';
 
 export async function GET(req: Request) {
   try {
@@ -79,7 +80,14 @@ export async function GET(req: Request) {
     const safeFileName = `SikkhaNova-Class-${pdf.classGrade}-${pdf.id.slice(-6)}.pdf`;
     const encodedUtf8Name = encodeURIComponent(`${pdf.title}.pdf`);
 
-    // If remote URL (e.g. Cloudinary), proxy stream with attachment header for instant browser download
+    // 1. If the PDF is hosted on Google Drive, redirect to Google Drive direct download URL
+    const driveFileId = extractGoogleDriveFileId(fileUrl);
+    if (driveFileId) {
+      const directDriveDownload = toGoogleDriveDownloadUrl(fileUrl);
+      return NextResponse.redirect(directDriveDownload);
+    }
+
+    // 2. If remote URL (e.g. Cloudinary), proxy stream with attachment header for instant browser download
     if (fileUrl.startsWith('http://') || fileUrl.startsWith('https://')) {
       const remoteRes = await fetch(fileUrl);
       if (!remoteRes.ok) {

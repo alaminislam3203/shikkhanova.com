@@ -144,7 +144,12 @@ export default function AddPdfForm({
         title: formData.title || file.name.replace(/\.pdf$/i, ''),
       });
 
-      notify(`"${file.name}" সফলভাবে ক্লাউডে আপলোড হয়েছে! এখন কার্ডটি সেভ করুন।`, 'success');
+      notify(
+        data.isGoogleDrive
+          ? `"${file.name}" সফলভাবে Google Drive-এ আপলোড হয়েছে! এখন কার্ডটি সেভ করুন।`
+          : `"${file.name}" সফলভাবে ক্লাউডে আপলোড হয়েছে! এখন কার্ডটি সেভ করুন।`,
+        'success'
+      );
     } catch (err: any) {
       notify(err.message || 'পিডিএফ আপলোডে সমস্যা হয়েছে', 'error');
     } finally {
@@ -399,19 +404,34 @@ export default function AddPdfForm({
                 </div>
               )}
 
-              {/* Direct URL Field (Auto-filled by Upload or Manually Editable) */}
-              <div>
-                <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                  অথবা সরাসরি পিডিএফ লিংক / Google Drive লিংক দিন:
+              {/* Direct URL Field (Auto-filled by Upload or Google Drive Link) */}
+              <div className="space-y-1.5">
+                <label className="block text-[11px] font-bold text-slate-600">
+                  অথবা সরাসরি Google Drive লিংক পেস্ট করুন (Anyone with the link):
                 </label>
                 <input
                   type="text"
                   required
                   value={formData.fileUrl}
                   onChange={(e) => onChange({ ...formData, fileUrl: e.target.value })}
-                  placeholder="ফাইল আপলোড করলে এখানে স্বয়ংক্রিয়ভাবে লিংক বসবে..."
+                  placeholder="যেমন: https://drive.google.com/file/d/1ABCxyz.../view?usp=sharing"
                   className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 font-mono text-xs text-slate-700 focus:outline-none focus:border-brand-500"
                 />
+                {formData.fileUrl &&
+                  (formData.fileUrl.includes('drive.google.com') ||
+                    formData.fileUrl.includes('docs.google.com')) && (
+                    <div className="flex items-center justify-between bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl text-[11px] font-bold text-emerald-800">
+                      <span>✓ Google Drive পিডিএফ লিংক শনাক্ত হয়েছে (পেমেন্ট সফল হলে সরাসরি ডাউনলোড হবে)</span>
+                      <a
+                        href={formData.fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-brand-700 underline ml-2 shrink-0"
+                      >
+                        চেক করুন
+                      </a>
+                    </div>
+                  )}
               </div>
             </div>
 

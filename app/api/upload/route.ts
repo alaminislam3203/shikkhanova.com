@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { uploadToCloudinary, isCloudinaryConfigured } from '@/lib/cloudinary';
+import { isGoogleDriveConfigured, uploadPdfToGoogleDrive } from '@/lib/googleDrive';
 
 export async function POST(req: Request) {
   try {
@@ -14,13 +15,6 @@ export async function POST(req: Request) {
 
     if (!contentType.includes('multipart/form-data')) {
       return NextResponse.json({ error: 'অসমর্থিত কনটেন্ট টাইপ' }, { status: 400 });
-    }
-
-    if (!isCloudinaryConfigured()) {
-      return NextResponse.json(
-        { error: 'Cloudinary সেটআপ করা নেই। দয়া করে .env ফাইলে Cloudinary কী যুক্ত করুন।' },
-        { status: 500 }
-      );
     }
 
     const formData = await req.formData();
@@ -36,29 +30,53 @@ export async function POST(req: Request) {
     const isPdf =
       file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
 
-    // Max 15MB for PDFs, 5MB for images
-    const maxSize = isPdf ? 15 * 1024 * 1024 : 5 * 1024 * 1024;
+    // Max 25MB for PDFs, 5MB for images
+    const maxSize = isPdf ? 25 * 1024 * 1024 : 5 * 1024 * 1024;
     if (file.size > maxSize) {
       return NextResponse.json(
         {
           error: isPdf
-            ? 'পিডিএফ ফাইলের সাইজ সর্বোচ্চ ১৫ মেগাবাইট হতে পারবে'
+            ? 'পিডিএফ ফাইলের সাইজ সর্বোচ্চ ২৫ মেগাবাইট হতে পারবে'
             : 'ছবির সাইজ সর্বোচ্চ ৫ মেগাবাইট হতে পারবে',
         },
         { status: 400 }
       );
     }
 
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    // 1. If PDF and Google Drive API is configured in .env, upload directly to Google Drive!
+    if (isPdf && isGoogleDriveConfigured()) {
+      const driveResult = await uploadPdfToGoogleDrive(buffer, file.name);
+      return NextResponse.json({
+        success: true,
+        url: driveResult.viewUrl,
+        downloadUrl: driveResult.downloadUrl,
+        driveFileId: driveResult.fileId,
+        fileName: file.name,
+        fileSize: file.size,
+        isPdf: true,
+        isGoogleDrive: true,
+      });
+    }
+
+    // 2. Otherwise upload to Cloudinary
+    if (!isCloudinaryConfigured()) {
+      return NextResponse.json(
+        { error: 'Google Drive অথবা Cloudinary ক্রেডেনশিয়াল (.env) সেটআপ করা নেই।' },
+        { status: 500 }
+      );
+    }
+
     const defaultFolder = isPdf ? 'shikkha_nova/pdfs' : 'shikkha_nova/general';
     const folder = (formData.get('folder') as string | null) || defaultFolder;
 
-    const baseName = file.name
-      .replace(/\.[^/.]+$/, '')
-      .replace(/[^a-zA-Z0-9_-]/g, '-')
-      .slice(0, 35) || 'material';
-
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    const baseName =
+      file.name
+        .replace(/\.[^/.]+$/, '')
+        .replace(/[^a-zA-Z0-9_-]/g, '-')
+        .slice(0, 35) || 'material';
 
     const finalUrl = await uploadToCloudinary(buffer, folder, baseName, { isPdf });
 
