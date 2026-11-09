@@ -43,6 +43,11 @@ async function ensureBannerTableAndSeed() {
       );
     `);
 
+    // Clean up any old .svg default banners if they exist
+    await prisma.$executeRawUnsafe(
+      `DELETE FROM "HeroBanner" WHERE "imageUrl" LIKE '%.svg'`
+    );
+
     const countRows: Array<{ count: bigint | number }> =
       await prisma.$queryRawUnsafe(`SELECT COUNT(*) as count FROM "HeroBanner"`);
     const count = Number(countRows?.[0]?.count || 0);
@@ -52,7 +57,7 @@ async function ensureBannerTableAndSeed() {
         await prisma.$executeRawUnsafe(
           `INSERT INTO "HeroBanner" ("id", "title", "imageUrl", "linkUrl", "displayOrder", "isActive")
            VALUES ($1, $2, $3, $4, $5, $6)
-           ON CONFLICT ("id") DO NOTHING`,
+           ON CONFLICT ("id") DO UPDATE SET "imageUrl" = EXCLUDED."imageUrl", "title" = EXCLUDED."title", "linkUrl" = EXCLUDED."linkUrl"`,
           b.id,
           b.title,
           b.imageUrl,
