@@ -3,12 +3,13 @@
 import React, { useState } from 'react';
 import { FaXmark } from 'react-icons/fa6';
 import { PdfItem } from '@/types';
+import toast from 'react-hot-toast';
 
 interface PdfPurchaseModalProps {
   pdf: PdfItem;
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: (pdfId: string) => void;
+  onSuccess: (pdfId: string, trxId?: string) => void;
   userPhone?: string;
   userName?: string;
   userEmail?: string;
@@ -61,13 +62,24 @@ export default function PdfPurchaseModal({
         throw new Error(data.error || 'পেমেন্ট সাবমিট করতে সমস্যা হয়েছে');
       }
 
+      const savedTrx = (data.trxId || trxId).trim().toUpperCase();
+      try {
+        const prev = JSON.parse(localStorage.getItem('sn_my_trx_ids') || '[]');
+        if (Array.isArray(prev) && !prev.includes(savedTrx)) {
+          localStorage.setItem('sn_my_trx_ids', JSON.stringify([...prev, savedTrx]));
+        }
+      } catch {}
+
       setSuccessMsg('আপনার TrxID সফলভাবে জমা হয়েছে! অ্যাডমিন যাচাই করার পর ডাউনলোড অপশন সক্রিয় হবে।');
-      onSuccess(pdf.id);
+      toast.success(`TrxID (${savedTrx}) জমা হয়েছে! অ্যাডমিন অনুমোদন করলেই ডাউনলোড বাটন সক্রিয় হবে।`);
+      onSuccess(pdf.id, savedTrx);
       setTimeout(() => {
         onClose();
-      }, 2500);
+      }, 1800);
     } catch (err: any) {
-      setErrorMsg(err.message || 'সমস্যা হয়েছে');
+      const message = err.message || 'সমস্যা হয়েছে';
+      setErrorMsg(message);
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }
