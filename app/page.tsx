@@ -13,7 +13,6 @@ export default function HomePage() {
       <ClassSelector />
       <SuccessStoriesSection />
       <FeaturesGrid />
-      <
       <PaymentBanner />
       <ContactCards />
     </div>
