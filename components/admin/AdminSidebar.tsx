@@ -19,11 +19,13 @@ import {
   FaBell,
   FaBookOpen,
   FaUserCheck,
+  FaImages,
 } from 'react-icons/fa6';
 import { TbCashBanknote } from 'react-icons/tb';
 
 export type AdminTab =
   | 'dashboard'
+  | 'banners'
   | 'purchases'
   | 'addResult'
   | 'addPdf'
@@ -98,6 +100,12 @@ export default function AdminSidebar({
       label: 'ড্যাশবোর্ড ওভারভিউ',
       sublabel: 'লাইভ পরিসংখ্যান ও রিপোর্ট',
       icon: FaChartPie,
+    },
+    {
+      id: 'banners',
+      label: 'হিরো ব্যানার স্লাইডার',
+      sublabel: 'হোমপেজ ব্যানার আপলোড ও ম্যানেজ',
+      icon: FaImages,
     },
     {
       id: 'purchases',

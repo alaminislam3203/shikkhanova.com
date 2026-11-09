@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 640" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#071930" />
+      <stop offset="50%" stop-color="#0F294A" />
+      <stop offset="100%" stop-color="#064E3B" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1920" height="640" fill="url(#bg3)" />
+  <circle cx="1680" cy="150" r="280" fill="#10B981" opacity="0.12" />
+  <circle cx="220" cy="520" r="250" fill="#C8102E" opacity="0.12" />
+  <rect x="0" y="624" width="1920" height="16" fill="#C8102E" />
+
+  <g transform="translate(130, 115)">
+    <rect x="0" y="0" width="390" height="48" rx="24" fill="#10B981" />
+    <text x="195" y="31" text-anchor="middle" fill="#FFFFFF" font-family="'Hind Siliguri', sans-serif" font-size="22" font-weight="800">
+      অনলাইন রেজাল্ট ও ডিজিটাল মার্কশিট
+    </text>
+
+    <text x="0" y="140" fill="#FFFFFF" font-family="'Hind Siliguri', sans-serif" font-size="68" font-weight="800">
+      মাসিক মূল্যায়ন ও <tspan fill="#34D399">মডেল টেস্ট ফলাফল</tspan>
+    </text>
+
+    <text x="0" y="210" fill="#E2E8F0" font-family="'Hind Siliguri', sans-serif" font-size="30" font-weight="600">
+      শ্রেণি ও রোল নম্বর দিয়ে ঘরে বসেই দেখুন পরীক্ষার ফলাফল, গ্রেডশিট ও মেধাক্রম
+    </text>
+
+    <g transform="translate(0, 260)">
+      <rect x="0" y="0" width="320" height="58" rx="14" fill="#FFFFFF" fill-opacity="0.12" stroke="#FFFFFF" stroke-opacity="0.25" />
+      <text x="160" y="37" text-anchor="middle" fill="#FFFFFF" font-family="'Hind Siliguri', sans-serif" font-size="24" font-weight="700">
+        ✓ স্বয়ংক্রিয় GPA ও গ্রেডশিট
+      </text>
+
+      <rect x="340" y="0" width="350" height="58" rx="14" fill="#FFFFFF" fill-opacity="0.12" stroke="#FFFFFF" stroke-opacity="0.25" />
+      <text x="515" y="37" text-anchor="middle" fill="#FFFFFF" font-family="'Hind Siliguri', sans-serif" font-size="24" font-weight="700">
+        ✓ ইউটিউব ভিডিও ক্লাস (@ShikkhaNova)
+      </text>
+    </g>
+
+    <g transform="translate(0, 355)">
+      <rect x="0" y="0" width="490" height="62" rx="16" fill="#C8102E" />
+      <text x="245" y="40" text-anchor="middle" fill="#FFFFFF" font-family="'Hind Siliguri', sans-serif" font-size="25" font-weight="700">
+        শিক্ষানোভা একাডেমি • জুম্মাপাড়া, নীলফামারী
+      </text>
+    </g>
+  </g>
+
+  <g transform="translate(1330, 115)">
+    <rect x="0" y="0" width="460" height="410" rx="34" fill="#FFFFFF" fill-opacity="0.96" />
+    <circle cx="230" cy="120" r="60" fill="#10B981" fill-opacity="0.15" />
+    <text x="230" y="138" text-anchor="middle" fill="#059669" font-family="'Exo 2', sans-serif" font-size="44" font-weight="900">
+      A+
+    </text>
+    <text x="230" y="225" text-anchor="middle" fill="#0A1E3C" font-family="'Hind Siliguri', sans-serif" font-size="34" font-weight="800">
+      GPA 5.00 প্রস্তুতি
+    </text>
+    <text x="230" y="270" text-anchor="middle" fill="#475569" font-family="'Hind Siliguri', sans-serif" font-size="23" font-weight="600">
+      নিয়মিত পরীক্ষা ও দুর্বলদের স্পেশাল কেয়ার
+    </text>
+    <rect x="65" y="305" width="330" height="58" rx="14" fill="#0A1E3C" />
+    <text x="230" y="343" text-anchor="middle" fill="#FFFFFF" font-family="'Hind Siliguri', sans-serif" font-size="23" font-weight="700">
+      "শিখবো, জিতবো" — শিক্ষানোভা
+    </text>
+  </g>
+</svg>

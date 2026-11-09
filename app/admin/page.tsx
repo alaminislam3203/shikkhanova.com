@@ -12,6 +12,7 @@ import AdminAttendanceManager from '@/components/admin/AdminAttendanceManager';
 import AdminNoticesManager from '@/components/admin/AdminNoticesManager';
 import AdminStudentsManager from '@/components/admin/AdminStudentsManager';
 import AdminSubjectsManager from '@/components/admin/AdminSubjectsManager';
+import AdminBannersManager from '@/components/admin/AdminBannersManager';
 import { PurchaseRecord } from '@/types';
 import {
   FaBars,
@@ -80,6 +81,7 @@ export default function AdminPage() {
         tabParam &&
         [
           'dashboard',
+          'banners',
           'purchases',
           'addResult',
           'addPdf',
@@ -347,6 +349,7 @@ export default function AdminPage() {
                 <span className="text-slate-300">•</span>
                 <span className="text-xs font-bold text-brand-700">
                   {activeTab === 'dashboard' && 'ড্যাশবোর্ড ওভারভিউ'}
+                  {activeTab === 'banners' && 'হোমপেজ ব্যানার স্লাইডার'}
                   {activeTab === 'purchases' && 'পেমেন্ট রিকোয়েস্ট যাচাই'}
                   {activeTab === 'addPdf' && 'পিডিএফ শিট ও কার্ড ম্যানেজমেন্ট'}
                   {activeTab === 'addResult' && 'কোচিং পরীক্ষার রেজাল্ট আপলোড'}
@@ -359,6 +362,7 @@ export default function AdminPage() {
               </div>
               <h1 className="text-lg sm:text-2xl font-black text-slate-800 leading-tight">
                 {activeTab === 'dashboard' && 'লাইভ ড্যাশবোর্ড ও একাডেমিক পরিসংখ্যান'}
+                {activeTab === 'banners' && 'ফুল-উইডথ হিরো ব্যানার আপলোড ও ম্যানেজমেন্ট'}
                 {activeTab === 'purchases' && 'বিকাশ ও নগদ পেমেন্ট অনুমোদন'}
                 {activeTab === 'addPdf' && 'পিডিএফ শিট আপলোড ও কার্ড কাস্টমাইজেশন'}
                 {activeTab === 'addResult' && 'নতুন পরীক্ষার ফলাফল সংরক্ষণ'}
