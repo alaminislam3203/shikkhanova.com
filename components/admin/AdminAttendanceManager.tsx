@@ -44,26 +44,71 @@ export default function AdminAttendanceManager() {
     setLoading(true);
     setMessage(null);
     try {
-      const res = await fetch(`/api/attendance?classGrade=${selectedClass}&date=${selectedDate}`);
-      const data = await res.json();
+      const [attRes, stdRes] = await Promise.all([
+        fetch(`/api/attendance?classGrade=${selectedClass}&date=${selectedDate}`, { cache: 'no-store' }),
+        fetch(`/api/admin/students?classGrade=${selectedClass}`, { cache: 'no-store' }),
+      ]);
+      const attData = await attRes.json();
+      const stdData = await stdRes.json();
 
-      if (data.records && data.records.length > 0) {
-        setStudents(
-          data.records.map((r: any) => ({
-            rollNumber: r.rollNumber,
+      const classRoster: Array<{ rollNumber: number; name: string }> =
+        stdData.students && Array.isArray(stdData.students) && stdData.students.length > 0
+          ? stdData.students.map((s: any) => ({
+              rollNumber: Number(s.rollNumber),
+              name: s.name,
+            }))
+          : Array.from({ length: 20 }, (_, i) => ({
+              rollNumber: i + 1,
+              name: getBengaliName(i + 1),
+            }));
+
+      if (attData.records && attData.records.length > 0) {
+        const savedMap = new Map<number, any>();
+        for (const r of attData.records) {
+          savedMap.set(Number(r.rollNumber), r);
+        }
+
+        // Merge saved attendance with current class students
+        const mergedMap = new Map<number, StudentRollItem>();
+        for (const r of attData.records) {
+          mergedMap.set(Number(r.rollNumber), {
+            rollNumber: Number(r.rollNumber),
             studentName: r.studentName || `শিক্ষার্থী রোল ${r.rollNumber}`,
-            classGrade: r.classGrade || selectedClass,
+            classGrade: Number(r.classGrade) || selectedClass,
             status: r.status,
-          }))
+          });
+        }
+        for (const s of classRoster) {
+          if (!mergedMap.has(s.rollNumber)) {
+            mergedMap.set(s.rollNumber, {
+              rollNumber: s.rollNumber,
+              studentName: s.name,
+              classGrade: selectedClass,
+              status: 'PRESENT',
+            });
+          } else {
+            const existing = mergedMap.get(s.rollNumber)!;
+            mergedMap.set(s.rollNumber, {
+              ...existing,
+              studentName: s.name || existing.studentName,
+            });
+          }
+        }
+
+        const mergedList = Array.from(mergedMap.values()).sort(
+          (a, b) => a.rollNumber - b.rollNumber
         );
+        setStudents(mergedList);
       } else {
-        const defaultList: StudentRollItem[] = Array.from({ length: 20 }, (_, i) => ({
-          rollNumber: i + 1,
-          studentName: getBengaliName(i + 1),
-          classGrade: selectedClass,
-          status: 'PRESENT',
-        }));
-        setStudents(defaultList);
+        const rosterList: StudentRollItem[] = classRoster
+          .sort((a, b) => a.rollNumber - b.rollNumber)
+          .map((s) => ({
+            rollNumber: s.rollNumber,
+            studentName: s.name,
+            classGrade: selectedClass,
+            status: 'PRESENT',
+          }));
+        setStudents(rosterList);
       }
     } catch {
       const defaultList: StudentRollItem[] = Array.from({ length: 20 }, (_, i) => ({
