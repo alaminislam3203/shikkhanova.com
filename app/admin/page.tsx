@@ -638,7 +638,7 @@ export default function AdminPage() {
 
                 <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-1">
                   <span className="text-slate-400 text-xs font-bold">বিকাশ ও নগদ পার্সোনাল নম্বর</span>
-                  <p className="font-black font-mono text-brand-700 text-base">01712592519</p>
+                  <p className="font-black font-bn-normal text-brand-700 text-base">০১৭১২৫৯২৫১৯</p>
                 </div>
 
                 <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-1">
