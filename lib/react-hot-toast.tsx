@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 export type ToastType = 'blank' | 'success' | 'error' | 'loading' | 'custom';
 
@@ -163,8 +164,10 @@ export function Toaster({
   containerClassName = '',
 }: ToasterProps) {
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     setToasts([...memoryToasts]);
     const listener: Listener = (updated) => {
       setToasts(updated);
@@ -175,7 +178,9 @@ export function Toaster({
     };
   }, []);
 
-  if (toasts.length === 0) return null;
+  if (!mounted || toasts.length === 0 || typeof document === 'undefined') {
+    return null;
+  }
 
   const centerToasts = toasts.filter(
     (t) => (t.position || position) === 'center' || t.type === 'custom'
@@ -184,15 +189,26 @@ export function Toaster({
     (t) => (t.position || position) !== 'center' && t.type !== 'custom'
   );
 
-  return (
+  const portalContent = (
     <>
-      {/* Screen-Centered Toasts (Confirmation Modals & Payment Success / Status Toasts) */}
+      {/* Screen-Centered Toasts — Always on top of ALL layers via Portal + Max 32-bit zIndex */}
       {centerToasts.length > 0 && (
         <div
-          style={containerStyle}
-          className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center p-4 bg-slate-900/50 backdrop-blur-[3px] animate-in fade-in duration-150 ${containerClassName}`}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 2147483647,
+            ...containerStyle,
+          }}
+          className={`fixed inset-0 flex flex-col items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in duration-150 ${containerClassName}`}
         >
-          <div className="flex flex-col items-center justify-center gap-3 w-full max-w-md pointer-events-auto">
+          <div
+            style={{ zIndex: 2147483647 }}
+            className="flex flex-col items-center justify-center gap-3 w-full max-w-md pointer-events-auto relative"
+          >
             {centerToasts.map((t) => {
               const content =
                 typeof t.message === 'function' ? t.message(t) : t.message;
@@ -211,7 +227,7 @@ export function Toaster({
               return (
                 <div
                   key={t.id}
-                  className="w-full max-w-sm bg-white text-slate-800 p-6 rounded-3xl shadow-2xl border border-slate-200/90 flex flex-col items-center text-center gap-3.5 animate-in zoom-in-95 duration-200 relative"
+                  className="w-full max-w-sm bg-white text-slate-800 p-6 rounded-3xl shadow-2xl border-2 border-slate-200 flex flex-col items-center text-center gap-3.5 animate-in zoom-in-95 duration-200 relative"
                 >
                   <button
                     type="button"
@@ -281,9 +297,18 @@ export function Toaster({
         </div>
       )}
 
-      {/* Non-center Toasts (if explicitly set to top-right / top-center) */}
+      {/* Non-center Toasts — Also rendered at Max zIndex */}
       {topToasts.length > 0 && (
-        <div className="fixed top-5 inset-x-0 z-[9999] flex flex-col items-center gap-2.5 px-4 pointer-events-none">
+        <div
+          style={{
+            position: 'fixed',
+            top: '20px',
+            left: 0,
+            right: 0,
+            zIndex: 2147483647,
+          }}
+          className="fixed top-5 inset-x-0 flex flex-col items-center gap-2.5 px-4 pointer-events-none"
+        >
           {topToasts.map((t) => {
             const content =
               typeof t.message === 'function' ? t.message(t) : t.message;
@@ -318,6 +343,8 @@ export function Toaster({
       )}
     </>
   );
+
+  return createPortal(portalContent, document.body);
 }
 
 export { toast };
