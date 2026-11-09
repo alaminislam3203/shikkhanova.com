@@ -1,22 +1,55 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   FaFilePdf,
   FaDownload,
   FaClock,
   FaCheck,
   FaLayerGroup,
+  FaArrowUpRightFromSquare,
 } from 'react-icons/fa6';
 import { HiSparkles } from 'react-icons/hi2';
 import { PdfItem } from '@/types';
+import toast from 'react-hot-toast';
 
 interface PdfCardProps {
   pdf: PdfItem;
   onBuyClick: (pdf: PdfItem) => void;
+  onRefreshStatus?: () => void;
 }
 
-export default function PdfCard({ pdf, onBuyClick }: PdfCardProps) {
+export default function PdfCard({ pdf, onBuyClick, onRefreshStatus }: PdfCardProps) {
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDynamicDownload = async () => {
+    setDownloading(true);
+    let savedTrx = '';
+    try {
+      const list = JSON.parse(localStorage.getItem('sn_my_trx_ids') || '[]');
+      if (Array.isArray(list)) {
+        savedTrx = list.join(',');
+      }
+    } catch {}
+
+    const downloadUrl = `/api/pdfs/download?pdfId=${encodeURIComponent(pdf.id)}${
+      savedTrx ? `&trxIds=${encodeURIComponent(savedTrx)}` : ''
+    }`;
+
+    try {
+      toast.success(`"${pdf.title}" ডাউনলোড শুরু হচ্ছে...`);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.setAttribute('download', `${pdf.title}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch {
+      window.open(pdf.fileUrl, '_blank', 'noopener,noreferrer');
+    } finally {
+      setTimeout(() => setDownloading(false), 1200);
+    }
+  };
   // Theme colors depending on subject
   const getSubjectTheme = (subj: string) => {
     if (subj.includes('গণিত') || subj.includes('Math')) {
@@ -161,31 +194,66 @@ export default function PdfCard({ pdf, onBuyClick }: PdfCardProps) {
       {/* Card Footer Action Button */}
       <div className="p-5 sm:p-6 pt-0">
         {isFreePdf ? (
-          <a
-            href={pdf.fileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            download
-            className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-2xl text-xs sm:text-sm shadow-md transition transform active:scale-95"
-          >
-            <FaDownload className="w-4 h-4" />
-            <span>এখনই ফ্রি ডাউনলোড করুন</span>
-          </a>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleDynamicDownload}
+              disabled={downloading}
+              className="flex-1 inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-2xl text-xs sm:text-sm shadow-md transition transform active:scale-95 disabled:opacity-75"
+            >
+              <FaDownload className={`w-4 h-4 ${downloading ? 'animate-bounce' : ''}`} />
+              <span>{downloading ? 'ডাউনলোড হচ্ছে...' : 'এখনই ফ্রি ডাউনলোড করুন'}</span>
+            </button>
+            <a
+              href={pdf.fileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="ব্রাউজারে পিডিএফ পড়ুন"
+              className="p-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition shrink-0"
+            >
+              <FaArrowUpRightFromSquare className="w-4 h-4" />
+            </a>
+          </div>
         ) : pdf.purchaseStatus === 'APPROVED' ? (
-          <a
-            href={pdf.fileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            download
-            className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-2xl text-xs sm:text-sm shadow-md transition transform active:scale-95"
-          >
-            <FaDownload className="w-4 h-4" />
-            <span>অনুমোদিত - এখনই ডাউনলোড করুন</span>
-          </a>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleDynamicDownload}
+                disabled={downloading}
+                className="flex-1 inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-2xl text-xs sm:text-sm shadow-md transition transform active:scale-95 disabled:opacity-75"
+              >
+                <FaDownload className={`w-4 h-4 ${downloading ? 'animate-bounce' : ''}`} />
+                <span>
+                  {downloading ? 'ডাউনলোড হচ্ছে...' : 'পেমেন্ট সফল — এখনই ডাউনলোড করুন'}
+                </span>
+              </button>
+              <a
+                href={pdf.fileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="ব্রাউজারে পিডিএফ ওপেন করুন"
+                className="p-3 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition shrink-0"
+              >
+                <FaArrowUpRightFromSquare className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
         ) : pdf.purchaseStatus === 'PENDING' ? (
-          <div className="w-full text-center py-3 px-3 bg-amber-50 border border-amber-200 rounded-2xl text-xs font-bold text-amber-800 flex items-center justify-center gap-2">
-            <FaClock className="w-4 h-4 text-amber-600 animate-spin" />
-            <span>TrxID যাচাই করা হচ্ছে (অপেক্ষা করুন)...</span>
+          <div className="space-y-2">
+            <div className="w-full text-center py-3 px-3 bg-amber-50 border border-amber-200 rounded-2xl text-xs font-bold text-amber-800 flex items-center justify-center gap-2">
+              <FaClock className="w-4 h-4 text-amber-600 animate-spin shrink-0" />
+              <span>TrxID যাচাই চলছে (অ্যাডমিন অনুমোদনের অপেক্ষায়)...</span>
+            </div>
+            {onRefreshStatus && (
+              <button
+                type="button"
+                onClick={onRefreshStatus}
+                className="w-full text-[11px] font-bold text-brand-700 hover:text-brand-800 hover:underline text-center"
+              >
+                ↻ পেমেন্ট স্ট্যাটাস এখনই চেক করুন
+              </button>
+            )}
           </div>
         ) : (
           <button
