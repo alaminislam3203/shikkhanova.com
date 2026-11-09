@@ -24,26 +24,18 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
         </div>
 
         {/* Institute Header */}
-        <div className="text-center border-b-2 border-brand-800 pb-5 space-y-1 relative z-10">
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <div className="bg-white p-1 rounded-2xl shadow-sm">
-              <Logo size="sm" clickable={false} />
-            </div>
-            <div className="text-left">
-              <h2 className="text-xl sm:text-2xl font-black text-brand-900 leading-tight">
-                শিক্ষানোভা কোচিং সেন্টার
-              </h2>
-              <p className="text-[11px] uppercase tracking-widest font-black text-nova-600">
-                SikkhaNova Coaching Center
-              </p>
+        <div className="text-center border-b-2 border-[#C8102E] pb-5 space-y-1.5 relative z-10">
+          <div className="flex items-center justify-center mb-1">
+            <div className="bg-white px-3 py-1.5 rounded-2xl shadow-xs border border-slate-100">
+              <Logo size="md" clickable={false} />
             </div>
           </div>
 
           <p className="text-xs sm:text-sm text-slate-600 font-semibold">
-            জুম্মাপাড়া, নীলফামারী সদর, নীলফামারী | হেল্পলাইন: <span className="font-bn-normal font-bold">০১৭১২৫৯২৫১৯</span>
+            জুম্মাপাড়া, নীলফামারী সদর, নীলফামারী | হেল্পলাইন: <span className="font-bn-normal font-bold text-[#0A1E3C]">০১৭১২৫৯২৫১৯</span>
           </p>
 
-          <div className="inline-block mt-2 bg-gradient-to-r from-brand-800 via-brand-700 to-indigo-900 text-white text-xs font-bold px-5 py-1.5 rounded-full uppercase shadow-sm">
+          <div className="inline-block mt-2 bg-[#0A1E3C] border-b-2 border-[#C8102E] text-white text-xs font-bold px-5 py-1.5 rounded-full uppercase shadow-sm">
             শিক্ষার্থী একাডেমিক ফলাফল ও মার্কশিট
           </div>
         </div>

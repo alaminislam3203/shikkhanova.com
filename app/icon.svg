@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="100%" height="100%">
+  <defs>
+    <linearGradient id="uccNavy" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#071426" />
+      <stop offset="60%" stop-color="#0A1E3C" />
+      <stop offset="100%" stop-color="#15325E" />
+    </linearGradient>
+    <linearGradient id="uccRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E51C39" />
+      <stop offset="100%" stop-color="#C8102E" />
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047" />
+      <stop offset="100%" stop-color="#F59E0B" />
+    </linearGradient>
+  </defs>
+
+  <path
+    d="M 90,8 L 164,34 L 164,98 C 164,142 132,166 90,176 C 48,166 16,142 16,98 L 16,34 Z"
+    fill="url(#uccNavy)"
+    stroke="#C8102E"
+    stroke-width="6"
+  />
+  <circle cx="90" cy="95" r="38" fill="url(#uccRed)" />
+  <polygon points="90,28 148,54 90,78 32,54" fill="#FFFFFF" />
+  <polygon points="90,32 140,54 90,74 40,54" fill="url(#uccNavy)" />
+  <path d="M 60,67 Q 90,84 120,67 L 120,79 Q 90,96 60,79 Z" fill="#FFFFFF" />
+  <circle cx="90" cy="54" r="4.5" fill="url(#gold)" />
+  <path d="M 90,54 Q 120,58 128,84" stroke="url(#gold)" stroke-width="4" fill="none" stroke-linecap="round" />
+  <circle cx="90" cy="96" r="9" fill="#FFFFFF" />
+  <path d="M 90,108 Q 76,122 62,134 Q 90,118 118,134 Q 104,122 90,108 Z" fill="#FFFFFF" />
+  <path d="M 90,136 Q 60,116 34,128 Q 62,102 90,126 Z" fill="#FFFFFF" />
+  <path d="M 90,136 Q 120,116 146,128 Q 118,102 90,126 Z" fill="#FFFFFF" />
+  <path d="M 90,148 Q 56,128 30,142 Q 58,118 90,138 Z" fill="url(#uccRed)" />
+  <path d="M 90,148 Q 124,128 150,142 Q 122,118 90,138 Z" fill="url(#uccRed)" />
+</svg>
+
