@@ -44,7 +44,8 @@ export default function PdfCard({ pdf, onBuyClick }: PdfCardProps) {
   };
 
   const theme = getSubjectTheme(pdf.subject);
-  const regularPrice = Math.round(pdf.price * 1.5);
+  const isFreePdf = Boolean(pdf.isFree) || Number(pdf.price) <= 0;
+  const regularPrice = isFreePdf ? 50 : Math.round(pdf.price * 1.5);
 
   return (
     <div className="group bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-2xl hover:border-brand-500/50 transition-all duration-300 flex flex-col justify-between overflow-hidden relative transform hover:-translate-y-1">
@@ -120,14 +121,29 @@ export default function PdfCard({ pdf, onBuyClick }: PdfCardProps) {
             <div>
               <span className="text-[10px] text-slate-400 font-semibold block uppercase">নির্ধারিত ফি</span>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-black text-brand-800">৳{pdf.price}</span>
-                <span className="text-xs text-slate-400 line-through font-semibold">৳{regularPrice}</span>
+                {isFreePdf ? (
+                  <>
+                    <span className="text-xl font-black text-emerald-600">ফ্রি (৳০)</span>
+                    <span className="text-xs text-slate-400 line-through font-semibold">৳{regularPrice}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-2xl font-black text-brand-800">৳{pdf.price}</span>
+                    <span className="text-xs text-slate-400 line-through font-semibold">৳{regularPrice}</span>
+                  </>
+                )}
               </div>
             </div>
 
             <div className="text-right">
-              <span className="text-[10px] bg-rose-100 text-rose-700 font-extrabold px-2 py-0.5 rounded-full inline-block mb-1">
-                বিশেষ ছাড়
+              <span
+                className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full inline-block mb-1 ${
+                  isFreePdf
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : 'bg-rose-100 text-rose-700'
+                }`}
+              >
+                {isFreePdf ? 'সবার জন্য উন্মুক্ত' : 'বিশেষ ছাড়'}
               </span>
               <div className="flex items-center justify-end gap-1.5">
                 <div className="bg-white px-1.5 py-0.5 rounded-md border border-slate-200/80 shadow-xs flex items-center">
@@ -144,9 +160,22 @@ export default function PdfCard({ pdf, onBuyClick }: PdfCardProps) {
 
       {/* Card Footer Action Button */}
       <div className="p-5 sm:p-6 pt-0">
-        {pdf.purchaseStatus === 'APPROVED' ? (
+        {isFreePdf ? (
           <a
             href={pdf.fileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            download
+            className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-2xl text-xs sm:text-sm shadow-md transition transform active:scale-95"
+          >
+            <FaDownload className="w-4 h-4" />
+            <span>এখনই ফ্রি ডাউনলোড করুন</span>
+          </a>
+        ) : pdf.purchaseStatus === 'APPROVED' ? (
+          <a
+            href={pdf.fileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             download
             className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-2xl text-xs sm:text-sm shadow-md transition transform active:scale-95"
           >
@@ -165,7 +194,7 @@ export default function PdfCard({ pdf, onBuyClick }: PdfCardProps) {
             className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-brand-700 via-brand-800 to-indigo-900 hover:from-brand-800 hover:to-indigo-950 text-white font-bold py-3 rounded-2xl text-xs sm:text-sm shadow-brand hover:shadow-xl transition-all duration-300 transform active:scale-95 group-hover:from-nova-600 group-hover:to-brand-800"
           >
             <FaFilePdf className="w-4 h-4 text-nova-300" />
-            <span>শিটটি সংগ্রহ করুন </span>
+            <span>শিটটি সংগ্রহ করুন (৳{pdf.price})</span>
           </button>
         )}
       </div>
