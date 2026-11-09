@@ -4,6 +4,52 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { PaymentMethod, PaymentStatus } from '@prisma/client';
 
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const trxId = searchParams.get('trxId')?.trim().toUpperCase();
+
+    if (!trxId) {
+      return NextResponse.json({ error: 'TrxID প্রদান করুন' }, { status: 400 });
+    }
+
+    const purchase = await prisma.pdfPurchase.findUnique({
+      where: { trxId },
+      include: {
+        pdf: {
+          select: {
+            id: true,
+            title: true,
+            classGrade: true,
+            subject: true,
+            price: true,
+            fileUrl: true,
+          },
+        },
+      },
+    });
+
+    if (!purchase) {
+      return NextResponse.json(
+        { error: 'এই TrxID দিয়ে কোনো পেমেন্ট রেকর্ড পাওয়া যায়নি' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      purchase: {
+        id: purchase.id,
+        trxId: purchase.trxId,
+        status: purchase.status,
+        pdfId: purchase.pdfId,
+        pdf: purchase.pdf,
+      },
+    });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);

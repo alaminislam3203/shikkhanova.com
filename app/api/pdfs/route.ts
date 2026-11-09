@@ -7,6 +7,7 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const classGrade = searchParams.get('classGrade');
+    const trxIdsParam = searchParams.get('trxIds');
     const session = await getServerSession(authOptions);
 
     const where: any = {};
@@ -14,14 +15,44 @@ export async function GET(req: Request) {
       where.classGrade = parseInt(classGrade);
     }
 
+    // Build dynamic purchase filter so logged-in students, email-matched students, and TrxID-matched students all get their live status
+    const orConditions: any[] = [];
+
+    if (session?.user?.id && session.user.id !== 'admin-master-id') {
+      orConditions.push({ studentId: session.user.id });
+    }
+
+    if (session?.user?.email) {
+      orConditions.push({
+        student: {
+          email: session.user.email.toLowerCase(),
+        },
+      });
+    }
+
+    if (trxIdsParam) {
+      const trxList = trxIdsParam
+        .split(',')
+        .map((t) => t.trim().toUpperCase())
+        .filter(Boolean);
+      if (trxList.length > 0) {
+        orConditions.push({
+          trxId: { in: trxList },
+        });
+      }
+    }
+
     const pdfs = await prisma.pdfMaterial.findMany({
       where,
       include: {
         purchases:
-          session?.user?.id && session.user.id !== 'admin-master-id'
+          orConditions.length > 0
             ? {
                 where: {
-                  studentId: session.user.id,
+                  OR: orConditions,
+                },
+                orderBy: {
+                  updatedAt: 'desc',
                 },
               }
             : false,
