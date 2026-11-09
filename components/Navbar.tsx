@@ -243,11 +243,7 @@ export default function Navbar() {
               <FaPhone className="text-emerald-400" />
               <span>হেল্পলাইন: ০১৭১২৫৯২৫১৯</span>
             </a>
-            <span className="hidden md:inline text-slate-500">|</span>
-            <span className="text-white font-bold bg-[#C8102E] px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 shadow-xs">
-              <HiSparkles className="text-amber-300" />
-              শিখবো, জিতবো
-            </span>
+          
           </div>
 
           <div className="flex items-center gap-3">
