@@ -13,6 +13,7 @@ import AdminNoticesManager from '@/components/admin/AdminNoticesManager';
 import AdminStudentsManager from '@/components/admin/AdminStudentsManager';
 import AdminSubjectsManager from '@/components/admin/AdminSubjectsManager';
 import AdminBannersManager from '@/components/admin/AdminBannersManager';
+import AdminAchieversManager from '@/components/admin/AdminAchieversManager';
 import { PurchaseRecord } from '@/types';
 import {
   FaBars,
@@ -82,6 +83,7 @@ export default function AdminPage() {
         [
           'dashboard',
           'banners',
+          'achievers',
           'purchases',
           'addResult',
           'addPdf',
@@ -350,6 +352,7 @@ export default function AdminPage() {
                 <span className="text-xs font-bold text-brand-700">
                   {activeTab === 'dashboard' && 'ড্যাশবোর্ড ওভারভিউ'}
                   {activeTab === 'banners' && 'হোমপেজ ব্যানার স্লাইডার'}
+                  {activeTab === 'achievers' && 'আমাদের সাফল্য গাঁথা'}
                   {activeTab === 'purchases' && 'পেমেন্ট রিকোয়েস্ট যাচাই'}
                   {activeTab === 'addPdf' && 'পিডিএফ শিট ও কার্ড ম্যানেজমেন্ট'}
                   {activeTab === 'addResult' && 'কোচিং পরীক্ষার রেজাল্ট আপলোড'}
