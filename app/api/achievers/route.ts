@@ -46,35 +46,11 @@ async function ensureAchieversTable() {
       );
     `);
 
-    const countRows: Array<{ count: bigint | number }> =
-      await prisma.$queryRawUnsafe(`SELECT COUNT(*) as count FROM "SuccessStory"`);
-    const count = Number(countRows?.[0]?.count || 0);
+    // Clean up any demo placeholder images so only genuine uploaded achievers show
+    await prisma.$executeRawUnsafe(
+      `DELETE FROM "SuccessStory" WHERE "photoUrl" LIKE '%cloudinary.com/demo/%'`
+    );
 
-    if (count === 0) {
-      for (const a of DEFAULT_ACHIEVERS) {
-        await prisma.$executeRawUnsafe(
-          `INSERT INTO "SuccessStory" ("id", "name", "classGrade", "classLabel", "achievement", "institution", "photoUrl", "badge", "year")
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-           ON CONFLICT ("id") DO UPDATE SET
-             "name" = EXCLUDED."name",
-             "classGrade" = EXCLUDED."classGrade",
-             "classLabel" = EXCLUDED."classLabel",
-             "achievement" = EXCLUDED."achievement",
-             "institution" = EXCLUDED."institution",
-             "photoUrl" = EXCLUDED."photoUrl",
-             "badge" = EXCLUDED."badge"`,
-          a.id,
-          a.name,
-          a.classGrade,
-          a.classLabel,
-          a.achievement,
-          a.institution,
-          a.photoUrl,
-          a.badge || '',
-          a.year || '২০২৬'
-        );
-      }
-    }
     return true;
   } catch (err) {
     console.warn('Database SuccessStory init skipped, using fallback:', err);

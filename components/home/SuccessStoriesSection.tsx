@@ -7,8 +7,9 @@ import {
   FaChevronRight,
   FaAward,
   FaGraduationCap,
+  FaImage,
 } from 'react-icons/fa6';
-import { DEFAULT_ACHIEVERS, AchieverItem } from '@/lib/defaultAchievers';
+import { AchieverItem } from '@/lib/defaultAchievers';
 
 const CLASS_TABS = [
   { label: 'সকল সাফল্য', value: 'all' },
@@ -22,9 +23,10 @@ const CLASS_TABS = [
 export default function SuccessStoriesSection() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const [achievers, setAchievers] = useState<AchieverItem[]>(DEFAULT_ACHIEVERS);
+  const [achievers, setAchievers] = useState<AchieverItem[]>([]);
   const [selectedClass, setSelectedClass] = useState<string>('all');
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     fetchAchievers();
@@ -39,25 +41,13 @@ export default function SuccessStoriesSection() {
           : `/api/achievers?classGrade=${selectedClass}`;
       const res = await fetch(url, { cache: 'no-store' });
       const data = await res.json();
-      if (data.achievers && Array.isArray(data.achievers) && data.achievers.length > 0) {
+      if (data.achievers && Array.isArray(data.achievers)) {
         setAchievers(data.achievers);
       } else {
-        const filtered =
-          selectedClass === 'all'
-            ? DEFAULT_ACHIEVERS
-            : DEFAULT_ACHIEVERS.filter(
-                (a) => a.classGrade === Number(selectedClass)
-              );
-        setAchievers(filtered);
+        setAchievers([]);
       }
     } catch {
-      const filtered =
-        selectedClass === 'all'
-          ? DEFAULT_ACHIEVERS
-          : DEFAULT_ACHIEVERS.filter(
-              (a) => a.classGrade === Number(selectedClass)
-            );
-      setAchievers(filtered);
+      setAchievers([]);
     } finally {
       setLoading(false);
     }
@@ -71,6 +61,52 @@ export default function SuccessStoriesSection() {
       behavior: 'smooth',
     });
   };
+
+  // 4-Card Skeleton Loader Component
+  const renderSkeletonCards = () => (
+    <div
+      ref={scrollContainerRef}
+      className="flex gap-4 sm:gap-6 overflow-x-auto py-3 px-2 sm:px-4 no-scrollbar"
+      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+    >
+      {[1, 2, 3, 4].map((i) => (
+        <div
+          key={`skeleton-${i}`}
+          className="w-[260px] sm:w-[280px] lg:w-[calc(25%-18px)] shrink-0 bg-white border border-slate-200/90 shadow-xs rounded-sm overflow-hidden flex flex-col animate-pulse"
+        >
+          {/* Skeleton Photo Container with Shimmer */}
+          <div className="relative w-full aspect-[4/4.8] bg-slate-200/80 overflow-hidden flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-slate-300/60 flex items-center justify-center text-slate-400">
+              <FaImage className="w-6 h-6 opacity-40" />
+            </div>
+
+            {/* Skeleton Top Badge */}
+            <div className="absolute top-2.5 right-2.5 w-16 h-4 bg-red-100 rounded-xs" />
+
+            {/* Skeleton Class Pill */}
+            <div className="absolute bottom-2 left-2 w-14 h-4 bg-slate-300/80 rounded-xs" />
+          </div>
+
+          {/* Skeleton Information Box */}
+          <div className="p-4 sm:p-5 flex flex-col justify-between flex-1 space-y-2 border-t border-slate-100">
+            <div className="space-y-2">
+              {/* Name Skeleton (Crimson light bar) */}
+              <div className="h-5 bg-[#C8102E]/20 rounded-xs w-3/4" />
+              {/* Class Skeleton */}
+              <div className="h-3.5 bg-slate-200 rounded-xs w-1/2" />
+              {/* Achievement Skeleton */}
+              <div className="h-3.5 bg-slate-200 rounded-xs w-4/5" />
+            </div>
+
+            {/* Institution Skeleton */}
+            <div className="pt-2 border-t border-slate-100">
+              <div className="h-3 bg-slate-150 bg-slate-200/70 rounded-xs w-3/5" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <section className="relative py-6 sm:py-8 space-y-6">
@@ -134,61 +170,86 @@ export default function SuccessStoriesSection() {
           <FaChevronRight className="w-3.5 h-3.5" />
         </button>
 
-        {/* Horizontal Cards Scrollable Track */}
-        <div
-          ref={scrollContainerRef}
-          className="flex gap-4 sm:gap-6 overflow-x-auto scroll-smooth py-3 px-2 sm:px-4 no-scrollbar"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
-          {achievers.map((student) => (
-            <div
-              key={student.id}
-              className="w-[260px] sm:w-[280px] lg:w-[calc(25%-18px)] shrink-0 bg-white border border-slate-200/90 hover:border-[#C8102E]/60 shadow-xs hover:shadow-md transition-all duration-300 rounded-sm overflow-hidden flex flex-col group/card"
-            >
-              {/* Student Photo Container (Loaded via Cloudinary) */}
-              <div className="relative w-full aspect-[4/4.8] overflow-hidden bg-slate-100">
-                <img
-                  src={student.photoUrl}
-                  alt={student.name}
-                  loading="lazy"
-                  className="w-full h-full object-cover object-top transition-transform duration-500 group-hover/card:scale-105"
-                />
+        {/* Content Area: Skeleton Loader vs Achievers Cards */}
+        {loading ? (
+          renderSkeletonCards()
+        ) : achievers.length === 0 ? (
+          renderSkeletonCards()
+        ) : (
+          <div
+            ref={scrollContainerRef}
+            className="flex gap-4 sm:gap-6 overflow-x-auto scroll-smooth py-3 px-2 sm:px-4 no-scrollbar"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {achievers.map((student) => {
+              const isImgLoaded = loadedImages[student.id];
 
-                {student.badge && (
-                  <span className="absolute top-2.5 right-2.5 bg-[#C8102E] text-white text-[10px] font-bold px-2 py-0.5 rounded-xs shadow-xs tracking-wider">
-                    {student.badge}
-                  </span>
-                )}
+              return (
+                <div
+                  key={student.id}
+                  className="w-[260px] sm:w-[280px] lg:w-[calc(25%-18px)] shrink-0 bg-white border border-slate-200/90 hover:border-[#C8102E]/60 shadow-xs hover:shadow-md transition-all duration-300 rounded-sm overflow-hidden flex flex-col group/card"
+                >
+                  {/* Student Photo Container with Image Skeleton */}
+                  <div className="relative w-full aspect-[4/4.8] overflow-hidden bg-slate-200">
+                    {/* Placeholder Shimmer while image loads */}
+                    {!isImgLoaded && (
+                      <div className="absolute inset-0 bg-slate-200 animate-pulse flex items-center justify-center">
+                        <FaImage className="w-8 h-8 text-slate-300" />
+                      </div>
+                    )}
 
-                <span className="absolute bottom-2 left-2 bg-[#0A1E3C]/80 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-0.5 rounded-xs">
-                  {student.classGrade}ম শ্রেণি
-                </span>
-              </div>
+                    <img
+                      src={student.photoUrl}
+                      alt={student.name}
+                      loading="lazy"
+                      onLoad={() =>
+                        setLoadedImages((prev) => ({
+                          ...prev,
+                          [student.id]: true,
+                        }))
+                      }
+                      className={`w-full h-full object-cover object-top transition-all duration-500 group-hover/card:scale-105 ${
+                        isImgLoaded ? 'opacity-100' : 'opacity-0'
+                      }`}
+                    />
 
-              {/* Student Information Box */}
-              <div className="p-4 sm:p-5 flex flex-col justify-between flex-1 text-left space-y-1.5 border-t border-slate-100">
-                <div>
-                  <h3 className="text-base sm:text-lg font-bold text-[#C8102E] leading-snug group-hover/card:underline">
-                    {student.name}
-                  </h3>
-                  <p className="text-xs sm:text-sm font-bold text-slate-800 leading-snug mt-1">
-                    {student.classLabel}
-                  </p>
-                  <p className="text-xs font-semibold text-slate-600 mt-0.5">
-                    {student.achievement}
-                  </p>
+                    {student.badge && (
+                      <span className="absolute top-2.5 right-2.5 bg-[#C8102E] text-white text-[10px] font-bold px-2 py-0.5 rounded-xs shadow-xs tracking-wider">
+                        {student.badge}
+                      </span>
+                    )}
+
+                    <span className="absolute bottom-2 left-2 bg-[#0A1E3C]/80 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-0.5 rounded-xs">
+                      {student.classGrade}ম শ্রেণি
+                    </span>
+                  </div>
+
+                  {/* Student Information Box */}
+                  <div className="p-4 sm:p-5 flex flex-col justify-between flex-1 text-left space-y-1.5 border-t border-slate-100">
+                    <div>
+                      <h3 className="text-base sm:text-lg font-bold text-[#C8102E] leading-snug group-hover/card:underline">
+                        {student.name}
+                      </h3>
+                      <p className="text-xs sm:text-sm font-bold text-slate-800 leading-snug mt-1">
+                        {student.classLabel}
+                      </p>
+                      <p className="text-xs font-semibold text-slate-600 mt-0.5">
+                        {student.achievement}
+                      </p>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-100/80">
+                      <p className="text-[11px] text-slate-500 font-medium truncate flex items-center gap-1">
+                        <FaGraduationCap className="text-slate-400 shrink-0" />
+                        <span>{student.institution}</span>
+                      </p>
+                    </div>
+                  </div>
                 </div>
-
-                <div className="pt-2 border-t border-slate-100/80">
-                  <p className="text-[11px] text-slate-500 font-medium truncate flex items-center gap-1">
-                    <FaGraduationCap className="text-slate-400 shrink-0" />
-                    <span>{student.institution}</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Bottom Result Call to Action */}
@@ -204,4 +265,3 @@ export default function SuccessStoriesSection() {
     </section>
   );
 }
-
