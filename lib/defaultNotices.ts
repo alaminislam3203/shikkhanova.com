@@ -96,3 +96,4 @@ export const DEFAULT_NOTICES: NoticeItem[] = [
     createdAt: '2026-10-28T08:00:00.000Z',
   },
 ];
+

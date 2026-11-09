@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { DEFAULT_NOTICES } from '@/lib/defaultNotices';
 import {
   FaUserCheck,
   FaAward,
@@ -15,6 +16,22 @@ import { TbCashBanknote } from 'react-icons/tb';
 import Logo from '@/components/common/Logo';
 
 export default function HeroSection() {
+  const [headlineNotice, setHeadlineNotice] = useState<string>(
+    DEFAULT_NOTICES[0]?.title ||
+      '৫ম থেকে ১০ম শ্রেণির সকল বিষয়ের স্পেশাল হ্যান্ডনোট ও সাজেশন এখন ওয়েবসাইটে পাওয়া যাচ্ছে!'
+  );
+
+  useEffect(() => {
+    fetch('/api/notices', { cache: 'no-store' })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.notices && Array.isArray(data.notices) && data.notices.length > 0) {
+          setHeadlineNotice(data.notices[0].title);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="space-y-4">
       {/* UCC Group Style Notice / Update Bar */}
@@ -23,11 +40,12 @@ export default function HeroSection() {
           <HiSparkles className="w-3.5 h-3.5 text-amber-300" />
           নোটিশ বোর্ড
         </span>
-        <div className="text-xs sm:text-sm font-semibold text-[#0A1E3C] truncate flex items-center gap-3">
-          <span>🎓 ৫ম থেকে ১০ম শ্রেণির সকল বিষয়ের স্পেশাল হ্যান্ডনোট ও সাজেশন এখন ওয়েবসাইটে পাওয়া যাচ্ছে!</span>
-          <span className="hidden md:inline text-slate-300">|</span>
-          <Link href="/pdfs" className="hidden md:inline-flex items-center gap-1 text-[#C8102E] font-bold hover:underline shrink-0">
-            পিডিএফ শপ দেখুন <FaArrowRight className="w-3 h-3" />
+        <div className="text-xs sm:text-sm font-semibold text-[#0A1E3C] truncate flex items-center justify-between flex-1 gap-3">
+          <Link href="/notices" className="truncate hover:text-[#C8102E] transition">
+            📢 {headlineNotice}
+          </Link>
+          <Link href="/notices" className="hidden md:inline-flex items-center gap-1 text-[#C8102E] font-bold hover:underline shrink-0">
+            সকল নোটিশ <FaArrowRight className="w-3 h-3" />
           </Link>
         </div>
       </div>

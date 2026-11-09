@@ -9,6 +9,7 @@ import PurchasesTable from '@/components/admin/PurchasesTable';
 import AddResultForm from '@/components/admin/AddResultForm';
 import AddPdfForm, { PdfFormData } from '@/components/admin/AddPdfForm';
 import AdminAttendanceManager from '@/components/admin/AdminAttendanceManager';
+import AdminNoticesManager from '@/components/admin/AdminNoticesManager';
 import { PurchaseRecord } from '@/types';
 import {
   FaBars,
@@ -75,7 +76,7 @@ export default function AdminPage() {
       const tabParam = params.get('tab') as AdminTab | null;
       if (
         tabParam &&
-        ['dashboard', 'purchases', 'addResult', 'addPdf', 'students', 'settings'].includes(tabParam)
+        ['dashboard', 'purchases', 'addResult', 'addPdf', 'notices', 'students', 'settings'].includes(tabParam)
       ) {
         setActiveTab(tabParam);
       }
@@ -479,6 +480,9 @@ export default function AdminPage() {
             onSubmit={handleResultSubmit}
           />
         )}
+
+        {/* TAB 3.5: Manage Notices */}
+        {activeTab === 'notices' && <AdminNoticesManager />}
 
         {/* TAB 4: Admin Roll Attendance Manager */}
         {activeTab === 'students' && <AdminAttendanceManager />}

@@ -16,6 +16,7 @@ import {
   FaAnglesLeft,
   FaAnglesRight,
   FaChartPie,
+  FaBell,
 } from 'react-icons/fa6';
 import { TbCashBanknote } from 'react-icons/tb';
 
@@ -24,6 +25,7 @@ export type AdminTab =
   | 'purchases'
   | 'addResult'
   | 'addPdf'
+  | 'notices'
   | 'students'
   | 'settings';
 
@@ -113,6 +115,12 @@ export default function AdminSidebar({
       label: 'কোচিং রেজাল্ট আপলোড',
       sublabel: 'পরীক্ষার মার্কশিট তৈরি',
       icon: FaAward,
+    },
+    {
+      id: 'notices',
+      label: 'নোটিশ বোর্ড ম্যানেজ',
+      sublabel: 'নোটিশ প্রকাশ, এডিট ও ডিলিট',
+      icon: FaBell,
     },
     {
       id: 'students',
