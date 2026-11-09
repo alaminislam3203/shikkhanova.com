@@ -252,3 +252,4 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: error.message || 'ডিলিট ব্যর্থ হয়েছে' }, { status: 500 });
   }
 }
+
