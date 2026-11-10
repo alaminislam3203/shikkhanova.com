@@ -35,8 +35,8 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
         </div>
 
         {/* Top-Right Corner: Bangladesh Education Board Grading System Table Box */}
-        <div className="sm:absolute sm:top-6 sm:right-6 sm:z-20 print:absolute print:top-6 print:right-6 mb-3 sm:mb-0 flex justify-end">
-          <div className="w-[168px] bg-white border border-slate-300 rounded-md overflow-hidden shadow-xs text-[9px]">
+        <div className="sm:absolute sm:top-8 sm:right-8 sm:z-20 print:absolute print:top-6 print:right-6 mb-3 sm:mb-0 flex justify-end">
+          <div className="w-[160px] sm:w-[172px] bg-white border border-slate-300 rounded-lg overflow-hidden shadow-xs text-[9px]">
             <table className="w-full border-collapse text-center">
               <thead>
                 <tr className="bg-[#0A1E3C] text-white font-bold border-b border-slate-300">
