@@ -279,23 +279,23 @@ export default function AccountPage() {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6">
       
       {/* Top Banner with Compact Profile Header */}
       <div
         style={{
           background: 'linear-gradient(135deg, #071426 0%, #0A1E3C 55%, #2A0B1E 100%)',
         }}
-        className="rounded-3xl p-6 sm:p-8 text-white shadow-premium border-b-4 border-[#C8102E] relative overflow-hidden"
+        className="rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 lg:p-8 text-white shadow-premium border-b-4 border-[#C8102E] relative overflow-hidden"
       >
         <div className="absolute right-0 top-0 w-80 h-80 bg-nova-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-        <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 text-center sm:text-left">
-          <div className="flex flex-col sm:flex-row items-center gap-5">
+        <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-3 sm:gap-6 text-center sm:text-left">
+          <div className="flex flex-row items-center gap-3.5 sm:gap-5 w-full sm:w-auto">
             {/* Avatar with Camera Icon */}
             <div className="relative group shrink-0">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl overflow-hidden bg-gradient-to-tr from-brand-700 to-nova-500 p-1 shadow-2xl border-2 border-white/30">
-                <div className="w-full h-full rounded-[20px] overflow-hidden bg-slate-900 flex items-center justify-center relative">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-2xl sm:rounded-3xl overflow-hidden bg-gradient-to-tr from-brand-700 to-nova-500 p-1 shadow-xl border-2 border-white/30">
+                <div className="w-full h-full rounded-[14px] sm:rounded-[20px] overflow-hidden bg-slate-900 flex items-center justify-center relative">
                   {profile.image ? (
                     <img
                       src={profile.image}
@@ -303,7 +303,7 @@ export default function AccountPage() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="text-3xl sm:text-4xl font-black text-white">
+                    <span className="text-2xl sm:text-4xl font-black text-white">
                       {profile.name ? profile.name.charAt(0) : '🎓'}
                     </span>
                   )}
@@ -320,10 +320,10 @@ export default function AccountPage() {
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
-                className="absolute -bottom-1.5 -right-1.5 w-8 h-8 rounded-xl bg-nova-500 hover:bg-nova-600 text-white flex items-center justify-center shadow-lg border-2 border-white transition transform hover:scale-110 active:scale-95"
+                className="absolute -bottom-1 -right-1 sm:-bottom-1.5 sm:-right-1.5 w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-nova-500 hover:bg-nova-600 text-white flex items-center justify-center shadow-lg border-2 border-white transition transform hover:scale-110 active:scale-95"
                 title="নতুন ছবি আপলোড করুন"
               >
-                <FaCamera className="w-3.5 h-3.5" />
+                <FaCamera className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5" />
               </button>
 
               <input
@@ -336,41 +336,49 @@ export default function AccountPage() {
             </div>
 
             {/* Profile Brief Info */}
-            <div className="space-y-1.5">
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                <h1 className="text-xl sm:text-2xl font-black text-white">{profile.name}</h1>
-                <span className="bg-nova-500 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+            <div className="space-y-1 text-left min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                <h1 className="text-base sm:text-2xl font-black text-white truncate max-w-[200px] sm:max-w-none">{profile.name}</h1>
+                <span className="bg-nova-500 text-white text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0">
                   {profile.role === 'ADMIN' ? 'অ্যাডমিন' : profile.role === 'TEACHER' ? 'শিক্ষক' : 'শিক্ষার্থী'}
                 </span>
               </div>
-              <p className="text-xs text-blue-200">
+              <p className="text-[11px] sm:text-xs text-blue-200 line-clamp-1">
                 শিক্ষানোভা একাডেমি • জুম্মাপাড়া, নীলফামারী সদর
               </p>
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1 text-xs text-slate-300">
+              <div className="flex flex-wrap items-center gap-1.5 pt-0.5 text-[10px] sm:text-xs text-slate-300">
                 {profile.classGrade && (
-                  <span className="inline-flex items-center gap-1 bg-white/10 px-2.5 py-0.5 rounded-lg font-bold border border-white/10">
+                  <span className="inline-flex items-center gap-1 bg-white/10 px-2 py-0.5 rounded-lg font-bold border border-white/10 shrink-0">
                     <FaGraduationCap className="text-nova-400" /> শ্রেণি {profile.classGrade}
                   </span>
                 )}
                 {profile.rollNumber && (
-                  <span className="inline-flex items-center gap-1 bg-white/10 px-2.5 py-0.5 rounded-lg font-bold border border-white/10">
+                  <span className="inline-flex items-center gap-1 bg-white/10 px-2 py-0.5 rounded-lg font-bold border border-white/10 shrink-0">
                     <FaHashtag className="text-nova-400" /> রোল {profile.rollNumber}
                   </span>
                 )}
-                <span className="inline-flex items-center gap-1 bg-white/10 px-2.5 py-0.5 rounded-lg font-mono text-[11px] border border-white/10">
+                <span className="hidden sm:inline-flex items-center gap-1 bg-white/10 px-2 py-0.5 rounded-lg font-mono text-[11px] border border-white/10 truncate">
                   <FaEnvelope className="text-nova-400" /> {profile.email}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Quick Photo Upload Trigger Button */}
-          <div className="shrink-0 flex items-center gap-2">
+          {/* Quick Action in Header (Helpline on mobile + Upload Button on desktop) */}
+          <div className="w-full sm:w-auto shrink-0 flex items-center justify-between sm:justify-end gap-2 border-t border-white/10 pt-2.5 sm:border-t-0 sm:pt-0">
+            <a
+              href="tel:01712592519"
+              className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs text-blue-200 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-xl border border-white/10 font-bold transition"
+            >
+              <FaPhone className="w-3 h-3 text-emerald-400" />
+              <span>হেল্পলাইন: ০১৭১২৫৯২৫১৯</span>
+            </a>
+
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
-              className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-4 py-2.5 rounded-2xl border border-white/20 transition backdrop-blur-md shadow-sm"
+              className="hidden sm:inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-4 py-2.5 rounded-2xl border border-white/20 transition backdrop-blur-md shadow-sm"
             >
               <FaCloudArrowUp className="text-nova-400 w-4 h-4" />
               <span>{uploading ? 'আপলোড হচ্ছে...' : 'নতুন ছবি আপলোড'}</span>
@@ -382,7 +390,7 @@ export default function AccountPage() {
       {/* Alert Message */}
       {msg && (
         <div
-          className={`p-4 rounded-2xl text-xs sm:text-sm font-bold transition flex items-center justify-between shadow-sm animate-in fade-in duration-200 ${
+          className={`p-3.5 sm:p-4 rounded-2xl text-xs sm:text-sm font-bold transition flex items-center justify-between shadow-sm animate-in fade-in duration-200 ${
             msg.type === 'success'
               ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
               : 'bg-rose-50 text-rose-800 border border-rose-200'
@@ -400,11 +408,34 @@ export default function AccountPage() {
         </div>
       )}
 
-      {/* Main Layout: Left Sidebar + Right Content Area */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      {/* Mobile Navigation Segmented Tabs (Visible on Mobile Screens Only) */}
+      <div className="lg:hidden bg-white rounded-2xl p-1.5 border border-slate-200 shadow-sm grid grid-cols-3 gap-1">
+        {sidebarTabs.map((tab) => {
+          const Icon = tab.icon;
+          const active = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              className={`py-2 px-1 rounded-xl text-xs font-bold transition-all flex flex-col items-center justify-center gap-1 ${
+                active
+                  ? 'bg-gradient-to-r from-brand-700 to-brand-800 text-white shadow-sm'
+                  : 'text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              <Icon className={`w-3.5 h-3.5 ${active ? 'text-white' : 'text-slate-400'}`} />
+              <span className="truncate text-[11px] font-bold">{tab.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Main Layout: Left Sidebar (Desktop) + Right Content Area */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-start">
         
-        {/* ================= LEFT SIDEBAR (4 Cols) ================= */}
-        <aside className="lg:col-span-4 bg-white rounded-3xl p-5 border border-slate-200/90 shadow-sm space-y-4 lg:sticky lg:top-28">
+        {/* ================= LEFT SIDEBAR (Desktop Only: 4 Cols) ================= */}
+        <aside className="hidden lg:block lg:col-span-4 bg-white rounded-3xl p-5 border border-slate-200/90 shadow-sm space-y-4 lg:sticky lg:top-28">
           
           <div className="pb-3 border-b border-slate-100">
             <h2 className="text-xs font-black text-slate-400 uppercase tracking-wider">অ্যাকাউন্ট মেনু</h2>
@@ -493,36 +524,35 @@ export default function AccountPage() {
 
         </aside>
 
-        {/* ================= RIGHT CONTENT AREA (8 Cols) ================= */}
-        <main className="lg:col-span-8 space-y-6">
+        {/* ================= RIGHT CONTENT AREA (8 Cols on Desktop / Full Width on Mobile) ================= */}
+        <main className="lg:col-span-8 space-y-4 sm:space-y-6">
           
           {/* TAB 1: Profile & Photo */}
           {activeTab === 'profile' && (
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6 animate-in fade-in duration-150">
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-slate-200 shadow-sm space-y-5 sm:space-y-6 animate-in fade-in duration-150">
               
-              <div className="border-b border-slate-100 pb-4">
-                <h2 className="text-lg font-black text-slate-800">ব্যক্তিগত ও একাডেমিক তথ্য</h2>
+              <div className="border-b border-slate-100 pb-3 sm:pb-4">
+                <h2 className="text-base sm:text-lg font-black text-slate-800">ব্যক্তিগত ও একাডেমিক তথ্য</h2>
                 <p className="text-xs text-slate-500 mt-0.5">
                   আপনার ছবি, পুরো নাম, মোবাইল নম্বর এবং শ্রেণি-রোল আপডেট করুন।
                 </p>
               </div>
 
               {/* Photo Upload Card Section */}
-              <div className="p-4 sm:p-5 bg-gradient-to-r from-slate-50 to-blue-50/40 rounded-2xl border border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="flex items-center gap-4 text-center sm:text-left">
-                  <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-brand-600 bg-brand-50 flex items-center justify-center shadow-md shrink-0">
+              <div className="p-3 sm:p-4 bg-gradient-to-r from-slate-50 to-blue-50/40 rounded-xl sm:rounded-2xl border border-slate-200/80 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 text-left">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl overflow-hidden border-2 border-brand-600 bg-brand-50 flex items-center justify-center shadow-md shrink-0">
                     {profile.image ? (
                       <img src={profile.image} alt={profile.name} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-2xl font-black text-brand-700">{profile.name?.charAt(0) || 'U'}</span>
+                      <span className="text-xl sm:text-2xl font-black text-brand-700">{profile.name?.charAt(0) || 'U'}</span>
                     )}
                   </div>
                   <div>
-                    <h3 className="text-sm font-black text-slate-800">প্রোফাইল ছবি</h3>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      JPG, PNG বা WebP ফরম্যাট (সর্বোচ্চ ৫ মেগাবাইট)
+                    <h3 className="text-xs sm:text-sm font-black text-slate-800">প্রোফাইল ছবি</h3>
+                    <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 line-clamp-1">
+                      JPG, PNG বা WebP ফরম্যাট (সর্বোচ্চ ৫MB)
                     </p>
-                 
                   </div>
                 </div>
 
@@ -530,15 +560,15 @@ export default function AccountPage() {
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
-                  className="bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-brand transition flex items-center gap-2 shrink-0"
+                  className="bg-brand-700 hover:bg-brand-800 text-white text-[11px] sm:text-xs font-bold px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl shadow-brand transition flex items-center gap-1.5 shrink-0"
                 >
-                  <FaCamera className="w-3.5 h-3.5" />
+                  <FaCamera className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   <span>{uploading ? 'আপলোড হচ্ছে...' : 'ছবি পরিবর্তন'}</span>
                 </button>
               </div>
 
               {/* Profile Details Form */}
-              <form onSubmit={handleProfileSubmit} className="space-y-4 text-xs sm:text-sm">
+              <form onSubmit={handleProfileSubmit} className="space-y-3.5 sm:space-y-4 text-xs sm:text-sm">
                 
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">শিক্ষার্থীর পূর্ণ নাম</label>
@@ -547,7 +577,7 @@ export default function AccountPage() {
                     required
                     value={profile.name}
                     onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 sm:py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition"
                   />
                 </div>
 
@@ -559,17 +589,17 @@ export default function AccountPage() {
                     type="email"
                     disabled
                     value={profile.email}
-                    className="w-full bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-500 font-mono cursor-not-allowed"
+                    className="w-full bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-2 sm:py-2.5 text-slate-500 font-mono cursor-not-allowed"
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
                   <div>
                     <label className="block font-bold text-slate-700 mb-1">শ্রেণি (Class 5 - 10)</label>
                     <select
                       value={profile.classGrade}
                       onChange={(e) => setProfile({ ...profile, classGrade: e.target.value })}
-                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 sm:px-3.5 py-2 sm:py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition text-xs sm:text-sm"
                     >
                       <option value="5">৫ম শ্রেণি</option>
                       <option value="6">৬ষ্ঠ শ্রেণি</option>
@@ -587,7 +617,7 @@ export default function AccountPage() {
                       value={profile.rollNumber}
                       onChange={(e) => setProfile({ ...profile, rollNumber: e.target.value })}
                       placeholder="যেমন: 1, 5"
-                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 sm:px-3.5 py-2 sm:py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition text-xs sm:text-sm"
                     />
                   </div>
                 </div>
@@ -599,7 +629,7 @@ export default function AccountPage() {
                     value={profile.phone}
                     onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
                     placeholder="01XXXXXXXXX"
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-mono font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 sm:py-2.5 font-mono font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition"
                   />
                 </div>
 
@@ -607,7 +637,7 @@ export default function AccountPage() {
                   <button
                     type="submit"
                     disabled={savingProfile}
-                    className="w-full sm:w-auto bg-brand-700 hover:bg-brand-800 text-white font-bold px-8 py-3 rounded-xl shadow-brand transition active:scale-[0.99] flex items-center justify-center gap-2"
+                    className="w-full sm:w-auto bg-brand-700 hover:bg-brand-800 text-white font-bold px-8 py-2.5 sm:py-3 rounded-xl shadow-brand transition active:scale-[0.99] flex items-center justify-center gap-2"
                   >
                     {savingProfile ? (
                       <>
@@ -630,10 +660,10 @@ export default function AccountPage() {
 
           {/* TAB 2: Security & Password */}
           {activeTab === 'security' && (
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6 animate-in fade-in duration-150">
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-slate-200 shadow-sm space-y-5 sm:space-y-6 animate-in fade-in duration-150">
               
-              <div className="border-b border-slate-100 pb-4">
-                <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
+              <div className="border-b border-slate-100 pb-3 sm:pb-4">
+                <h2 className="text-base sm:text-lg font-black text-slate-800 flex items-center gap-2">
                   <FaShieldHalved className="text-brand-700" /> অ্যাকাউন্ট নিরাপত্তা ও পাসওয়ার্ড পরিবর্তন
                 </h2>
                 <p className="text-xs text-slate-500 mt-0.5">
@@ -641,7 +671,7 @@ export default function AccountPage() {
                 </p>
               </div>
 
-              <form onSubmit={handlePasswordSubmit} className="space-y-4 max-w-lg text-xs sm:text-sm">
+              <form onSubmit={handlePasswordSubmit} className="space-y-3.5 sm:space-y-4 max-w-lg text-xs sm:text-sm">
                 
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">বর্তমান পাসওয়ার্ড</label>
@@ -651,7 +681,7 @@ export default function AccountPage() {
                     value={passwords.currentPassword}
                     onChange={(e) => setPasswords({ ...passwords, currentPassword: e.target.value })}
                     placeholder="আপনার বর্তমান পাসওয়ার্ড দিন"
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-brand-500 focus:bg-white transition"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 sm:py-2.5 focus:outline-none focus:border-brand-500 focus:bg-white transition"
                   />
                 </div>
 
@@ -663,7 +693,7 @@ export default function AccountPage() {
                     value={passwords.newPassword}
                     onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
                     placeholder="কমপক্ষে ৬ অক্ষরের পাসওয়ার্ড দিন"
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-brand-500 focus:bg-white transition"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 sm:py-2.5 focus:outline-none focus:border-brand-500 focus:bg-white transition"
                   />
                 </div>
 
@@ -675,7 +705,7 @@ export default function AccountPage() {
                     value={passwords.confirmPassword}
                     onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
                     placeholder="পুনরায় নতুন পাসওয়ার্ড লিখুন"
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-brand-500 focus:bg-white transition"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 sm:py-2.5 focus:outline-none focus:border-brand-500 focus:bg-white transition"
                   />
                 </div>
 
@@ -683,7 +713,7 @@ export default function AccountPage() {
                   <button
                     type="submit"
                     disabled={changingPassword}
-                    className="w-full sm:w-auto bg-slate-900 hover:bg-black text-white font-bold px-8 py-3 rounded-xl shadow transition active:scale-[0.99] flex items-center justify-center gap-2"
+                    className="w-full sm:w-auto bg-slate-900 hover:bg-black text-white font-bold px-8 py-2.5 sm:py-3 rounded-xl shadow transition active:scale-[0.99] flex items-center justify-center gap-2"
                   >
                     {changingPassword ? (
                       <>
@@ -701,7 +731,7 @@ export default function AccountPage() {
 
               </form>
 
-              <div className="bg-amber-50 p-4 rounded-2xl border border-amber-200/80 text-xs text-amber-900 space-y-1">
+              <div className="bg-amber-50 p-3.5 sm:p-4 rounded-2xl border border-amber-200/80 text-xs text-amber-900 space-y-1">
                 <p className="font-bold flex items-center gap-1.5">
                   <HiSparkles className="text-amber-600" /> নিরাপত্তা টিপস:
                 </p>
@@ -711,104 +741,105 @@ export default function AccountPage() {
             </div>
           )}
 
-          {/* TAB 3: Activity & Shortcuts */}
+          {/* TAB 3: Activity & Shortcuts (2 CARDS PER ROW ON MOBILE) */}
           {activeTab === 'activity' && (
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6 animate-in fade-in duration-150">
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-slate-200 shadow-sm space-y-5 sm:space-y-6 animate-in fade-in duration-150">
               
-              <div className="border-b border-slate-100 pb-4">
-                <h2 className="text-lg font-black text-slate-800">আমার একাডেমিক কার্যক্রম ও শিটসমূহ</h2>
+              <div className="border-b border-slate-100 pb-3 sm:pb-4">
+                <h2 className="text-base sm:text-lg font-black text-slate-800">আমার একাডেমিক কার্যক্রম ও শিটসমূহ</h2>
                 <p className="text-xs text-slate-500 mt-0.5">
                   আপনার সংগৃহীত পিডিএফ হ্যান্ডনোট, পরীক্ষার রেজাল্ট ও দৈনিক উপস্থিতি চেক করুন।
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* 2 Cards Per Row on Mobile */}
+              <div className="grid grid-cols-2 sm:grid-cols-2 gap-2.5 sm:gap-4">
                 
                 {/* PDF Materials Shortcut */}
                 <Link
                   href="/profile"
-                  className="p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50/60 hover:bg-white transition shadow-xs hover:shadow-md group flex flex-col justify-between space-y-4"
+                  className="p-3 sm:p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50/60 hover:bg-white transition shadow-xs hover:shadow-md group flex flex-col justify-between space-y-2.5 sm:space-y-4"
                 >
-                  <div className="space-y-2">
-                    <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center">
-                      <FaFilePdf className="w-5 h-5" />
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center">
+                      <FaFilePdf className="w-4 h-4 sm:w-5 sm:h-5" />
                     </div>
-                    <h3 className="font-black text-slate-800 group-hover:text-brand-700 transition">
+                    <h3 className="text-xs sm:text-base font-black text-slate-800 group-hover:text-brand-700 transition truncate sm:line-clamp-none">
                       সংগৃহীত পিডিএফ নোট
                     </h3>
-                    <p className="text-xs text-slate-500">
+                    <p className="hidden sm:block text-xs text-slate-500">
                       আপনার বিকাশ বা নগদ পেমেন্টে অনুমোদিত সকল শিট ও হ্যান্ডনোট ডাউনলোড করুন।
                     </p>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-brand-700 pt-2 border-t border-slate-100">
-                    <span>ডাউনলোড পেইজে যান</span>
-                    <FaArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                  <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-brand-700 pt-1.5 sm:pt-2 border-t border-slate-100">
+                    <span>ডাউনলোড পেইজ</span>
+                    <FaArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </Link>
 
                 {/* Exam Result Shortcut */}
                 <Link
                   href="/results"
-                  className="p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50/60 hover:bg-white transition shadow-xs hover:shadow-md group flex flex-col justify-between space-y-4"
+                  className="p-3 sm:p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50/60 hover:bg-white transition shadow-xs hover:shadow-md group flex flex-col justify-between space-y-2.5 sm:space-y-4"
                 >
-                  <div className="space-y-2">
-                    <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
-                      <FaAward className="w-5 h-5" />
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
+                      <FaAward className="w-4 h-4 sm:w-5 sm:h-5" />
                     </div>
-                    <h3 className="font-black text-slate-800 group-hover:text-brand-700 transition">
+                    <h3 className="text-xs sm:text-base font-black text-slate-800 group-hover:text-brand-700 transition truncate sm:line-clamp-none">
                      রেজাল্ট ও মার্কশিট
                     </h3>
-                    <p className="text-xs text-slate-500">
+                    <p className="hidden sm:block text-xs text-slate-500">
                       ক্লাস ও রোল নম্বর দিয়ে অফিশিয়াল গ্রেডশিট, জিপিএ ও সাবজেক্ট মার্কস দেখুন।
                     </p>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-brand-700 pt-2 border-t border-slate-100">
+                  <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-brand-700 pt-1.5 sm:pt-2 border-t border-slate-100">
                     <span>মার্কশিট দেখুন</span>
-                    <FaArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                    <FaArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </Link>
 
                 {/* Daily Attendance Shortcut */}
                 <Link
                   href="/attendance"
-                  className="p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50/60 hover:bg-white transition shadow-xs hover:shadow-md group flex flex-col justify-between space-y-4"
+                  className="p-3 sm:p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50/60 hover:bg-white transition shadow-xs hover:shadow-md group flex flex-col justify-between space-y-2.5 sm:space-y-4"
                 >
-                  <div className="space-y-2">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
-                      <FaUserCheck className="w-5 h-5" />
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                      <FaUserCheck className="w-4 h-4 sm:w-5 sm:h-5" />
                     </div>
-                    <h3 className="font-black text-slate-800 group-hover:text-brand-700 transition">
+                    <h3 className="text-xs sm:text-base font-black text-slate-800 group-hover:text-brand-700 transition truncate sm:line-clamp-none">
                       দৈনিক রোল উপস্থিতি
                     </h3>
-                    <p className="text-xs text-slate-500">
+                    <p className="hidden sm:block text-xs text-slate-500">
                       ৫ম থেকে ১০ম শ্রেণি পর্যন্ত তারিখ অনুযায়ী ক্লাসের উপস্থিতি ও অনুপস্থিতি দেখুন।
                     </p>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-brand-700 pt-2 border-t border-slate-100">
+                  <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-brand-700 pt-1.5 sm:pt-2 border-t border-slate-100">
                     <span>হাজিরা চেক করুন</span>
-                    <FaArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                    <FaArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </Link>
 
                 {/* PDFs Shop Shortcut */}
                 <Link
                   href="/pdfs"
-                  className="p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50/60 hover:bg-white transition shadow-xs hover:shadow-md group flex flex-col justify-between space-y-4"
+                  className="p-3 sm:p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50/60 hover:bg-white transition shadow-xs hover:shadow-md group flex flex-col justify-between space-y-2.5 sm:space-y-4"
                 >
-                  <div className="space-y-2">
-                    <div className="w-10 h-10 rounded-xl bg-blue-100 text-brand-700 flex items-center justify-center">
-                      <HiSparkles className="w-5 h-5" />
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-blue-100 text-brand-700 flex items-center justify-center">
+                      <HiSparkles className="w-4 h-4 sm:w-5 sm:h-5" />
                     </div>
-                    <h3 className="font-black text-slate-800 group-hover:text-brand-700 transition">
-                      নতুন সাজেশন ও নোট কিনুন
+                    <h3 className="text-xs sm:text-base font-black text-slate-800 group-hover:text-brand-700 transition truncate sm:line-clamp-none">
+                      নোট ও সাজেশন শপ
                     </h3>
-                    <p className="text-xs text-slate-500">
+                    <p className="hidden sm:block text-xs text-slate-500">
                       অভিজ্ঞ শিক্ষকদের তৈরি ১০০% কমন উপযোগী রঙিন অধ্যায়ভিত্তিক হ্যান্ডনোট।
                     </p>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-brand-700 pt-2 border-t border-slate-100">
+                  <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-brand-700 pt-1.5 sm:pt-2 border-t border-slate-100">
                     <span>নোট শপে যান</span>
-                    <FaArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                    <FaArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </Link>
 
@@ -816,6 +847,29 @@ export default function AccountPage() {
 
             </div>
           )}
+
+          {/* Mobile Quick Action Buttons (Admin & Logout) */}
+          <div className="lg:hidden grid grid-cols-2 gap-2.5 pt-1">
+            {session.user.role === 'ADMIN' && (
+              <Link
+                href="/admin"
+                className="p-3 rounded-2xl text-xs font-bold text-brand-800 bg-brand-50 hover:bg-brand-100/80 border border-brand-200/60 transition flex items-center justify-center gap-2"
+              >
+                <FaUserShield className="w-4 h-4 text-brand-700 shrink-0" />
+                <span>অ্যাডমিন প্যানেল</span>
+              </Link>
+            )}
+            <button
+              type="button"
+              onClick={() => signOut({ callbackUrl: '/' })}
+              className={`p-3 rounded-2xl text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition flex items-center justify-center gap-2 ${
+                session.user.role === 'ADMIN' ? '' : 'col-span-2'
+              }`}
+            >
+              <FaArrowRightFromBracket className="w-4 h-4 shrink-0" />
+              <span>লগআউট করুন</span>
+            </button>
+          </div>
 
         </main>
 
