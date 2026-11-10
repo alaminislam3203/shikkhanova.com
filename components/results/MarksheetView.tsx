@@ -57,99 +57,97 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
         </div>
 
         {/* Student Profile Info & Status */}
-        <div className="p-4 sm:p-5 rounded-2xl border text-xs sm:text-sm relative z-10 bg-slate-50 border-slate-200">
-          <div className="grid grid-cols-1 md:grid-cols-2 print:grid-cols-2 gap-4 sm:gap-6">
-            
-            {/* Column 1: শিক্ষার্থীর নাম, পিতার নাম, মাতার নাম, বিদ্যালয়ের নাম (সবগুলো ১ কলামে) */}
-            <div className="space-y-2.5">
-              <div className="flex items-start">
-                <span className="w-28 sm:w-32 shrink-0 text-slate-600 font-bold text-xs sm:text-sm">
-                  শিক্ষার্থীর নাম:
-                </span>
-                <span className="text-slate-900 text-sm sm:text-base font-black truncate">
-                  {result.studentName}
-                </span>
-              </div>
-
-              <div className="flex items-start">
-                <span className="w-28 sm:w-32 shrink-0 text-slate-600 font-bold text-xs sm:text-sm">
-                  পিতার নাম:
-                </span>
-                <span className="text-slate-800 text-xs sm:text-sm font-bold truncate">
-                  {result.fatherName || '—'}
-                </span>
-              </div>
-
-              <div className="flex items-start">
-                <span className="w-28 sm:w-32 shrink-0 text-slate-600 font-bold text-xs sm:text-sm">
-                  মাতার নাম:
-                </span>
-                <span className="text-slate-800 text-xs sm:text-sm font-bold truncate">
-                  {result.motherName || '—'}
-                </span>
-              </div>
-
-              <div className="flex items-start">
-                <span className="w-28 sm:w-32 shrink-0 text-slate-600 font-bold text-xs sm:text-sm">
-                  বিদ্যালয়ের নাম:
-                </span>
-                <span className="text-slate-800 text-xs sm:text-sm font-bold">
-                  {result.schoolName || '—'}
-                </span>
-              </div>
+        <div className="p-4 sm:p-5 rounded-2xl border text-xs sm:text-sm relative z-10 bg-slate-50 border-slate-200 space-y-4">
+          
+          {/* Top Section: ১টি কলামে উপর-নিচ (শিক্ষার্থীর নাম, পিতার নাম, মাতার নাম, বিদ্যালয়ের নাম) */}
+          <div className="space-y-2 border-b border-slate-200/80 pb-3.5">
+            <div className="flex items-start">
+              <span className="w-28 sm:w-32 shrink-0 text-slate-600 font-bold text-xs sm:text-sm">
+                শিক্ষার্থীর নাম:
+              </span>
+              <span className="text-slate-900 text-sm sm:text-base font-black truncate">
+                {result.studentName}
+              </span>
             </div>
 
-            {/* Column 2: শ্রেণি, রোল নম্বর, জন্ম তারিখ, ফলাফল স্ট্যাটাস */}
-            <div className="space-y-2.5 md:border-l md:border-slate-200 md:pl-6 print:border-l print:border-slate-200 print:pl-6">
-              <div className="flex items-center">
-                <span className="w-28 sm:w-32 shrink-0 text-slate-600 font-bold text-xs sm:text-sm">
-                  শ্রেণি:
-                </span>
-                <span className="text-brand-700 font-black text-sm sm:text-base">
-                  Class {result.classGrade}
-                </span>
-              </div>
-
-              <div className="flex items-center">
-                <span className="w-28 sm:w-32 shrink-0 text-slate-600 font-bold text-xs sm:text-sm">
-                  রোল নম্বর:
-                </span>
-                <span className="text-nova-600 font-black text-sm sm:text-base">
-                  রোল {result.rollNumber}
-                </span>
-              </div>
-
-              <div className="flex items-center">
-                <span className="w-28 sm:w-32 shrink-0 text-slate-600 font-bold text-xs sm:text-sm">
-                  জন্ম তারিখ:
-                </span>
-                <span className="text-slate-800 text-xs sm:text-sm font-bold">
-                  {result.dateOfBirth || '—'}
-                </span>
-              </div>
-
-              <div className="flex items-center">
-                <span className="w-28 sm:w-32 shrink-0 text-slate-600 font-bold text-xs sm:text-sm">
-                  ফলাফল স্ট্যাটাস:
-                </span>
-                <span
-                  className={`inline-flex items-center gap-1 font-black text-xs px-2.5 py-1 rounded-full ${
-                    isPassed
-                      ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                      : 'bg-rose-100 text-rose-800 border border-rose-300'
-                  }`}
-                >
-                  {isPassed ? (
-                    <FaCircleCheck className="w-3 h-3 text-emerald-600" />
-                  ) : (
-                    <FaCircleXmark className="w-3 h-3 text-rose-600" />
-                  )}
-                  {isPassed ? 'উত্তীর্ণ (PASSED)' : 'অনুত্তীর্ণ (FAILED)'}
-                </span>
-              </div>
+            <div className="flex items-start">
+              <span className="w-28 sm:w-32 shrink-0 text-slate-600 font-bold text-xs sm:text-sm">
+                পিতার নাম:
+              </span>
+              <span className="text-slate-800 text-xs sm:text-sm font-bold truncate">
+                {result.fatherName || '—'}
+              </span>
             </div>
 
+            <div className="flex items-start">
+              <span className="w-28 sm:w-32 shrink-0 text-slate-600 font-bold text-xs sm:text-sm">
+                মাতার নাম:
+              </span>
+              <span className="text-slate-800 text-xs sm:text-sm font-bold truncate">
+                {result.motherName || '—'}
+              </span>
+            </div>
+
+            <div className="flex items-start">
+              <span className="w-28 sm:w-32 shrink-0 text-slate-600 font-bold text-xs sm:text-sm">
+                বিদ্যালয়ের নাম:
+              </span>
+              <span className="text-slate-800 text-xs sm:text-sm font-bold">
+                {result.schoolName || '—'}
+              </span>
+            </div>
           </div>
+
+          {/* Bottom Section: বিদ্যালয়ের নামের নিচে ৪টি কলামে (শ্রেণি, রোল নম্বর, জন্ম তারিখ, ফলাফল স্ট্যাটাস) */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 print:grid-cols-4 gap-2.5 sm:gap-4 pt-1">
+            <div className="bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200 shadow-xs">
+              <span className="text-[11px] text-slate-500 font-bold block mb-0.5">
+                শ্রেণি:
+              </span>
+              <strong className="text-brand-700 font-black text-sm sm:text-base block">
+                Class {result.classGrade}
+              </strong>
+            </div>
+
+            <div className="bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200 shadow-xs">
+              <span className="text-[11px] text-slate-500 font-bold block mb-0.5">
+                রোল নম্বর:
+              </span>
+              <strong className="text-nova-600 font-black text-sm sm:text-base block">
+                রোল {result.rollNumber}
+              </strong>
+            </div>
+
+            <div className="bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200 shadow-xs">
+              <span className="text-[11px] text-slate-500 font-bold block mb-0.5">
+                জন্ম তারিখ:
+              </span>
+              <strong className="text-slate-800 font-bold text-xs sm:text-sm block">
+                {result.dateOfBirth || '—'}
+              </strong>
+            </div>
+
+            <div className="bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200 shadow-xs">
+              <span className="text-[11px] text-slate-500 font-bold block mb-1">
+                ফলাফল স্ট্যাটাস:
+              </span>
+              <span
+                className={`inline-flex items-center gap-1 font-black text-[11px] sm:text-xs px-2.5 py-1 rounded-full ${
+                  isPassed
+                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                    : 'bg-rose-100 text-rose-800 border border-rose-300'
+                }`}
+              >
+                {isPassed ? (
+                  <FaCircleCheck className="w-3 h-3 text-emerald-600" />
+                ) : (
+                  <FaCircleXmark className="w-3 h-3 text-rose-600" />
+                )}
+                {isPassed ? 'উত্তীর্ণ (PASSED)' : 'অনুত্তীর্ণ (FAILED)'}
+              </span>
+            </div>
+          </div>
+
         </div>
 
         {/* Subject-by-Subject Marks Table */}
