@@ -81,13 +81,13 @@ export default function HomeGallerySection() {
         </p>
       </div>
 
-      {/* 4-Card Responsive Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      {/* 4-Card Responsive Grid (2 columns on mobile, 4 on lg) */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
         {FEATURED_PHOTOS.map((photo) => (
           <div
             key={photo.id}
             onClick={() => setActivePhoto(photo)}
-            className="group bg-white rounded-2xl overflow-hidden border border-slate-200/90 shadow-xs hover:shadow-xl hover:border-[#C8102E]/40 transition-all duration-300 cursor-pointer flex flex-col justify-between"
+            className="group bg-white rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200/90 shadow-xs hover:shadow-xl hover:border-[#C8102E]/40 transition-all duration-300 cursor-pointer flex flex-col justify-between"
           >
             {/* Image Container */}
             <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
@@ -97,32 +97,32 @@ export default function HomeGallerySection() {
                 loading="lazy"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0A1E3C]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-3.5">
-                <span className="text-[11px] font-bold text-white bg-[#C8102E] px-2.5 py-1 rounded-sm shadow-xs">
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0A1E3C]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-2 sm:p-3.5">
+                <span className="text-[9px] sm:text-[11px] font-bold text-white bg-[#C8102E] px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-sm shadow-xs">
                   বড় করে দেখুন
                 </span>
-                <span className="w-7 h-7 rounded-full bg-white text-[#0A1E3C] flex items-center justify-center shadow">
-                  <FaExpand className="w-3 h-3" />
+                <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white text-[#0A1E3C] flex items-center justify-center shadow">
+                  <FaExpand className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                 </span>
               </div>
-              <span className="absolute top-2.5 left-2.5 text-[10px] font-bold bg-[#0A1E3C]/90 backdrop-blur-xs text-white px-2 py-0.5 rounded-sm">
+              <span className="absolute top-2 left-2 sm:top-2.5 sm:left-2.5 text-[9px] sm:text-[10px] font-bold bg-[#0A1E3C]/90 backdrop-blur-xs text-white px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded-sm">
                 {photo.categoryLabel}
               </span>
             </div>
 
             {/* Information Beneath Photo */}
-            <div className="p-4 space-y-1.5 flex-1 flex flex-col justify-between">
+            <div className="p-2.5 sm:p-4 space-y-1 sm:space-y-1.5 flex-1 flex flex-col justify-between">
               <div>
-                <div className="flex items-center gap-1.5 text-[11px] text-slate-400 font-semibold mb-1">
-                  <FaCalendarDays className="text-[#C8102E]" />
+                <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-slate-400 font-semibold mb-0.5 sm:mb-1">
+                  <FaCalendarDays className="text-[#C8102E] w-2.5 h-2.5 sm:w-3 sm:h-3" />
                   <span>{photo.date}</span>
                 </div>
-                <h3 className="text-sm font-bold text-[#0A1E3C] group-hover:text-[#C8102E] transition-colors leading-snug">
+                <h3 className="text-xs sm:text-sm font-bold text-[#0A1E3C] group-hover:text-[#C8102E] transition-colors leading-snug line-clamp-2">
                   {photo.title}
                 </h3>
               </div>
 
-              <p className="text-[11px] text-slate-500 line-clamp-2 leading-relaxed pt-1 border-t border-slate-100">
+              <p className="text-[10px] sm:text-[11px] text-slate-500 line-clamp-1 sm:line-clamp-2 leading-relaxed pt-1 border-t border-slate-100">
                 {photo.subtitle}
               </p>
             </div>

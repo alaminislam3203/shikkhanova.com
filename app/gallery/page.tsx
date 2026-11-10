@@ -145,42 +145,44 @@ export default function PhotoGalleryPage() {
         ))}
       </div>
 
-      {/* Gallery Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Gallery Grid (2 columns on mobile, 2 on sm, 3 on lg) */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
         {filteredPhotos.map((photo) => (
           <div
             key={photo.id}
             onClick={() => setActivePhoto(photo)}
-            className="group bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-xs hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col justify-between"
+            className="group bg-white rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 shadow-xs hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col justify-between"
           >
-            <div className="relative h-56 overflow-hidden bg-slate-100">
+            <div className="relative aspect-[4/3] sm:h-56 overflow-hidden bg-slate-100">
               <img
                 src={photo.imageUrl}
                 alt={photo.title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0A1E3C]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-4">
-                <span className="text-xs font-bold text-white bg-[#C8102E] px-2.5 py-1 rounded-sm">
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0A1E3C]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-2 sm:p-4">
+                <span className="text-[9px] sm:text-xs font-bold text-white bg-[#C8102E] px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-sm">
                   বড় করে দেখুন
                 </span>
-                <span className="w-8 h-8 rounded-full bg-white text-[#0A1E3C] flex items-center justify-center shadow">
-                  <FaExpand className="w-3.5 h-3.5" />
+                <span className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white text-[#0A1E3C] flex items-center justify-center shadow">
+                  <FaExpand className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5" />
                 </span>
               </div>
-              <span className="absolute top-3 left-3 text-[11px] font-bold bg-[#0A1E3C]/90 text-white px-2.5 py-1 rounded-sm">
+              <span className="absolute top-2 left-2 sm:top-3 sm:left-3 text-[9px] sm:text-[11px] font-bold bg-[#0A1E3C]/90 text-white px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-sm">
                 {photo.categoryLabel}
               </span>
             </div>
 
-            <div className="p-5 space-y-1.5">
-              <div className="flex items-center gap-1.5 text-[11px] text-slate-400 font-semibold">
-                <FaCalendarDays className="text-[#C8102E]" />
+            <div className="p-2.5 sm:p-5 space-y-1 sm:space-y-1.5">
+              <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-slate-400 font-semibold">
+                <FaCalendarDays className="text-[#C8102E] w-2.5 h-2.5 sm:w-3 sm:h-3" />
                 <span>{photo.date}</span>
               </div>
-              <h3 className="text-base font-bold text-[#0A1E3C] group-hover:text-[#C8102E] transition">
+              <h3 className="text-xs sm:text-base font-bold text-[#0A1E3C] line-clamp-2 leading-snug group-hover:text-[#C8102E] transition">
                 {photo.title}
               </h3>
-              <p className="text-xs text-slate-500 leading-relaxed">{photo.subtitle}</p>
+              <p className="text-[11px] sm:text-xs text-slate-500 line-clamp-1 sm:line-clamp-none leading-relaxed">
+                {photo.subtitle}
+              </p>
             </div>
           </div>
         ))}
