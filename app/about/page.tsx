@@ -41,32 +41,32 @@ export default function AboutPage() {
   ];
 
   return (
-    <div className="space-y-10">
-      {/* Hero Banner */}
+    <div className="space-y-6 sm:space-y-10">
+      {/* Hero Banner (Compact on Mobile) */}
       <div
         style={{
           background: 'linear-gradient(135deg, #071426 0%, #0A1E3C 55%, #2A0B1E 100%)',
         }}
-        className="relative overflow-hidden text-white p-6 sm:p-10 lg:p-12 rounded-3xl shadow-2xl border-b-4 border-[#C8102E]"
+        className="relative overflow-hidden text-white p-4 sm:p-8 lg:p-12 rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl border-b-4 border-[#C8102E]"
       >
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-          <div className="space-y-3.5 max-w-2xl">
-            <span className="inline-flex items-center gap-1.5 bg-[#C8102E] text-white text-xs font-bold px-3.5 py-1 rounded-sm uppercase tracking-wider">
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-8">
+          <div className="space-y-2 sm:space-y-3.5 max-w-2xl">
+            <span className="inline-flex items-center gap-1.5 bg-[#C8102E] text-white text-[10px] sm:text-xs font-bold px-2.5 py-0.5 sm:px-3.5 sm:py-1 rounded-sm uppercase tracking-wider">
               আমাদের সম্পর্কে
             </span>
-            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight">
+            <h1 className="text-lg sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-snug sm:leading-tight">
               শিক্ষা নোভা সম্পর্কে
             </h1>
-            <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
+            <p className="text-[11px] sm:text-sm text-slate-200 leading-snug sm:leading-relaxed line-clamp-2 sm:line-clamp-none">
               “শিখবো, জিতবো” স্লোগানকে ধারণ করে নীলফামারী সদরের জুম্মাপাড়ায় ৫ম থেকে ১০ম শ্রেণির শিক্ষার্থীদের মেধা বিকাশ ও সেরা ফলাফল নিশ্চিত করার একটি আধুনিক একাডেমিক প্রতিষ্ঠান।
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl p-5 shadow-xl shrink-0 flex flex-col items-center gap-3">
-            <Logo size="md" clickable={false} />
+          <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-lg shrink-0 flex flex-row lg:flex-col items-center justify-between gap-3">
+            <Logo size="sm" clickable={false} />
             <Link
               href="/chairman-message"
-              className="w-full inline-flex items-center justify-center gap-1.5 bg-[#C8102E] hover:bg-[#A50D26] text-white text-xs font-bold px-4 py-2 rounded-sm transition"
+              className="inline-flex items-center justify-center gap-1.5 bg-[#C8102E] hover:bg-[#A50D26] text-white text-[11px] sm:text-xs font-bold px-3 py-1.5 sm:px-4 sm:py-2 rounded-sm transition whitespace-nowrap"
             >
               <span>চেয়ারম্যানের বার্তা পড়ুন</span>
               <FaArrowRight className="w-3 h-3" />

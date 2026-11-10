@@ -14,30 +14,30 @@ import {
 
 export default function ChairmanMessagePage() {
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
-      {/* Header Banner */}
+    <div className="max-w-5xl mx-auto space-y-5 sm:space-y-8">
+      {/* Header Banner (Compact on Mobile) */}
       <div
         style={{
           background: 'linear-gradient(135deg, #071426 0%, #0A1E3C 55%, #2A0B1E 100%)',
         }}
-        className="relative overflow-hidden text-white p-6 sm:p-10 rounded-3xl shadow-2xl border-b-4 border-[#C8102E]"
+        className="relative overflow-hidden text-white p-4 sm:p-8 lg:p-10 rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl border-b-4 border-[#C8102E]"
       >
-        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-2">
-            <span className="inline-block bg-[#C8102E] text-white text-xs font-bold px-3 py-1 rounded-sm uppercase">
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="space-y-1 sm:space-y-2">
+            <span className="inline-block bg-[#C8102E] text-white text-[10px] sm:text-xs font-bold px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-sm uppercase">
               আমাদের সম্পর্কে
             </span>
-            <h1 className="text-2xl sm:text-4xl font-black tracking-tight">
+            <h1 className="text-lg sm:text-3xl md:text-4xl font-black tracking-tight leading-snug sm:leading-tight">
               চেয়ারম্যানের বার্তা
             </h1>
-            <p className="text-xs sm:text-sm text-slate-200">
+            <p className="text-[11px] sm:text-sm text-slate-200">
               শিক্ষা নোভা একাডেমির প্রতিষ্ঠাতা ও পরিচালকের শুভেচ্ছা ও দিকনির্দেশনা
             </p>
           </div>
 
           <Link
             href="/about"
-            className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-4 py-2.5 rounded-sm border border-white/15 transition self-start sm:self-auto"
+            className="inline-flex items-center gap-1.5 sm:gap-2 bg-white/10 hover:bg-white/20 text-white text-[11px] sm:text-xs font-bold px-3 py-1.5 sm:px-4 sm:py-2.5 rounded-sm border border-white/15 transition self-start sm:self-auto"
           >
             <FaArrowLeft className="w-3 h-3" />
             <span>শিক্ষা নোভা সম্পর্কে</span>
