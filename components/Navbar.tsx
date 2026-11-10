@@ -306,7 +306,6 @@ export default function Navbar() {
   }
 
   const navLinks: NavLinkItem[] = [
-    { href: '/', label: 'হোম' },
     {
       href: '/about',
       label: 'আমাদের সম্পর্কে',
