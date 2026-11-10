@@ -55,7 +55,7 @@ const SERVICES: ServiceItem[] = [
     title: 'ইউনিক এক্সাম সিস্টেম',
     subtitle: 'সাপ্তাহিক, মাসিক ও বিশেষ মডেল টেস্ট পরীক্ষা',
     icon: FaFileSignature,
-    href: '/results',
+    href: '/quiz',
   },
   {
     id: 'srv-6',
