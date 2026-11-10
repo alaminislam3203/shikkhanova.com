@@ -49,6 +49,7 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const classGrade = searchParams.get('classGrade');
     const rollNumber = searchParams.get('rollNumber');
+    const examTitle = searchParams.get('examTitle');
     const all = searchParams.get('all');
 
     // 1. Admin Request: Fetch all results for a class or all classes
@@ -78,11 +79,16 @@ export async function GET(req: Request) {
     }
 
     try {
+      const whereCondition: any = {
+        classGrade: parseInt(classGrade),
+        rollNumber: parseInt(rollNumber),
+      };
+      if (examTitle && examTitle !== 'all') {
+        whereCondition.examTitle = examTitle;
+      }
+
       const results = await prisma.examResult.findMany({
-        where: {
-          classGrade: parseInt(classGrade),
-          rollNumber: parseInt(rollNumber),
-        },
+        where: whereCondition,
         orderBy: { createdAt: 'desc' },
       });
 
@@ -93,9 +99,12 @@ export async function GET(req: Request) {
 
     // Fallback to local file
     const local = readLocalResults();
-    const matched = local.filter(
-      (r) => String(r.classGrade) === String(classGrade) && String(r.rollNumber) === String(rollNumber)
-    );
+    const matched = local.filter((r) => {
+      const matchCls = String(r.classGrade) === String(classGrade);
+      const matchRoll = String(r.rollNumber) === String(rollNumber);
+      const matchExam = !examTitle || examTitle === 'all' || r.examTitle.trim() === examTitle.trim();
+      return matchCls && matchRoll && matchExam;
+    });
 
     return NextResponse.json({ results: matched.map(enrichResultWithProfile) });
   } catch (error: any) {

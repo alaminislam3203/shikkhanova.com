@@ -47,6 +47,10 @@ export default function AccountPage() {
     phone: '',
     classGrade: '7',
     rollNumber: '',
+    fatherName: '',
+    motherName: '',
+    schoolName: '',
+    dateOfBirth: '',
     image: '',
     role: 'STUDENT',
   });
@@ -77,6 +81,10 @@ export default function AccountPage() {
           phone: data.user.phone || '',
           classGrade: data.user.classGrade ? data.user.classGrade.toString() : '7',
           rollNumber: data.user.rollNumber ? data.user.rollNumber.toString() : '',
+          fatherName: data.user.fatherName || '',
+          motherName: data.user.motherName || '',
+          schoolName: data.user.schoolName || '',
+          dateOfBirth: data.user.dateOfBirth || '',
           image: data.user.image || session?.user?.image || '',
           role: data.user.role || 'STUDENT',
         });
@@ -89,6 +97,10 @@ export default function AccountPage() {
           phone: session.user.phone || '',
           classGrade: session.user.classGrade ? session.user.classGrade.toString() : '7',
           rollNumber: session.user.rollNumber ? session.user.rollNumber.toString() : '',
+          fatherName: '',
+          motherName: '',
+          schoolName: '',
+          dateOfBirth: '',
           image: session.user.image || '',
           role: session.user.role || 'STUDENT',
         });
@@ -166,6 +178,10 @@ export default function AccountPage() {
           phone: profile.phone,
           classGrade: parseInt(profile.classGrade),
           rollNumber: profile.rollNumber ? parseInt(profile.rollNumber) : null,
+          fatherName: profile.fatherName,
+          motherName: profile.motherName,
+          schoolName: profile.schoolName,
+          dateOfBirth: profile.dateOfBirth,
         }),
       });
 
@@ -603,6 +619,64 @@ export default function AccountPage() {
                     value={profile.rollNumber}
                     onChange={(e) => setProfile({ ...profile, rollNumber: e.target.value })}
                     placeholder="যেমন: 1, 5, 12"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition text-xs sm:text-sm"
+                  />
+                </div>
+              </div>
+
+              {/* Parents Names */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1.5">
+                    পিতার নাম (Father's Name)
+                  </label>
+                  <input
+                    type="text"
+                    value={profile.fatherName}
+                    onChange={(e) => setProfile({ ...profile, fatherName: e.target.value })}
+                    placeholder="যেমন: মো: রফিকুল ইসলাম"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition text-xs sm:text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1.5">
+                    মাতার নাম (Mother's Name)
+                  </label>
+                  <input
+                    type="text"
+                    value={profile.motherName}
+                    onChange={(e) => setProfile({ ...profile, motherName: e.target.value })}
+                    placeholder="যেমন: মোসা: রোকেয়া বেগম"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition text-xs sm:text-sm"
+                  />
+                </div>
+              </div>
+
+              {/* School & Date of Birth */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1.5">
+                    বিদ্যালয়ের নাম (School Name)
+                  </label>
+                  <input
+                    type="text"
+                    value={profile.schoolName}
+                    onChange={(e) => setProfile({ ...profile, schoolName: e.target.value })}
+                    placeholder="যেমন: নীলফামারী সরকারি উচ্চ বিদ্যালয়"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition text-xs sm:text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1.5">
+                    জন্ম তারিখ (Date of Birth)
+                  </label>
+                  <input
+                    type="text"
+                    value={profile.dateOfBirth}
+                    onChange={(e) => setProfile({ ...profile, dateOfBirth: e.target.value })}
+                    placeholder="DD/MM/YYYY"
                     className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition text-xs sm:text-sm"
                   />
                 </div>

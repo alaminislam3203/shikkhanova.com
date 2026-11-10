@@ -24,12 +24,36 @@ import { HiSparkles } from 'react-icons/hi2';
 export default function ProfilePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [extraProfile, setExtraProfile] = useState<{
+    fatherName?: string;
+    motherName?: string;
+    schoolName?: string;
+    dateOfBirth?: string;
+  }>({});
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login');
     }
   }, [status, router]);
+
+  useEffect(() => {
+    if (session?.user) {
+      fetch('/api/user/profile')
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.user) {
+            setExtraProfile({
+              fatherName: d.user.fatherName,
+              motherName: d.user.motherName,
+              schoolName: d.user.schoolName,
+              dateOfBirth: d.user.dateOfBirth,
+            });
+          }
+        })
+        .catch(() => {});
+    }
+  }, [session]);
 
   if (status === 'loading') {
     return (
@@ -161,7 +185,27 @@ export default function ProfilePage() {
           </div>
 
           <div className="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/80 space-y-1">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">একাডেমিক প্রতিষ্ঠান</span>
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">পিতার নাম</span>
+            <p className="font-bold text-slate-800 text-xs sm:text-sm">{extraProfile.fatherName || 'নির্ধারিত নয়'}</p>
+          </div>
+
+          <div className="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/80 space-y-1">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">মাতার নাম</span>
+            <p className="font-bold text-slate-800 text-xs sm:text-sm">{extraProfile.motherName || 'নির্ধারিত নয়'}</p>
+          </div>
+
+          <div className="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/80 space-y-1">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">বিদ্যালয়ের নাম</span>
+            <p className="font-bold text-slate-800 text-xs sm:text-sm">{extraProfile.schoolName || 'নির্ধারিত নয়'}</p>
+          </div>
+
+          <div className="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/80 space-y-1">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">জন্ম তারিখ</span>
+            <p className="font-bold text-slate-800 text-xs sm:text-sm">{extraProfile.dateOfBirth || 'নির্ধারিত নয়'}</p>
+          </div>
+
+          <div className="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/80 space-y-1">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">কোচিং প্রতিষ্ঠান</span>
             <p className="font-bold text-slate-800 text-xs sm:text-sm">শিক্ষানোভা একাডেমি (Shikkha Nova)</p>
           </div>
 

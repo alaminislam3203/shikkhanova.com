@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
+import { getStudentProfile, saveStudentProfile } from '@/lib/studentProfiles';
 
 export async function GET() {
   try {
@@ -46,6 +47,8 @@ export async function GET() {
       return NextResponse.json({ error: 'ব্যবহারকারী পাওয়া যায়নি' }, { status: 404 });
     }
 
+    const prof = getStudentProfile(user.classGrade || 7, user.rollNumber || 1, user.email);
+
     return NextResponse.json({
       user: {
         id: user.id,
@@ -55,6 +58,10 @@ export async function GET() {
         phone: user.phone,
         classGrade: user.classGrade,
         rollNumber: user.rollNumber,
+        fatherName: prof.fatherName,
+        motherName: prof.motherName,
+        schoolName: prof.schoolName,
+        dateOfBirth: prof.dateOfBirth,
         image: (user as any).image || null,
         createdAt: user.createdAt,
       },
@@ -72,7 +79,18 @@ export async function PATCH(req: Request) {
     }
 
     const body = await req.json();
-    const { name, phone, classGrade, rollNumber, currentPassword, newPassword } = body;
+    const {
+      name,
+      phone,
+      classGrade,
+      rollNumber,
+      currentPassword,
+      newPassword,
+      fatherName,
+      motherName,
+      schoolName,
+      dateOfBirth,
+    } = body;
 
     if (session.user.id === 'admin-master-id') {
       try {
@@ -104,6 +122,12 @@ export async function PATCH(req: Request) {
     if (classGrade !== undefined) updateData.classGrade = classGrade ? parseInt(classGrade) : null;
     if (rollNumber !== undefined) updateData.rollNumber = rollNumber ? parseInt(rollNumber) : null;
     if (body.image) updateData.image = body.image;
+
+    const clsNum = classGrade ? parseInt(classGrade) : (session.user as any)?.classGrade || 7;
+    const rollNum = rollNumber ? parseInt(rollNumber) : (session.user as any)?.rollNumber || 1;
+    if (fatherName !== undefined || motherName !== undefined || schoolName !== undefined || dateOfBirth !== undefined) {
+      saveStudentProfile(clsNum, rollNum, { fatherName, motherName, schoolName, dateOfBirth }, session.user.email);
+    }
 
     // Handle Password Change if requested
     if (newPassword) {
