@@ -19,7 +19,7 @@ export default function ClassSelector() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
         <div>
           <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-            <FaBookOpen className="text-brand-700" /> শ্রেণি নির্বাচন (Classes 5 - 10)
+            <FaBookOpen className="text-[#C8102E]" /> শ্রেণি নির্বাচন (৫ম - ১০ম শ্রেণি)
           </h2>
           <p className="text-xs sm:text-sm text-slate-500">
             আপনার শ্রেণি নির্বাচন করে সরাসরি রোল উপস্থিতি, ফলাফল বা ভিডিও ক্লাস দেখুন
@@ -41,7 +41,7 @@ export default function ClassSelector() {
               <span className="text-3xl font-black text-brand-700 group-hover:text-nova-600 transition-colors inline-block">
                 {c.bn.split(' ')[0]}
               </span>
-              <h3 className="text-sm font-bold text-slate-800">{c.name}</h3>
+              <h3 className="text-sm font-bold text-slate-800">{c.bn}</h3>
               <p className="text-[11px] font-medium text-slate-400">{c.rolls}</p>
             </div>
             <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-center gap-1 text-[11px] font-bold text-brand-700 group-hover:text-nova-600">

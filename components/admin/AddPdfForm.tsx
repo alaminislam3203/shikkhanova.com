@@ -508,7 +508,7 @@ export default function AddPdfForm({
             {/* Subject Quick-Select Pills (Dynamic NCTB Subjects per Class) */}
             <div className="flex items-center gap-1.5 flex-wrap">
               <span className="text-[11px] font-bold text-slate-400">
-                শ্রেণি {formData.classGrade}-এর NCTB বিষয়সমূহ:
+                {toBengaliClass(formData.classGrade)} শ্রেণির NCTB বিষয়সমূহ:
               </span>
               {classSubjects.map((subj) => (
                 <button
@@ -693,7 +693,7 @@ export default function AddPdfForm({
                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                 }`}
               >
-                Class {cls}
+                {toBengaliClass(cls)} শ্রেণি
               </button>
             ))}
           </div>
@@ -726,7 +726,7 @@ export default function AddPdfForm({
                 <div className="space-y-2.5">
                   <div className="flex items-center justify-between gap-2">
                     <span className="inline-flex items-center gap-1 bg-brand-100 text-brand-800 text-[11px] font-black px-2.5 py-0.5 rounded-full">
-                      <FaLayerGroup className="w-3 h-3" /> শ্রেণি {item.classGrade}
+                      <FaLayerGroup className="w-3 h-3" /> {toBengaliClass(item.classGrade)} শ্রেণি
                     </span>
                     <span
                       className={`text-xs font-black px-2.5 py-0.5 rounded-full ${
