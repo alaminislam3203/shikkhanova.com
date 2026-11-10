@@ -17,7 +17,6 @@ import {
   FaFilePdf,
   FaChevronRight,
 } from 'react-icons/fa6';
-import { HiSparkles } from 'react-icons/hi2';
 
 export default function Footer() {
   const [subscribed, setSubscribed] = useState(false);
@@ -41,45 +40,19 @@ export default function Footer() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 relative z-10">
         
-        {/* Pre-Footer Action Banner (Premium Executive Card) */}
-        <div className="rounded-3xl bg-gradient-to-r from-[#0A1E3C] via-[#0F284E] to-[#1E0B16] text-white p-6 sm:p-8 shadow-xl border border-slate-200/20 relative overflow-hidden">
-          {/* Ambient Lighting Accents */}
-          <div className="absolute -top-12 -right-12 w-48 h-48 bg-[#C8102E]/30 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-blue-600/20 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
-            <div className="space-y-2 max-w-2xl">
-              <div className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-[#C8102E] px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm">
-                <HiSparkles className="w-3.5 h-3.5 text-amber-300" />
-                ২৪/৭ শিক্ষার্থী ও অভিভাবক সাপোর্ট
-              </div>
-              <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                ভর্তি, শিট বা রেজাল্ট সংক্রান্ত কোনো জিজ্ঞাসা আছে?
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-200/90 leading-relaxed">
-                আমাদের একাডেমি টিম আপনার সহায়তায় সার্বক্ষণিক প্রস্তুত। সরাসরি কল করুন বা হোয়াটসঅ্যাপে লিখুন।
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-center gap-3 shrink-0">
-              <a
-                href="tel:01712592519"
-                className="inline-flex items-center gap-2 bg-[#C8102E] hover:bg-[#A50D26] text-white font-black px-5 py-3 rounded-2xl text-xs sm:text-sm shadow-lg shadow-red-900/30 transition transform hover:-translate-y-0.5 active:scale-95"
-              >
-                <FaPhone className="w-3.5 h-3.5 text-white" />
-                <span className="font-bn-normal">০১৭১২৫৯২৫১৯</span>
-              </a>
-              <a
-                href="https://wa.me/8801712592519"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-black px-5 py-3 rounded-2xl text-xs sm:text-sm shadow-lg shadow-emerald-900/20 transition transform hover:-translate-y-0.5 active:scale-95"
-              >
-                <FaWhatsapp className="text-white text-base" />
-                <span>হোয়াটসঅ্যাপ মেসেজ</span>
-              </a>
-            </div>
-          </div>
+        {/* Pre-Footer Action Banner Image */}
+        <div className="rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg border border-slate-200/80 bg-white">
+          <a
+            href="tel:01712592519"
+            aria-label="ভর্তি ও তথ্যের জন্য কল করুন ০১৭১২৫৯২৫১৯"
+            className="block w-full group"
+          >
+            <img
+              src="/banners/footer-banner.png"
+              alt="ভর্তি চলছে • শিক্ষা নোভা একাডেমি • হেল্পলাইন: ০১৭১২৫৯২৫১৯"
+              className="w-full h-auto object-cover group-hover:scale-[1.01] transition-transform duration-300"
+            />
+          </a>
         </div>
 
         {/* 4 Main Footer Columns on White Card Surface */}
