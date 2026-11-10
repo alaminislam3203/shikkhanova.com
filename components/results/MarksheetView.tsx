@@ -99,8 +99,8 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
           </p>
 
           {/* Exam Title Set Prominently in Header */}
-          <div className="pt-1">
-            <div className="inline-flex flex-wrap items-center justify-center gap-2 bg-[#0A1E3C] border-b-2 border-[#C8102E] text-white text-xs sm:text-sm font-bold px-6 py-2 rounded-full uppercase shadow-md">
+          <div className="pt-0.5">
+            <div className="inline-flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 bg-[#0A1E3C] border-b-2 border-[#C8102E] text-white text-[11px] sm:text-xs font-bold px-4 sm:px-5 py-1 sm:py-1.5 rounded-full uppercase shadow-sm">
               <span className="text-amber-300 font-black">{result.examTitle}</span>
               <span className="text-slate-400">|</span>
               <span>একাডেমিক ফলাফল ও অফিশিয়াল মার্কশিট</span>
