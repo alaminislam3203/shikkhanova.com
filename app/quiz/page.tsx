@@ -94,6 +94,13 @@ export default function QuizPage() {
         const savedName = localStorage.getItem('sn_student_quiz_name');
         if (savedName) setStudentNameInput(savedName);
       }
+
+      // Check if URL has #leaderboard and scroll smoothly
+      if (typeof window !== 'undefined' && window.location.hash === '#leaderboard') {
+        setTimeout(() => {
+          resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 300);
+      }
     } catch {}
   }, [session]);
 
@@ -834,7 +841,7 @@ export default function QuizPage() {
       {/* ─────────────────────────────────────────────────────────────
           8. 🏆 RESULT BOARD / LEADERBOARD SECTION
       ───────────────────────────────────────────────────────────── */}
-      <section ref={resultsRef} className="space-y-5">
+      <section ref={resultsRef} id="leaderboard" className="space-y-5 scroll-mt-24">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-200 pb-3">
           <div>
             <div className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 bg-amber-50 px-3 py-0.5 rounded-full border border-amber-200 mb-1">

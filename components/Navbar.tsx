@@ -83,6 +83,15 @@ const INSTANT_SITE_INDEX = [
     keywords: 'quiz mcq model test কুইজ মডেল টেস্ট পরীক্ষা mcq প্রশ্ন উত্তর ফ্রি প্রিমিয়াম',
   },
   {
+    id: 'page-leaderboard',
+    title: '🏆 মেধা তালিকা ও লিডারবোর্ড (Quiz Leaderboard)',
+    subtitle: 'সেরা শিক্ষার্থীদের র‍্যাঙ্কিং, গোল্ড/সিলভার মেডেল ও প্রাপ্ত স্কোর',
+    categoryLabel: 'লিডারবোর্ড',
+    href: '/quiz#leaderboard',
+    badge: 'Top Rank',
+    keywords: 'leaderboard লিডারবোর্ড মেধা তালিকা র‍্যাঙ্কিং মেডেল রেজাল্ট বোর্ড কুইজ সেরা',
+  },
+  {
     id: 'page-results',
     title: 'কোচিং পরীক্ষার রেজাল্ট ও মার্কশিট',
     subtitle: 'শ্রেণি ও রোল নম্বর দিয়ে অফিশিয়াল গ্রেডশিট ও জিপিএ অনুসন্ধান',
