@@ -565,39 +565,43 @@ export default function QuizPage() {
           <span className="text-xs font-bold text-slate-400">ফ্রি MCQ • তাৎক্ষণিক স্কোর</span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4">
           {[5, 6, 7, 8, 9, 10].map((cls) => {
             const isCurrentClass = selectedClass === cls;
             return (
               <div
                 key={cls}
-                className={`bg-white rounded-3xl p-5 border transition-all duration-200 shadow-sm hover:shadow-md space-y-4 ${
+                className={`bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-5 border transition-all duration-200 shadow-sm hover:shadow-md space-y-2.5 sm:space-y-4 flex flex-col justify-between ${
                   isCurrentClass ? 'border-emerald-500 ring-2 ring-emerald-500/20' : 'border-slate-200'
                 }`}
               >
-                <div className="flex items-start justify-between">
-                  <div className="space-y-1">
-                    <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      ফ্রি টেস্ট
-                    </span>
-                    <h3 className="text-base font-black text-slate-800">🎓 {toBengaliClass(cls)} শ্রেণি — Free Test</h3>
+                <div className="space-y-1.5 sm:space-y-2">
+                  <div className="flex items-start justify-between gap-1">
+                    <div className="space-y-0.5 min-w-0">
+                      <span className="text-[9px] sm:text-[10px] font-black uppercase px-1.5 sm:px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 inline-block">
+                        ফ্রি টেস্ট
+                      </span>
+                      <h3 className="text-xs sm:text-base font-black text-slate-800 truncate sm:line-clamp-none">
+                        🎓 {toBengaliClass(cls)} শ্রেণি
+                      </h3>
+                    </div>
+                    <div className="w-7 h-7 sm:w-12 sm:h-10 rounded-xl sm:rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-100 flex items-center justify-center font-black text-xs sm:text-sm shrink-0">
+                      {toBengaliClass(cls)}
+                    </div>
                   </div>
-                  <div className="w-12 h-10 px-2 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-100 flex items-center justify-center font-black text-sm">
-                    {toBengaliClass(cls)}
-                  </div>
-                </div>
 
-                <p className="text-xs text-slate-500 leading-snug">
-                  বাছাইকৃত গুরুত্বপূর্ণ MCQ • সাথে সাথে সঠিক উত্তর ও ব্যাখ্যা সহ ফলাফল।
-                </p>
+                  <p className="hidden sm:block text-xs text-slate-500 leading-snug">
+                    বাছাইকৃত গুরুত্বপূর্ণ MCQ • সাথে সাথে সঠিক উত্তর ও ব্যাখ্যা সহ ফলাফল।
+                  </p>
+                </div>
 
                 <button
                   type="button"
                   onClick={() => handleStartFreeClassTest(cls)}
-                  className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2 active:scale-98"
+                  className="w-full py-2 sm:py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] sm:text-xs shadow-sm sm:shadow-md transition flex items-center justify-center gap-1.5 active:scale-98"
                 >
-                  <FaGift className="w-3.5 h-3.5" />
-                  <span>Free Test শুরু করুন</span>
+                  <FaGift className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+                  <span>Free Test দিন</span>
                 </button>
               </div>
             );
@@ -622,42 +626,46 @@ export default function QuizPage() {
           <span className="text-xs font-bold text-[#C8102E]">৳৫০ • পূর্ণাঙ্গ মডেল টেস্ট</span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4">
           {[5, 6, 7, 8, 9, 10].map((cls) => {
             const isUnlocked = unlockedClasses.includes(cls) || session?.user?.role === 'ADMIN';
 
             return (
               <div
                 key={cls}
-                className="bg-white rounded-3xl p-5 border-t-4 border-[#C8102E] border-slate-200 shadow-sm hover:shadow-lg transition-all duration-200 space-y-4"
+                className="bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-5 border-t-4 border-[#C8102E] border-slate-200 shadow-sm hover:shadow-lg transition-all duration-200 space-y-2.5 sm:space-y-4 flex flex-col justify-between"
               >
-                <div className="flex items-start justify-between">
-                  <div className="space-y-1">
-                    <span
-                      className={`text-[10px] font-black uppercase px-2 py-0.5 rounded ${
-                        isUnlocked
-                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                          : 'bg-red-50 text-[#C8102E] border border-red-200'
-                      }`}
-                    >
-                      {isUnlocked ? 'আনলকড (Unlocked)' : 'প্রিমিয়াম টেস্ট'}
-                    </span>
-                    <h3 className="text-base font-black text-slate-800">💎 {toBengaliClass(cls)} শ্রেণি — Paid Test</h3>
+                <div className="space-y-1.5 sm:space-y-2">
+                  <div className="flex items-start justify-between gap-1">
+                    <div className="space-y-0.5 min-w-0">
+                      <span
+                        className={`text-[9px] sm:text-[10px] font-black uppercase px-1.5 sm:px-2 py-0.5 rounded inline-block ${
+                          isUnlocked
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                            : 'bg-red-50 text-[#C8102E] border border-red-200'
+                        }`}
+                      >
+                        {isUnlocked ? 'আনলকড' : 'প্রিমিয়াম'}
+                      </span>
+                      <h3 className="text-xs sm:text-base font-black text-slate-800 truncate sm:line-clamp-none">
+                        💎 {toBengaliClass(cls)} শ্রেণি
+                      </h3>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <div className="text-sm sm:text-xl font-black text-[#C8102E]">৳৫০</div>
+                      <div className="hidden sm:block text-[10px] text-slate-400 font-semibold">এককালীন ফি</div>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-xl font-black text-[#C8102E]">৳৫০</div>
-                    <div className="text-[10px] text-slate-400 font-semibold">এককালীন ফি</div>
-                  </div>
-                </div>
 
-                <p className="text-xs text-slate-500 leading-snug">
-                  পূর্ণাঙ্গ মডেল টেস্ট • অধ্যায়ভিত্তিক স্পেশাল MCQ • বিস্তারিত ফলাফল, র‍্যাংক ও সমাধান।
-                </p>
+                  <p className="hidden sm:block text-xs text-slate-500 leading-snug">
+                    পূর্ণাঙ্গ মডেল টেস্ট • অধ্যায়ভিত্তিক স্পেশাল MCQ • বিস্তারিত ফলাফল, র‍্যাংক ও সমাধান।
+                  </p>
+                </div>
 
                 <button
                   type="button"
                   onClick={() => handleOpenPaidClassTest(cls)}
-                  className={`w-full py-2.5 rounded-xl font-bold text-xs shadow-md transition flex items-center justify-center gap-2 active:scale-98 ${
+                  className={`w-full py-2 sm:py-2.5 rounded-xl font-bold text-[11px] sm:text-xs shadow-sm sm:shadow-md transition flex items-center justify-center gap-1.5 active:scale-98 ${
                     isUnlocked
                       ? 'bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white'
                       : 'bg-gradient-to-r from-[#0A1E3C] to-[#C8102E] hover:from-[#0F284E] hover:to-[#A50D26] text-white'
@@ -665,13 +673,13 @@ export default function QuizPage() {
                 >
                   {isUnlocked ? (
                     <>
-                      <FaCheck className="w-3.5 h-3.5" />
-                      <span>টেস্ট শুরু করুন (Unlocked)</span>
+                      <FaCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+                      <span>টেস্ট দিন</span>
                     </>
                   ) : (
                     <>
-                      <FaLock className="w-3.5 h-3.5" />
-                      <span>Paid Test কিনুন (৳৫০)</span>
+                      <FaLock className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+                      <span>Paid Test কিনুন</span>
                     </>
                   )}
                 </button>
