@@ -384,7 +384,7 @@ export default function MobileBottomNav() {
                 </div>
 
                 <Link
-                  href="/profile"
+                  href="/my-notes"
                   onClick={() => setIsMenuOpen(false)}
                   className="flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-50 transition group"
                 >
@@ -421,24 +421,26 @@ export default function MobileBottomNav() {
                   <FaChevronRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
                 </Link>
 
-                <Link
-                  href="/attendance"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-50 transition group"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                      <FaUserCheck className="w-4 h-4" />
+                {session.user.role === 'ADMIN' && (
+                  <Link
+                    href="/attendance"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-50 transition group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                        <FaUserCheck className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-slate-800 group-hover:text-[#C8102E] transition">
+                          দৈনিক রোল হাজিরা (অ্যাডমিন)
+                        </p>
+                        <p className="text-[10px] text-slate-400">তারিখ অনুযায়ী ক্লাসে উপস্থিতি গ্রহণ</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-xs font-bold text-slate-800 group-hover:text-[#C8102E] transition">
-                        দৈনিক রোল হাজিরা / উপস্থিতি
-                      </p>
-                      <p className="text-[10px] text-slate-400">তারিখ অনুযায়ী ক্লাসে উপস্থিতি চেক</p>
-                    </div>
-                  </div>
-                  <FaChevronRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
-                </Link>
+                    <FaChevronRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+                  </Link>
+                )}
 
                 <Link
                   href="/quiz"
