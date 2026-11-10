@@ -105,14 +105,14 @@ export default function MyNotesPage() {
   if (!session?.user) return null;
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="space-y-6 max-w-6xl mx-auto">
       
       {/* Top Banner */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #071426 0%, #0A1E3C 55%, #2A0B1E 100%)',
+          background: 'linear-gradient(135deg, #07459bff 0%, #093575ff 55%, #07459bff 100%)',
         }}
-        className="text-white rounded-2xl sm:rounded-3xl p-4 sm:p-7 shadow-premium border-b-4 border-[#C8102E] relative overflow-hidden"
+        className="text-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-premium border-b-4 border-[#07459b] relative overflow-hidden"
       >
         <div className="absolute right-0 top-0 w-80 h-80 bg-nova-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -187,19 +187,19 @@ export default function MyNotesPage() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4 lg:gap-5">
             {purchases.map((pur) => (
               <div
                 key={pur.id}
-                className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 p-4 sm:p-5 shadow-sm space-y-3 flex flex-col justify-between hover:shadow-md transition"
+                className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 p-3 sm:p-5 shadow-sm space-y-2.5 sm:space-y-3 flex flex-col justify-between hover:shadow-md transition"
               >
-                <div className="space-y-2">
-                  <div className="flex justify-between items-start gap-2">
-                    <span className="text-[11px] font-bold text-brand-700 bg-brand-50 px-2.5 py-0.5 rounded-lg border border-brand-200/60">
+                <div className="space-y-1.5 sm:space-y-2">
+                  <div className="flex flex-wrap items-start justify-between gap-1 sm:gap-2">
+                    <span className="text-[10px] sm:text-[11px] font-bold text-brand-700 bg-brand-50 px-2 sm:px-2.5 py-0.5 rounded-md sm:rounded-lg border border-brand-200/60 truncate max-w-[110px] sm:max-w-none">
                       Class {pur.pdf.classGrade} • {pur.pdf.subject}
                     </span>
                     <span
-                      className={`text-[10px] font-black px-2.5 py-0.5 rounded-full ${
+                      className={`text-[9px] sm:text-[10px] font-black px-2 sm:px-2.5 py-0.5 rounded-full shrink-0 ${
                         pur.status === 'APPROVED'
                           ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                           : pur.status === 'REJECTED'
@@ -215,23 +215,23 @@ export default function MyNotesPage() {
                     </span>
                   </div>
 
-                  <h3 className="font-bold text-slate-800 text-sm leading-snug line-clamp-2">
+                  <h3 className="font-bold text-slate-800 text-xs sm:text-sm leading-snug line-clamp-2">
                     {pur.pdf.title}
                   </h3>
 
-                  <div className="text-xs text-slate-500 space-y-1 font-mono pt-1">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[11px] font-sans text-slate-500">পেমেন্ট মাধ্যম:</span>
-                      <div className="bg-white px-2 py-0.5 rounded border border-slate-200 inline-flex items-center shadow-xs">
+                  <div className="text-[11px] sm:text-xs text-slate-500 space-y-0.5 sm:space-y-1 font-mono pt-0.5 sm:pt-1">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-[10px] sm:text-[11px] font-sans text-slate-500">পেমেন্ট:</span>
+                      <div className="bg-white px-1.5 sm:px-2 py-0.5 rounded border border-slate-200 inline-flex items-center shadow-xs">
                         <img
                           src={pur.paymentMethod === 'BKASH' ? '/assets/images/bkash.png' : '/assets/images/nagad.png'}
                           alt={pur.paymentMethod}
-                          className="h-3.5 w-auto object-contain"
+                          className="h-3 sm:h-3.5 w-auto object-contain"
                         />
                       </div>
-                      <span className="font-bold text-slate-800">৳{pur.amount}</span>
+                      <span className="font-bold text-slate-800 text-xs sm:text-sm">৳{pur.amount}</span>
                     </div>
-                    <div className="text-[11px] text-slate-400">TrxID: {pur.trxId}</div>
+                    <div className="text-[10px] sm:text-[11px] text-slate-400 truncate">TrxID: {pur.trxId}</div>
                   </div>
                 </div>
 
@@ -240,14 +240,14 @@ export default function MyNotesPage() {
                     <a
                       href={`/api/pdfs/download?pdfId=${encodeURIComponent(pur.pdf.id)}&trxIds=${encodeURIComponent(pur.trxId)}`}
                       download={`${pur.pdf.title}.pdf`}
-                      className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-sm transition active:scale-98"
+                      className="w-full inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs shadow-sm transition active:scale-98"
                     >
-                      <FaDownload className="w-3.5 h-3.5" />
-                      <span>ডাউনলোড করুন (PDF)</span>
+                      <FaDownload className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+                      <span>ডাউনলোড (PDF)</span>
                     </a>
                   ) : (
-                    <div className="w-full text-center py-2 px-3 bg-slate-50 text-slate-500 text-xs font-semibold rounded-xl border border-slate-200/60">
-                      পেমেন্ট যাচাইয়ের পর ডাউনলোড লিংক সক্রিয় হবে
+                    <div className="w-full text-center py-2 px-2 bg-slate-50 text-slate-500 text-[10px] sm:text-xs font-semibold rounded-xl border border-slate-200/60 leading-tight">
+                      যাচাই শেষে ডাউনলোড সক্রিয় হবে
                     </div>
                   )}
                 </div>
