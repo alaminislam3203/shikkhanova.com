@@ -22,6 +22,10 @@ export interface SubjectMark {
 
 export interface MarksheetData {
   studentName: string;
+  fatherName?: string;
+  motherName?: string;
+  schoolName?: string;
+  dateOfBirth?: string;
   classGrade: number;
   rollNumber: number;
   examTitle: string;
