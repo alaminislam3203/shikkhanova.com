@@ -116,3 +116,4 @@ export function calculateOverallResult(subjects: SubjectMarkEntry[]): Calculated
     failedCount: 0,
   };
 }
+
