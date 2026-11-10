@@ -4,31 +4,23 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import {
-  FREE_CLASS_QUESTIONS,
-  PAID_CLASS_QUESTIONS,
-  SUBJECT_LIST,
-  SUBJECT_QUESTIONS,
   RawQuestion,
+  SUBJECT_LIST,
+  getStoredFreeQuestions,
+  getStoredPaidQuestions,
+  getStoredSubjectQuestions,
 } from '@/lib/defaultQuizData';
 import {
-  FaGraduationCap,
   FaAward,
-  FaClock,
   FaCircleCheck,
   FaCircleXmark,
   FaGift,
   FaGem,
-  FaBookOpen,
-  FaCartShopping,
-  FaPlus,
-  FaTrash,
-  FaPhone,
-  FaShareNodes,
   FaRotateRight,
   FaCheck,
-  FaArrowRight,
   FaLock,
   FaKey,
+  FaGear,
 } from 'react-icons/fa6';
 import { HiSparkles } from 'react-icons/hi2';
 
@@ -74,44 +66,19 @@ export default function QuizPage() {
   const [paymentTargetClass, setPaymentTargetClass] = useState<number>(6);
   const [paymentPackageName, setPaymentPackageName] = useState<string>('Paid Model Test');
   const [paymentAmount, setPaymentAmount] = useState<number>(50);
-  const [trxIdInput, setTrxIdInput] = useState<string>('');
   const [accessCodeInput, setAccessCodeInput] = useState<string>('');
   const [unlockSuccessMsg, setUnlockSuccessMsg] = useState<string>('');
-
-  // Admin MCQ Management State
-  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState<boolean>(false);
-  const [adminTab, setAdminTab] = useState<'add' | 'bulk' | 'manage'>('add');
-  const [adminClass, setAdminClass] = useState<number>(6);
-  const [adminSubject, setAdminSubject] = useState<string>('বাংলা');
-  const [newQText, setNewQText] = useState<string>('');
-  const [newOpA, setNewOpA] = useState<string>('');
-  const [newOpB, setNewOpB] = useState<string>('');
-  const [newOpC, setNewOpC] = useState<string>('');
-  const [newOpD, setNewOpD] = useState<string>('');
-  const [newCorrectAns, setNewCorrectAns] = useState<number>(0);
-  const [newExplanation, setNewExplanation] = useState<string>('');
-  const [bulkText, setBulkText] = useState<string>('');
-  const [adminMsg, setAdminMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
-
-  // Custom added questions (Class -> Subject -> Array)
-  const [customQuestions, setCustomQuestions] = useState<Record<string, Record<string, RawQuestion[]>>>({});
 
   // Refs for scrolling
   const testAreaRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
-  const adminRef = useRef<HTMLDivElement>(null);
 
-  // Load persisted results and custom questions on mount
+  // Load persisted results and unlocked classes on mount
   useEffect(() => {
     try {
       const storedResults = localStorage.getItem('sn_quiz_results');
       if (storedResults) {
         setResultsList(JSON.parse(storedResults));
-      }
-
-      const storedCustom = localStorage.getItem('sn_custom_questions');
-      if (storedCustom) {
-        setCustomQuestions(JSON.parse(storedCustom));
       }
 
       const storedUnlocked = localStorage.getItem('sn_unlocked_classes');
@@ -134,27 +101,27 @@ export default function QuizPage() {
     }, 100);
   };
 
-  // Start Free Test for a specific class (5-10)
+  // Start Free Test for a specific class (5-10) — Loads from Admin Storage
   const handleStartFreeClassTest = (classGrade: number) => {
     setSelectedClass(classGrade);
-    const questions = FREE_CLASS_QUESTIONS[classGrade] || FREE_CLASS_QUESTIONS[6];
+    const questions = getStoredFreeQuestions(classGrade);
     setActiveQuestions(questions);
     setSelectedAnswers({});
     setIsSubmitted(false);
     setIsTestActive(true);
     setActiveTestTitle(`${classGrade}ম শ্রেণি — ফ্রি মডেল টেস্ট`);
-    setActiveTestBadge('Free Model Test');
+    setActiveTestBadge('🎁 Free Model Test');
     scrollTo(testAreaRef);
   };
 
-  // Start or open Paid Test
+  // Start or open Paid Test — Loads from Admin Storage
   const handleOpenPaidClassTest = (classGrade: number) => {
     setSelectedClass(classGrade);
     const isUnlocked = unlockedClasses.includes(classGrade) || session?.user?.role === 'ADMIN';
 
     if (isUnlocked) {
       // Already unlocked, start the test directly!
-      const questions = PAID_CLASS_QUESTIONS[classGrade] || PAID_CLASS_QUESTIONS[6];
+      const questions = getStoredPaidQuestions(classGrade);
       setActiveQuestions(questions);
       setSelectedAnswers({});
       setIsSubmitted(false);
@@ -172,15 +139,12 @@ export default function QuizPage() {
     }
   };
 
-  // Start Subject Test
+  // Start Subject Test — Loads from Admin Storage
   const handleStartSubjectTest = (subjectName: string) => {
     setSelectedSubject(subjectName);
-    // Combine default subject questions + any custom admin questions
-    const defaults = SUBJECT_QUESTIONS[subjectName] || [];
-    const custom = customQuestions[String(selectedClass)]?.[subjectName] || [];
-    const combined = [...custom, ...defaults];
+    const questions = getStoredSubjectQuestions(selectedClass, subjectName);
 
-    setActiveQuestions(combined.length > 0 ? combined : defaults);
+    setActiveQuestions(questions);
     setSelectedAnswers({});
     setIsSubmitted(false);
     setIsTestActive(true);
@@ -199,7 +163,7 @@ export default function QuizPage() {
     });
 
     const total = activeQuestions.length;
-    const percentage = Math.round((score / total) * 100);
+    const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
     setQuizScore(score);
     setIsSubmitted(true);
 
@@ -243,12 +207,11 @@ export default function QuizPage() {
   const handleVerifyUnlock = (e: React.FormEvent) => {
     e.preventDefault();
     const code = accessCodeInput.trim().toUpperCase();
-    const trx = trxIdInput.trim();
 
     // Universal promo access codes or valid TrxID (>= 6 chars)
     const validCodes = ['NOVA50', 'SHIKKHA2026', 'SHIKKHANOVA', 'ADMIN100', 'FREE2026'];
     const isCodeValid = validCodes.includes(code);
-    const isTrxValid = trx.length >= 6;
+    const isTrxValid = code.length >= 6;
 
     if (isCodeValid || isTrxValid) {
       const updated = Array.from(new Set([...unlockedClasses, paymentTargetClass]));
@@ -261,14 +224,14 @@ export default function QuizPage() {
       setTimeout(() => {
         setPaymentModalOpen(false);
         handleStartPaidAfterUnlock(paymentTargetClass);
-      }, 1500);
+      }, 1400);
     } else {
       alert('অনুগ্রহ করে সঠিক অ্যাক্সেস কোড অথবা বিকাশ/নগদ TrxID প্রদান করুন।');
     }
   };
 
   const handleStartPaidAfterUnlock = (classGrade: number) => {
-    const questions = PAID_CLASS_QUESTIONS[classGrade] || PAID_CLASS_QUESTIONS[6];
+    const questions = getStoredPaidQuestions(classGrade);
     setActiveQuestions(questions);
     setSelectedAnswers({});
     setIsSubmitted(false);
@@ -276,107 +239,6 @@ export default function QuizPage() {
     setActiveTestTitle(`${classGrade}ম শ্রেণি — প্রিমিয়াম মডেল টেস্ট`);
     setActiveTestBadge('💎 Premium Test');
     scrollTo(testAreaRef);
-  };
-
-  // Admin Single Question Add
-  const handleAddSingleQuestion = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newQText.trim() || !newOpA.trim() || !newOpB.trim() || !newOpC.trim() || !newOpD.trim()) {
-      setAdminMsg({ text: 'অনুগ্রহ করে প্রশ্ন এবং ৪টি অপশন সঠিকভাবে পূরণ করুন।', type: 'error' });
-      return;
-    }
-
-    const newQ: RawQuestion = {
-      q: newQText.trim(),
-      options: [newOpA.trim(), newOpB.trim(), newOpC.trim(), newOpD.trim()],
-      ans: newCorrectAns,
-      explanation: newExplanation.trim() || undefined,
-    };
-
-    const cStr = String(adminClass);
-    const updated = { ...customQuestions };
-    if (!updated[cStr]) updated[cStr] = {};
-    if (!updated[cStr][adminSubject]) updated[cStr][adminSubject] = [];
-    updated[cStr][adminSubject].push(newQ);
-
-    setCustomQuestions(updated);
-    try {
-      localStorage.setItem('sn_custom_questions', JSON.stringify(updated));
-    } catch {}
-
-    setAdminMsg({
-      text: `✅ প্রশ্ন সফলভাবে সংরক্ষণ হয়েছে! (${adminClass}ম শ্রেণি — ${adminSubject})`,
-      type: 'success',
-    });
-    setNewQText('');
-    setNewOpA('');
-    setNewOpB('');
-    setNewOpC('');
-    setNewOpD('');
-    setNewExplanation('');
-  };
-
-  // Admin Bulk Questions Add
-  const handleAddBulkQuestions = (e: React.FormEvent) => {
-    e.preventDefault();
-    const lines = bulkText.split('\n').map((l) => l.trim()).filter(Boolean);
-    if (lines.length === 0) {
-      setAdminMsg({ text: 'কোনো প্রশ্ন পাওয়া যায়নি। নির্দিষ্ট ফরম্যাটে লিখুন।', type: 'error' });
-      return;
-    }
-
-    let addedCount = 0;
-    let skippedCount = 0;
-    const cStr = String(adminClass);
-    const updated = { ...customQuestions };
-    if (!updated[cStr]) updated[cStr] = {};
-    if (!updated[cStr][adminSubject]) updated[cStr][adminSubject] = [];
-
-    lines.forEach((line) => {
-      const parts = line.split('|').map((p) => p.trim());
-      if (parts.length >= 6) {
-        const qText = parts[0];
-        const ops: [string, string, string, string] = [parts[1], parts[2], parts[3], parts[4]];
-        const ansChar = parts[5].toUpperCase();
-        const ansIdx = ansChar === 'A' ? 0 : ansChar === 'B' ? 1 : ansChar === 'C' ? 2 : ansChar === 'D' ? 3 : 0;
-        const exp = parts[6] ? parts[6] : undefined;
-
-        updated[cStr][adminSubject].push({
-          q: qText,
-          options: ops,
-          ans: ansIdx,
-          explanation: exp,
-        });
-        addedCount++;
-      } else {
-        skippedCount++;
-      }
-    });
-
-    setCustomQuestions(updated);
-    try {
-      localStorage.setItem('sn_custom_questions', JSON.stringify(updated));
-    } catch {}
-
-    setAdminMsg({
-      text: `✅ ${addedCount}টি প্রশ্ন যোগ হয়েছে! ${skippedCount > 0 ? `(${skippedCount}টি লাইন সঠিক ফরম্যাট ছিল না)` : ''}`,
-      type: 'success',
-    });
-    setBulkText('');
-  };
-
-  // Delete Question
-  const handleDeleteCustomQuestion = (cls: number, sub: string, idx: number) => {
-    if (!confirm('আপনি কি এই প্রশ্নটি মুছে ফেলতে চান?')) return;
-    const cStr = String(cls);
-    const updated = { ...customQuestions };
-    if (updated[cStr]?.[sub]) {
-      updated[cStr][sub].splice(idx, 1);
-      setCustomQuestions(updated);
-      try {
-        localStorage.setItem('sn_custom_questions', JSON.stringify(updated));
-      } catch {}
-    }
   };
 
   // Clear Leaderboard
@@ -432,15 +294,16 @@ export default function QuizPage() {
               <span>লিডারবোর্ড দেখুন</span>
             </button>
 
-            <button
-              onClick={() => {
-                setIsAdminPanelOpen((prev) => !prev);
-                if (!isAdminPanelOpen) scrollTo(adminRef);
-              }}
-              className="px-4 py-3 rounded-2xl bg-slate-900/60 hover:bg-slate-900 text-slate-300 hover:text-white font-bold text-xs border border-slate-700 transition"
-            >
-              ⚙️ {isAdminPanelOpen ? 'অ্যাডমিন বন্ধ করুন' : 'MCQ ম্যানেজ'}
-            </button>
+            {/* Admin Management Link — Visible ONLY if Admin is logged in */}
+            {session?.user?.role === 'ADMIN' && (
+              <Link
+                href="/admin?tab=mcqQuiz"
+                className="px-4 py-3 rounded-2xl bg-slate-900/80 hover:bg-black text-amber-300 hover:text-amber-200 font-bold text-xs border border-amber-400/30 transition flex items-center gap-1.5"
+              >
+                <FaGear className="w-3.5 h-3.5 text-amber-400" />
+                <span>MCQ ম্যানেজমেন্ট (অ্যাডমিন)</span>
+              </Link>
+            )}
           </div>
 
           {/* Student Name Input */}
@@ -523,154 +386,162 @@ export default function QuizPage() {
             </div>
 
             {/* Questions List */}
-            <div className="space-y-6">
-              {activeQuestions.map((item, qIdx) => {
-                const userSelected = selectedAnswers[qIdx];
-                const isAnswered = userSelected !== undefined;
-                const isCorrect = isAnswered && userSelected === item.ans;
+            {activeQuestions.length === 0 ? (
+              <div className="py-12 text-center text-slate-500 text-sm">
+                এই ক্যাটাগরিতে এখনও কোনো প্রশ্ন আপলোড করা হয়নি।
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {activeQuestions.map((item, qIdx) => {
+                  const userSelected = selectedAnswers[qIdx];
+                  const isAnswered = userSelected !== undefined;
+                  const isCorrect = isAnswered && userSelected === item.ans;
 
-                return (
-                  <div
-                    key={qIdx}
-                    className={`p-5 rounded-2xl border transition-all ${
-                      isSubmitted
-                        ? isCorrect
-                          ? 'bg-emerald-50/60 border-emerald-300'
-                          : 'bg-rose-50/50 border-rose-300'
-                        : isAnswered
-                        ? 'bg-slate-50/80 border-[#C8102E]/30'
-                        : 'bg-slate-50/40 border-slate-200'
-                    }`}
-                  >
-                    {/* Question Title */}
-                    <div className="flex items-start gap-2.5">
-                      <span className="w-6 h-6 rounded-lg bg-[#0A1E3C] text-white flex items-center justify-center text-xs font-black shrink-0 mt-0.5">
-                        {qIdx + 1}
-                      </span>
-                      <p className="text-sm sm:text-base font-bold text-slate-900 leading-snug">{item.q}</p>
-                    </div>
-
-                    {/* Options (A, B, C, D) */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-4 pl-0 sm:pl-8">
-                      {item.options.map((optText, opIdx) => {
-                        const isChosen = userSelected === opIdx;
-                        const isTheCorrectOne = isSubmitted && opIdx === item.ans;
-                        const isWrongChoice = isSubmitted && isChosen && !isTheCorrectOne;
-
-                        let optStyles = 'bg-white border-slate-200 hover:border-slate-300 text-slate-700';
-
-                        if (!isSubmitted && isChosen) {
-                          optStyles = 'bg-red-50 border-[#C8102E] text-[#C8102E] font-bold shadow-xs';
-                        } else if (isSubmitted) {
-                          if (isTheCorrectOne) {
-                            optStyles = 'bg-emerald-100/80 border-emerald-500 text-emerald-900 font-bold';
-                          } else if (isWrongChoice) {
-                            optStyles = 'bg-rose-100/80 border-rose-500 text-rose-900 font-bold line-through';
-                          }
-                        }
-
-                        return (
-                          <label
-                            key={opIdx}
-                            className={`flex items-center gap-3 p-3 rounded-xl border text-xs sm:text-sm cursor-pointer transition-all ${optStyles}`}
-                          >
-                            <input
-                              type="radio"
-                              name={`question_${qIdx}`}
-                              value={opIdx}
-                              disabled={isSubmitted}
-                              checked={isChosen}
-                              onChange={() => {
-                                setSelectedAnswers((prev) => ({ ...prev, [qIdx]: opIdx }));
-                              }}
-                              className="text-[#C8102E] focus:ring-[#C8102E] w-4 h-4 cursor-pointer"
-                            />
-                            <span className="font-bold uppercase text-slate-400">
-                              {String.fromCharCode(65 + opIdx)}.
-                            </span>
-                            <span className="flex-1">{optText}</span>
-                            {isSubmitted && isTheCorrectOne && (
-                              <FaCircleCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                            )}
-                            {isSubmitted && isWrongChoice && (
-                              <FaCircleXmark className="w-4 h-4 text-rose-600 shrink-0" />
-                            )}
-                          </label>
-                        );
-                      })}
-                    </div>
-
-                    {/* Explanation Box (Visible after submission) */}
-                    {isSubmitted && item.explanation && (
-                      <div className="mt-3.5 pl-0 sm:pl-8">
-                        <div className="bg-white/90 border border-slate-200 p-3 rounded-xl text-xs text-slate-600 space-y-1">
-                          <p className="font-bold text-slate-800">💡 ব্যাখ্যা ও সঠিক উত্তর:</p>
-                          <p>{item.explanation}</p>
-                        </div>
+                  return (
+                    <div
+                      key={qIdx}
+                      className={`p-5 rounded-2xl border transition-all ${
+                        isSubmitted
+                          ? isCorrect
+                            ? 'bg-emerald-50/60 border-emerald-300'
+                            : 'bg-rose-50/50 border-rose-300'
+                          : isAnswered
+                          ? 'bg-slate-50/80 border-[#C8102E]/30'
+                          : 'bg-slate-50/40 border-slate-200'
+                      }`}
+                    >
+                      {/* Question Title */}
+                      <div className="flex items-start gap-2.5">
+                        <span className="w-6 h-6 rounded-lg bg-[#0A1E3C] text-white flex items-center justify-center text-xs font-black shrink-0 mt-0.5">
+                          {qIdx + 1}
+                        </span>
+                        <p className="text-sm sm:text-base font-bold text-slate-900 leading-snug">{item.q}</p>
                       </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+
+                      {/* Options (A, B, C, D) */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-4 pl-0 sm:pl-8">
+                        {item.options.map((optText, opIdx) => {
+                          const isChosen = userSelected === opIdx;
+                          const isTheCorrectOne = isSubmitted && opIdx === item.ans;
+                          const isWrongChoice = isSubmitted && isChosen && !isTheCorrectOne;
+
+                          let optStyles = 'bg-white border-slate-200 hover:border-slate-300 text-slate-700';
+
+                          if (!isSubmitted && isChosen) {
+                            optStyles = 'bg-red-50 border-[#C8102E] text-[#C8102E] font-bold shadow-xs';
+                          } else if (isSubmitted) {
+                            if (isTheCorrectOne) {
+                              optStyles = 'bg-emerald-100/80 border-emerald-500 text-emerald-900 font-bold';
+                            } else if (isWrongChoice) {
+                              optStyles = 'bg-rose-100/80 border-rose-500 text-rose-900 font-bold line-through';
+                            }
+                          }
+
+                          return (
+                            <label
+                              key={opIdx}
+                              className={`flex items-center gap-3 p-3 rounded-xl border text-xs sm:text-sm cursor-pointer transition-all ${optStyles}`}
+                            >
+                              <input
+                                type="radio"
+                                name={`question_${qIdx}`}
+                                value={opIdx}
+                                disabled={isSubmitted}
+                                checked={isChosen}
+                                onChange={() => {
+                                  setSelectedAnswers((prev) => ({ ...prev, [qIdx]: opIdx }));
+                                }}
+                                className="text-[#C8102E] focus:ring-[#C8102E] w-4 h-4 cursor-pointer"
+                              />
+                              <span className="font-bold uppercase text-slate-400">
+                                {String.fromCharCode(65 + opIdx)}.
+                              </span>
+                              <span className="flex-1">{optText}</span>
+                              {isSubmitted && isTheCorrectOne && (
+                                <FaCircleCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                              )}
+                              {isSubmitted && isWrongChoice && (
+                                <FaCircleXmark className="w-4 h-4 text-rose-600 shrink-0" />
+                              )}
+                            </label>
+                          );
+                        })}
+                      </div>
+
+                      {/* Explanation Box (Visible after submission) */}
+                      {isSubmitted && item.explanation && (
+                        <div className="mt-3.5 pl-0 sm:pl-8">
+                          <div className="bg-white/90 border border-slate-200 p-3 rounded-xl text-xs text-slate-600 space-y-1">
+                            <p className="font-bold text-slate-800">💡 ব্যাখ্যা ও সঠিক উত্তর:</p>
+                            <p>{item.explanation}</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
 
             {/* Submit / Score Action Footer */}
-            <div className="pt-4 border-t border-slate-200">
-              {!isSubmitted ? (
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <p className="text-xs text-slate-500 font-medium">
-                    উত্তর দেওয়া হয়েছে: {Object.keys(selectedAnswers).length} / {activeQuestions.length} টি
-                  </p>
-                  <button
-                    type="button"
-                    onClick={handleSubmitTest}
-                    className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-black text-sm shadow-xl transition active:scale-95"
-                  >
-                    ✅ পরীক্ষা জমা দিন (Submit Test)
-                  </button>
-                </div>
-              ) : (
-                <div className="p-6 rounded-2xl bg-gradient-to-r from-slate-900 to-[#0A1E3C] text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
-                  <div className="space-y-1 text-center sm:text-left">
-                    <div className="inline-flex items-center gap-1.5 text-xs text-amber-300 font-bold bg-white/10 px-3 py-0.5 rounded-full">
-                      <FaAward /> পরীক্ষার ফলাফল ও মূল্যায়ন
-                    </div>
-                    <h4 className="text-2xl font-black">
-                      আপনার স্কোর: {quizScore} / {activeQuestions.length} (
-                      {Math.round((quizScore / activeQuestions.length) * 100)}%)
-                    </h4>
-                    <p className="text-xs text-slate-300">
-                      {quizScore === activeQuestions.length
-                        ? '🎉 অসাধারণ! আপনি ১০০% সঠিক উত্তর দিয়ে গোল্ড মেডেল অর্জন করেছেন!'
-                        : quizScore >= activeQuestions.length * 0.8
-                        ? '👏 খুব চমৎকার ফলাফল! সিলভার মেডেল নিশ্চিত হয়েছে।'
-                        : 'পরবর্তী মডেল টেস্টে আরও ভালো করার চেষ্টা করুন। শুভকামনা!'}
+            {activeQuestions.length > 0 && (
+              <div className="pt-4 border-t border-slate-200">
+                {!isSubmitted ? (
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <p className="text-xs text-slate-500 font-medium">
+                      উত্তর দেওয়া হয়েছে: {Object.keys(selectedAnswers).length} / {activeQuestions.length} টি
                     </p>
-                  </div>
-
-                  <div className="flex items-center gap-3 shrink-0">
                     <button
                       type="button"
-                      onClick={() => {
-                        setSelectedAnswers({});
-                        setIsSubmitted(false);
-                      }}
-                      className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition flex items-center gap-1.5"
+                      onClick={handleSubmitTest}
+                      className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-black text-sm shadow-xl transition active:scale-95"
                     >
-                      <FaRotateRight className="w-3.5 h-3.5" /> পুনরায় পরীক্ষা দিন
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => scrollTo(resultsRef)}
-                      className="px-5 py-2.5 rounded-xl bg-[#C8102E] hover:bg-[#A50D26] text-white text-xs font-black shadow-lg transition"
-                    >
-                      🏆 লিডারবোর্ড দেখুন
+                      ✅ পরীক্ষা জমা দিন (Submit Test)
                     </button>
                   </div>
-                </div>
-              )}
-            </div>
+                ) : (
+                  <div className="p-6 rounded-2xl bg-gradient-to-r from-slate-900 to-[#0A1E3C] text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
+                    <div className="space-y-1 text-center sm:text-left">
+                      <div className="inline-flex items-center gap-1.5 text-xs text-amber-300 font-bold bg-white/10 px-3 py-0.5 rounded-full">
+                        <FaAward /> পরীক্ষার ফলাফল ও মূল্যায়ন
+                      </div>
+                      <h4 className="text-2xl font-black">
+                        আপনার স্কোর: {quizScore} / {activeQuestions.length} (
+                        {Math.round((quizScore / activeQuestions.length) * 100)}%)
+                      </h4>
+                      <p className="text-xs text-slate-300">
+                        {quizScore === activeQuestions.length
+                          ? '🎉 অসাধারণ! আপনি ১০০% সঠিক উত্তর দিয়ে গোল্ড মেডেল অর্জন করেছেন!'
+                          : quizScore >= activeQuestions.length * 0.8
+                          ? '👏 খুব চমৎকার ফলাফল! সিলভার মেডেল নিশ্চিত হয়েছে।'
+                          : 'পরবর্তী মডেল টেস্টে আরও ভালো করার চেষ্টা করুন। শুভকামনা!'}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-3 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedAnswers({});
+                          setIsSubmitted(false);
+                        }}
+                        className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition flex items-center gap-1.5"
+                      >
+                        <FaRotateRight className="w-3.5 h-3.5" /> পুনরায় পরীক্ষা দিন
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => scrollTo(resultsRef)}
+                        className="px-5 py-2.5 rounded-xl bg-[#C8102E] hover:bg-[#A50D26] text-white text-xs font-black shadow-lg transition"
+                      >
+                        🏆 লিডারবোর্ড দেখুন
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </section>
         )}
       </div>
@@ -684,12 +555,12 @@ export default function QuizPage() {
             <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-0.5 rounded-full border border-emerald-200 mb-1">
               <FaGift /> ১০০% ফ্রি মডেল টেস্ট
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">Class-wise Free Model Test</h2>
+            <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">🎁 Class-wise Free Model Test</h2>
             <p className="text-xs text-slate-500 font-medium">
               ৫ম থেকে ১০ম শ্রেণি পর্যন্ত প্রতিটি ক্লাসের জন্য আলাদা ফ্রি মডেল টেস্ট
             </p>
           </div>
-          <span className="text-xs font-bold text-slate-400">৫টি ফ্রি MCQ • তাৎক্ষণিক স্কোর</span>
+          <span className="text-xs font-bold text-slate-400">ফ্রি MCQ • তাৎক্ষণিক স্কোর</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -715,7 +586,7 @@ export default function QuizPage() {
                 </div>
 
                 <p className="text-xs text-slate-500 leading-snug">
-                  ৫টি বাছাইকৃত গুরুত্বপূর্ণ MCQ • সাথে সাথে সঠিক উত্তর ও ব্যাখ্যা সহ ফলাফল।
+                  বাছাইকৃত গুরুত্বপূর্ণ MCQ • সাথে সাথে সঠিক উত্তর ও ব্যাখ্যা সহ ফলাফল।
                 </p>
 
                 <button
@@ -724,7 +595,7 @@ export default function QuizPage() {
                   className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2 active:scale-98"
                 >
                   <FaGift className="w-3.5 h-3.5" />
-                  <span>Free Test শুরু করুন</span>
+                  <span>🎁 Free Test শুরু করুন</span>
                 </button>
               </div>
             );
@@ -823,7 +694,7 @@ export default function QuizPage() {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
-          {SUBJECT_LIST.map((sub, idx) => (
+          {SUBJECT_LIST.map((sub) => (
             <div
               key={sub.name}
               className="bg-white rounded-2xl p-4 border border-slate-200/90 hover:border-[#C8102E]/40 shadow-xs hover:shadow-md transition text-center space-y-2.5 group"
@@ -1052,265 +923,6 @@ export default function QuizPage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          9. ⚙️ ADMIN MCQ MANAGEMENT PANEL
-      ───────────────────────────────────────────────────────────── */}
-      {isAdminPanelOpen && (
-        <section
-          ref={adminRef}
-          className="bg-slate-900 text-white rounded-3xl p-6 sm:p-10 space-y-6 shadow-2xl border border-slate-800 animate-in fade-in duration-200"
-        >
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
-            <div>
-              <h3 className="text-xl font-black text-white">⚙️ Advanced MCQ Admin Panel</h3>
-              <p className="text-xs text-slate-400 font-medium">
-                এখান থেকে ক্লাস ও বিষয় নির্বাচন করে এককভাবে বা একসাথে অনেকগুলো (Bulk) MCQ যোগ করতে পারবেন।
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setAdminTab('add')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${
-                  adminTab === 'add' ? 'bg-[#C8102E] text-white' : 'bg-slate-800 text-slate-300'
-                }`}
-              >
-                ➕ MCQ যোগ
-              </button>
-              <button
-                type="button"
-                onClick={() => setAdminTab('bulk')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${
-                  adminTab === 'bulk' ? 'bg-[#C8102E] text-white' : 'bg-slate-800 text-slate-300'
-                }`}
-              >
-                📋 Bulk MCQ
-              </button>
-              <button
-                type="button"
-                onClick={() => setAdminTab('manage')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${
-                  adminTab === 'manage' ? 'bg-[#C8102E] text-white' : 'bg-slate-800 text-slate-300'
-                }`}
-              >
-                🗂️ MCQ তালিকা
-              </button>
-            </div>
-          </div>
-
-          {/* Feedback Message */}
-          {adminMsg && (
-            <div
-              className={`p-3 rounded-xl text-xs font-bold ${
-                adminMsg.type === 'success' ? 'bg-emerald-900/60 text-emerald-300' : 'bg-rose-900/60 text-rose-300'
-              }`}
-            >
-              {adminMsg.text}
-            </div>
-          )}
-
-          {/* Class & Subject Selector */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">ক্লাস নির্বাচন</label>
-              <select
-                value={adminClass}
-                onChange={(e) => setAdminClass(Number(e.target.value))}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"
-              >
-                {[5, 6, 7, 8, 9, 10].map((c) => (
-                  <option key={c} value={c}>
-                    {c}ম শ্রেণি
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">বিষয় নির্বাচন</label>
-              <select
-                value={adminSubject}
-                onChange={(e) => setAdminSubject(e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"
-              >
-                {SUBJECT_LIST.map((s) => (
-                  <option key={s.name} value={s.name}>
-                    {s.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* TAB 1: Single MCQ Add */}
-          {adminTab === 'add' && (
-            <form onSubmit={handleAddSingleQuestion} className="space-y-4">
-              <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">প্রশ্ন লিখুন</label>
-                <textarea
-                  rows={2}
-                  required
-                  value={newQText}
-                  onChange={(e) => setNewQText(e.target.value)}
-                  placeholder="যেমন: বাংলাদেশের জাতীয় কবি কে?"
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-xs text-white outline-none"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[11px] font-bold text-slate-400 block mb-1">অপশন A</label>
-                  <input
-                    type="text"
-                    required
-                    value={newOpA}
-                    onChange={(e) => setNewOpA(e.target.value)}
-                    placeholder="অপশন A লিখুন"
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="text-[11px] font-bold text-slate-400 block mb-1">অপশন B</label>
-                  <input
-                    type="text"
-                    required
-                    value={newOpB}
-                    onChange={(e) => setNewOpB(e.target.value)}
-                    placeholder="অপশন B লিখুন"
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="text-[11px] font-bold text-slate-400 block mb-1">অপশন C</label>
-                  <input
-                    type="text"
-                    required
-                    value={newOpC}
-                    onChange={(e) => setNewOpC(e.target.value)}
-                    placeholder="অপশন C লিখুন"
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="text-[11px] font-bold text-slate-400 block mb-1">অপশন D</label>
-                  <input
-                    type="text"
-                    required
-                    value={newOpD}
-                    onChange={(e) => setNewOpD(e.target.value)}
-                    placeholder="অপশন D লিখুন"
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">সঠিক উত্তর</label>
-                  <select
-                    value={newCorrectAns}
-                    onChange={(e) => setNewCorrectAns(Number(e.target.value))}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"
-                  >
-                    <option value={0}>A (প্রথম অপশন)</option>
-                    <option value={1}>B (দ্বিতীয় অপশন)</option>
-                    <option value={2}>C (তৃতীয় অপশন)</option>
-                    <option value={3}>D (চতুর্থ অপশন)</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">ব্যাখ্যা (ঐচ্ছিক)</label>
-                  <input
-                    type="text"
-                    value={newExplanation}
-                    onChange={(e) => setNewExplanation(e.target.value)}
-                    placeholder="কেন এই উত্তর সঠিক তা বুঝিয়ে লিখুন"
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition"
-              >
-                💾 MCQ Save করুন
-              </button>
-            </form>
-          )}
-
-          {/* TAB 2: Bulk MCQ Import */}
-          {adminTab === 'bulk' && (
-            <form onSubmit={handleAddBulkQuestions} className="space-y-4">
-              <div className="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700 text-xs text-slate-300 space-y-1">
-                <p className="font-bold text-amber-300">📋 Bulk MCQ Format নিয়মাবলী:</p>
-                <p>প্রতি লাইনে একটি করে প্রশ্ন লিখুন: <code className="bg-black/50 px-1.5 py-0.5 rounded text-amber-200">প্রশ্ন | অপশন A | অপশন B | অপশন C | অপশন D | সঠিক উত্তর (A/B/C/D) | ব্যাখ্যা (ঐচ্ছিক)</code></p>
-              </div>
-
-              <textarea
-                rows={8}
-                required
-                value={bulkText}
-                onChange={(e) => setBulkText(e.target.value)}
-                placeholder={`বাংলাদেশের রাজধানী কোনটি? | চট্টগ্রাম | ঢাকা | খুলনা | সিলেট | B | ঢাকা হলো বাংলাদেশের সাংবিধানিক রাজধানী।\n৫ × ৬ = কত? | ২০ | ২৫ | ৩০ | ৩৫ | C | ৫ এর সাথে ৬ গুণ করলে ৩০ হয়।`}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-xs text-white outline-none font-mono"
-              />
-
-              <button
-                type="submit"
-                className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition"
-              >
-                📋 সব MCQ Save করুন
-              </button>
-            </form>
-          )}
-
-          {/* TAB 3: MCQ List & Management */}
-          {adminTab === 'manage' && (
-            <div className="space-y-3">
-              <p className="text-xs text-slate-400">
-                {adminClass}ম শ্রেণির {adminSubject} বিষয়ের কাস্টম যোগ করা প্রশ্নসমূহ:
-              </p>
-              {(!customQuestions[String(adminClass)]?.[adminSubject] ||
-                customQuestions[String(adminClass)][adminSubject].length === 0) ? (
-                <div className="p-4 rounded-xl bg-slate-800 text-xs text-slate-400 text-center">
-                  এই শ্রেণি ও বিষয়ে এখনও কোনো কাস্টম MCQ যোগ করা হয়নি।
-                </div>
-              ) : (
-                <div className="space-y-2 max-h-72 overflow-y-auto">
-                  {customQuestions[String(adminClass)][adminSubject].map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="p-3 rounded-xl bg-slate-800 border border-slate-700 flex items-start justify-between gap-3"
-                    >
-                      <div className="text-xs space-y-1 min-w-0 flex-1">
-                        <p className="font-bold text-white">
-                          {idx + 1}. {item.q}
-                        </p>
-                        <p className="text-slate-400 text-[11px]">
-                          A: {item.options[0]} | B: {item.options[1]} | C: {item.options[2]} | D: {item.options[3]}
-                        </p>
-                        <p className="text-emerald-400 text-[10px]">
-                          সঠিক: {['A', 'B', 'C', 'D'][item.ans]}
-                        </p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteCustomQuestion(adminClass, adminSubject, idx)}
-                        className="p-1.5 rounded-lg bg-rose-900/60 hover:bg-rose-800 text-rose-300 text-xs transition"
-                        title="Delete Question"
-                      >
-                        <FaTrash className="w-3 h-3" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-        </section>
-      )}
-
-      {/* ─────────────────────────────────────────────────────────────
           10. PAYMENT & ACCESS CODE MODAL
       ───────────────────────────────────────────────────────────── */}
       {paymentModalOpen && (
@@ -1394,4 +1006,3 @@ export default function QuizPage() {
     </div>
   );
 }
-
