@@ -17,6 +17,7 @@ import {
 import { HiSparkles } from 'react-icons/hi2';
 import { PdfItem } from '@/types';
 import PdfCard from '@/components/pdfs/PdfCard';
+import { toBengaliClass } from '@/lib/defaultQuizData';
 
 export interface PdfFormData {
   id?: string;

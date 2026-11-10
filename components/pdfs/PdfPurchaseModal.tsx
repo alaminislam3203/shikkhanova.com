@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { FaXmark } from 'react-icons/fa6';
 import { PdfItem } from '@/types';
 import toast from 'react-hot-toast';
+import { toBengaliClass } from '@/lib/defaultQuizData';
 
 interface PdfPurchaseModalProps {
   pdf: PdfItem;
@@ -97,7 +98,7 @@ export default function PdfPurchaseModal({
 
         <div className="space-y-1">
           <span className="text-[11px] font-bold text-nova-600 bg-nova-50 px-2 py-0.5 rounded-md">
-            Class {pdf.classGrade} • {pdf.subject}
+            {toBengaliClass(pdf.classGrade)} শ্রেণি • {pdf.subject}
           </span>
           <h3 className="text-lg font-black text-slate-800">
             {pdf.title}
