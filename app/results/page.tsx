@@ -4,18 +4,16 @@ import React, { useState } from 'react';
 import {
   FaAward,
   FaMagnifyingGlass,
-  FaPrint,
   FaGraduationCap,
   FaHashtag,
-  FaLocationDot,
-  FaPhone,
   FaCircleCheck,
   FaCircleXmark,
+  FaBookOpen,
 } from 'react-icons/fa6';
-import { HiSparkles } from 'react-icons/hi2';
-
 import MarksheetView from '@/components/results/MarksheetView';
-import { MarksheetData } from '@/types';
+import { MarksheetData, SubjectMark } from '@/types';
+import { DEFAULT_NCTB_SUBJECTS, NctbSubjectItem } from '@/lib/nctbSubjects';
+import { calculateSubjectGradeAndGpa, calculateOverallResult } from '@/lib/gradingUtils';
 
 export default function ResultsPage() {
   const [classGrade, setClassGrade] = useState<number>(7);
@@ -24,6 +22,63 @@ export default function ResultsPage() {
   const [result, setResult] = useState<MarksheetData | null>(null);
   const [searched, setSearched] = useState<boolean>(false);
 
+  // Generate realistic NCTB subject-by-subject fallback if database doesn't have custom entry
+  const generateNctbFallback = (cls: number, roll: number): MarksheetData => {
+    // Pick subjects for this class
+    const classSubjects = DEFAULT_NCTB_SUBJECTS.filter((sub) => {
+      if (sub.classGrade !== cls) return false;
+      if (cls >= 9) {
+        // Default to Science or common subjects
+        return sub.group === 'সকল বিভাগ' || sub.group === 'বিজ্ঞান';
+      }
+      return true;
+    });
+
+    const entries = classSubjects.map((sub, idx) => {
+      // Deterministic realistic score based on roll and subject index
+      const variance = ((roll * 7 + idx * 13) % 20) - 8;
+      const basePercentage = Math.max(48, Math.min(96, 92 - roll * 2 + variance));
+      const obtained = Math.round((sub.fullMarks * basePercentage) / 100);
+      const evalRes = calculateSubjectGradeAndGpa(obtained, sub.fullMarks);
+
+      return {
+        code: sub.subjectCode,
+        subject: sub.subjectName,
+        fullMarks: sub.fullMarks,
+        obtained,
+        grade: evalRes.grade,
+        gpa: evalRes.gpa,
+        isFourthSubject: sub.id.includes('higher-math') || sub.id.includes('agri') || idx === classSubjects.length - 1,
+      };
+    });
+
+    const overall = calculateOverallResult(
+      entries.map((e) => ({
+        subjectId: e.code,
+        subjectName: e.subject,
+        subjectCode: e.code,
+        fullMarks: e.fullMarks,
+        obtainedMarks: e.obtained,
+        grade: e.grade,
+        gpa: e.gpa,
+        isCompulsory: !e.isFourthSubject,
+        isFourthSubject: e.isFourthSubject,
+      }))
+    );
+
+    return {
+      studentName: getBengaliName(roll),
+      classGrade: cls,
+      rollNumber: roll,
+      examTitle: 'মাসিক মূল্যায়ন ও সাময়িক পরীক্ষা ২০২৬',
+      totalMarks: overall.totalMarks,
+      obtainedMarks: overall.obtainedMarks,
+      grade: overall.grade,
+      gpa: overall.gpa,
+      subjects: entries,
+    };
+  };
+
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!rollNumber) return;
@@ -31,17 +86,35 @@ export default function ResultsPage() {
     setLoading(true);
     setSearched(true);
 
+    const rollInt = parseInt(rollNumber) || 1;
+
     try {
-      const res = await fetch(`/api/results?classGrade=${classGrade}&rollNumber=${rollNumber}`);
+      const res = await fetch(`/api/results?classGrade=${classGrade}&rollNumber=${rollInt}`);
       const data = await res.json();
 
       if (data.results && data.results.length > 0) {
         const item = data.results[0];
-        let subs = [];
+        let subs: SubjectMark[] = [];
         try {
-          subs = item.subjectMarks ? JSON.parse(item.subjectMarks) : [];
+          if (item.subjectMarks) {
+            const parsed = JSON.parse(item.subjectMarks);
+            subs = parsed.map((p: any) => ({
+              code: p.subjectCode || p.code,
+              subject: p.subjectName || p.subject,
+              fullMarks: p.fullMarks || 100,
+              obtained: p.obtainedMarks ?? p.obtained ?? 0,
+              grade: p.grade || 'F',
+              gpa: typeof p.gpa === 'number' ? p.gpa : parseFloat(p.gpa) || 0,
+              isFourthSubject: Boolean(p.isFourthSubject),
+            }));
+          }
         } catch {
           subs = [];
+        }
+
+        if (subs.length === 0) {
+          const fallback = generateNctbFallback(item.classGrade, item.rollNumber);
+          subs = fallback.subjects;
         }
 
         setResult({
@@ -53,64 +126,38 @@ export default function ResultsPage() {
           obtainedMarks: item.obtainedMarks,
           grade: item.grade,
           gpa: item.gpa,
-          subjects: subs.length > 0 ? subs : getDefaultSubjects(item.obtainedMarks),
+          subjects: subs,
         });
       } else {
         // Fallback realistic demo marksheet if database has not been seeded yet
-        const rollInt = parseInt(rollNumber);
-        const demoObtained = Math.max(260, 400 - (rollInt * 6));
-        const demoGrade = demoObtained >= 320 ? 'A+' : demoObtained >= 280 ? 'A' : 'A-';
-        const demoGpa = demoObtained >= 320 ? 5.00 : demoObtained >= 280 ? 4.00 : 3.50;
-
-        setResult({
-          studentName: getBengaliName(rollInt),
-          classGrade: classGrade,
-          rollNumber: rollInt,
-          examTitle: 'মাসিক মূল্যায়ন ও মডেল টেস্ট',
-          totalMarks: 400,
-          obtainedMarks: demoObtained,
-          grade: demoGrade,
-          gpa: demoGpa,
-          subjects: getDefaultSubjects(demoObtained),
-        });
+        setResult(generateNctbFallback(classGrade, rollInt));
       }
     } catch {
-      // Fallback
-      const rollInt = parseInt(rollNumber) || 1;
-      setResult({
-        studentName: getBengaliName(rollInt),
-        classGrade: classGrade,
-        rollNumber: rollInt,
-        examTitle: 'মাসিক মূল্যায়ন পরীক্ষা',
-        totalMarks: 400,
-        obtainedMarks: 362,
-        grade: 'A+',
-        gpa: 5.00,
-        subjects: getDefaultSubjects(362),
-      });
+      // Fallback on network/server error
+      setResult(generateNctbFallback(classGrade, rollInt));
     } finally {
       setLoading(false);
     }
   };
 
   const getBengaliName = (roll: number) => {
-    const names = ['রাকিবুল হাসান', 'সাদিয়া সুলতানা', 'আরিফুল ইসলাম', 'তানজিলা আক্তার', 'মাহমুদুল করিম'];
-    return names[(roll - 1) % names.length];
-  };
-
-  const getDefaultSubjects = (total: number) => {
-    const base = Math.floor(total / 4);
-    return [
-      { subject: 'বাংলা (Bangla)', fullMarks: 100, obtained: Math.min(100, base + 2), grade: 'A+', gpa: 5.00 },
-      { subject: 'ইংরেজি (English)', fullMarks: 100, obtained: Math.min(100, base - 3), grade: 'A', gpa: 4.00 },
-      { subject: 'সাধারণ গণিত (Mathematics)', fullMarks: 100, obtained: Math.min(100, base + 6), grade: 'A+', gpa: 5.00 },
-      { subject: 'বিজ্ঞান (General Science)', fullMarks: 100, obtained: Math.min(100, base - 1), grade: 'A+', gpa: 5.00 },
+    const names = [
+      'রাকিবুল হাসান',
+      'সাদিয়া সুলতানা',
+      'আরিফুল ইসলাম',
+      'তানজিলা আক্তার',
+      'মাহমুদুল করিম',
+      'নাসরিন জাহান',
+      'ফারহান আহমেদ',
+      'সুমাইয়া জান্নাত',
+      'মেহেদী হাসান',
+      'আনিকা তাবাসসুম',
     ];
+    return names[(roll - 1) % names.length];
   };
 
   return (
     <div className="space-y-8">
-
       {/* Search Header */}
       <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-4 no-print">
         <div className="flex items-center gap-3">
@@ -119,10 +166,10 @@ export default function ResultsPage() {
           </div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-black text-brand-900">
-              কোচিং রেজাল্ট ও মার্কশিট
+              কোচিং রেজাল্ট ও মার্কশিট (NCTB)
             </h1>
             <p className="text-xs sm:text-sm text-slate-500">
-              ৫ম থেকে ১০ম শ্রেণি - রোল নম্বর দিয়ে পরীক্ষার গ্রেড ও নম্বরপত্র বের করুন
+              ৫ম থেকে ১০ম শ্রেণি - বিষয়ভিত্তিক নম্বর, জিপিএ ও অফিশিয়াল মার্কশিট অনুসন্ধান করুন
             </p>
           </div>
         </div>
@@ -137,12 +184,12 @@ export default function ResultsPage() {
               onChange={(e) => setClassGrade(parseInt(e.target.value))}
               className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-semibold focus:ring-2 focus:ring-brand-500 focus:outline-none"
             >
-              <option value={5}>৫ম</option>
-              <option value={6}>৬ষ্ঠ</option>
-              <option value={7}>৭ম</option>
-              <option value={8}>৮ম</option>
-              <option value={9}>৯ম</option>
-              <option value={10}>১০ম</option>
+              <option value={5}>৫ম শ্রেণি (Class 5 - NCTB)</option>
+              <option value={6}>৬ষ্ঠ শ্রেণি (Class 6 - NCTB)</option>
+              <option value={7}>৭ম শ্রেণি (Class 7 - NCTB)</option>
+              <option value={8}>৮ম শ্রেণি (Class 8 - NCTB)</option>
+              <option value={9}>৯ম শ্রেণি (Class 9 - NCTB)</option>
+              <option value={10}>১০ম শ্রেণি (Class 10 / SSC - NCTB)</option>
             </select>
           </div>
 
@@ -153,18 +200,20 @@ export default function ResultsPage() {
             <input
               type="number"
               required
+              min={1}
               value={rollNumber}
               onChange={(e) => setRollNumber(e.target.value)}
               placeholder="যেমন: 1, 2, 5..."
               className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-semibold focus:ring-2 focus:ring-brand-500 focus:outline-none"
-            />
+            >
+            </input>
           </div>
 
           <div className="flex items-end">
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-brand-700 to-brand-800 hover:from-brand-800 hover:to-brand-900 text-white font-bold py-2.5 px-4 rounded-xl text-sm shadow-brand transition flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-brand-700 to-brand-800 hover:from-brand-800 hover:to-brand-900 text-white font-bold py-2.5 px-4 rounded-xl text-sm shadow-brand transition flex items-center justify-center gap-2 cursor-pointer"
             >
               <FaMagnifyingGlass className="w-3.5 h-3.5" />
               <span>{loading ? 'অনুসন্ধান হচ্ছে...' : 'রেজাল্ট দেখুন'}</span>
@@ -179,13 +228,11 @@ export default function ResultsPage() {
       {/* If Not Searched Yet */}
       {!result && !searched && (
         <div className="p-12 text-center bg-white rounded-3xl border border-dashed border-slate-300 space-y-3">
-          <FaAward className="w-12 h-12 text-slate-300 mx-auto" />
+          <FaBookOpen className="w-12 h-12 text-slate-300 mx-auto" />
           <h4 className="text-base font-bold text-slate-700">উপরে শ্রেণি এবং রোল দিয়ে রেজাল্ট সার্চ করুন</h4>
           <p className="text-xs text-slate-400">উদাহরণস্বরূপ: Class 7 এবং রোল ১ সিলেক্ট করে "রেজাল্ট দেখুন" বাটনে চাপুন</p>
         </div>
       )}
-
     </div>
   );
 }
-
