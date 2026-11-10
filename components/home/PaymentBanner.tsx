@@ -28,7 +28,7 @@ export default function PaymentBanner() {
         {/* 2-Column Grid on Mobile for bKash & Nagad */}
         <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
           <div className="bg-white/10 backdrop-blur-md border border-white/20 p-2 sm:p-4 rounded-xl sm:rounded-2xl text-center space-y-1 sm:space-y-1.5 shadow-md">
-            <div className="bg-white p-1 rounded-lg sm:rounded-xl inline-flex items-center justify-center shadow-xs">
+            <div className="bg-white p-1 rounded-sm sm:rounded-sm inline-flex items-center justify-center shadow-xs">
               <img src="/assets/images/bkash.png" alt="bKash" className="h-4 sm:h-5 w-auto object-contain" />
             </div>
             <p className="text-[9px] sm:text-[10px] text-blue-200 font-bold uppercase tracking-wider truncate">bKash Personal</p>
@@ -36,7 +36,7 @@ export default function PaymentBanner() {
           </div>
 
           <div className="bg-white/10 backdrop-blur-md border border-white/20 p-2 sm:p-4 rounded-xl sm:rounded-2xl text-center space-y-1 sm:space-y-1.5 shadow-md">
-            <div className="bg-white p-1 rounded-lg sm:rounded-xl inline-flex items-center justify-center shadow-xs">
+            <div className="bg-white p-1 rounded-sm sm:rounded-sm inline-flex items-center justify-center shadow-xs">
               <img src="/assets/images/nagad.png" alt="Nagad" className="h-4 sm:h-5 w-auto object-contain" />
             </div>
             <p className="text-[9px] sm:text-[10px] text-blue-200 font-bold uppercase tracking-wider truncate">Nagad Personal</p>

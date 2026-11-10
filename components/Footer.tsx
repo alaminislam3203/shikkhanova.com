@@ -32,9 +32,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-gradient-to-b from-slate-50 via-white to-slate-50 text-slate-700 pt-14 pb-28 lg:pb-12 border-t border-slate-200 relative overflow-hidden mt-auto">
-      {/* Top Multi-Color Accent Line */}
-      <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#0A1E3C] via-[#C8102E] to-[#E02447]" />
-
+    
       {/* Subtle Background Pattern */}
       <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:20px_20px] opacity-40 pointer-events-none" />
 

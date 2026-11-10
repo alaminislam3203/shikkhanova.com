@@ -16,7 +16,6 @@ export default function HomePage() {
       <FeaturesGrid />
       <HomeGallerySection />
       <PaymentBanner />
-      <ContactCards />
     </div>
   );
 }
