@@ -621,6 +621,23 @@ export const SUBJECT_QUESTIONS: Record<string, RawQuestion[]> = {
 
 // ─── HELPER FUNCTIONS FOR RETRIEVAL & ADMIN STORAGE ───
 
+export const toBengaliClass = (cls: number | string): string => {
+  const map: Record<string, string> = {
+    '5': '৫ম',
+    '6': '৬ষ্ঠ',
+    '7': '৭ম',
+    '8': '৮ম',
+    '9': '৯ম',
+    '10': '১০ম',
+  };
+  return map[String(cls)] || `${cls}ম`;
+};
+
+export const toBengaliNumber = (num: number | string): string => {
+  const bnDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+  return String(num).replace(/\d/g, (d) => bnDigits[Number(d)]);
+};
+
 export function getStoredFreeQuestions(classGrade: number): RawQuestion[] {
   if (typeof window === 'undefined') {
     return FREE_CLASS_QUESTIONS[classGrade] || [];

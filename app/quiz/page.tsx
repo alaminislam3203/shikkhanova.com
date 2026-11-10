@@ -9,6 +9,8 @@ import {
   getStoredFreeQuestions,
   getStoredPaidQuestions,
   getStoredSubjectQuestions,
+  toBengaliClass,
+  toBengaliNumber,
 } from '@/lib/defaultQuizData';
 import {
   FaAward,
@@ -109,7 +111,7 @@ export default function QuizPage() {
     setSelectedAnswers({});
     setIsSubmitted(false);
     setIsTestActive(true);
-    setActiveTestTitle(`${classGrade}ম শ্রেণি — ফ্রি মডেল টেস্ট`);
+    setActiveTestTitle(`${toBengaliClass(classGrade)} শ্রেণি — ফ্রি মডেল টেস্ট`);
     setActiveTestBadge('🎁 Free Model Test');
     scrollTo(testAreaRef);
   };
@@ -126,13 +128,13 @@ export default function QuizPage() {
       setSelectedAnswers({});
       setIsSubmitted(false);
       setIsTestActive(true);
-      setActiveTestTitle(`${classGrade}ম শ্রেণি — প্রিমিয়াম মডেল টেস্ট`);
+      setActiveTestTitle(`${toBengaliClass(classGrade)} শ্রেণি — প্রিমিয়াম মডেল টেস্ট`);
       setActiveTestBadge('💎 Premium Test');
       scrollTo(testAreaRef);
     } else {
       // Open Payment & Access Code Modal
       setPaymentTargetClass(classGrade);
-      setPaymentPackageName(`${classGrade}ম শ্রেণির প্রিমিয়াম মডেল টেস্ট`);
+      setPaymentPackageName(`${toBengaliClass(classGrade)} শ্রেণির প্রিমিয়াম মডেল টেস্ট`);
       setPaymentAmount(50);
       setUnlockSuccessMsg('');
       setPaymentModalOpen(true);
@@ -148,7 +150,7 @@ export default function QuizPage() {
     setSelectedAnswers({});
     setIsSubmitted(false);
     setIsTestActive(true);
-    setActiveTestTitle(`${selectedClass}ম শ্রেণি — ${subjectName} বিষয়ভিত্তিক টেস্ট`);
+    setActiveTestTitle(`${toBengaliClass(selectedClass)} শ্রেণি — ${subjectName} বিষয়ভিত্তিক টেস্ট`);
     setActiveTestBadge(`📖 ${subjectName}`);
     scrollTo(testAreaRef);
   };
@@ -220,7 +222,7 @@ export default function QuizPage() {
         localStorage.setItem('sn_unlocked_classes', JSON.stringify(updated));
       } catch {}
 
-      setUnlockSuccessMsg(`🎉 অভিনন্দন! ${paymentTargetClass}ম শ্রেণির প্রিমিয়াম মডেল টেস্ট সফলভাবে আনলক হয়েছে!`);
+      setUnlockSuccessMsg(`🎉 অভিনন্দন! ${toBengaliClass(paymentTargetClass)} শ্রেণির প্রিমিয়াম মডেল টেস্ট সফলভাবে আনলক হয়েছে!`);
       setTimeout(() => {
         setPaymentModalOpen(false);
         handleStartPaidAfterUnlock(paymentTargetClass);
@@ -236,7 +238,7 @@ export default function QuizPage() {
     setSelectedAnswers({});
     setIsSubmitted(false);
     setIsTestActive(true);
-    setActiveTestTitle(`${classGrade}ম শ্রেণি — প্রিমিয়াম মডেল টেস্ট`);
+    setActiveTestTitle(`${toBengaliClass(classGrade)} শ্রেণি — প্রিমিয়াম মডেল টেস্ট`);
     setActiveTestBadge('💎 Premium Test');
     scrollTo(testAreaRef);
   };
@@ -283,7 +285,7 @@ export default function QuizPage() {
               className="px-5 py-3 rounded-2xl bg-[#C8102E] hover:bg-[#A50D26] text-white font-black text-xs sm:text-sm shadow-xl transition transform hover:-translate-y-0.5 active:scale-95 flex items-center gap-2"
             >
               <FaGift className="w-4 h-4 text-amber-300" />
-              <span>{selectedClass}ম শ্রেণির Free Test দিন</span>
+              <span>{toBengaliClass(selectedClass)} শ্রেণির Free Test দিন</span>
             </button>
 
             <button
@@ -346,7 +348,7 @@ export default function QuizPage() {
                 }`}
               >
                 <div className="text-2xl mb-1">🎓</div>
-                <div className="font-black text-sm sm:text-base">{cls}ম শ্রেণি</div>
+                <div className="font-black text-sm sm:text-base">{toBengaliClass(cls)} শ্রেণি</div>
                 <div className={`text-[10px] mt-0.5 ${isSelected ? 'text-red-100' : 'text-slate-400'}`}>
                   Model Test
                 </div>
@@ -578,10 +580,10 @@ export default function QuizPage() {
                     <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
                       ফ্রি টেস্ট
                     </span>
-                    <h3 className="text-base font-black text-slate-800">🎓 {cls}ম শ্রেণি — Free Test</h3>
+                    <h3 className="text-base font-black text-slate-800">🎓 {toBengaliClass(cls)} শ্রেণি — Free Test</h3>
                   </div>
-                  <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black text-lg">
-                    {cls}
+                  <div className="w-12 h-10 px-2 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-100 flex items-center justify-center font-black text-sm">
+                    {toBengaliClass(cls)}
                   </div>
                 </div>
 
@@ -640,7 +642,7 @@ export default function QuizPage() {
                     >
                       {isUnlocked ? 'আনলকড (Unlocked)' : 'প্রিমিয়াম টেস্ট'}
                     </span>
-                    <h3 className="text-base font-black text-slate-800">💎 {cls}ম শ্রেণি — Paid Test</h3>
+                    <h3 className="text-base font-black text-slate-800">💎 {toBengaliClass(cls)} শ্রেণি — Paid Test</h3>
                   </div>
                   <div className="text-right">
                     <div className="text-xl font-black text-[#C8102E]">৳৫০</div>
@@ -686,11 +688,11 @@ export default function QuizPage() {
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-200 pb-3">
           <div>
             <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">
-              {selectedClass}ম শ্রেণির বিষয় নির্বাচন করুন
+              {toBengaliClass(selectedClass)} শ্রেণির বিষয় নির্বাচন করুন
             </h2>
             <p className="text-xs text-slate-500 font-medium">যেকোনো বিষয়ের ওপর মডেল টেস্ট অনুশীলন করুন</p>
           </div>
-          <span className="text-xs font-bold text-slate-500">নির্বাচিত: {selectedClass}ম শ্রেণি</span>
+          <span className="text-xs font-bold text-slate-500">নির্বাচিত: {toBengaliClass(selectedClass)} শ্রেণি</span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
@@ -901,7 +903,7 @@ export default function QuizPage() {
                         {i === 0 ? '👑 ১' : i === 1 ? '🥈 ২' : i === 2 ? '🥉 ৩' : i + 1}
                       </td>
                       <td className="py-3 px-4 font-bold text-slate-900">{res.name}</td>
-                      <td className="py-3 px-4 text-slate-600">{res.classGrade}ম শ্রেণি</td>
+                      <td className="py-3 px-4 text-slate-600">{toBengaliClass(res.classGrade)} শ্রেণি</td>
                       <td className="py-3 px-4 font-semibold text-slate-700">{res.subject}</td>
                       <td className="py-3 px-4 text-center font-black text-[#C8102E]">
                         {res.score}/{res.total}
