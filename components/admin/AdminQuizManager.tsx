@@ -5,6 +5,7 @@ import Link from 'next/link';
 import {
   RawQuestion,
   SUBJECT_LIST,
+  toBengaliClass,
   getStoredFreeQuestions,
   saveStoredFreeQuestions,
   getStoredPaidQuestions,
@@ -323,7 +324,7 @@ export default function AdminQuizManager() {
                       : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  {c}ম
+                  {toBengaliClass(c)}
                 </button>
               ))}
             </div>
@@ -429,7 +430,7 @@ export default function AdminQuizManager() {
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div>
               <h3 className="text-base font-black text-slate-800">
-                {selectedClass}ম শ্রেণি —{' '}
+                {toBengaliClass(selectedClass)} শ্রেণি —{' '}
                 {category === 'free'
                   ? 'ফ্রি মডেল টেস্ট প্রশ্নমালা'
                   : category === 'paid'
@@ -555,7 +556,7 @@ export default function AdminQuizManager() {
                 {editingIndex !== null ? 'প্রশ্ন এডিট করুন' : 'নতুন MCQ প্রশ্ন যোগ করুন'}
               </h3>
               <p className="text-xs text-slate-500 font-medium">
-                নির্বাচিত শ্রেণি: <strong>{selectedClass}ম শ্রেণি</strong> • ক্যাটাগরি:{' '}
+                নির্বাচিত শ্রেণি: <strong>{toBengaliClass(selectedClass)} শ্রেণি</strong> • ক্যাটাগরি:{' '}
                 <strong>
                   {category === 'free' ? 'ফ্রি' : category === 'paid' ? 'পেইড' : selectedSubject}
                 </strong>
