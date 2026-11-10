@@ -54,15 +54,13 @@ export default function ResultsPage() {
 
     const overall = calculateOverallResult(
       entries.map((e) => ({
-        subjectId: e.code,
-        subjectName: e.subject,
-        subjectCode: e.code,
+        code: e.code,
+        subject: e.subject,
         fullMarks: e.fullMarks,
-        obtainedMarks: e.obtained,
+        obtained: e.obtained,
         grade: e.grade,
         gpa: e.gpa,
-        isCompulsory: !e.isFourthSubject,
-        isFourthSubject: e.isFourthSubject,
+        isOptional: e.isFourthSubject,
       }))
     );
 
