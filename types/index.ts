@@ -74,3 +74,27 @@ export interface PurchaseRecord {
   };
 }
 
+export interface QuizQuestion {
+  id: string;
+  question: string;
+  options: [string, string, string, string];
+  correctAnswer: number; // 0 for A, 1 for B, 2 for C, 3 for D
+  explanation?: string;
+  classGrade: number; // 5 to 10
+  subject: string; // বাংলা, ইংরেজি, গণিত, বিজ্ঞান, বাংলাদেশ ও বিশ্বপরিচয়, ICT
+  isPremium?: boolean;
+}
+
+export interface QuizResultRecord {
+  id: string;
+  name: string;
+  phone?: string;
+  classGrade: number;
+  subject: string;
+  score: number;
+  total: number;
+  percentage: number;
+  date: string;
+  medal?: string;
+}
+
