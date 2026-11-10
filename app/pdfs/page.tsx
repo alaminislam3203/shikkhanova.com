@@ -7,6 +7,7 @@ import PdfCard from '@/components/pdfs/PdfCard';
 import PdfPurchaseModal from '@/components/pdfs/PdfPurchaseModal';
 import { PdfItem } from '@/types';
 import toast from 'react-hot-toast';
+import { toBengaliClass } from '@/lib/defaultQuizData';
 import {
   FaFilePdf,
   FaMagnifyingGlass,
@@ -30,6 +31,13 @@ export default function PdfsPage() {
   const prevStatusMapRef = useRef<Record<string, string>>({});
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const cls = params.get('classGrade');
+      if (cls && ['5', '6', '7', '8', '9', '10'].includes(cls)) {
+        setSelectedClass(cls);
+      }
+    }
     try {
       const cached = sessionStorage.getItem('sn_pdfs_cache_v1');
       if (cached) {
@@ -295,7 +303,7 @@ export default function PdfsPage() {
               onClick={() => setSelectedClass('all')}
               className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all whitespace-nowrap ${
                 selectedClass === 'all'
-                  ? 'bg-brand-700 text-white shadow-brand'
+                  ? 'bg-gradient-to-r from-[#0A1E3C] to-[#C8102E] text-white shadow-md'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
@@ -307,11 +315,11 @@ export default function PdfsPage() {
                 onClick={() => setSelectedClass(cls.toString())}
                 className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all whitespace-nowrap ${
                   selectedClass === cls.toString()
-                    ? 'bg-brand-700 text-white shadow-brand'
+                    ? 'bg-gradient-to-r from-[#0A1E3C] to-[#C8102E] text-white shadow-md'
                     : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                 }`}
               >
-                Class {cls}
+                {toBengaliClass(cls)} শ্রেণি
               </button>
             ))}
           </div>
