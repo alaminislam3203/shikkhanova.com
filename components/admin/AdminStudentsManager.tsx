@@ -377,6 +377,64 @@ export default function AdminStudentsManager() {
                 </div>
               </div>
 
+              {/* Parents Name */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">
+                    পিতার নাম (Father's Name)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.fatherName}
+                    onChange={(e) => setFormData({ ...formData, fatherName: e.target.value })}
+                    placeholder="যেমন: মো: রফিকুল ইসলাম"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-[#C8102E] focus:bg-white text-xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">
+                    মাতার নাম (Mother's Name)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.motherName}
+                    onChange={(e) => setFormData({ ...formData, motherName: e.target.value })}
+                    placeholder="যেমন: মোসা: রোকেয়া বেগম"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-[#C8102E] focus:bg-white text-xs"
+                  />
+                </div>
+              </div>
+
+              {/* School Name & Date of Birth */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">
+                    বিদ্যালয়ের নাম (School)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.schoolName}
+                    onChange={(e) => setFormData({ ...formData, schoolName: e.target.value })}
+                    placeholder="যেমন: নীলফামারী সরকারি উচ্চ বিদ্যালয়"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-[#C8102E] focus:bg-white text-xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">
+                    জন্ম তারিখ (DOB)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.dateOfBirth}
+                    onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+                    placeholder="DD/MM/YYYY"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-[#C8102E] focus:bg-white text-xs"
+                  />
+                </div>
+              </div>
+
               <div>
                 <label className="block font-bold text-slate-700 mb-1">
                   মোবাইল নম্বর (শিক্ষার্থী / অভিভাবক)
@@ -548,6 +606,11 @@ export default function AdminStudentsManager() {
                         </td>
                         <td className="py-3 px-4">
                           <p className="font-black text-slate-800">{student.name}</p>
+                          {(student.schoolName || student.fatherName) && (
+                            <p className="text-[11px] text-slate-500 font-semibold truncate max-w-xs">
+                              {student.schoolName || ''}{student.schoolName && student.fatherName ? ' • ' : ''}{student.fatherName ? `পিতা: ${student.fatherName}` : ''}
+                            </p>
+                          )}
                         </td>
                         <td className="py-3 px-4">
                           <span className="inline-flex items-center gap-1 bg-blue-50 text-[#0A1E3C] border border-blue-200/80 text-xs font-bold px-2.5 py-0.5 rounded-full">
