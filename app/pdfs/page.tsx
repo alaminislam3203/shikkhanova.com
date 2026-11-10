@@ -11,12 +11,10 @@ import { toBengaliClass } from '@/lib/defaultQuizData';
 import {
   FaFilePdf,
   FaMagnifyingGlass,
-  FaCircleCheck,
   FaClock,
   FaPlus,
   FaKey,
 } from 'react-icons/fa6';
-import { HiSparkles } from 'react-icons/hi2';
 
 export default function PdfsPage() {
   const { data: session } = useSession();
@@ -197,98 +195,33 @@ export default function PdfsPage() {
   return (
     <div className="space-y-5 sm:space-y-8">
       
-      {/* Top Banner: UCC Group Style Deep Academic Navy & Crimson Red (Compact on Mobile) */}
-      <div
-        style={{
-          background: 'linear-gradient(135deg, #071426 0%, #0A1E3C 55%, #2A0B1E 100%)',
-        }}
-        className="relative overflow-hidden text-white p-4 sm:p-8 lg:p-12 rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl border-b-4 border-[#C8102E]"
-      >
-        {/* Glow Spheres */}
-        <div className="absolute top-0 right-0 w-52 h-52 sm:w-96 sm:h-96 bg-nova-500/10 rounded-full blur-2xl sm:blur-3xl pointer-events-none"></div>
-        <div className="absolute -left-12 -bottom-12 sm:-left-20 sm:-bottom-20 w-48 h-48 sm:w-80 sm:h-80 bg-brand-500/15 rounded-full blur-2xl sm:blur-3xl pointer-events-none"></div>
-
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 sm:gap-8">
-          
-          {/* Left: Heading & Description */}
-          <div className="space-y-2 sm:space-y-3.5 max-w-2xl">
-            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-              <span className="bg-nova-500 text-white text-[10px] sm:text-xs font-black px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full uppercase tracking-wider shadow-md flex items-center gap-1.5">
-                <HiSparkles /> প্রিমিয়াম হ্যান্ডনোট শপ
-              </span>
-              <span className="text-[10px] sm:text-xs text-blue-200 font-semibold bg-white/10 px-2.5 py-0.5 sm:px-3 sm:py-0.5 rounded-full border border-white/10">
-                ৫ম থেকে ১০ম শ্রেণি • জুম্মাপাড়া, নীলফামারী সদর
-              </span>
-            </div>
-
-            <h1 className="text-lg sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-snug sm:leading-tight text-white drop-shadow-sm">
-              স্মার্ট হ্যান্ডনোট ও <span className="text-nova-400">এক্সক্লুসিভ সাজেশন</span>
-            </h1>
-
-            <p className="text-[11px] sm:text-sm text-blue-100 leading-snug sm:leading-relaxed font-normal line-clamp-2 sm:line-clamp-none">
-              আমাদের অভিজ্ঞ শিক্ষকদের প্রস্তুতকৃত অধ্যায়ভিত্তিক রঙিন নোট। যেকোনো শিট নিতে নির্ধারিত ফি বিকাশ বা নগদ নম্বরে সেন্ড মানি করে TrxID সাবমিট করলেই ডাউনলোড আনলক হয়ে যাবে।
-            </p>
-
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 sm:gap-4 pt-0.5 sm:pt-1 text-[10px] sm:text-xs text-blue-200 font-medium">
-              <span className="inline-flex items-center gap-1.5">
-                <FaCircleCheck className="text-emerald-400" /> ১০০% কমন নিশ্চয়তা
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <FaCircleCheck className="text-emerald-400" /> স্পষ্ট A4 প্রিন্টযোগ্য PDF
-              </span>
-              <span className="hidden sm:inline-flex items-center gap-1.5">
-                <FaCircleCheck className="text-emerald-400" /> ম্যানুয়াল বিকাশ/নগদ ভেরিফিকেশন
-              </span>
-            </div>
-
-            {session?.user?.role === 'ADMIN' && (
-              <div className="pt-1 sm:pt-2">
-                <Link
-                  href="/admin?tab=addPdf"
-                  className="inline-flex items-center gap-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-3 py-1.5 sm:px-4 sm:py-2.5 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs shadow-lg transition transform hover:-translate-y-0.5"
-                >
-                  <FaPlus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                  <span>পিডিএফ শিট আপলোড ও ম্যানেজ করুন</span>
-                </Link>
-              </div>
-            )}
+      {/* Top Banner: pdf-page-banner.png */}
+      <div className="space-y-3">
+        {session?.user?.role === 'ADMIN' && (
+          <div className="flex justify-end">
+            <Link
+              href="/admin?tab=addPdf"
+              className="inline-flex items-center gap-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-3.5 py-2 rounded-xl text-xs shadow-md transition transform hover:-translate-y-0.5"
+            >
+              <FaPlus className="w-3.5 h-3.5" />
+              <span>পিডিএফ শিট আপলোড ও ম্যানেজ করুন</span>
+            </Link>
           </div>
+        )}
 
-          {/* Right: Payment Quick Numbers (Side-by-side compact on mobile, stacked on desktop) */}
-          <div className="grid grid-cols-2 lg:flex lg:flex-col gap-2 sm:gap-3 shrink-0">
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 p-2 sm:p-4 rounded-xl sm:rounded-2xl flex items-center justify-between gap-2 sm:gap-5 shadow-lg hover:bg-white/15 transition">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-8 h-6 sm:w-14 sm:h-10 rounded-lg sm:rounded-xl bg-white p-1 sm:p-1.5 flex items-center justify-center shadow-md shrink-0">
-                  <img src="/assets/images/bkash.png" alt="bKash" className="h-full w-auto object-contain" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[9px] sm:text-[10px] text-blue-200 font-bold uppercase tracking-wider truncate">বিকাশ পার্সোনাল</p>
-                  <p className="text-xs sm:text-base font-black font-bn-normal text-white tracking-wider truncate">০১৭১২৫৯২৫১৯</p>
-                </div>
-              </div>
-              <span className="hidden sm:inline-block text-[10px] bg-emerald-500/30 text-emerald-300 px-3 py-1 rounded-full font-bold border border-emerald-400/30 shrink-0">
-                Send Money
-              </span>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 p-2 sm:p-4 rounded-xl sm:rounded-2xl flex items-center justify-between gap-2 sm:gap-5 shadow-lg hover:bg-white/15 transition">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-8 h-6 sm:w-14 sm:h-10 rounded-lg sm:rounded-xl bg-white p-1 sm:p-1.5 flex items-center justify-center shadow-md shrink-0">
-                  <img src="/assets/images/nagad.png" alt="Nagad" className="h-full w-auto object-contain" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[9px] sm:text-[10px] text-blue-200 font-bold uppercase tracking-wider truncate">নগদ পার্সোনাল</p>
-                  <p className="text-xs sm:text-base font-black font-bn-normal text-white tracking-wider truncate">০১৭১২৫৯২৫১৯</p>
-                </div>
-              </div>
-              <span className="hidden sm:inline-block text-[10px] bg-emerald-500/30 text-emerald-300 px-3 py-1 rounded-full font-bold border border-emerald-400/30 shrink-0">
-                Send Money
-              </span>
-            </div>
-          </div>
-
+        <div className="rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg border border-slate-200/80 bg-white">
+          <a
+            href="tel:01712592519"
+            aria-label="বিকাশ বা নগদ নম্বরে ফি পাঠাতে কল করুন ০১৭১২৫৯২৫১৯"
+            className="block w-full group"
+          >
+            <img
+              src="/banners/pdf-page-banner.png"
+              alt="৫ম থেকে ১০ম শ্রেণির স্মার্ট হ্যান্ডনোট ও এক্সক্লুসিভ সাজেশন • বিকাশ ও নগদ: 01712592519"
+              className="w-full h-auto object-cover group-hover:scale-[1.005] transition-transform duration-300"
+            />
+          </a>
         </div>
-
       </div>
 
       {/* Filter and Search Bar */}
