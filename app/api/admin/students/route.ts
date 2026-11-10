@@ -136,13 +136,6 @@ export async function GET(req: Request) {
 
   const dbOk = await ensureSeedStudents();
   if (dbOk) {
-    const fatherName = body.fatherName !== undefined ? (body.fatherName || '').trim() : undefined;
-    const motherName = body.motherName !== undefined ? (body.motherName || '').trim() : undefined;
-    const schoolName = body.schoolName !== undefined ? (body.schoolName || '').trim() : undefined;
-    const dateOfBirth = body.dateOfBirth !== undefined ? (body.dateOfBirth || '').trim() : undefined;
-
-    saveStudentProfile(classGrade, rollNumber, { fatherName, motherName, schoolName, dateOfBirth }, email);
-
     try {
       const whereClause: any = { role: 'STUDENT' };
       if (filterClass) {
