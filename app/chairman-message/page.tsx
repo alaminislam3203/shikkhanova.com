@@ -46,9 +46,9 @@ export default function ChairmanMessagePage() {
       </div>
 
       {/* Main Message Card */}
-      <div className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-10 border border-slate-200 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
         {/* Left Profile Column */}
-        <div className="lg:col-span-4 bg-slate-50 rounded-2xl p-6 border border-slate-200/80 text-center space-y-4">
+        <div className="lg:col-span-4 bg-slate-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-slate-200/80 text-center space-y-3.5 sm:space-y-4">
           <div className="w-40 h-48 sm:w-44 sm:h-52 mx-auto rounded-2xl bg-gradient-to-br from-[#0A1E3C] to-[#C8102E] p-1 shadow-lg">
             <div className="w-full h-full rounded-xl bg-white overflow-hidden">
               <img
