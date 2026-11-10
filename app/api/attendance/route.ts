@@ -6,6 +6,12 @@ import { AttendanceStatus } from '@prisma/client';
 
 export async function GET(req: Request) {
   try {
+    const session = await getServerSession(authOptions);
+    // Only ADMIN can view attendance
+    if (!session || session.user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'শুধুমাত্র অ্যাডমিন হাজিরা দেখতে পারবেন' }, { status: 403 });
+    }
+
     const { searchParams } = new URL(req.url);
     const classGrade = searchParams.get('classGrade');
     const dateStr = searchParams.get('date');
