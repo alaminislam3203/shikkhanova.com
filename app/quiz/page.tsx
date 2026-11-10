@@ -143,7 +143,7 @@ export default function QuizPage() {
     setIsSubmitted(false);
     setIsTestActive(true);
     setActiveTestTitle(`${classGrade}ম শ্রেণি — ফ্রি মডেল টেস্ট`);
-    setActiveTestBadge('🎁 Free Model Test');
+    setActiveTestBadge('Free Model Test');
     scrollTo(testAreaRef);
   };
 
@@ -684,7 +684,7 @@ export default function QuizPage() {
             <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-0.5 rounded-full border border-emerald-200 mb-1">
               <FaGift /> ১০০% ফ্রি মডেল টেস্ট
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">🎁 Class-wise Free Model Test</h2>
+            <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">Class-wise Free Model Test</h2>
             <p className="text-xs text-slate-500 font-medium">
               ৫ম থেকে ১০ম শ্রেণি পর্যন্ত প্রতিটি ক্লাসের জন্য আলাদা ফ্রি মডেল টেস্ট
             </p>
@@ -724,7 +724,7 @@ export default function QuizPage() {
                   className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2 active:scale-98"
                 >
                   <FaGift className="w-3.5 h-3.5" />
-                  <span>🎁 Free Test শুরু করুন</span>
+                  <span>Free Test শুরু করুন</span>
                 </button>
               </div>
             );
