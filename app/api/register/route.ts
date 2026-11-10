@@ -2,11 +2,23 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import prisma from '@/lib/prisma';
 import { Role } from '@prisma/client';
+import { saveStudentProfile } from '@/lib/studentProfiles';
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, email, password, phone, classGrade, rollNumber } = body;
+    const {
+      name,
+      email,
+      password,
+      phone,
+      classGrade,
+      rollNumber,
+      fatherName,
+      motherName,
+      schoolName,
+      dateOfBirth,
+    } = body;
 
     if (!name || !email || !password) {
       return NextResponse.json(
@@ -30,6 +42,8 @@ export async function POST(req: Request) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const numClass = classGrade ? parseInt(classGrade.toString()) : 7;
+    const numRoll = rollNumber ? parseInt(rollNumber.toString()) : 1;
 
     const newUser = await prisma.user.create({
       data: {
@@ -38,10 +52,18 @@ export async function POST(req: Request) {
         password: hashedPassword,
         phone: phone || null,
         role: Role.STUDENT,
-        classGrade: classGrade ? parseInt(classGrade.toString()) : null,
-        rollNumber: rollNumber ? parseInt(rollNumber.toString()) : null,
+        classGrade: numClass,
+        rollNumber: numRoll,
       },
     });
+
+    // Save extra profile details (Father, Mother, School, DOB)
+    saveStudentProfile(
+      numClass,
+      numRoll,
+      { fatherName, motherName, schoolName, dateOfBirth },
+      cleanEmail
+    );
 
     return NextResponse.json(
       {
@@ -63,4 +85,3 @@ export async function POST(req: Request) {
     );
   }
 }
-

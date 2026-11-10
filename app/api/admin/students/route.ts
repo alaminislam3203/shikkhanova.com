@@ -229,13 +229,6 @@ export async function POST(req: Request) {
 
     saveStudentProfile(classGrade, rollNumber, { fatherName, motherName, schoolName, dateOfBirth }, email);
 
-    const fatherName = body.fatherName !== undefined ? (body.fatherName || '').trim() : undefined;
-    const motherName = body.motherName !== undefined ? (body.motherName || '').trim() : undefined;
-    const schoolName = body.schoolName !== undefined ? (body.schoolName || '').trim() : undefined;
-    const dateOfBirth = body.dateOfBirth !== undefined ? (body.dateOfBirth || '').trim() : undefined;
-
-    saveStudentProfile(classGrade, rollNumber, { fatherName, motherName, schoolName, dateOfBirth }, email);
-
     try {
       const existingEmail = await prisma.user.findUnique({ where: { email } });
       const finalEmail = existingEmail
