@@ -26,6 +26,10 @@ export interface StudentItem {
   phone: string;
   classGrade: number;
   rollNumber: number;
+  fatherName?: string;
+  motherName?: string;
+  schoolName?: string;
+  dateOfBirth?: string;
 }
 
 const CLASS_LABELS: Record<number, string> = {
@@ -54,6 +58,10 @@ export default function AdminStudentsManager() {
     phone: '',
     email: '',
     password: '',
+    fatherName: '',
+    motherName: '',
+    schoolName: '',
+    dateOfBirth: '',
   });
 
   useEffect(() => {
@@ -106,6 +114,10 @@ export default function AdminStudentsManager() {
       phone: '',
       email: '',
       password: '',
+      fatherName: '',
+      motherName: '',
+      schoolName: '',
+      dateOfBirth: '',
     });
   };
 
@@ -130,6 +142,10 @@ export default function AdminStudentsManager() {
           phone: formData.phone.trim(),
           email: formData.email.trim(),
           password: formData.password.trim(),
+          fatherName: formData.fatherName.trim(),
+          motherName: formData.motherName.trim(),
+          schoolName: formData.schoolName.trim(),
+          dateOfBirth: formData.dateOfBirth.trim(),
         }),
       });
 
@@ -162,6 +178,10 @@ export default function AdminStudentsManager() {
       phone: student.phone || '',
       email: student.email || '',
       password: '',
+      fatherName: student.fatherName || '',
+      motherName: student.motherName || '',
+      schoolName: student.schoolName || '',
+      dateOfBirth: student.dateOfBirth || '',
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
