@@ -5,7 +5,6 @@ import ClassSelector from '@/components/home/ClassSelector';
 import FeaturesGrid from '@/components/home/FeaturesGrid';
 import HomeGallerySection from '@/components/home/HomeGallerySection';
 import PaymentBanner from '@/components/home/PaymentBanner';
-import ContactCards from '@/components/home/ContactCards';
 
 export default function HomePage() {
   return (
