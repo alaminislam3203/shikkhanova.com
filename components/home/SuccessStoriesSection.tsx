@@ -28,10 +28,34 @@ export default function SuccessStoriesSection() {
   const [selectedClass, setSelectedClass] = useState<string>('all');
   const [loading, setLoading] = useState<boolean>(true);
   const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
+  const [isPaused, setIsPaused] = useState<boolean>(false);
 
   useEffect(() => {
     fetchAchievers();
   }, [selectedClass]);
+
+  // Auto-swipe / change every 3 seconds
+  useEffect(() => {
+    if (loading || achievers.length <= 1 || isPaused) return;
+
+    const interval = setInterval(() => {
+      if (!scrollContainerRef.current) return;
+      const container = scrollContainerRef.current;
+      const maxScroll = container.scrollWidth - container.clientWidth;
+
+      const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+      const scrollStep = isMobile ? container.clientWidth * 0.9 : 320;
+
+      // Loop back to beginning when reaching the end
+      if (container.scrollLeft >= maxScroll - 15) {
+        container.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        container.scrollBy({ left: scrollStep, behavior: 'smooth' });
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [loading, achievers.length, isPaused]);
 
   const fetchAchievers = async () => {
     try {
@@ -148,8 +172,14 @@ export default function SuccessStoriesSection() {
         ))}
       </div>
 
-      {/* Carousel Wrapper with Red Navigation Arrow Buttons */}
-      <div className="relative group/carousel px-1">
+      {/* Carousel Wrapper with Red Navigation Arrow Buttons (Auto-swipe every 3s, pauses on hover/touch) */}
+      <div
+        className="relative group/carousel px-1"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+        onTouchStart={() => setIsPaused(true)}
+        onTouchEnd={() => setIsPaused(false)}
+      >
         {/* Left Arrow Button */}
         <button
           type="button"
