@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import AccountNavTabs from '@/components/account/AccountNavTabs';
 import {
   FaLock,
   FaShieldHalved,
@@ -88,11 +87,8 @@ export default function PasswordPage() {
   if (!session?.user) return null;
 
   return (
-    <div className="max-w-2xl mx-auto space-y-4 sm:space-y-6">
+    <div className="max-w-2xl mx-auto space-y-6">
       
-      {/* Account Navigation Tabs */}
-      <AccountNavTabs activeTab="security" />
-
       {/* Top Banner */}
       <div
         style={{
