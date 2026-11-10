@@ -136,6 +136,13 @@ export async function GET(req: Request) {
 
   const dbOk = await ensureSeedStudents();
   if (dbOk) {
+    const fatherName = body.fatherName !== undefined ? (body.fatherName || '').trim() : undefined;
+    const motherName = body.motherName !== undefined ? (body.motherName || '').trim() : undefined;
+    const schoolName = body.schoolName !== undefined ? (body.schoolName || '').trim() : undefined;
+    const dateOfBirth = body.dateOfBirth !== undefined ? (body.dateOfBirth || '').trim() : undefined;
+
+    saveStudentProfile(classGrade, rollNumber, { fatherName, motherName, schoolName, dateOfBirth }, email);
+
     try {
       const whereClause: any = { role: 'STUDENT' };
       if (filterClass) {
@@ -222,6 +229,20 @@ export async function POST(req: Request) {
 
     const hashedPassword = await bcrypt.hash(rawPassword, 10);
 
+    const fatherName = (body.fatherName || '').trim();
+    const motherName = (body.motherName || '').trim();
+    const schoolName = (body.schoolName || '').trim();
+    const dateOfBirth = (body.dateOfBirth || '').trim();
+
+    saveStudentProfile(classGrade, rollNumber, { fatherName, motherName, schoolName, dateOfBirth }, email);
+
+    const fatherName = body.fatherName !== undefined ? (body.fatherName || '').trim() : undefined;
+    const motherName = body.motherName !== undefined ? (body.motherName || '').trim() : undefined;
+    const schoolName = body.schoolName !== undefined ? (body.schoolName || '').trim() : undefined;
+    const dateOfBirth = body.dateOfBirth !== undefined ? (body.dateOfBirth || '').trim() : undefined;
+
+    saveStudentProfile(classGrade, rollNumber, { fatherName, motherName, schoolName, dateOfBirth }, email);
+
     try {
       const existingEmail = await prisma.user.findUnique({ where: { email } });
       const finalEmail = existingEmail
@@ -306,6 +327,13 @@ export async function PATCH(req: Request) {
       );
     }
 
+    const fatherName = body.fatherName !== undefined ? (body.fatherName || '').trim() : undefined;
+    const motherName = body.motherName !== undefined ? (body.motherName || '').trim() : undefined;
+    const schoolName = body.schoolName !== undefined ? (body.schoolName || '').trim() : undefined;
+    const dateOfBirth = body.dateOfBirth !== undefined ? (body.dateOfBirth || '').trim() : undefined;
+
+    saveStudentProfile(classGrade, rollNumber, { fatherName, motherName, schoolName, dateOfBirth }, email);
+
     try {
       const updateData: any = {
         name,
@@ -383,6 +411,13 @@ export async function DELETE(req: Request) {
     if (!id) {
       return NextResponse.json({ error: 'শিক্ষার্থীর আইডি আবশ্যক' }, { status: 400 });
     }
+
+    const fatherName = body.fatherName !== undefined ? (body.fatherName || '').trim() : undefined;
+    const motherName = body.motherName !== undefined ? (body.motherName || '').trim() : undefined;
+    const schoolName = body.schoolName !== undefined ? (body.schoolName || '').trim() : undefined;
+    const dateOfBirth = body.dateOfBirth !== undefined ? (body.dateOfBirth || '').trim() : undefined;
+
+    saveStudentProfile(classGrade, rollNumber, { fatherName, motherName, schoolName, dateOfBirth }, email);
 
     try {
       await prisma.user.delete({ where: { id } });
