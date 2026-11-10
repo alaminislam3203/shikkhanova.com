@@ -66,44 +66,47 @@ export default function NoticesPage() {
   });
 
   return (
-    <div className="space-y-8">
-      {/* Header Banner */}
+    <div className="space-y-5 sm:space-y-8">
+      {/* Header Banner (Compact on Mobile) */}
       <div
         style={{
           background: 'linear-gradient(135deg, #071426 0%, #0A1E3C 55%, #2A0B1E 100%)',
         }}
-        className="relative overflow-hidden text-white p-6 sm:p-10 lg:p-12 rounded-3xl shadow-2xl border-b-4 border-[#C8102E]"
+        className="relative overflow-hidden text-white p-4 sm:p-8 lg:p-12 rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl border-b-4 border-[#C8102E]"
       >
-        <div className="absolute -right-16 -top-16 w-72 h-72 bg-[#C8102E]/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-3 max-w-2xl">
-            <span className="inline-flex items-center gap-1.5 bg-[#C8102E] text-white text-xs font-bold px-3.5 py-1 rounded-sm uppercase tracking-wider shadow-xs">
-              <FaBell className="w-3.5 h-3.5 text-amber-300" />
+        <div className="absolute -right-16 -top-16 w-52 h-52 sm:w-72 sm:h-72 bg-[#C8102E]/20 rounded-full blur-2xl sm:blur-3xl pointer-events-none" />
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-3.5 sm:gap-6">
+          <div className="space-y-2 sm:space-y-3 max-w-2xl">
+            <span className="inline-flex items-center gap-1.5 bg-[#C8102E] text-white text-[10px] sm:text-xs font-bold px-2.5 py-0.5 sm:px-3.5 sm:py-1 rounded-sm uppercase tracking-wider shadow-xs">
+              <FaBell className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300" />
               অফিশিয়াল নোটিশ বোর্ড
             </span>
-            <h1 className="text-2xl sm:text-4xl font-black tracking-tight">
+            <h1 className="text-lg sm:text-3xl md:text-4xl font-black tracking-tight leading-snug sm:leading-tight">
               সকল নোটিশ ও একাডেমিক বিজ্ঞপ্তি
             </h1>
-            <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
+            <p className="text-[11px] sm:text-sm text-slate-200 leading-snug sm:leading-relaxed line-clamp-2 sm:line-clamp-none">
               শিক্ষা নোভা একাডেমির ৫ম থেকে ১০ম শ্রেণির ক্লাস রুটিন, পরীক্ষার সময়সূচি, ফলাফল ও জরুরি বিজ্ঞপ্তিসমূহ নিয়মিত এখানে আপডেট করা হয়।
             </p>
             {session?.user?.role === 'ADMIN' && (
-              <div className="pt-1">
+              <div className="pt-0.5 sm:pt-1">
                 <Link
                   href="/admin?tab=notices"
-                  className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold px-4 py-2 rounded-sm text-xs shadow transition"
+                  className="inline-flex items-center gap-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold px-3 py-1.5 sm:px-4 sm:py-2 rounded-sm text-[11px] sm:text-xs shadow transition"
                 >
                   <FaPlus className="w-3 h-3" />
-                  <span>অ্যাডমিন প্যানেল থেকে নোটিশ যুক্ত বা এডিট করুন</span>
+                  <span>নোটিশ যুক্ত বা এডিট করুন</span>
                 </Link>
               </div>
             )}
           </div>
 
-          <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-4 text-xs space-y-1.5 shrink-0">
-            <p className="text-slate-300 font-semibold">জরুরি তথ্য ও অনুসন্ধান:</p>
-            <p className="text-base font-black font-bn-normal text-white">০১৭১২৫৯২৫১৯</p>
-            <p className="text-[11px] text-emerald-300 flex items-center gap-1 font-semibold">
+          {/* Helpline box: Compact single-row bar on mobile, neatly stacked on desktop */}
+          <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-xl sm:rounded-2xl p-2.5 sm:p-4 text-xs shrink-0 flex items-center justify-between md:flex-col md:items-start gap-2.5 md:gap-1.5">
+            <div>
+              <p className="text-[10px] sm:text-xs text-slate-300 font-semibold">জরুরি তথ্য ও অনুসন্ধান:</p>
+              <p className="text-sm sm:text-base font-black font-bn-normal text-white">০১৭১২৫৯২৫১৯</p>
+            </div>
+            <p className="text-[10px] sm:text-[11px] text-emerald-300 flex items-center gap-1 font-semibold">
               <FaCircleCheck /> জুম্মাপাড়া, নীলফামারী সদর
             </p>
           </div>
@@ -111,13 +114,13 @@ export default function NoticesPage() {
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-xs flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4">
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
+      <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-slate-200 shadow-xs flex flex-col md:flex-row justify-between items-stretch md:items-center gap-3 sm:gap-4">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
           {categories.map((cat) => (
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
-              className={`px-3.5 py-2 rounded-sm text-xs font-bold transition whitespace-nowrap ${
+              className={`px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-sm text-xs font-bold transition whitespace-nowrap ${
                 selectedCategory === cat.id
                   ? 'bg-[#C8102E] text-white shadow-xs'
                   : 'bg-slate-100 text-slate-700 hover:bg-red-50 hover:text-[#C8102E]'
