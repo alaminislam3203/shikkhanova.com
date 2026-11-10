@@ -404,13 +404,6 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: 'শিক্ষার্থীর আইডি আবশ্যক' }, { status: 400 });
     }
 
-    const fatherName = body.fatherName !== undefined ? (body.fatherName || '').trim() : undefined;
-    const motherName = body.motherName !== undefined ? (body.motherName || '').trim() : undefined;
-    const schoolName = body.schoolName !== undefined ? (body.schoolName || '').trim() : undefined;
-    const dateOfBirth = body.dateOfBirth !== undefined ? (body.dateOfBirth || '').trim() : undefined;
-
-    saveStudentProfile(classGrade, rollNumber, { fatherName, motherName, schoolName, dateOfBirth }, email);
-
     try {
       await prisma.user.delete({ where: { id } });
       return NextResponse.json({ message: 'শিক্ষার্থী সফলভাবে মুছে ফেলা হয়েছে' });
