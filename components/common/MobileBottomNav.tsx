@@ -485,8 +485,27 @@ export default function MobileBottomNav() {
               <div className="bg-white rounded-2xl p-3 border border-slate-200/90 shadow-xs space-y-1">
                 <div className="px-2 py-1 text-[11px] font-black text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                   <FaGear className="text-brand-600" />
-                  <span>অ্যাকাউন্ট সেটিংস</span>
+                  <span>অ্যাকাউন্ট ও প্রোফাইল</span>
                 </div>
+
+                <Link
+                  href="/profile"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-50 transition group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-blue-50 text-brand-700 flex items-center justify-center shrink-0">
+                      <FaUser className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-slate-800 group-hover:text-[#C8102E] transition">
+                        আমার শিক্ষার্থী প্রোফাইল
+                      </p>
+                      <p className="text-[10px] text-slate-400">ব্যক্তিগত ও একাডেমিক পরিচিতি</p>
+                    </div>
+                  </div>
+                  <FaChevronRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+                </Link>
 
                 <Link
                   href="/account"
@@ -495,13 +514,13 @@ export default function MobileBottomNav() {
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
-                      <FaUser className="w-4 h-4" />
+                      <FaGear className="w-4 h-4" />
                     </div>
                     <div>
                       <p className="text-xs font-bold text-slate-800 group-hover:text-[#C8102E] transition">
-                        ব্যক্তিগত তথ্য ও প্রোফাইল ছবি
+                        ছবি ও তথ্য পরিবর্তন
                       </p>
-                      <p className="text-[10px] text-slate-400">নাম, মোবাইল নম্বর, শ্রেণি ও রোল</p>
+                      <p className="text-[10px] text-slate-400">নাম, মোবাইল নম্বর, শ্রেণি ও রোল এডিট</p>
                     </div>
                   </div>
                   <FaChevronRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform" />

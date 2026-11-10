@@ -746,9 +746,9 @@ export default function AccountPage() {
             <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-slate-200 shadow-sm space-y-5 sm:space-y-6 animate-in fade-in duration-150">
               
               <div className="border-b border-slate-100 pb-3 sm:pb-4">
-                <h2 className="text-base sm:text-lg font-black text-slate-800">আমার একাডেমিক কার্যক্রম ও শিটসমূহ</h2>
+                <h2 className="text-base sm:text-lg font-black text-slate-800">আমার একাডেমিক কার্যক্রম ও শর্টকাট</h2>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  আপনার সংগৃহীত পিডিএফ হ্যান্ডনোট, পরীক্ষার রেজাল্ট ও দৈনিক উপস্থিতি চেক করুন।
+                  আপনার সংগৃহীত পিডিএফ হ্যান্ডনোট, পরীক্ষার রেজাল্ট ও মডেল টেস্ট লিংক।
                 </p>
               </div>
 
@@ -757,7 +757,7 @@ export default function AccountPage() {
                 
                 {/* PDF Materials Shortcut */}
                 <Link
-                  href="/profile"
+                  href="/my-notes"
                   className="p-3 sm:p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50/60 hover:bg-white transition shadow-xs hover:shadow-md group flex flex-col justify-between space-y-2.5 sm:space-y-4"
                 >
                   <div className="space-y-1.5 sm:space-y-2">
@@ -799,27 +799,50 @@ export default function AccountPage() {
                   </div>
                 </Link>
 
-                {/* Daily Attendance Shortcut */}
-                <Link
-                  href="/attendance"
-                  className="p-3 sm:p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50/60 hover:bg-white transition shadow-xs hover:shadow-md group flex flex-col justify-between space-y-2.5 sm:space-y-4"
-                >
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
-                      <FaUserCheck className="w-4 h-4 sm:w-5 sm:h-5" />
+                {/* Student Profile (Non-Admin) OR Attendance (Admin Only) */}
+                {session?.user?.role === 'ADMIN' ? (
+                  <Link
+                    href="/attendance"
+                    className="p-3 sm:p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50/60 hover:bg-white transition shadow-xs hover:shadow-md group flex flex-col justify-between space-y-2.5 sm:space-y-4"
+                  >
+                    <div className="space-y-1.5 sm:space-y-2">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                        <FaUserCheck className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </div>
+                      <h3 className="text-xs sm:text-base font-black text-slate-800 group-hover:text-brand-700 transition truncate sm:line-clamp-none">
+                        রোল হাজিরা (অ্যাডমিন)
+                      </h3>
+                      <p className="hidden sm:block text-xs text-slate-500">
+                        ৫ম থেকে ১০ম শ্রেণি পর্যন্ত তারিখ অনুযায়ী ক্লাসের উপস্থিতি গ্রহণ করুন।
+                      </p>
                     </div>
-                    <h3 className="text-xs sm:text-base font-black text-slate-800 group-hover:text-brand-700 transition truncate sm:line-clamp-none">
-                      দৈনিক রোল উপস্থিতি
-                    </h3>
-                    <p className="hidden sm:block text-xs text-slate-500">
-                      ৫ম থেকে ১০ম শ্রেণি পর্যন্ত তারিখ অনুযায়ী ক্লাসের উপস্থিতি ও অনুপস্থিতি দেখুন।
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-brand-700 pt-1.5 sm:pt-2 border-t border-slate-100">
-                    <span>হাজিরা চেক করুন</span>
-                    <FaArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </Link>
+                    <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-brand-700 pt-1.5 sm:pt-2 border-t border-slate-100">
+                      <span>হাজিরা মডিউল</span>
+                      <FaArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </Link>
+                ) : (
+                  <Link
+                    href="/profile"
+                    className="p-3 sm:p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50/60 hover:bg-white transition shadow-xs hover:shadow-md group flex flex-col justify-between space-y-2.5 sm:space-y-4"
+                  >
+                    <div className="space-y-1.5 sm:space-y-2">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-blue-100 text-brand-700 flex items-center justify-center">
+                        <FaUser className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </div>
+                      <h3 className="text-xs sm:text-base font-black text-slate-800 group-hover:text-brand-700 transition truncate sm:line-clamp-none">
+                        আমার প্রোফাইল কার্ড
+                      </h3>
+                      <p className="hidden sm:block text-xs text-slate-500">
+                        আপনার একাডেমিক তথ্য, শ্রেণি ও রোল নম্বর সম্বলিত পরিচিতি কার্ড দেখুন।
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-brand-700 pt-1.5 sm:pt-2 border-t border-slate-100">
+                      <span>প্রোফাইল দেখুন</span>
+                      <FaArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </Link>
+                )}
 
                 {/* PDFs Shop Shortcut */}
                 <Link

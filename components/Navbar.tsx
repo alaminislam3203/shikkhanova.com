@@ -650,27 +650,35 @@ export default function Navbar() {
                           </Link>
                         )}
 
+                        {/* Profile Link */}
+                        <Link
+                          href="/profile"
+                          onClick={() => setDropdownOpen(false)}
+                          className="block px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold text-slate-700 hover:text-brand-700 hover:bg-brand-50/70 transition"
+                        >
+                          <p className="leading-tight">আমার প্রোফাইল</p>
+                          <p className="text-[10px] text-slate-400 font-normal mt-0.5">শিক্ষার্থীর পরিচিতি ও বিবরণ</p>
+                        </Link>
+
+                        {/* My Purchased Notes */}
+                        <Link
+                          href="/my-notes"
+                          onClick={() => setDropdownOpen(false)}
+                          className="block px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold text-slate-700 hover:text-[#C8102E] hover:bg-red-50/70 transition"
+                        >
+                          <p className="leading-tight">সংগৃহীত শিট ও হ্যান্ডনোট</p>
+                          <p className="text-[10px] text-slate-400 font-normal mt-0.5">অনুমোদিত পিডিএফ ডাউনলোড</p>
+                        </Link>
+
                         {/* Profile Settings & Photo Upload */}
                         <Link
                           href="/account"
                           onClick={() => setDropdownOpen(false)}
                           className="block px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold text-slate-700 hover:text-brand-700 hover:bg-brand-50/70 transition"
                         >
-                          <p className="leading-tight">একাউন্ট</p>
+                          <p className="leading-tight">একাউন্ট সেটিংস</p>
                           <p className="text-[10px] text-slate-400 font-normal mt-0.5">ছবি, তথ্য ও পাসওয়ার্ড পরিবর্তন</p>
                         </Link>
-
-                        {/* Student Dashboard Shortcut */}
-                        {session.user.role === 'STUDENT' && (
-                          <Link
-                            href="/profile"
-                            onClick={() => setDropdownOpen(false)}
-                            className="block px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold text-slate-700 hover:text-nova-600 hover:bg-nova-50/70 transition"
-                          >
-                            <p className="leading-tight">আমার ড্যাশবোর্ড</p>
-                            <p className="text-[10px] text-slate-400 font-normal mt-0.5">সংগৃহীত শিট ও ফলাফল</p>
-                          </Link>
-                        )}
 
                       </div>
 
