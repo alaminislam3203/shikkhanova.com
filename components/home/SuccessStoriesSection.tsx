@@ -10,6 +10,7 @@ import {
   FaImage,
 } from 'react-icons/fa6';
 import { AchieverItem } from '@/lib/defaultAchievers';
+import { toBengaliClass } from '@/lib/defaultQuizData';
 
 const CLASS_TABS = [
   { label: 'সকল সাফল্য', value: 'all' },
