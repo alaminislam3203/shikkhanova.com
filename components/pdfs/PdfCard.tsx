@@ -12,6 +12,7 @@ import {
 import { HiSparkles } from 'react-icons/hi2';
 import { PdfItem } from '@/types';
 import toast from 'react-hot-toast';
+import { toBengaliClass } from '@/lib/defaultQuizData';
 
 interface PdfCardProps {
   pdf: PdfItem;
@@ -97,7 +98,7 @@ export default function PdfCard({ pdf, onBuyClick, onRefreshStatus }: PdfCardPro
           <div className="relative z-10 flex justify-between items-start gap-2">
             <span className="inline-flex items-center gap-1.5 bg-black/40 backdrop-blur-md text-white text-[11px] font-extrabold px-3 py-1 rounded-full border border-white/20 shadow-sm">
               <FaLayerGroup className="w-3 h-3 text-nova-400" />
-              শ্রেণি {pdf.classGrade}
+              {toBengaliClass(pdf.classGrade)} শ্রেণি
             </span>
 
             <span className="inline-flex items-center gap-1 bg-nova-500 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
