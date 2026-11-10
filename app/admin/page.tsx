@@ -14,6 +14,7 @@ import AdminStudentsManager from '@/components/admin/AdminStudentsManager';
 import AdminSubjectsManager from '@/components/admin/AdminSubjectsManager';
 import AdminBannersManager from '@/components/admin/AdminBannersManager';
 import AdminAchieversManager from '@/components/admin/AdminAchieversManager';
+import AdminQuizManager from '@/components/admin/AdminQuizManager';
 import { PurchaseRecord } from '@/types';
 import {
   FaBars,
@@ -87,6 +88,7 @@ export default function AdminPage() {
           'purchases',
           'addResult',
           'addPdf',
+          'mcqQuiz',
           'notices',
           'students',
           'subjects',
@@ -503,6 +505,9 @@ export default function AdminPage() {
             }}
           />
         )}
+
+        {/* TAB 2.5: Manage Online Quiz & MCQ Questions */}
+        {activeTab === 'mcqQuiz' && <AdminQuizManager />}
 
         {/* TAB 3: Upload Result */}
         {activeTab === 'addResult' && (

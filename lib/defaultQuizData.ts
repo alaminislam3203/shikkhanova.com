@@ -619,3 +619,73 @@ export const SUBJECT_QUESTIONS: Record<string, RawQuestion[]> = {
   ],
 };
 
+// ─── HELPER FUNCTIONS FOR RETRIEVAL & ADMIN STORAGE ───
+
+export function getStoredFreeQuestions(classGrade: number): RawQuestion[] {
+  if (typeof window === 'undefined') {
+    return FREE_CLASS_QUESTIONS[classGrade] || [];
+  }
+  try {
+    const raw = localStorage.getItem(`sn_free_q_${classGrade}`);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+  return FREE_CLASS_QUESTIONS[classGrade] || [];
+}
+
+export function saveStoredFreeQuestions(classGrade: number, questions: RawQuestion[]): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(`sn_free_q_${classGrade}`, JSON.stringify(questions));
+  } catch {}
+}
+
+export function getStoredPaidQuestions(classGrade: number): RawQuestion[] {
+  if (typeof window === 'undefined') {
+    return PAID_CLASS_QUESTIONS[classGrade] || [];
+  }
+  try {
+    const raw = localStorage.getItem(`sn_paid_q_${classGrade}`);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+  return PAID_CLASS_QUESTIONS[classGrade] || [];
+}
+
+export function saveStoredPaidQuestions(classGrade: number, questions: RawQuestion[]): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(`sn_paid_q_${classGrade}`, JSON.stringify(questions));
+  } catch {}
+}
+
+export function getStoredSubjectQuestions(classGrade: number, subject: string): RawQuestion[] {
+  if (typeof window === 'undefined') {
+    return SUBJECT_QUESTIONS[subject] || [];
+  }
+  try {
+    const raw = localStorage.getItem(`sn_sub_q_${classGrade}_${subject}`);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+  return SUBJECT_QUESTIONS[subject] || [];
+}
+
+export function saveStoredSubjectQuestions(
+  classGrade: number,
+  subject: string,
+  questions: RawQuestion[]
+): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(`sn_sub_q_${classGrade}_${subject}`, JSON.stringify(questions));
+  } catch {}
+}
+
+

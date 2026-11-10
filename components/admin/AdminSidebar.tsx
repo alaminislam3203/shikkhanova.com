@@ -28,8 +28,9 @@ export type AdminTab =
   | 'banners'
   | 'achievers'
   | 'purchases'
-  | 'addResult'
   | 'addPdf'
+  | 'mcqQuiz'
+  | 'addResult'
   | 'notices'
   | 'students'
   | 'subjects'
@@ -128,6 +129,13 @@ export default function AdminSidebar({
       sublabel: 'PDF আপলোড, এডিট ও ডিলিট',
       icon: FaFilePdf,
       badge: pdfCount !== undefined && pdfCount > 0 ? `${pdfCount}টি` : undefined,
+    },
+    {
+      id: 'mcqQuiz',
+      label: 'অনলাইন কুইজ ও MCQ',
+      sublabel: 'মডেল টেস্ট প্রশ্ন যোগ ও ম্যানেজ',
+      icon: FaBookOpen,
+      badge: 'MCQ',
     },
     {
       id: 'addResult',
