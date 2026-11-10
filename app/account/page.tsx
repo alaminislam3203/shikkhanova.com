@@ -72,8 +72,10 @@ export default function AccountPage() {
   useEffect(() => {
     if (session?.user) {
       fetchUserProfile();
+    } else if (status === 'unauthenticated') {
+      setLoading(false);
     }
-  }, [session]);
+  }, [session, status]);
 
   const fetchUserProfile = async () => {
     setLoading(true);
