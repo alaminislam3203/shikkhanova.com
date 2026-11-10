@@ -23,6 +23,10 @@ import {
   FaFilePdf,
   FaArrowRight,
   FaLock,
+  FaAward,
+  FaBookOpen,
+  FaChevronRight,
+  FaGear,
 } from 'react-icons/fa6';
 import { HiSparkles } from 'react-icons/hi2';
 
@@ -100,22 +104,22 @@ export default function AccountPage() {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      setMsg({ text: 'দয়া করে একটি সঠিক ছবি (JPG, PNG, WebP) নির্বাচন করুন', type: 'error' });
+      setMsg({ text: 'অনুগ্রহ করে শুধুমাত্র ছবি ফাইল (JPG, PNG, WebP) নির্বাচন করুন', type: 'error' });
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      setMsg({ text: 'ছবির সাইজ ৫ মেগাবাইটের কম হতে হবে', type: 'error' });
+      setMsg({ text: 'ছবি সর্বোচ্চ ৫ মেগাবাইট হতে পারবে', type: 'error' });
       return;
     }
 
     setUploading(true);
     setMsg(null);
 
-    try {
-      const formData = new FormData();
-      formData.append('photo', file);
+    const formData = new FormData();
+    formData.append('file', file);
 
+    try {
       const res = await fetch('/api/user/upload-photo', {
         method: 'POST',
         body: formData,
@@ -123,31 +127,31 @@ export default function AccountPage() {
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || 'ছবি আপলোড ব্যর্থ হয়েছে');
+        throw new Error(data.error || 'ছবি আপলোড করা যায়নি');
       }
 
-      setProfile((prev) => ({ ...prev, image: data.imageUrl }));
-      setMsg({
-        text: data.isCloudinary
-          ? 'ছবি সফলভাবে আপলোড ও সংরক্ষিত হয়েছে! ☁️'
-          : 'প্রোফাইল ছবি সফলভাবে আপলোড হয়েছে!',
-        type: 'success',
-      });
+      setProfile((prev) => ({ ...prev, image: data.url }));
 
-      // Update NextAuth session in real-time
       if (update) {
         await update({
-          user: { image: data.imageUrl },
+          user: {
+            image: data.url,
+          },
         });
       }
+
+      setMsg({ text: 'প্রোফাইল ছবি সফলভাবে আপডেট হয়েছে!', type: 'success' });
     } catch (err: any) {
       setMsg({ text: err.message || 'ছবি আপলোডে সমস্যা হয়েছে', type: 'error' });
     } finally {
       setUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
-  // Handle Profile Update
+  // Handle Profile Details Update
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSavingProfile(true);
@@ -200,44 +204,318 @@ export default function AccountPage() {
 
   if (!session?.user) return null;
 
+  const sideMenuItems = [
+    {
+      id: 'profile',
+      label: 'প্রোফাইল ও একাডেমিক তথ্য',
+      sublabel: 'নাম, শ্রেণি, রোল ও মোবাইল আপডেট',
+      href: '/account',
+      icon: FaUser,
+      active: true,
+    },
+    {
+      id: 'security',
+      label: 'নিরাপত্তা ও পাসওয়ার্ড',
+      sublabel: 'পাসওয়ার্ড পরিবর্তন করুন',
+      href: '/password',
+      icon: FaShieldHalved,
+      active: false,
+    },
+    {
+      id: 'notes',
+      label: 'আমার শিট ও ফলাফল',
+      sublabel: 'সংগৃহীত শিট ও মার্কশিট',
+      href: '/my-notes',
+      icon: FaBookOpen,
+      active: false,
+    },
+    {
+      id: 'card',
+      label: 'শিক্ষার্থী প্রোফাইল কার্ড',
+      sublabel: 'অফিশিয়াল পরিচিতিপত্র দেখুন',
+      href: '/profile',
+      icon: FaGraduationCap,
+      active: false,
+    },
+    {
+      id: 'results',
+      label: 'পরীক্ষার রেজাল্ট অনুসন্ধান',
+      sublabel: 'রোল ও শ্রেণি অনুযায়ী গ্রেডশিট',
+      href: '/results',
+      icon: FaAward,
+      active: false,
+    },
+  ];
+
   return (
-    <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
+    <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
       
-      {/* Account Navigation Tabs */}
-      <AccountNavTabs activeTab="account" />
+      {/* Mobile Top Navigation Tabs (Hidden on Desktop) */}
+      <div className="lg:hidden">
+        <AccountNavTabs activeTab="account" />
+      </div>
 
-      {/* 1. Top Banner with Compact Profile Header */}
-      <div
-        style={{
-          background: 'linear-gradient(135deg, #071426 0%, #0A1E3C 55%, #2A0B1E 100%)',
-        }}
-        className="rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 lg:p-8 text-white shadow-premium border-b-4 border-[#C8102E] relative overflow-hidden"
-      >
-        <div className="absolute right-0 top-0 w-80 h-80 bg-nova-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      {/* Main Layout: Desktop 2-Column Side Menu System (lg:grid-cols-12) */}
+      <div className="lg:grid lg:grid-cols-12 lg:gap-8 items-start space-y-6 lg:space-y-0">
+        
+        {/* ========================================================= */}
+        {/* DESKTOP SIDE MENU (Col 1-4, Sticky)                       */}
+        {/* ========================================================= */}
+        <aside className="lg:col-span-4 xl:col-span-4 space-y-4 lg:sticky lg:top-24">
+          
+          {/* User Profile Summary Card */}
+          <div
+            style={{
+              background: 'linear-gradient(135deg, #071426 0%, #0A1E3C 60%, #2A0B1E 100%)',
+            }}
+            className="rounded-2xl sm:rounded-3xl p-5 sm:p-6 text-white shadow-premium border-b-4 border-[#C8102E] relative overflow-hidden"
+          >
+            <div className="absolute right-0 top-0 w-48 h-48 bg-nova-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
-        <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-3 sm:gap-6 text-center sm:text-left">
-          <div className="flex flex-row items-center gap-3.5 sm:gap-5 w-full sm:w-auto">
-            {/* Avatar with Camera Icon */}
-            <div className="relative group shrink-0">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-2xl sm:rounded-3xl overflow-hidden bg-gradient-to-tr from-brand-700 to-nova-500 p-1 shadow-xl border-2 border-white/30">
-                <div className="w-full h-full rounded-[14px] sm:rounded-[20px] overflow-hidden bg-slate-900 flex items-center justify-center relative">
-                  {profile.image ? (
-                    <img
-                      src={profile.image}
-                      alt={profile.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-2xl sm:text-4xl font-black text-white">
-                      {profile.name ? profile.name.charAt(0) : '🎓'}
+            <div className="relative z-10 flex flex-col items-center text-center space-y-3">
+              {/* Avatar with Camera Icon */}
+              <div className="relative group">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-gradient-to-tr from-brand-700 to-nova-500 p-1 shadow-xl border-2 border-white/30">
+                  <div className="w-full h-full rounded-[14px] overflow-hidden bg-slate-900 flex items-center justify-center relative">
+                    {profile.image ? (
+                      <img
+                        src={profile.image}
+                        alt={profile.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-3xl font-black text-white">
+                        {profile.name ? profile.name.charAt(0) : '🎓'}
+                      </span>
+                    )}
+
+                    {uploading && (
+                      <div className="absolute inset-0 bg-black/70 flex items-center justify-center text-white">
+                        <FaClock className="w-5 h-5 animate-spin text-nova-400" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="absolute -bottom-1.5 -right-1.5 w-8 h-8 rounded-xl bg-nova-500 hover:bg-nova-600 text-white flex items-center justify-center shadow-lg border-2 border-white transition transform hover:scale-110 active:scale-95"
+                  title="নতুন ছবি আপলোড করুন"
+                >
+                  <FaCamera className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              {/* User Info */}
+              <div className="space-y-1">
+                <div className="flex items-center justify-center gap-2">
+                  <h2 className="text-lg font-black text-white truncate max-w-[220px]">
+                    {profile.name}
+                  </h2>
+                  <span className="bg-[#C8102E] text-white text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0">
+                    {profile.role === 'ADMIN' ? 'অ্যাডমিন' : 'শিক্ষার্থী'}
+                  </span>
+                </div>
+
+                <p className="text-xs text-blue-200 font-mono truncate">{profile.email}</p>
+
+                <div className="flex items-center justify-center gap-1.5 pt-1 text-[11px] text-slate-300">
+                  {profile.classGrade && (
+                    <span className="bg-white/10 px-2.5 py-0.5 rounded-md font-bold border border-white/10">
+                      শ্রেণি {profile.classGrade}
                     </span>
                   )}
-
-                  {uploading && (
-                    <div className="absolute inset-0 bg-black/70 flex items-center justify-center text-white">
-                      <FaClock className="w-5 h-5 animate-spin text-nova-400" />
-                    </div>
+                  {profile.rollNumber && (
+                    <span className="bg-white/10 px-2.5 py-0.5 rounded-md font-bold border border-white/10">
+                      রোল {profile.rollNumber}
+                    </span>
                   )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Side Menu Navigation Links */}
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-3.5 border border-slate-200/90 shadow-sm space-y-1">
+            <span className="text-[10px] uppercase font-black text-slate-400 tracking-wider px-3 py-1 block">
+              অ্যাকাউন্ট মেনু
+            </span>
+
+            {sideMenuItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  className={`flex items-center justify-between p-3 rounded-xl transition-all duration-150 group ${
+                    item.active
+                      ? 'bg-[#0A1E3C] text-white font-bold shadow-xs'
+                      : 'text-slate-700 hover:bg-slate-50 hover:text-[#0A1E3C]'
+                  }`}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div
+                      className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition ${
+                        item.active
+                          ? 'bg-white/15 text-white'
+                          : 'bg-slate-100 text-slate-500 group-hover:bg-red-50 group-hover:text-[#C8102E]'
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className={`text-xs font-bold truncate ${item.active ? 'text-white' : 'text-slate-800'}`}>
+                        {item.label}
+                      </p>
+                      <p className={`text-[10px] truncate ${item.active ? 'text-blue-200' : 'text-slate-400'}`}>
+                        {item.sublabel}
+                      </p>
+                    </div>
+                  </div>
+
+                  <FaChevronRight
+                    className={`w-3 h-3 shrink-0 transition-transform ${
+                      item.active
+                        ? 'text-white/70'
+                        : 'text-slate-300 group-hover:text-[#0A1E3C] group-hover:translate-x-0.5'
+                    }`}
+                  />
+                </Link>
+              );
+            })}
+
+            {/* Admin Link if role === 'ADMIN' */}
+            {session.user.role === 'ADMIN' && (
+              <Link
+                href="/admin"
+                className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/80 hover:border-emerald-300 text-emerald-800 transition group mt-2"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                    <FaUserShield className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-emerald-950">অ্যাডমিন প্যানেল</p>
+                    <p className="text-[10px] text-emerald-700">সকল মডিউল ও ডাটা ম্যানেজ</p>
+                  </div>
+                </div>
+                <FaArrowRight className="w-3.5 h-3.5 text-emerald-600 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            )}
+
+            {/* Logout Button */}
+            <div className="pt-2 mt-2 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => signOut({ callbackUrl: '/' })}
+                className="w-full flex items-center justify-center gap-2 p-2.5 rounded-xl bg-rose-50 hover:bg-rose-100/80 text-rose-600 text-xs font-bold transition active:scale-98"
+              >
+                <FaArrowRightFromBracket className="w-3.5 h-3.5" />
+                <span>লগআউট করুন</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Helpline Card in Side Menu */}
+          <div className="bg-gradient-to-r from-slate-900 to-[#0A1E3C] rounded-2xl p-4 text-white shadow-xs border border-white/10 hidden lg:block">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-emerald-400 shrink-0 border border-white/15">
+                <FaPhone className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[11px] text-slate-300">সাহায্য বা অনুসন্ধানের জন্য:</p>
+                <a
+                  href="tel:01712592519"
+                  className="text-xs font-bold text-white hover:text-nova-400 font-mono transition"
+                >
+                  ০১৭১২৫৯২৫১৯
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </aside>
+
+        {/* ========================================================= */}
+        {/* MAIN CONTENT AREA (Col 5-12)                               */}
+        {/* ========================================================= */}
+        <main className="lg:col-span-8 xl:col-span-8 space-y-5 sm:space-y-6">
+          
+          {/* Header Banner */}
+          <div
+            style={{
+              background: 'linear-gradient(135deg, #071426 0%, #0A1E3C 55%, #2A0B1E 100%)',
+            }}
+            className="rounded-2xl sm:rounded-3xl p-5 sm:p-7 text-white shadow-premium border-b-4 border-[#C8102E] relative overflow-hidden"
+          >
+            <div className="absolute right-0 top-0 w-80 h-80 bg-nova-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <span className="inline-flex items-center gap-1.5 bg-[#C8102E] text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-1.5 shadow-xs">
+                  <FaGear className="w-3 h-3 text-amber-300" /> একাউন্ট সেটিংস
+                </span>
+                <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                  ব্যক্তিগত ও একাডেমিক তথ্য পরিবর্তন
+                </h1>
+                <p className="text-xs text-blue-200 mt-1 max-w-xl">
+                  আপনার ছবি, মোবাইল নম্বর এবং শ্রেণি-রোল আপডেট করে সবসময় হালনাগাদ রাখুন।
+                </p>
+              </div>
+
+              <div className="shrink-0 flex items-center gap-2">
+                <Link
+                  href="/profile"
+                  className="inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 active:scale-98 text-white text-xs font-bold px-3.5 py-2 rounded-xl border border-white/15 transition shadow-xs"
+                >
+                  <FaUser className="w-3 h-3 text-nova-400" />
+                  <span>প্রোফাইল কার্ড</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Alert Message */}
+          {msg && (
+            <div
+              className={`p-3.5 sm:p-4 rounded-2xl text-xs sm:text-sm font-bold transition flex items-center justify-between shadow-sm animate-in fade-in duration-200 ${
+                msg.type === 'success'
+                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                  : 'bg-rose-50 text-rose-800 border border-rose-200'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                {msg.type === 'success' ? (
+                  <FaCircleCheck className="text-emerald-600 shrink-0 w-4 h-4" />
+                ) : (
+                  <FaCircleExclamation className="text-rose-600 shrink-0 w-4 h-4" />
+                )}
+                <span>{msg.text}</span>
+              </div>
+              <button onClick={() => setMsg(null)} className="text-xs opacity-70 hover:opacity-100">✕</button>
+            </div>
+          )}
+
+          {/* Main Profile Edit Form Card */}
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-slate-200/90 shadow-sm space-y-6">
+            
+            {/* Photo Upload Box inside Form */}
+            <div className="p-4 bg-gradient-to-r from-slate-50 to-blue-50/50 rounded-2xl border border-slate-200/90 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3.5 w-full sm:w-auto">
+                <div className="w-14 h-14 rounded-2xl overflow-hidden border-2 border-brand-600 bg-brand-50 flex items-center justify-center shadow-md shrink-0">
+                  {profile.image ? (
+                    <img src={profile.image} alt={profile.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-2xl font-black text-brand-700">{profile.name?.charAt(0) || 'U'}</span>
+                  )}
+                </div>
+                <div>
+                  <h3 className="text-sm font-black text-slate-800">প্রোফাইল ছবি পরিবর্তন</h3>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    JPG, PNG বা WebP ফরম্যাট (সর্বোচ্চ ৫ মেগাবাইট)
+                  </p>
                 </div>
               </div>
 
@@ -245,10 +523,19 @@ export default function AccountPage() {
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
-                className="absolute -bottom-1 -right-1 sm:-bottom-1.5 sm:-right-1.5 w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-nova-500 hover:bg-nova-600 text-white flex items-center justify-center shadow-lg border-2 border-white transition transform hover:scale-110 active:scale-95"
-                title="নতুন ছবি আপলোড করুন"
+                className="w-full sm:w-auto bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-brand transition flex items-center justify-center gap-2 shrink-0 active:scale-98 disabled:opacity-60"
               >
-                <FaCamera className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5" />
+                {uploading ? (
+                  <>
+                    <FaClock className="w-3.5 h-3.5 animate-spin" />
+                    <span>আপলোড হচ্ছে...</span>
+                  </>
+                ) : (
+                  <>
+                    <FaCloudArrowUp className="w-3.5 h-3.5 text-nova-400" />
+                    <span>নতুন ছবি আপলোড</span>
+                  </>
+                )}
               </button>
 
               <input
@@ -260,282 +547,144 @@ export default function AccountPage() {
               />
             </div>
 
-            {/* Profile Brief Info */}
-            <div className="space-y-1 text-left min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                <h1 className="text-base sm:text-2xl font-black text-white truncate max-w-[200px] sm:max-w-none">{profile.name}</h1>
-                <span className="bg-nova-500 text-white text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0">
-                  {profile.role === 'ADMIN' ? 'অ্যাডমিন' : profile.role === 'TEACHER' ? 'শিক্ষক' : 'শিক্ষার্থী'}
-                </span>
+            {/* Profile Fields Form */}
+            <form onSubmit={handleProfileSubmit} className="space-y-4 text-xs sm:text-sm">
+              
+              <div>
+                <label className="block font-bold text-slate-700 mb-1.5">
+                  শিক্ষার্থীর পূর্ণ নাম <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={profile.name}
+                  onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                  placeholder="আপনার পূর্ণ নাম লিখুন"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition"
+                />
               </div>
-              <p className="text-[11px] sm:text-xs text-blue-200 line-clamp-1">
-                শিক্ষানোভা একাডেমি • জুম্মাপাড়া, নীলফামারী সদর
-              </p>
-              <div className="flex flex-wrap items-center gap-1.5 pt-0.5 text-[10px] sm:text-xs text-slate-300">
-                {profile.classGrade && (
-                  <span className="inline-flex items-center gap-1 bg-white/10 px-2 py-0.5 rounded-lg font-bold border border-white/10 shrink-0">
-                    <FaGraduationCap className="text-nova-400" /> শ্রেণি {profile.classGrade}
-                  </span>
-                )}
-                {profile.rollNumber && (
-                  <span className="inline-flex items-center gap-1 bg-white/10 px-2 py-0.5 rounded-lg font-bold border border-white/10 shrink-0">
-                    <FaHashtag className="text-nova-400" /> রোল {profile.rollNumber}
-                  </span>
-                )}
-                <span className="hidden sm:inline-flex items-center gap-1 bg-white/10 px-2 py-0.5 rounded-lg font-mono text-[11px] border border-white/10 truncate">
-                  <FaEnvelope className="text-nova-400" /> {profile.email}
-                </span>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1.5">
+                  নিবন্ধিত ইমেইল ঠিকানা <span className="text-slate-400 font-normal">(অপরিবর্তনযোগ্য)</span>
+                </label>
+                <input
+                  type="email"
+                  disabled
+                  value={profile.email}
+                  className="w-full bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-500 font-mono cursor-not-allowed"
+                />
               </div>
-            </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1.5">শ্রেণি (Class 5 - 10)</label>
+                  <select
+                    value={profile.classGrade}
+                    onChange={(e) => setProfile({ ...profile, classGrade: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition text-xs sm:text-sm"
+                  >
+                    <option value="5">৫ম শ্রেণি</option>
+                    <option value="6">৬ষ্ঠ শ্রেণি</option>
+                    <option value="7">৭ম শ্রেণি</option>
+                    <option value="8">৮ম শ্রেণি</option>
+                    <option value="9">৯ম শ্রেণি</option>
+                    <option value="10">১০ম শ্রেণি</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1.5">শ্রেণির রোল নম্বর</label>
+                  <input
+                    type="number"
+                    value={profile.rollNumber}
+                    onChange={(e) => setProfile({ ...profile, rollNumber: e.target.value })}
+                    placeholder="যেমন: 1, 5, 12"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition text-xs sm:text-sm"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1.5">
+                  মোবাইল নম্বর (অভিভাবক / শিক্ষার্থী)
+                </label>
+                <input
+                  type="tel"
+                  value={profile.phone}
+                  onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                  placeholder="01XXXXXXXXX"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-mono font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition"
+                />
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-end">
+                <button
+                  type="submit"
+                  disabled={savingProfile}
+                  className="w-full sm:w-auto bg-[#C8102E] hover:bg-[#A00D24] text-white font-bold px-8 py-2.5 sm:py-3 rounded-xl shadow-xs transition active:scale-98 flex items-center justify-center gap-2 disabled:opacity-60"
+                >
+                  {savingProfile ? (
+                    <>
+                      <FaClock className="w-4 h-4 animate-spin" />
+                      <span>সংরক্ষণ করা হচ্ছে...</span>
+                    </>
+                  ) : (
+                    <>
+                      <FaCheck className="w-4 h-4" />
+                      <span>তথ্য সংরক্ষণ করুন</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+            </form>
+
           </div>
 
-          {/* Quick Action in Header (Helpline on mobile + Upload Button on desktop) */}
-          <div className="w-full sm:w-auto shrink-0 flex items-center justify-between sm:justify-end gap-2 border-t border-white/10 pt-2.5 sm:border-t-0 sm:pt-0">
-            <a
-              href="tel:01712592519"
-              className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs text-blue-200 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-xl border border-white/10 font-bold transition"
+          {/* Quick Shortcuts Cards Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            
+            <Link
+              href="/password"
+              className="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-[#0A1E3C] shadow-xs hover:shadow-md transition flex items-center justify-between group"
             >
-              <FaPhone className="w-3 h-3 text-emerald-400" />
-              <span>হেল্পলাইন: ০১৭১২৫৯২৫১৯</span>
-            </a>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center shrink-0 group-hover:bg-[#0A1E3C] group-hover:text-white transition">
+                  <FaLock className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs sm:text-sm font-black text-slate-800 group-hover:text-[#C8102E] transition">
+                    পাসওয়ার্ড ও নিরাপত্তা
+                  </p>
+                  <p className="text-[11px] text-slate-500">পাসওয়ার্ড পরিবর্তন ও অ্যাকাউন্ট সুরক্ষা</p>
+                </div>
+              </div>
+              <FaArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 transition-transform" />
+            </Link>
 
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
-              className="hidden sm:inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-4 py-2.5 rounded-2xl border border-white/20 transition backdrop-blur-md shadow-sm"
+            <Link
+              href="/my-notes"
+              className="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-[#C8102E] shadow-xs hover:shadow-md transition flex items-center justify-between group"
             >
-              <FaCloudArrowUp className="text-nova-400 w-4 h-4" />
-              <span>{uploading ? 'আপলোড হচ্ছে...' : 'নতুন ছবি আপলোড'}</span>
-            </button>
-          </div>
-        </div>
-      </div>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-rose-50 text-[#C8102E] flex items-center justify-center shrink-0 group-hover:bg-[#C8102E] group-hover:text-white transition">
+                  <FaFilePdf className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs sm:text-sm font-black text-slate-800 group-hover:text-[#C8102E] transition">
+                    সংগৃহীত শিট ও নোট
+                  </p>
+                  <p className="text-[11px] text-slate-500">ক্রয়কৃত শিট ডাউনলোড ও হিস্ট্রি</p>
+                </div>
+              </div>
+              <FaArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 transition-transform" />
+            </Link>
 
-      {/* Alert Message */}
-      {msg && (
-        <div
-          className={`p-3.5 sm:p-4 rounded-2xl text-xs sm:text-sm font-bold transition flex items-center justify-between shadow-sm animate-in fade-in duration-200 ${
-            msg.type === 'success'
-              ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-              : 'bg-rose-50 text-rose-800 border border-rose-200'
-          }`}
-        >
-          <div className="flex items-center gap-2">
-            {msg.type === 'success' ? (
-              <FaCircleCheck className="text-emerald-600 shrink-0 w-4 h-4" />
-            ) : (
-              <FaCircleExclamation className="text-rose-600 shrink-0 w-4 h-4" />
-            )}
-            <span>{msg.text}</span>
-          </div>
-          <button onClick={() => setMsg(null)} className="text-xs opacity-70 hover:opacity-100">✕</button>
-        </div>
-      )}
-
-      {/* 2. Main Profile Edit Card */}
-      <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-slate-200 shadow-sm space-y-5 sm:space-y-6">
-        
-        <div className="border-b border-slate-100 pb-3 sm:pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div>
-            <h2 className="text-base sm:text-lg font-black text-slate-800">ব্যক্তিগত ও একাডেমিক তথ্য পরিবর্তন</h2>
-            <p className="text-xs text-slate-500 mt-0.5">
-              আপনার ছবি, নাম, মোবাইল নম্বর এবং শ্রেণি-রোল আপডেট করুন।
-            </p>
-          </div>
-          
-          <Link
-            href="/profile"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-700 hover:text-brand-800 bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-xl border border-brand-200 transition self-start sm:self-auto"
-          >
-            <FaUser className="w-3 h-3" />
-            <span>প্রোফাইল কার্ড দেখুন</span>
-          </Link>
-        </div>
-
-        {/* Photo Upload Card Section */}
-        <div className="p-3 sm:p-4 bg-gradient-to-r from-slate-50 to-blue-50/40 rounded-xl sm:rounded-2xl border border-slate-200/80 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 text-left">
-            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl overflow-hidden border-2 border-brand-600 bg-brand-50 flex items-center justify-center shadow-md shrink-0">
-              {profile.image ? (
-                <img src={profile.image} alt={profile.name} className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-xl sm:text-2xl font-black text-brand-700">{profile.name?.charAt(0) || 'U'}</span>
-              )}
-            </div>
-            <div>
-              <h3 className="text-xs sm:text-sm font-black text-slate-800">প্রোফাইল ছবি</h3>
-              <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 line-clamp-1">
-                JPG, PNG বা WebP ফরম্যাট (সর্বোচ্চ ৫MB)
-              </p>
-            </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
-            className="bg-brand-700 hover:bg-brand-800 text-white text-[11px] sm:text-xs font-bold px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl shadow-brand transition flex items-center gap-1.5 shrink-0 active:scale-98"
-          >
-            <FaCamera className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-            <span>{uploading ? 'আপলোড হচ্ছে...' : 'ছবি পরিবর্তন'}</span>
-          </button>
-        </div>
+        </main>
 
-        {/* Profile Details Form */}
-        <form onSubmit={handleProfileSubmit} className="space-y-3.5 sm:space-y-4 text-xs sm:text-sm">
-          
-          <div>
-            <label className="block font-bold text-slate-700 mb-1">শিক্ষার্থীর পূর্ণ নাম</label>
-            <input
-              type="text"
-              required
-              value={profile.name}
-              onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-              className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 sm:py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition"
-            />
-          </div>
-
-          <div>
-            <label className="block font-bold text-slate-700 mb-1">
-              ইমেইল ঠিকানা <span className="text-slate-400 font-normal">(অপরিবর্তনযোগ্য)</span>
-            </label>
-            <input
-              type="email"
-              disabled
-              value={profile.email}
-              className="w-full bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-2 sm:py-2.5 text-slate-500 font-mono cursor-not-allowed"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">শ্রেণি (Class 5 - 10)</label>
-              <select
-                value={profile.classGrade}
-                onChange={(e) => setProfile({ ...profile, classGrade: e.target.value })}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 sm:px-3.5 py-2 sm:py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition text-xs sm:text-sm"
-              >
-                <option value="5">৫ম শ্রেণি</option>
-                <option value="6">৬ষ্ঠ শ্রেণি</option>
-                <option value="7">৭ম শ্রেণি</option>
-                <option value="8">৮ম শ্রেণি</option>
-                <option value="9">৯ম শ্রেণি</option>
-                <option value="10">১০ম শ্রেণি</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">রোল নম্বর</label>
-              <input
-                type="number"
-                value={profile.rollNumber}
-                onChange={(e) => setProfile({ ...profile, rollNumber: e.target.value })}
-                placeholder="যেমন: 1, 5"
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 sm:px-3.5 py-2 sm:py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition text-xs sm:text-sm"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block font-bold text-slate-700 mb-1">মোবাইল নম্বর (অভিভাবক / শিক্ষার্থী)</label>
-            <input
-              type="tel"
-              value={profile.phone}
-              onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-              placeholder="01XXXXXXXXX"
-              className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 sm:py-2.5 font-mono font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition"
-            />
-          </div>
-
-          <div className="pt-2">
-            <button
-              type="submit"
-              disabled={savingProfile}
-              className="w-full sm:w-auto bg-brand-700 hover:bg-brand-800 text-white font-bold px-8 py-2.5 sm:py-3 rounded-xl shadow-brand transition active:scale-[0.99] flex items-center justify-center gap-2"
-            >
-              {savingProfile ? (
-                <>
-                  <FaClock className="w-4 h-4 animate-spin" />
-                  <span>সংরক্ষণ করা হচ্ছে...</span>
-                </>
-              ) : (
-                <>
-                  <FaCheck className="w-4 h-4" />
-                  <span>তথ্য সংরক্ষণ করুন</span>
-                </>
-              )}
-            </button>
-          </div>
-
-        </form>
-
-      </div>
-
-      {/* 3. Dedicated Separate Page Links Card */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-        
-        {/* Link to Dedicated /password page */}
-        <Link
-          href="/password"
-          className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-slate-800 shadow-xs hover:shadow-md transition flex items-center justify-between group"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center shrink-0 group-hover:bg-slate-900 group-hover:text-white transition">
-              <FaLock className="w-4 h-4" />
-            </div>
-            <div>
-              <p className="text-xs sm:text-sm font-black text-slate-800 group-hover:text-[#C8102E] transition">
-                পাসওয়ার্ড ও নিরাপত্তা
-              </p>
-              <p className="text-[11px] text-slate-500">পাসওয়ার্ড পরিবর্তন করতে চান? এখানে ক্লিক করুন</p>
-            </div>
-          </div>
-          <FaArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 transition-transform" />
-        </Link>
-
-        {/* Link to Dedicated /my-notes page */}
-        <Link
-          href="/my-notes"
-          className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-[#C8102E] shadow-xs hover:shadow-md transition flex items-center justify-between group"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-rose-50 text-[#C8102E] flex items-center justify-center shrink-0 group-hover:bg-[#C8102E] group-hover:text-white transition">
-              <FaFilePdf className="w-4 h-4" />
-            </div>
-            <div>
-              <p className="text-xs sm:text-sm font-black text-slate-800 group-hover:text-[#C8102E] transition">
-                সংগৃহীত শিট ও নোট
-              </p>
-              <p className="text-[11px] text-slate-500">ক্রয়কৃত শিট ডাউনলোড ও হিস্ট্রি দেখুন</p>
-            </div>
-          </div>
-          <FaArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 transition-transform" />
-        </Link>
-
-      </div>
-
-      {/* 4. Bottom Quick Action Buttons (Admin & Logout) */}
-      <div className="grid grid-cols-2 gap-2.5 pt-1">
-        {session.user.role === 'ADMIN' && (
-          <Link
-            href="/admin"
-            className="p-3 rounded-2xl text-xs font-bold text-brand-800 bg-brand-50 hover:bg-brand-100/80 border border-brand-200/60 transition flex items-center justify-center gap-2"
-          >
-            <FaUserShield className="w-4 h-4 text-brand-700 shrink-0" />
-            <span>অ্যাডমিন প্যানেল</span>
-          </Link>
-        )}
-        <button
-          type="button"
-          onClick={() => signOut({ callbackUrl: '/' })}
-          className={`p-3 rounded-2xl text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition flex items-center justify-center gap-2 ${
-            session.user.role === 'ADMIN' ? '' : 'col-span-2'
-          }`}
-        >
-          <FaArrowRightFromBracket className="w-4 h-4 shrink-0" />
-          <span>লগআউট করুন</span>
-        </button>
       </div>
 
     </div>
