@@ -1,8 +1,7 @@
 'use client';
 
 import React from 'react';
-import { FaPrint, FaAward } from 'react-icons/fa6';
-import { HiSparkles } from 'react-icons/hi2';
+import { FaPrint, FaAward, FaCircleCheck, FaCircleXmark } from 'react-icons/fa6';
 import Logo from '@/components/common/Logo';
 import { MarksheetData } from '@/types';
 
@@ -11,11 +10,13 @@ interface MarksheetViewProps {
 }
 
 export default function MarksheetView({ result }: MarksheetViewProps) {
+  const isPassed = result.grade !== 'F' && result.gpa > 0;
 
   const handlePrint = () => {
     // Close any open dropdowns/menus before printing
-    document.body.click();
-    // Small delay to let menus close, then print
+    if (typeof document !== 'undefined') {
+      document.body.click();
+    }
     setTimeout(() => {
       window.print();
     }, 100);
@@ -26,11 +27,11 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
       {/* Printable Sheet */}
       <div
         id="printableArea"
-        className="bg-white p-6 sm:p-10 rounded-3xl border-2 border-slate-200/90 shadow-2xl space-y-6 max-w-4xl mx-auto relative overflow-hidden"
+        className="bg-white p-6 sm:p-10 rounded-3xl border-2 border-slate-300 shadow-xl space-y-6 max-w-4xl mx-auto relative overflow-hidden print:p-6 print:border-none print:shadow-none"
       >
         {/* Subtle Watermark */}
         <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none select-none">
-          <span className="text-9xl font-black text-brand-900">SIKKHANOVA</span>
+          <span className="text-9xl font-black text-brand-900 tracking-widest">SHIKKHANOVA</span>
         </div>
 
         {/* Institute Header */}
@@ -45,75 +46,123 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
             জুম্মাপাড়া, নীলফামারী সদর, নীলফামারী | হেল্পলাইন: <span className="font-bn-normal font-bold text-[#0A1E3C]">০১৭১২৫৯২৫১৯</span>
           </p>
 
-          <div className="inline-block mt-2 bg-[#0A1E3C] border-b-2 border-[#C8102E] text-white text-xs font-bold px-5 py-1.5 rounded-full uppercase shadow-sm">
-            শিক্ষার্থী একাডেমিক ফলাফল ও মার্কশিট
+          <div className="inline-flex items-center gap-2 mt-2 bg-[#0A1E3C] border-b-2 border-[#C8102E] text-white text-xs font-bold px-6 py-1.5 rounded-full uppercase shadow-sm">
+            <span>একাডেমিক ফলাফল ও অফিশিয়াল মার্কশিট</span>
+            <span className="text-slate-300">|</span>
+            <span className="text-amber-300">NCTB কারিকুলাম</span>
           </div>
         </div>
 
-        {/* Student Profile Info */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl border text-xs sm:text-sm relative z-10" style={{ backgroundColor: '#EFF6FF', borderColor: '#BFDBFE' }}>
+        {/* Student Profile Info & Status */}
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 p-4 rounded-2xl border text-xs sm:text-sm relative z-10 bg-slate-50 border-slate-200">
           <div>
             <span className="text-[11px] text-slate-500 block font-bold">শিক্ষার্থীর নাম:</span>
-            <strong className="text-slate-900 text-base font-black">{result.studentName}</strong>
+            <strong className="text-slate-900 text-sm sm:text-base font-black truncate block">{result.studentName}</strong>
           </div>
           <div>
             <span className="text-[11px] text-slate-500 block font-bold">শ্রেণি:</span>
-            <strong className="text-brand-700 font-black text-base">Class {result.classGrade}</strong>
+            <strong className="text-brand-700 font-black text-sm sm:text-base">Class {result.classGrade}</strong>
           </div>
           <div>
             <span className="text-[11px] text-slate-500 block font-bold">রোল নম্বর:</span>
-            <strong className="text-nova-600 font-black text-base">রোল {result.rollNumber}</strong>
+            <strong className="text-nova-600 font-black text-sm sm:text-base">রোল {result.rollNumber}</strong>
+          </div>
+          <div className="sm:col-span-1">
+            <span className="text-[11px] text-slate-500 block font-bold">পরীক্ষার নাম:</span>
+            <strong className="text-slate-800 font-bold text-xs truncate block">{result.examTitle}</strong>
           </div>
           <div>
-            <span className="text-[11px] text-slate-500 block font-bold">পরীক্ষার নাম:</span>
-            <strong className="text-slate-800 font-bold">{result.examTitle}</strong>
+            <span className="text-[11px] text-slate-500 block font-bold">ফলাফল স্ট্যাটাস:</span>
+            <span
+              className={`inline-flex items-center gap-1 font-black text-xs px-2.5 py-0.5 rounded-full ${
+                isPassed ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-rose-100 text-rose-800 border border-rose-300'
+              }`}
+            >
+              {isPassed ? <FaCircleCheck className="w-3 h-3 text-emerald-600" /> : <FaCircleXmark className="w-3 h-3 text-rose-600" />}
+              {isPassed ? 'উত্তীর্ণ (PASSED)' : 'অনুত্তীর্ণ (FAILED)'}
+            </span>
           </div>
         </div>
 
-        {/* Marks Table */}
+        {/* Subject-by-Subject Marks Table */}
         <div className="overflow-x-auto relative z-10">
           <table className="w-full text-left border-collapse border border-slate-300">
             <thead>
-              <tr className="text-slate-800 text-xs font-bold uppercase border-b border-slate-300" style={{ backgroundColor: '#F1F5F9' }}>
-                <th className="py-3 px-4 border border-slate-300">বিষয় (Subject)</th>
-                <th className="py-3 px-4 border border-slate-300 text-center w-24">পূর্ণমান</th>
-                <th className="py-3 px-4 border border-slate-300 text-center w-28">প্রাপ্ত নম্বর</th>
-                <th className="py-3 px-4 border border-slate-300 text-center w-24">লেটার গ্রেড</th>
-                <th className="py-3 px-4 border border-slate-300 text-center w-24">জিপিএ</th>
+              <tr className="text-slate-800 text-xs font-bold uppercase border-b border-slate-300 bg-slate-100">
+                <th className="py-2.5 px-3 border border-slate-300 text-center w-16">কোড</th>
+                <th className="py-2.5 px-4 border border-slate-300">বিষয় (NCTB Subject)</th>
+                <th className="py-2.5 px-3 border border-slate-300 text-center w-20">পূর্ণমান</th>
+                <th className="py-2.5 px-3 border border-slate-300 text-center w-24">প্রাপ্ত নম্বর</th>
+                <th className="py-2.5 px-3 border border-slate-300 text-center w-24">লেটার গ্রেড</th>
+                <th className="py-2.5 px-3 border border-slate-300 text-center w-20">জিপিএ (GP)</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200 text-sm">
+            <tbody className="divide-y divide-slate-200 text-xs sm:text-sm">
               {result.subjects.map((sub, idx) => (
                 <tr key={idx} className="hover:bg-slate-50/50">
-                  <td className="py-3 px-4 border border-slate-300 font-bold text-slate-800">
-                    {sub.subject}
+                  <td className="py-2.5 px-3 border border-slate-300 text-center font-mono font-bold text-slate-600 text-xs">
+                    {sub.code || `০${idx + 1}`}
                   </td>
-                  <td className="py-3 px-4 border border-slate-300 text-center text-slate-600 font-semibold">
+                  <td className="py-2.5 px-4 border border-slate-300 font-bold text-slate-800">
+                    <div className="flex items-center justify-between">
+                      <span>{sub.subject}</span>
+                      {sub.isFourthSubject && (
+                        <span className="text-[10px] bg-purple-100 text-purple-700 font-bold px-2 py-0.5 rounded-full ml-2">
+                          ৪র্থ বিষয়
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="py-2.5 px-3 border border-slate-300 text-center text-slate-600 font-semibold">
                     {sub.fullMarks}
                   </td>
-                  <td className="py-3 px-4 border border-slate-300 text-center font-black text-slate-900">
+                  <td className="py-2.5 px-3 border border-slate-300 text-center font-black text-slate-900">
                     {sub.obtained}
                   </td>
-                  <td className="py-3 px-4 border border-slate-300 text-center font-black text-emerald-700">
-                    {sub.grade}
+                  <td className="py-2.5 px-3 border border-slate-300 text-center font-black">
+                    <span
+                      className={`inline-block px-2 py-0.5 rounded text-xs ${
+                        sub.grade === 'A+'
+                          ? 'bg-emerald-100 text-emerald-800 font-black'
+                          : sub.grade === 'F'
+                          ? 'bg-rose-100 text-rose-800 font-black'
+                          : 'text-slate-800 font-bold'
+                      }`}
+                    >
+                      {sub.grade}
+                    </span>
                   </td>
-                  <td className="py-3 px-4 border border-slate-300 text-center font-black text-brand-700">
+                  <td className="py-2.5 px-3 border border-slate-300 text-center font-black text-brand-700">
                     {sub.gpa.toFixed(2)}
                   </td>
                 </tr>
               ))}
             </tbody>
             <tfoot>
-              <tr className="font-bold text-slate-800 border-t-2 border-slate-400" style={{ backgroundColor: '#EFF6FF' }}>
-                <td className="py-3.5 px-4 border border-slate-300 text-base">সর্বমোট ফলাফল (Total)</td>
-                <td className="py-3.5 px-4 border border-slate-300 text-center">{result.totalMarks}</td>
-                <td className="py-3.5 px-4 border border-slate-300 text-center text-brand-800 font-black text-base">
+              <tr className="font-bold text-slate-900 border-t-2 border-slate-400 bg-blue-50/80">
+                <td colSpan={2} className="py-3 px-4 border border-slate-300 text-sm font-black text-[#0A1E3C]">
+                  সর্বমোট ফলাফল (Total Evaluation)
+                </td>
+                <td className="py-3 px-3 border border-slate-300 text-center text-slate-700 font-bold">
+                  {result.totalMarks}
+                </td>
+                <td className="py-3 px-3 border border-slate-300 text-center text-brand-800 font-black text-base">
                   {result.obtainedMarks}
                 </td>
-                <td className="py-3.5 px-4 border border-slate-300 text-center text-emerald-700 font-black text-base">
-                  {result.grade}
+                <td className="py-3 px-3 border border-slate-300 text-center font-black text-base">
+                  <span
+                    className={`inline-block px-3 py-0.5 rounded-md text-sm font-black ${
+                      result.grade === 'A+'
+                        ? 'bg-emerald-600 text-white'
+                        : result.grade === 'F'
+                        ? 'bg-rose-600 text-white'
+                        : 'bg-brand-800 text-white'
+                    }`}
+                  >
+                    {result.grade}
+                  </span>
                 </td>
-                <td className="py-3.5 px-4 border border-slate-300 text-center text-emerald-700 font-black text-base">
+                <td className="py-3 px-3 border border-slate-300 text-center text-brand-800 font-black text-base">
                   {result.gpa.toFixed(2)}
                 </td>
               </tr>
@@ -121,30 +170,37 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
           </table>
         </div>
 
-        {/* Grading Scale & Legend */}
-        <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 p-3 rounded-xl border border-slate-200 text-[10px] text-center font-semibold text-slate-600 relative z-10" style={{ backgroundColor: '#F8FAFC' }}>
-          <div>৮০-১০০ = <span className="font-bold text-emerald-700">A+ (5.00)</span></div>
-          <div>৭০-৭৯ = <span className="font-bold text-emerald-600">A (4.00)</span></div>
-          <div>৬০-৬৯ = <span className="font-bold text-blue-600">A- (3.50)</span></div>
-          <div>৫০-৫৯ = <span className="font-bold text-amber-600">B (3.00)</span></div>
-          <div>৪০-৪৯ = <span className="font-bold text-orange-600">C (2.00)</span></div>
-          <div>০০-৩৯ = <span className="font-bold text-rose-600">F (0.00)</span></div>
+        {/* Bangladesh Education Board Grading Scale */}
+        <div className="space-y-1.5 relative z-10">
+          <div className="flex items-center justify-between text-[11px] font-bold text-slate-600 px-1">
+            <span>বাংলাদেশ শিক্ষা বোর্ড গ্রেডিং স্কেল (National Grading System):</span>
+            <span className="text-slate-400">পাস মার্ক: ৩৩%</span>
+          </div>
+          <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5 p-2.5 rounded-xl border border-slate-200 text-[10px] text-center font-semibold text-slate-600 bg-slate-50">
+            <div className="p-1 rounded bg-white border border-slate-100">৮০-১০০ = <span className="font-bold text-emerald-700">A+ (5.00)</span></div>
+            <div className="p-1 rounded bg-white border border-slate-100">৭০-৭৯ = <span className="font-bold text-emerald-600">A (4.00)</span></div>
+            <div className="p-1 rounded bg-white border border-slate-100">৬০-৬৯ = <span className="font-bold text-blue-600">A- (3.50)</span></div>
+            <div className="p-1 rounded bg-white border border-slate-100">৫০-৫৯ = <span className="font-bold text-amber-600">B (3.00)</span></div>
+            <div className="p-1 rounded bg-white border border-slate-100">৪০-৪৯ = <span className="font-bold text-orange-600">C (2.00)</span></div>
+            <div className="p-1 rounded bg-white border border-slate-100">৩৩-৩৯ = <span className="font-bold text-amber-800">D (1.00)</span></div>
+            <div className="p-1 rounded bg-rose-50 border border-rose-200">০০-৩২ = <span className="font-bold text-rose-600">F (0.00)</span></div>
+          </div>
         </div>
 
-        {/* Signatures */}
+        {/* Official Signatures */}
         <div className="pt-10 flex justify-between items-end text-center text-xs font-bold text-slate-700 relative z-10">
           <div className="space-y-1">
-            <div className="w-36 border-b border-slate-400"></div>
-            <p>অভিভাবকের স্বাক্ষর</p>
-          </div>
-          <div className="space-y-1">
-            <div className="w-36 border-b border-slate-400"></div>
+            <div className="w-36 border-b border-slate-400 mx-auto"></div>
             <p>শ্রেণি শিক্ষকের স্বাক্ষর</p>
           </div>
           <div className="space-y-1">
-            <div className="w-40 border-b-2 border-slate-800"></div>
+            <div className="w-36 border-b border-slate-400 mx-auto"></div>
+            <p>অভিভাবকের স্বাক্ষর</p>
+          </div>
+          <div className="space-y-1">
+            <div className="w-44 border-b-2 border-slate-800 mx-auto"></div>
             <p className="text-brand-900 font-black">সেন্টার প্রধান / পরিচালক</p>
-            <p className="text-[10px] text-slate-500 font-normal">শিক্ষানোভা, নীলফামারী সদর</p>
+            <p className="text-[10px] text-slate-500 font-normal">শিক্ষানোভা একাডেমি, নীলফামারী সদর</p>
           </div>
         </div>
       </div>

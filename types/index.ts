@@ -11,11 +11,13 @@ export interface StudentRollItem {
 }
 
 export interface SubjectMark {
+  code?: string;
   subject: string;
   fullMarks: number;
   obtained: number;
   grade: string;
   gpa: number;
+  isFourthSubject?: boolean;
 }
 
 export interface MarksheetData {
