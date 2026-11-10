@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import AccountNavTabs from '@/components/account/AccountNavTabs';
 import {
   FaUser,
   FaGraduationCap,
@@ -44,11 +43,8 @@ export default function ProfilePage() {
   if (!session?.user) return null;
 
   return (
-    <div className="space-y-4 sm:space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-6 max-w-4xl mx-auto">
       
-      {/* Account Navigation Tabs */}
-      <AccountNavTabs activeTab="account" />
-
       {/* 1. Student Identity Header Banner */}
       <div
         style={{

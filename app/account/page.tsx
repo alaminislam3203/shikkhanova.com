@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import AccountNavTabs from '@/components/account/AccountNavTabs';
 import {
   FaUser,
   FaCamera,
@@ -250,18 +249,13 @@ export default function AccountPage() {
   return (
     <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
       
-      {/* Mobile Top Navigation Tabs (Hidden on Desktop) */}
-      <div className="lg:hidden">
-        <AccountNavTabs activeTab="account" />
-      </div>
-
       {/* Main Layout: Desktop 2-Column Side Menu System (lg:grid-cols-12) */}
       <div className="lg:grid lg:grid-cols-12 lg:gap-8 items-start space-y-6 lg:space-y-0">
         
         {/* ========================================================= */}
-        {/* DESKTOP SIDE MENU (Col 1-4, Sticky)                       */}
+        {/* DESKTOP SIDE MENU (Hidden on Mobile, Visible on Desktop) */}
         {/* ========================================================= */}
-        <aside className="lg:col-span-4 xl:col-span-4 space-y-4 lg:sticky lg:top-24">
+        <aside className="hidden lg:block lg:col-span-4 xl:col-span-4 space-y-4 lg:sticky lg:top-24">
           
           {/* User Profile Summary Card */}
           <div
