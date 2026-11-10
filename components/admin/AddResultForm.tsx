@@ -18,6 +18,7 @@ import {
   FaLayerGroup,
   FaPercent,
   FaCalculator,
+  FaXmark,
 } from 'react-icons/fa6';
 import { DEFAULT_NCTB_SUBJECTS, NctbSubjectItem } from '@/lib/nctbSubjects';
 import {
@@ -70,6 +71,18 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
 
   // Class Students from Database / Local
   const [classStudents, setClassStudents] = useState<Array<{ id: string; rollNumber: number; name: string }>>([]);
+  const [studentSearchQuery, setStudentSearchQuery] = useState<string>('');
+
+  // Filter students based on search query (by roll or name)
+  const filteredClassStudents = useMemo(() => {
+    if (!studentSearchQuery.trim()) return classStudents;
+    const q = studentSearchQuery.toLowerCase().trim();
+    return classStudents.filter(
+      (std) =>
+        std.name.toLowerCase().includes(q) ||
+        String(std.rollNumber).includes(q)
+    );
+  }, [classStudents, studentSearchQuery]);
 
   // Subject Marks Table state
   const [subjectRows, setSubjectRows] = useState<SubjectMarkEntry[]>([]);
@@ -477,35 +490,79 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
 
         </div>
 
-        {/* Quick Student Selection Chips from Class Roster */}
+        {/* Quick Student Selection & Search from Class Roster */}
         {classStudents.length > 0 && (
-          <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-1.5">
-            <span className="text-[11px] font-bold text-slate-500 flex items-center gap-1.5">
-              <FaUserGraduate className="text-[#C8102E]" />
-              শ্রেণি {classGrade}-এর নিবন্ধিত তালিকা থেকে দ্রুত শিক্ষার্থী নির্বাচন করুন:
-            </span>
-            <div className="flex items-center gap-1.5 flex-wrap max-h-28 overflow-y-auto pt-1">
-              {classStudents.map((std) => {
-                const isSelected = String(rollNumber) === String(std.rollNumber);
-                return (
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-2.5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <span className="text-[11px] font-bold text-slate-700 flex items-center gap-1.5">
+                <FaUserGraduate className="text-[#C8102E]" />
+                <span>শ্রেণি {classGrade}-এর শিক্ষার্থী তালিকা থেকে সার্চ বা দ্রুত নির্বাচন:</span>
+                <span className="text-[10px] bg-slate-200 text-slate-700 font-extrabold px-2 py-0.5 rounded-full">
+                  মোট {classStudents.length} জন
+                </span>
+              </span>
+
+              {/* Live Search Input */}
+              <div className="relative w-full sm:w-64">
+                <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
+                  <FaMagnifyingGlass className="w-3 h-3" />
+                </div>
+                <input
+                  type="text"
+                  value={studentSearchQuery}
+                  onChange={(e) => setStudentSearchQuery(e.target.value)}
+                  placeholder="নাম বা রোল লিখে খুঁজুন..."
+                  className="w-full pl-8 pr-7 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#C8102E] focus:border-[#C8102E]"
+                />
+                {studentSearchQuery && (
                   <button
-                    key={std.id}
                     type="button"
-                    onClick={() => {
-                      setRollNumber(String(std.rollNumber));
-                      setStudentName(std.name);
-                    }}
-                    className={`text-[11px] px-2.5 py-1 rounded-lg font-bold transition border ${
-                      isSelected
-                        ? 'bg-[#C8102E] text-white border-[#C8102E] shadow-xs'
-                        : 'bg-white text-slate-700 hover:bg-red-50 border-slate-200'
-                    }`}
+                    onClick={() => setStudentSearchQuery('')}
+                    className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600"
+                    title="সার্চ মুছুন"
                   >
-                    রোল {std.rollNumber}: {std.name}
+                    <FaXmark className="w-3 h-3" />
                   </button>
-                );
-              })}
+                )}
+              </div>
             </div>
+
+            {/* Filtered Students Chips */}
+            {filteredClassStudents.length > 0 ? (
+              <div className="flex items-center gap-1.5 flex-wrap max-h-32 overflow-y-auto pt-1 pr-1">
+                {filteredClassStudents.map((std) => {
+                  const isSelected = String(rollNumber) === String(std.rollNumber);
+                  return (
+                    <button
+                      key={std.id}
+                      type="button"
+                      onClick={() => {
+                        setRollNumber(String(std.rollNumber));
+                        setStudentName(std.name);
+                      }}
+                      className={`text-[11px] px-2.5 py-1 rounded-lg font-bold transition border flex items-center gap-1.5 ${
+                        isSelected
+                          ? 'bg-[#C8102E] text-white border-[#C8102E] shadow-xs'
+                          : 'bg-white text-slate-700 hover:bg-red-50 hover:border-red-200 border-slate-200'
+                      }`}
+                    >
+                      <span className="font-mono">রোল {std.rollNumber}:</span>
+                      <span>{std.name}</span>
+                      {isSelected && <FaCheck className="w-2.5 h-2.5 ml-0.5" />}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="py-2.5 px-3 bg-white rounded-xl border border-dashed border-slate-200 text-center">
+                <p className="text-xs text-slate-500 font-semibold">
+                  &ldquo;<span className="text-rose-600 font-bold">{studentSearchQuery}</span>&rdquo; দিয়ে কোনো শিক্ষার্থী খুঁজে পাওয়া যায়নি।
+                </p>
+                <p className="text-[10px] text-slate-400 mt-0.5">
+                  আপনি উপরের বক্সে সরাসরি যেকোনো নাম ও রোল লিখে রেজাল্ট যোগ করতে পারবেন।
+                </p>
+              </div>
+            )}
           </div>
         )}
 
