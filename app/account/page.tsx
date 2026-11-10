@@ -26,6 +26,7 @@ import {
   FaBookOpen,
   FaChevronRight,
   FaGear,
+  FaTrophy,
 } from 'react-icons/fa6';
 import { HiSparkles } from 'react-icons/hi2';
 
@@ -242,6 +243,14 @@ export default function AccountPage() {
       sublabel: 'রোল ও শ্রেণি অনুযায়ী গ্রেডশিট',
       href: '/results',
       icon: FaAward,
+      active: false,
+    },
+    {
+      id: 'leaderboard',
+      label: 'কুইজ লিডারবোর্ড',
+      sublabel: 'মেধাতালিকা ও সেরা র‍্যাঙ্কিং স্কোর',
+      href: '/quiz#leaderboard',
+      icon: FaTrophy,
       active: false,
     },
   ];

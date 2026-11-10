@@ -27,6 +27,7 @@ import {
   FaUserCheck,
   FaGem,
   FaGift,
+  FaTrophy,
 } from 'react-icons/fa6';
 import { HiSparkles } from 'react-icons/hi2';
 
@@ -456,6 +457,25 @@ export default function MobileBottomNav() {
                         কুইজ ও মডেল টেস্ট
                       </p>
                       <p className="text-[10px] text-slate-400">ফ্রি ও পেইড স্পেশাল মডেল টেস্ট</p>
+                    </div>
+                  </div>
+                  <FaChevronRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+                </Link>
+
+                <Link
+                  href="/quiz#leaderboard"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-50 transition group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                      <FaTrophy className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-slate-800 group-hover:text-[#C8102E] transition">
+                        কুইজ লিডারবোর্ড (মেধাতালিকা)
+                      </p>
+                      <p className="text-[10px] text-slate-400">সেরা ফলাফল ও মেডেল তালিকা</p>
                     </div>
                   </div>
                   <FaChevronRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
