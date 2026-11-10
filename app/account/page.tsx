@@ -249,7 +249,7 @@ export default function AccountPage() {
       id: 'leaderboard',
       label: 'কুইজ লিডারবোর্ড',
       sublabel: 'মেধাতালিকা ও সেরা র‍্যাঙ্কিং স্কোর',
-      href: '/quiz#leaderboard',
+      href: '/leaderboard',
       icon: FaTrophy,
       active: false,
     },
