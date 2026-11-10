@@ -64,11 +64,20 @@ export default function ResultsPage() {
       }))
     );
 
+    const birthYear = 2026 - (cls + 6);
+    const birthDay = ((roll * 7) % 28) + 1;
+    const birthMonth = ((roll * 3) % 12) + 1;
+    const dob = `${String(birthDay).padStart(2, '0')}/${String(birthMonth).padStart(2, '0')}/${birthYear}`;
+
     return {
       studentName: getBengaliName(roll),
+      fatherName: getFatherName(roll),
+      motherName: getMotherName(roll),
+      schoolName: getSchoolName(cls, roll),
+      dateOfBirth: dob,
       classGrade: cls,
       rollNumber: roll,
-      examTitle: 'মাসিক মূল্যায়ন ও সাময়িক পরীক্ষা ২০২৬',
+      examTitle: '১ম সাময়িক মূল্যায়ন পরীক্ষা ২০২৬',
       totalMarks: overall.totalFullMarks,
       obtainedMarks: overall.totalObtainedMarks,
       grade: overall.grade,
@@ -117,6 +126,10 @@ export default function ResultsPage() {
 
         setResult({
           studentName: item.studentName,
+          fatherName: item.fatherName || getFatherName(item.rollNumber),
+          motherName: item.motherName || getMotherName(item.rollNumber),
+          schoolName: item.schoolName || getSchoolName(item.classGrade, item.rollNumber),
+          dateOfBirth: item.dateOfBirth,
           classGrade: item.classGrade,
           rollNumber: item.rollNumber,
           examTitle: item.examTitle,
@@ -152,6 +165,44 @@ export default function ResultsPage() {
       'আনিকা তাবাসসুম',
     ];
     return names[(roll - 1) % names.length];
+  };
+
+  const getFatherName = (roll: number) => {
+    const fathers = [
+      'মো: রফিকুল ইসলাম',
+      'মো: শাহ আলম',
+      'মো: আব্দুল মালেক',
+      'মো: আনোয়ার হোসেন',
+      'মো: নজরুল ইসলাম',
+      'মো: গোলাম মোস্তফা',
+      'মো: সিরাজুল ইসলাম',
+      'মো: আবুল কাশেম',
+    ];
+    return fathers[(roll - 1) % fathers.length];
+  };
+
+  const getMotherName = (roll: number) => {
+    const mothers = [
+      'মোসা: রোকেয়া বেগম',
+      'মোসা: শাহানাজ বেগম',
+      'মোসা: পারভীন আক্তার',
+      'মোসা: নাছিমা খাতুন',
+      'মোসা: ফরিদা ইয়াসমিন',
+      'মোসা: রেহানা সুলতানা',
+      'মোসা: মমতাজ বেগম',
+      'মোসা: সালমা আক্তার',
+    ];
+    return mothers[(roll - 1) % mothers.length];
+  };
+
+  const getSchoolName = (cls: number, roll: number) => {
+    const schools = [
+      'নীলফামারী সরকারি উচ্চ বিদ্যালয়',
+      'নীলফামারী সরকারি বালিকা উচ্চ বিদ্যালয়',
+      'নীলফামারী মডেল হাই স্কুল',
+      'কালেক্টরেট পাবলিক স্কুল ও কলেজ, নীলফামারী',
+    ];
+    return schools[(cls + roll) % schools.length];
   };
 
   return (

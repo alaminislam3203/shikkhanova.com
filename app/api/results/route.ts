@@ -4,10 +4,23 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import fs from 'fs';
 import path from 'path';
+import { getStudentProfile } from '@/lib/studentProfiles';
 
 export const dynamic = 'force-dynamic';
 
 const LOCAL_RESULTS_PATH = path.join(process.cwd(), 'data', 'results.json');
+
+function enrichResultWithProfile(res: any) {
+  if (!res) return res;
+  const prof = getStudentProfile(res.classGrade, res.rollNumber);
+  return {
+    ...res,
+    fatherName: res.fatherName || prof.fatherName,
+    motherName: res.motherName || prof.motherName,
+    schoolName: res.schoolName || prof.schoolName,
+    dateOfBirth: res.dateOfBirth || prof.dateOfBirth,
+  };
+}
 
 function readLocalResults(): any[] {
   try {
@@ -47,7 +60,7 @@ export async function GET(req: Request) {
           orderBy: [{ classGrade: 'asc' }, { rollNumber: 'asc' }, { createdAt: 'desc' }],
         });
         if (results && results.length > 0) {
-          return NextResponse.json({ results });
+          return NextResponse.json({ results: results.map(enrichResultWithProfile) });
         }
       } catch {}
 
@@ -56,7 +69,7 @@ export async function GET(req: Request) {
       const filtered = classGrade && classGrade !== 'all'
         ? local.filter((r) => String(r.classGrade) === String(classGrade))
         : local;
-      return NextResponse.json({ results: filtered });
+      return NextResponse.json({ results: filtered.map(enrichResultWithProfile) });
     }
 
     // 2. Student / Parent Search by Class and Roll
@@ -74,7 +87,7 @@ export async function GET(req: Request) {
       });
 
       if (results && results.length > 0) {
-        return NextResponse.json({ results });
+        return NextResponse.json({ results: results.map(enrichResultWithProfile) });
       }
     } catch {}
 
@@ -84,7 +97,7 @@ export async function GET(req: Request) {
       (r) => String(r.classGrade) === String(classGrade) && String(r.rollNumber) === String(rollNumber)
     );
 
-    return NextResponse.json({ results: matched });
+    return NextResponse.json({ results: matched.map(enrichResultWithProfile) });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

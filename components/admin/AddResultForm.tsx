@@ -70,7 +70,17 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
   const [editingResultId, setEditingResultId] = useState<string | null>(null);
 
   // Class Students from Database / Local
-  const [classStudents, setClassStudents] = useState<Array<{ id: string; rollNumber: number; name: string }>>([]);
+  const [classStudents, setClassStudents] = useState<
+    Array<{
+      id: string;
+      rollNumber: number;
+      name: string;
+      fatherName?: string;
+      motherName?: string;
+      schoolName?: string;
+      dateOfBirth?: string;
+    }>
+  >([]);
   const [studentSearchQuery, setStudentSearchQuery] = useState<string>('');
 
   // Filter students based on search query (by roll or name)
@@ -548,6 +558,11 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
                     >
                       <span className="font-mono">রোল {std.rollNumber}:</span>
                       <span>{std.name}</span>
+                      {std.schoolName && (
+                        <span className="text-[9px] text-slate-400 font-normal hidden md:inline">
+                          • {std.schoolName}
+                        </span>
+                      )}
                       {isSelected && <FaCheck className="w-2.5 h-2.5 ml-0.5" />}
                     </button>
                   );
