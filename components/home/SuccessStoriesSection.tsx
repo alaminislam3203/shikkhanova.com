@@ -14,7 +14,7 @@ import { toBengaliClass } from '@/lib/defaultQuizData';
 
 const CLASS_TABS = [
   { label: 'সকল সাফল্য', value: 'all' },
-  { label: '১০ম শ্রেণি (SSC)', value: '10' },
+  { label: '১০ম শ্রেণি', value: '10' },
   { label: '৯ম শ্রেণি', value: '9' },
   { label: '৮ম শ্রেণি', value: '8' },
   { label: '৭ম শ্রেণি', value: '7' },
