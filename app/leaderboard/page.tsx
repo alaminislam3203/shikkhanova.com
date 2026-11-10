@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import Logo from '@/components/common/Logo';
 import { useSession } from 'next-auth/react';
 import {
   FaTrophy,
@@ -357,27 +356,20 @@ export default function LeaderboardPage() {
       }}
       className="min-h-screen text-white -mt-6 sm:-mt-8 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-8 sm:py-12 select-none"
     >
-      <div className="max-w-5xl mx-auto space-y-8 sm:space-y-12">
+      <div className="w-full space-y-8 sm:space-y-12">
         
         {/* ==================================================================== */}
-        {/* TOP BAR: BRAND LOGO & TIME PERIOD TOGGLE (WEEKLY / MONTHLY)         */}
+        {/* TOP BAR: BACK BUTTON & TIME PERIOD TOGGLE (WEEKLY / MONTHLY)        */}
         {/* ==================================================================== */}
         <header className="flex items-center justify-between gap-4 border-b border-white/10 pb-6">
           <div className="flex items-center gap-3">
             <Link
               href="/account"
-              className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center text-white transition active:scale-95"
+              className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center text-white transition active:scale-95 shadow-sm"
               title="একাউন্টে ফিরে যান"
             >
-              <FaArrowLeft className="w-3.5 h-3.5" />
+              <FaArrowLeft className="w-4 h-4" />
             </Link>
-
-            <div className="flex items-center gap-2">
-              <Logo size="sm" clickable={true} />
-              <span className="hidden sm:inline-block text-[11px] font-black uppercase tracking-widest text-amber-300 bg-amber-400/10 px-2.5 py-0.5 rounded-full border border-amber-300/20">
-                Leaderboard
-              </span>
-            </div>
           </div>
 
           {/* Time Period Pill Toggle (Exact look from reference image) */}
