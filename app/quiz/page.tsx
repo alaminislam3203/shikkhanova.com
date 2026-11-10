@@ -254,69 +254,69 @@ export default function QuizPage() {
   };
 
   return (
-    <div className="space-y-12 pb-16">
+    <div className="space-y-8 sm:space-y-12 pb-16">
       {/* ─────────────────────────────────────────────────────────────
-          1. HERO HEADER SECTION
+          1. HERO HEADER SECTION (Compact Banner on Mobile)
       ───────────────────────────────────────────────────────────── */}
-      <section className="relative rounded-3xl bg-gradient-to-r from-[#0A1E3C] via-[#0F2C59] to-[#200A18] text-white p-6 sm:p-12 shadow-2xl border border-slate-200/20 overflow-hidden">
+      <section className="relative rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#0A1E3C] via-[#0F2C59] to-[#200A18] text-white p-4 sm:p-8 lg:p-12 shadow-xl sm:shadow-2xl border border-slate-200/20 overflow-hidden">
         {/* Glow Spheres */}
-        <div className="absolute -top-16 -right-16 w-64 h-64 bg-[#C8102E]/25 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-12 -right-12 sm:-top-16 sm:-right-16 w-36 h-36 sm:w-64 sm:h-64 bg-[#C8102E]/25 rounded-full blur-2xl sm:blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-12 -left-12 sm:-bottom-16 sm:-left-16 w-36 h-36 sm:w-64 sm:h-64 bg-blue-600/20 rounded-full blur-2xl sm:blur-3xl pointer-events-none" />
 
-        <div className="relative z-10 max-w-3xl space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#C8102E] text-white text-xs font-bold shadow-md">
-            <HiSparkles className="w-4 h-4 text-amber-300" />
+        <div className="relative z-10 max-w-3xl space-y-2.5 sm:space-y-4">
+          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 py-0.5 sm:px-3.5 sm:py-1 rounded-full bg-[#C8102E] text-white text-[10px] sm:text-xs font-bold shadow-md">
+            <HiSparkles className="w-3 h-3 sm:w-4 sm:h-4 text-amber-300" />
             <span>শিক্ষানোভা ডিজিটাল মডেল টেস্ট ২০২৬</span>
           </div>
 
-          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
+          <h1 className="text-lg sm:text-3xl md:text-4xl lg:text-5xl font-black text-white tracking-tight leading-snug sm:leading-tight">
             শিখুন • পরীক্ষা দিন • ফলাফল দেখুন
           </h1>
 
-          <p className="text-sm sm:text-base text-slate-200 font-medium leading-relaxed">
+          <p className="text-[11px] sm:text-sm lg:text-base text-slate-200 font-medium leading-relaxed line-clamp-2 sm:line-clamp-none">
             ৫ম থেকে ১০ম শ্রেণির শিক্ষার্থীদের জন্য অধ্যায়ভিত্তিক ও শ্রেণিভিত্তিক অনলাইন MCQ মডেল টেস্ট প্ল্যাটফর্ম। সাথে
             সাথে ফলাফল, সঠিক উত্তরের ব্যাখ্যা ও স্বয়ংক্রিয় লিডারবোর্ড।
           </p>
 
           {/* Quick Buttons */}
-          <div className="flex flex-wrap items-center gap-3 pt-2">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-1 sm:pt-2">
             <button
               onClick={() => handleStartFreeClassTest(selectedClass)}
-              className="px-5 py-3 rounded-2xl bg-[#C8102E] hover:bg-[#A50D26] text-white font-black text-xs sm:text-sm shadow-xl transition transform hover:-translate-y-0.5 active:scale-95 flex items-center gap-2"
+              className="px-3.5 py-2 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl bg-[#C8102E] hover:bg-[#A50D26] text-white font-black text-[11px] sm:text-sm shadow-lg transition transform hover:-translate-y-0.5 active:scale-95 flex items-center gap-1.5 sm:gap-2"
             >
-              <FaGift className="w-4 h-4 text-amber-300" />
-              <span>{toBengaliClass(selectedClass)} শ্রেণির Free Test দিন</span>
+              <FaGift className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-300" />
+              <span>{toBengaliClass(selectedClass)} শ্রেণির Free Test</span>
             </button>
 
             <button
               onClick={() => scrollTo(resultsRef)}
-              className="px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm backdrop-blur-md border border-white/20 transition active:scale-95 flex items-center gap-2"
+              className="px-3.5 py-2 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-[11px] sm:text-sm backdrop-blur-md border border-white/20 transition active:scale-95 flex items-center gap-1.5 sm:gap-2"
             >
-              <FaAward className="w-4 h-4 text-amber-400" />
-              <span>লিডারবোর্ড দেখুন</span>
+              <FaAward className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
+              <span>লিডারবোর্ড</span>
             </button>
 
             {/* Admin Management Link — Visible ONLY if Admin is logged in */}
             {session?.user?.role === 'ADMIN' && (
               <Link
                 href="/admin?tab=mcqQuiz"
-                className="px-4 py-3 rounded-2xl bg-slate-900/80 hover:bg-black text-amber-300 hover:text-amber-200 font-bold text-xs border border-amber-400/30 transition flex items-center gap-1.5"
+                className="px-3 py-2 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-900/80 hover:bg-black text-amber-300 hover:text-amber-200 font-bold text-[11px] sm:text-xs border border-amber-400/30 transition flex items-center gap-1.5"
               >
-                <FaGear className="w-3.5 h-3.5 text-amber-400" />
-                <span>MCQ ম্যানেজমেন্ট (অ্যাডমিন)</span>
+                <FaGear className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-400" />
+                <span>MCQ ম্যানেজমেন্ট</span>
               </Link>
             )}
           </div>
 
           {/* Student Name Input */}
-          <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs text-slate-300">
-            <span className="font-bold text-slate-200">আপনার নাম:</span>
+          <div className="pt-1 sm:pt-2 flex flex-row items-center gap-2 text-[11px] sm:text-xs text-slate-300">
+            <span className="font-bold text-slate-200 shrink-0">আপনার নাম:</span>
             <input
               type="text"
               value={studentNameInput}
               onChange={(e) => setStudentNameInput(e.target.value)}
               placeholder="নাম লিখুন (লিডারবোর্ডে যুক্ত হবে)"
-              className="bg-white/10 border border-white/20 focus:border-[#C8102E] rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-400 outline-none w-64"
+              className="bg-white/10 border border-white/20 focus:border-[#C8102E] rounded-xl px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs text-white placeholder-slate-400 outline-none w-48 sm:w-64"
             />
           </div>
         </div>
@@ -341,14 +341,14 @@ export default function QuizPage() {
                 key={cls}
                 type="button"
                 onClick={() => setSelectedClass(cls)}
-                className={`p-4 rounded-2xl border text-center transition-all duration-200 group relative overflow-hidden ${
+                className={`p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border text-center transition-all duration-200 group relative overflow-hidden ${
                   isSelected
                     ? 'bg-gradient-to-tr from-[#9B0D23] via-[#C8102E] to-[#E5254A] text-white border-transparent shadow-lg shadow-red-600/25 scale-102'
                     : 'bg-white hover:bg-red-50/40 text-slate-700 border-slate-200 hover:border-red-200 shadow-xs'
                 }`}
               >
-                <div className="text-2xl mb-1">🎓</div>
-                <div className="font-black text-sm sm:text-base">{toBengaliClass(cls)} শ্রেণি</div>
+                <div className="text-xl sm:text-2xl mb-0.5 sm:mb-1">🎓</div>
+                <div className="font-black text-xs sm:text-base">{toBengaliClass(cls)} শ্রেণি</div>
                 <div className={`text-[10px] mt-0.5 ${isSelected ? 'text-red-100' : 'text-slate-400'}`}>
                   Model Test
                 </div>
@@ -597,7 +597,7 @@ export default function QuizPage() {
                   className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2 active:scale-98"
                 >
                   <FaGift className="w-3.5 h-3.5" />
-                  <span>🎁 Free Test শুরু করুন</span>
+                  <span>Free Test শুরু করুন</span>
                 </button>
               </div>
             );
@@ -671,7 +671,7 @@ export default function QuizPage() {
                   ) : (
                     <>
                       <FaLock className="w-3.5 h-3.5" />
-                      <span>💳 Paid Test কিনুন (৳৫০)</span>
+                      <span>Paid Test কিনুন (৳৫০)</span>
                     </>
                   )}
                 </button>
