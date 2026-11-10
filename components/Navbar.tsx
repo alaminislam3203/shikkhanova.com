@@ -72,6 +72,15 @@ const INSTANT_SITE_INDEX = [
     keywords: 'pdf note sheet হ্যান্ডনোট শিট সাজেশন গণিত বিজ্ঞান ইংরেজি পদার্থ রসায়ন জীববিজ্ঞান আইসিটি',
   },
   {
+    id: 'page-quiz',
+    title: 'অনলাইন কুইজ ও মডেল টেস্ট (MCQ Model Test)',
+    subtitle: '৫ম-১০ম শ্রেণির ফ্রি ও প্রিমিয়াম মডেল টেস্ট, ইনস্ট্যান্ট রেজাল্ট ও লিডারবোর্ড',
+    categoryLabel: 'মডেল টেস্ট',
+    href: '/quiz',
+    badge: 'MCQ Test',
+    keywords: 'quiz mcq model test কুইজ মডেল টেস্ট পরীক্ষা mcq প্রশ্ন উত্তর ফ্রি প্রিমিয়াম',
+  },
+  {
     id: 'page-results',
     title: 'কোচিং পরীক্ষার রেজাল্ট ও মার্কশিট',
     subtitle: 'শ্রেণি ও রোল নম্বর দিয়ে অফিশিয়াল গ্রেডশিট ও জিপিএ অনুসন্ধান',
@@ -306,6 +315,7 @@ export default function Navbar() {
         { href: '/chairman-message', label: 'চেয়ারম্যানের বার্তা' },
       ],
     },
+    { href: '/quiz', label: 'মডেল টেস্ট', badge: 'MCQ' },
     { href: '/notices', label: 'নোটিশ' },
     { href: '/results', label: 'রেজাল্ট' },
     { href: '/pdfs', label: 'শিট ও নোট' },

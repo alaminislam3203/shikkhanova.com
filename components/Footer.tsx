@@ -193,6 +193,12 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2.5 text-xs font-semibold text-slate-600">
               <li>
+                <Link href="/quiz" className="hover:text-[#C8102E] transition-colors flex items-center gap-2 group">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-400 group-hover:bg-[#C8102E]" />
+                  <span>অনলাইন কুইজ ও মডেল টেস্ট</span>
+                </Link>
+              </li>
+              <li>
                 <Link href="/results" className="hover:text-[#C8102E] transition-colors flex items-center gap-2 group">
                   <span className="w-1.5 h-1.5 rounded-full bg-red-400 group-hover:bg-[#C8102E]" />
                   <span>কোচিং পরীক্ষার ফলাফল ও মার্কশিট</span>

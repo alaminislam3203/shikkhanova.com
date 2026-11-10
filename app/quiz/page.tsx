@@ -1,0 +1,1396 @@
+'use client';
+
+import React, { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import {
+  FREE_CLASS_QUESTIONS,
+  PAID_CLASS_QUESTIONS,
+  SUBJECT_LIST,
+  SUBJECT_QUESTIONS,
+  RawQuestion,
+} from '@/lib/defaultQuizData';
+import {
+  FaGraduationCap,
+  FaAward,
+  FaClock,
+  FaCircleCheck,
+  FaCircleXmark,
+  FaGift,
+  FaGem,
+  FaBookOpen,
+  FaCartShopping,
+  FaPlus,
+  FaTrash,
+  FaPhone,
+  FaShareNodes,
+  FaRotateRight,
+  FaCheck,
+  FaArrowRight,
+  FaLock,
+  FaKey,
+} from 'react-icons/fa6';
+import { HiSparkles } from 'react-icons/hi2';
+
+interface QuizResultItem {
+  id: string;
+  name: string;
+  classGrade: number;
+  subject: string;
+  score: number;
+  total: number;
+  percentage: number;
+  medal: string;
+  date: string;
+}
+
+export default function QuizPage() {
+  const { data: session } = useSession();
+
+  // Navigation / Filter States
+  const [selectedClass, setSelectedClass] = useState<number>(6);
+  const [selectedSubject, setSelectedSubject] = useState<string>('বাংলা');
+
+  // Active Quiz State
+  const [isTestActive, setIsTestActive] = useState<boolean>(false);
+  const [activeTestTitle, setActiveTestTitle] = useState<string>('');
+  const [activeTestBadge, setActiveTestBadge] = useState<string>('');
+  const [activeQuestions, setActiveQuestions] = useState<RawQuestion[]>([]);
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+  const [quizScore, setQuizScore] = useState<number>(0);
+
+  // Student Identity
+  const [studentNameInput, setStudentNameInput] = useState<string>('');
+
+  // Leaderboard / Result Board State
+  const [resultsList, setResultsList] = useState<QuizResultItem[]>([]);
+
+  // Unlocked Paid Tests (persisted in localStorage)
+  const [unlockedClasses, setUnlockedClasses] = useState<number[]>([]);
+
+  // Payment / Unlock Modal
+  const [paymentModalOpen, setPaymentModalOpen] = useState<boolean>(false);
+  const [paymentTargetClass, setPaymentTargetClass] = useState<number>(6);
+  const [paymentPackageName, setPaymentPackageName] = useState<string>('Paid Model Test');
+  const [paymentAmount, setPaymentAmount] = useState<number>(50);
+  const [trxIdInput, setTrxIdInput] = useState<string>('');
+  const [accessCodeInput, setAccessCodeInput] = useState<string>('');
+  const [unlockSuccessMsg, setUnlockSuccessMsg] = useState<string>('');
+
+  // Admin MCQ Management State
+  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState<boolean>(false);
+  const [adminTab, setAdminTab] = useState<'add' | 'bulk' | 'manage'>('add');
+  const [adminClass, setAdminClass] = useState<number>(6);
+  const [adminSubject, setAdminSubject] = useState<string>('বাংলা');
+  const [newQText, setNewQText] = useState<string>('');
+  const [newOpA, setNewOpA] = useState<string>('');
+  const [newOpB, setNewOpB] = useState<string>('');
+  const [newOpC, setNewOpC] = useState<string>('');
+  const [newOpD, setNewOpD] = useState<string>('');
+  const [newCorrectAns, setNewCorrectAns] = useState<number>(0);
+  const [newExplanation, setNewExplanation] = useState<string>('');
+  const [bulkText, setBulkText] = useState<string>('');
+  const [adminMsg, setAdminMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+
+  // Custom added questions (Class -> Subject -> Array)
+  const [customQuestions, setCustomQuestions] = useState<Record<string, Record<string, RawQuestion[]>>>({});
+
+  // Refs for scrolling
+  const testAreaRef = useRef<HTMLDivElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
+  const adminRef = useRef<HTMLDivElement>(null);
+
+  // Load persisted results and custom questions on mount
+  useEffect(() => {
+    try {
+      const storedResults = localStorage.getItem('sn_quiz_results');
+      if (storedResults) {
+        setResultsList(JSON.parse(storedResults));
+      }
+
+      const storedCustom = localStorage.getItem('sn_custom_questions');
+      if (storedCustom) {
+        setCustomQuestions(JSON.parse(storedCustom));
+      }
+
+      const storedUnlocked = localStorage.getItem('sn_unlocked_classes');
+      if (storedUnlocked) {
+        setUnlockedClasses(JSON.parse(storedUnlocked));
+      }
+
+      if (session?.user?.name) {
+        setStudentNameInput(session.user.name);
+      } else {
+        const savedName = localStorage.getItem('sn_student_quiz_name');
+        if (savedName) setStudentNameInput(savedName);
+      }
+    } catch {}
+  }, [session]);
+
+  const scrollTo = (ref: React.RefObject<HTMLDivElement>) => {
+    setTimeout(() => {
+      ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
+
+  // Start Free Test for a specific class (5-10)
+  const handleStartFreeClassTest = (classGrade: number) => {
+    setSelectedClass(classGrade);
+    const questions = FREE_CLASS_QUESTIONS[classGrade] || FREE_CLASS_QUESTIONS[6];
+    setActiveQuestions(questions);
+    setSelectedAnswers({});
+    setIsSubmitted(false);
+    setIsTestActive(true);
+    setActiveTestTitle(`${classGrade}ম শ্রেণি — ফ্রি মডেল টেস্ট`);
+    setActiveTestBadge('🎁 Free Model Test');
+    scrollTo(testAreaRef);
+  };
+
+  // Start or open Paid Test
+  const handleOpenPaidClassTest = (classGrade: number) => {
+    setSelectedClass(classGrade);
+    const isUnlocked = unlockedClasses.includes(classGrade) || session?.user?.role === 'ADMIN';
+
+    if (isUnlocked) {
+      // Already unlocked, start the test directly!
+      const questions = PAID_CLASS_QUESTIONS[classGrade] || PAID_CLASS_QUESTIONS[6];
+      setActiveQuestions(questions);
+      setSelectedAnswers({});
+      setIsSubmitted(false);
+      setIsTestActive(true);
+      setActiveTestTitle(`${classGrade}ম শ্রেণি — প্রিমিয়াম মডেল টেস্ট`);
+      setActiveTestBadge('💎 Premium Test');
+      scrollTo(testAreaRef);
+    } else {
+      // Open Payment & Access Code Modal
+      setPaymentTargetClass(classGrade);
+      setPaymentPackageName(`${classGrade}ম শ্রেণির প্রিমিয়াম মডেল টেস্ট`);
+      setPaymentAmount(50);
+      setUnlockSuccessMsg('');
+      setPaymentModalOpen(true);
+    }
+  };
+
+  // Start Subject Test
+  const handleStartSubjectTest = (subjectName: string) => {
+    setSelectedSubject(subjectName);
+    // Combine default subject questions + any custom admin questions
+    const defaults = SUBJECT_QUESTIONS[subjectName] || [];
+    const custom = customQuestions[String(selectedClass)]?.[subjectName] || [];
+    const combined = [...custom, ...defaults];
+
+    setActiveQuestions(combined.length > 0 ? combined : defaults);
+    setSelectedAnswers({});
+    setIsSubmitted(false);
+    setIsTestActive(true);
+    setActiveTestTitle(`${selectedClass}ম শ্রেণি — ${subjectName} বিষয়ভিত্তিক টেস্ট`);
+    setActiveTestBadge(`📖 ${subjectName}`);
+    scrollTo(testAreaRef);
+  };
+
+  // Submit Active Test
+  const handleSubmitTest = () => {
+    let score = 0;
+    activeQuestions.forEach((q, idx) => {
+      if (selectedAnswers[idx] === q.ans) {
+        score++;
+      }
+    });
+
+    const total = activeQuestions.length;
+    const percentage = Math.round((score / total) * 100);
+    setQuizScore(score);
+    setIsSubmitted(true);
+
+    // Determine Medal
+    let medal = '⭐ Top 10';
+    if (percentage === 100) medal = '🥇 Gold';
+    else if (percentage >= 80) medal = '🥈 Silver';
+    else if (percentage >= 60) medal = '🥉 Bronze';
+
+    const studentName =
+      studentNameInput.trim() || session?.user?.name || `শিক্ষার্থী #${Math.floor(100 + Math.random() * 900)}`;
+
+    if (studentNameInput.trim()) {
+      try {
+        localStorage.setItem('sn_student_quiz_name', studentNameInput.trim());
+      } catch {}
+    }
+
+    const newRecord: QuizResultItem = {
+      id: String(Date.now()),
+      name: studentName,
+      classGrade: selectedClass,
+      subject: activeTestTitle.split('—')[1]?.trim() || 'মডেল টেস্ট',
+      score,
+      total,
+      percentage,
+      medal,
+      date: new Date().toLocaleDateString('bn-BD', { day: 'numeric', month: 'short', year: 'numeric' }),
+    };
+
+    const updated = [newRecord, ...resultsList].slice(0, 30);
+    setResultsList(updated);
+    try {
+      localStorage.setItem('sn_quiz_results', JSON.stringify(updated));
+    } catch {}
+
+    scrollTo(testAreaRef);
+  };
+
+  // Unlock paid test with access code or TrxID
+  const handleVerifyUnlock = (e: React.FormEvent) => {
+    e.preventDefault();
+    const code = accessCodeInput.trim().toUpperCase();
+    const trx = trxIdInput.trim();
+
+    // Universal promo access codes or valid TrxID (>= 6 chars)
+    const validCodes = ['NOVA50', 'SHIKKHA2026', 'SHIKKHANOVA', 'ADMIN100', 'FREE2026'];
+    const isCodeValid = validCodes.includes(code);
+    const isTrxValid = trx.length >= 6;
+
+    if (isCodeValid || isTrxValid) {
+      const updated = Array.from(new Set([...unlockedClasses, paymentTargetClass]));
+      setUnlockedClasses(updated);
+      try {
+        localStorage.setItem('sn_unlocked_classes', JSON.stringify(updated));
+      } catch {}
+
+      setUnlockSuccessMsg(`🎉 অভিনন্দন! ${paymentTargetClass}ম শ্রেণির প্রিমিয়াম মডেল টেস্ট সফলভাবে আনলক হয়েছে!`);
+      setTimeout(() => {
+        setPaymentModalOpen(false);
+        handleStartPaidAfterUnlock(paymentTargetClass);
+      }, 1500);
+    } else {
+      alert('অনুগ্রহ করে সঠিক অ্যাক্সেস কোড অথবা বিকাশ/নগদ TrxID প্রদান করুন।');
+    }
+  };
+
+  const handleStartPaidAfterUnlock = (classGrade: number) => {
+    const questions = PAID_CLASS_QUESTIONS[classGrade] || PAID_CLASS_QUESTIONS[6];
+    setActiveQuestions(questions);
+    setSelectedAnswers({});
+    setIsSubmitted(false);
+    setIsTestActive(true);
+    setActiveTestTitle(`${classGrade}ম শ্রেণি — প্রিমিয়াম মডেল টেস্ট`);
+    setActiveTestBadge('💎 Premium Test');
+    scrollTo(testAreaRef);
+  };
+
+  // Admin Single Question Add
+  const handleAddSingleQuestion = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newQText.trim() || !newOpA.trim() || !newOpB.trim() || !newOpC.trim() || !newOpD.trim()) {
+      setAdminMsg({ text: 'অনুগ্রহ করে প্রশ্ন এবং ৪টি অপশন সঠিকভাবে পূরণ করুন।', type: 'error' });
+      return;
+    }
+
+    const newQ: RawQuestion = {
+      q: newQText.trim(),
+      options: [newOpA.trim(), newOpB.trim(), newOpC.trim(), newOpD.trim()],
+      ans: newCorrectAns,
+      explanation: newExplanation.trim() || undefined,
+    };
+
+    const cStr = String(adminClass);
+    const updated = { ...customQuestions };
+    if (!updated[cStr]) updated[cStr] = {};
+    if (!updated[cStr][adminSubject]) updated[cStr][adminSubject] = [];
+    updated[cStr][adminSubject].push(newQ);
+
+    setCustomQuestions(updated);
+    try {
+      localStorage.setItem('sn_custom_questions', JSON.stringify(updated));
+    } catch {}
+
+    setAdminMsg({
+      text: `✅ প্রশ্ন সফলভাবে সংরক্ষণ হয়েছে! (${adminClass}ম শ্রেণি — ${adminSubject})`,
+      type: 'success',
+    });
+    setNewQText('');
+    setNewOpA('');
+    setNewOpB('');
+    setNewOpC('');
+    setNewOpD('');
+    setNewExplanation('');
+  };
+
+  // Admin Bulk Questions Add
+  const handleAddBulkQuestions = (e: React.FormEvent) => {
+    e.preventDefault();
+    const lines = bulkText.split('\n').map((l) => l.trim()).filter(Boolean);
+    if (lines.length === 0) {
+      setAdminMsg({ text: 'কোনো প্রশ্ন পাওয়া যায়নি। নির্দিষ্ট ফরম্যাটে লিখুন।', type: 'error' });
+      return;
+    }
+
+    let addedCount = 0;
+    let skippedCount = 0;
+    const cStr = String(adminClass);
+    const updated = { ...customQuestions };
+    if (!updated[cStr]) updated[cStr] = {};
+    if (!updated[cStr][adminSubject]) updated[cStr][adminSubject] = [];
+
+    lines.forEach((line) => {
+      const parts = line.split('|').map((p) => p.trim());
+      if (parts.length >= 6) {
+        const qText = parts[0];
+        const ops: [string, string, string, string] = [parts[1], parts[2], parts[3], parts[4]];
+        const ansChar = parts[5].toUpperCase();
+        const ansIdx = ansChar === 'A' ? 0 : ansChar === 'B' ? 1 : ansChar === 'C' ? 2 : ansChar === 'D' ? 3 : 0;
+        const exp = parts[6] ? parts[6] : undefined;
+
+        updated[cStr][adminSubject].push({
+          q: qText,
+          options: ops,
+          ans: ansIdx,
+          explanation: exp,
+        });
+        addedCount++;
+      } else {
+        skippedCount++;
+      }
+    });
+
+    setCustomQuestions(updated);
+    try {
+      localStorage.setItem('sn_custom_questions', JSON.stringify(updated));
+    } catch {}
+
+    setAdminMsg({
+      text: `✅ ${addedCount}টি প্রশ্ন যোগ হয়েছে! ${skippedCount > 0 ? `(${skippedCount}টি লাইন সঠিক ফরম্যাট ছিল না)` : ''}`,
+      type: 'success',
+    });
+    setBulkText('');
+  };
+
+  // Delete Question
+  const handleDeleteCustomQuestion = (cls: number, sub: string, idx: number) => {
+    if (!confirm('আপনি কি এই প্রশ্নটি মুছে ফেলতে চান?')) return;
+    const cStr = String(cls);
+    const updated = { ...customQuestions };
+    if (updated[cStr]?.[sub]) {
+      updated[cStr][sub].splice(idx, 1);
+      setCustomQuestions(updated);
+      try {
+        localStorage.setItem('sn_custom_questions', JSON.stringify(updated));
+      } catch {}
+    }
+  };
+
+  // Clear Leaderboard
+  const handleClearResults = () => {
+    if (confirm('আপনি কি রেজাল্ট বোর্ডের সকল ফলাফল পরিষ্কার করতে চান?')) {
+      setResultsList([]);
+      try {
+        localStorage.removeItem('sn_quiz_results');
+      } catch {}
+    }
+  };
+
+  return (
+    <div className="space-y-12 pb-16">
+      {/* ─────────────────────────────────────────────────────────────
+          1. HERO HEADER SECTION
+      ───────────────────────────────────────────────────────────── */}
+      <section className="relative rounded-3xl bg-gradient-to-r from-[#0A1E3C] via-[#0F2C59] to-[#200A18] text-white p-6 sm:p-12 shadow-2xl border border-slate-200/20 overflow-hidden">
+        {/* Glow Spheres */}
+        <div className="absolute -top-16 -right-16 w-64 h-64 bg-[#C8102E]/25 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative z-10 max-w-3xl space-y-4">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#C8102E] text-white text-xs font-bold shadow-md">
+            <HiSparkles className="w-4 h-4 text-amber-300" />
+            <span>শিক্ষানোভা ডিজিটাল মডেল টেস্ট ২০২৬</span>
+          </div>
+
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
+            শিখুন • পরীক্ষা দিন • ফলাফল দেখুন
+          </h1>
+
+          <p className="text-sm sm:text-base text-slate-200 font-medium leading-relaxed">
+            ৫ম থেকে ১০ম শ্রেণির শিক্ষার্থীদের জন্য অধ্যায়ভিত্তিক ও শ্রেণিভিত্তিক অনলাইন MCQ মডেল টেস্ট প্ল্যাটফর্ম। সাথে
+            সাথে ফলাফল, সঠিক উত্তরের ব্যাখ্যা ও স্বয়ংক্রিয় লিডারবোর্ড।
+          </p>
+
+          {/* Quick Buttons */}
+          <div className="flex flex-wrap items-center gap-3 pt-2">
+            <button
+              onClick={() => handleStartFreeClassTest(selectedClass)}
+              className="px-5 py-3 rounded-2xl bg-[#C8102E] hover:bg-[#A50D26] text-white font-black text-xs sm:text-sm shadow-xl transition transform hover:-translate-y-0.5 active:scale-95 flex items-center gap-2"
+            >
+              <FaGift className="w-4 h-4 text-amber-300" />
+              <span>{selectedClass}ম শ্রেণির Free Test দিন</span>
+            </button>
+
+            <button
+              onClick={() => scrollTo(resultsRef)}
+              className="px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm backdrop-blur-md border border-white/20 transition active:scale-95 flex items-center gap-2"
+            >
+              <FaAward className="w-4 h-4 text-amber-400" />
+              <span>লিডারবোর্ড দেখুন</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setIsAdminPanelOpen((prev) => !prev);
+                if (!isAdminPanelOpen) scrollTo(adminRef);
+              }}
+              className="px-4 py-3 rounded-2xl bg-slate-900/60 hover:bg-slate-900 text-slate-300 hover:text-white font-bold text-xs border border-slate-700 transition"
+            >
+              ⚙️ {isAdminPanelOpen ? 'অ্যাডমিন বন্ধ করুন' : 'MCQ ম্যানেজ'}
+            </button>
+          </div>
+
+          {/* Student Name Input */}
+          <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs text-slate-300">
+            <span className="font-bold text-slate-200">আপনার নাম:</span>
+            <input
+              type="text"
+              value={studentNameInput}
+              onChange={(e) => setStudentNameInput(e.target.value)}
+              placeholder="নাম লিখুন (লিডারবোর্ডে যুক্ত হবে)"
+              className="bg-white/10 border border-white/20 focus:border-[#C8102E] rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-400 outline-none w-64"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          2. CLASS SELECTION TABS
+      ───────────────────────────────────────────────────────────── */}
+      <section className="space-y-4">
+        <div className="text-center space-y-1">
+          <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">শ্রেণি নির্বাচন করুন</h2>
+          <p className="text-xs sm:text-sm text-slate-500 font-medium">
+            প্রতিটি ক্লাসের জন্য আলাদা ফ্রি ও প্রিমিয়াম মডেল টেস্ট প্রস্তুত করা আছে
+          </p>
+        </div>
+
+        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2.5 sm:gap-4 max-w-4xl mx-auto">
+          {[5, 6, 7, 8, 9, 10].map((cls) => {
+            const isSelected = selectedClass === cls;
+            return (
+              <button
+                key={cls}
+                type="button"
+                onClick={() => setSelectedClass(cls)}
+                className={`p-4 rounded-2xl border text-center transition-all duration-200 group relative overflow-hidden ${
+                  isSelected
+                    ? 'bg-gradient-to-tr from-[#9B0D23] via-[#C8102E] to-[#E5254A] text-white border-transparent shadow-lg shadow-red-600/25 scale-102'
+                    : 'bg-white hover:bg-red-50/40 text-slate-700 border-slate-200 hover:border-red-200 shadow-xs'
+                }`}
+              >
+                <div className="text-2xl mb-1">🎓</div>
+                <div className="font-black text-sm sm:text-base">{cls}ম শ্রেণি</div>
+                <div className={`text-[10px] mt-0.5 ${isSelected ? 'text-red-100' : 'text-slate-400'}`}>
+                  Model Test
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          3. ACTIVE TEST PANEL (EXAMINATION AREA)
+      ───────────────────────────────────────────────────────────── */}
+      <div ref={testAreaRef}>
+        {isTestActive && (
+          <section className="bg-white rounded-3xl border-2 border-[#C8102E]/30 shadow-2xl p-6 sm:p-10 space-y-6 animate-in slide-in-from-top-4 duration-300 relative overflow-hidden">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 border-b border-slate-200">
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-red-50 text-[#C8102E] text-xs font-bold border border-red-200">
+                  {activeTestBadge}
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">{activeTestTitle}</h3>
+                <p className="text-xs text-slate-500 font-medium">
+                  মোট প্রশ্ন: {activeQuestions.length}টি • প্রতিটি প্রশ্নের সঠিক উত্তর নির্বাচন করুন
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsTestActive(false)}
+                  className="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold transition"
+                >
+                  ✕ বন্ধ করুন
+                </button>
+              </div>
+            </div>
+
+            {/* Questions List */}
+            <div className="space-y-6">
+              {activeQuestions.map((item, qIdx) => {
+                const userSelected = selectedAnswers[qIdx];
+                const isAnswered = userSelected !== undefined;
+                const isCorrect = isAnswered && userSelected === item.ans;
+
+                return (
+                  <div
+                    key={qIdx}
+                    className={`p-5 rounded-2xl border transition-all ${
+                      isSubmitted
+                        ? isCorrect
+                          ? 'bg-emerald-50/60 border-emerald-300'
+                          : 'bg-rose-50/50 border-rose-300'
+                        : isAnswered
+                        ? 'bg-slate-50/80 border-[#C8102E]/30'
+                        : 'bg-slate-50/40 border-slate-200'
+                    }`}
+                  >
+                    {/* Question Title */}
+                    <div className="flex items-start gap-2.5">
+                      <span className="w-6 h-6 rounded-lg bg-[#0A1E3C] text-white flex items-center justify-center text-xs font-black shrink-0 mt-0.5">
+                        {qIdx + 1}
+                      </span>
+                      <p className="text-sm sm:text-base font-bold text-slate-900 leading-snug">{item.q}</p>
+                    </div>
+
+                    {/* Options (A, B, C, D) */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-4 pl-0 sm:pl-8">
+                      {item.options.map((optText, opIdx) => {
+                        const isChosen = userSelected === opIdx;
+                        const isTheCorrectOne = isSubmitted && opIdx === item.ans;
+                        const isWrongChoice = isSubmitted && isChosen && !isTheCorrectOne;
+
+                        let optStyles = 'bg-white border-slate-200 hover:border-slate-300 text-slate-700';
+
+                        if (!isSubmitted && isChosen) {
+                          optStyles = 'bg-red-50 border-[#C8102E] text-[#C8102E] font-bold shadow-xs';
+                        } else if (isSubmitted) {
+                          if (isTheCorrectOne) {
+                            optStyles = 'bg-emerald-100/80 border-emerald-500 text-emerald-900 font-bold';
+                          } else if (isWrongChoice) {
+                            optStyles = 'bg-rose-100/80 border-rose-500 text-rose-900 font-bold line-through';
+                          }
+                        }
+
+                        return (
+                          <label
+                            key={opIdx}
+                            className={`flex items-center gap-3 p-3 rounded-xl border text-xs sm:text-sm cursor-pointer transition-all ${optStyles}`}
+                          >
+                            <input
+                              type="radio"
+                              name={`question_${qIdx}`}
+                              value={opIdx}
+                              disabled={isSubmitted}
+                              checked={isChosen}
+                              onChange={() => {
+                                setSelectedAnswers((prev) => ({ ...prev, [qIdx]: opIdx }));
+                              }}
+                              className="text-[#C8102E] focus:ring-[#C8102E] w-4 h-4 cursor-pointer"
+                            />
+                            <span className="font-bold uppercase text-slate-400">
+                              {String.fromCharCode(65 + opIdx)}.
+                            </span>
+                            <span className="flex-1">{optText}</span>
+                            {isSubmitted && isTheCorrectOne && (
+                              <FaCircleCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                            )}
+                            {isSubmitted && isWrongChoice && (
+                              <FaCircleXmark className="w-4 h-4 text-rose-600 shrink-0" />
+                            )}
+                          </label>
+                        );
+                      })}
+                    </div>
+
+                    {/* Explanation Box (Visible after submission) */}
+                    {isSubmitted && item.explanation && (
+                      <div className="mt-3.5 pl-0 sm:pl-8">
+                        <div className="bg-white/90 border border-slate-200 p-3 rounded-xl text-xs text-slate-600 space-y-1">
+                          <p className="font-bold text-slate-800">💡 ব্যাখ্যা ও সঠিক উত্তর:</p>
+                          <p>{item.explanation}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Submit / Score Action Footer */}
+            <div className="pt-4 border-t border-slate-200">
+              {!isSubmitted ? (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <p className="text-xs text-slate-500 font-medium">
+                    উত্তর দেওয়া হয়েছে: {Object.keys(selectedAnswers).length} / {activeQuestions.length} টি
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleSubmitTest}
+                    className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-black text-sm shadow-xl transition active:scale-95"
+                  >
+                    ✅ পরীক্ষা জমা দিন (Submit Test)
+                  </button>
+                </div>
+              ) : (
+                <div className="p-6 rounded-2xl bg-gradient-to-r from-slate-900 to-[#0A1E3C] text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
+                  <div className="space-y-1 text-center sm:text-left">
+                    <div className="inline-flex items-center gap-1.5 text-xs text-amber-300 font-bold bg-white/10 px-3 py-0.5 rounded-full">
+                      <FaAward /> পরীক্ষার ফলাফল ও মূল্যায়ন
+                    </div>
+                    <h4 className="text-2xl font-black">
+                      আপনার স্কোর: {quizScore} / {activeQuestions.length} (
+                      {Math.round((quizScore / activeQuestions.length) * 100)}%)
+                    </h4>
+                    <p className="text-xs text-slate-300">
+                      {quizScore === activeQuestions.length
+                        ? '🎉 অসাধারণ! আপনি ১০০% সঠিক উত্তর দিয়ে গোল্ড মেডেল অর্জন করেছেন!'
+                        : quizScore >= activeQuestions.length * 0.8
+                        ? '👏 খুব চমৎকার ফলাফল! সিলভার মেডেল নিশ্চিত হয়েছে।'
+                        : 'পরবর্তী মডেল টেস্টে আরও ভালো করার চেষ্টা করুন। শুভকামনা!'}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedAnswers({});
+                        setIsSubmitted(false);
+                      }}
+                      className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition flex items-center gap-1.5"
+                    >
+                      <FaRotateRight className="w-3.5 h-3.5" /> পুনরায় পরীক্ষা দিন
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => scrollTo(resultsRef)}
+                      className="px-5 py-2.5 rounded-xl bg-[#C8102E] hover:bg-[#A50D26] text-white text-xs font-black shadow-lg transition"
+                    >
+                      🏆 লিডারবোর্ড দেখুন
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+      </div>
+
+      {/* ─────────────────────────────────────────────────────────────
+          4. 🎁 CLASS-WISE FREE MODEL TESTS (5th to 10th)
+      ───────────────────────────────────────────────────────────── */}
+      <section className="space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-200 pb-3">
+          <div>
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-0.5 rounded-full border border-emerald-200 mb-1">
+              <FaGift /> ১০০% ফ্রি মডেল টেস্ট
+            </div>
+            <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">🎁 Class-wise Free Model Test</h2>
+            <p className="text-xs text-slate-500 font-medium">
+              ৫ম থেকে ১০ম শ্রেণি পর্যন্ত প্রতিটি ক্লাসের জন্য আলাদা ফ্রি মডেল টেস্ট
+            </p>
+          </div>
+          <span className="text-xs font-bold text-slate-400">৫টি ফ্রি MCQ • তাৎক্ষণিক স্কোর</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[5, 6, 7, 8, 9, 10].map((cls) => {
+            const isCurrentClass = selectedClass === cls;
+            return (
+              <div
+                key={cls}
+                className={`bg-white rounded-3xl p-5 border transition-all duration-200 shadow-sm hover:shadow-md space-y-4 ${
+                  isCurrentClass ? 'border-emerald-500 ring-2 ring-emerald-500/20' : 'border-slate-200'
+                }`}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      ফ্রি টেস্ট
+                    </span>
+                    <h3 className="text-base font-black text-slate-800">🎓 {cls}ম শ্রেণি — Free Test</h3>
+                  </div>
+                  <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black text-lg">
+                    {cls}
+                  </div>
+                </div>
+
+                <p className="text-xs text-slate-500 leading-snug">
+                  ৫টি বাছাইকৃত গুরুত্বপূর্ণ MCQ • সাথে সাথে সঠিক উত্তর ও ব্যাখ্যা সহ ফলাফল।
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() => handleStartFreeClassTest(cls)}
+                  className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2 active:scale-98"
+                >
+                  <FaGift className="w-3.5 h-3.5" />
+                  <span>🎁 Free Test শুরু করুন</span>
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          5. 💎 CLASS-WISE PAID/PREMIUM MODEL TESTS (5th to 10th)
+      ───────────────────────────────────────────────────────────── */}
+      <section className="space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-200 pb-3">
+          <div>
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#C8102E] bg-red-50 px-3 py-0.5 rounded-full border border-red-200 mb-1">
+              <FaGem /> এক্সক্লুসিভ প্রিপারেশন
+            </div>
+            <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">💎 Class-wise Paid Model Test</h2>
+            <p className="text-xs text-slate-500 font-medium">
+              ৫ম থেকে ১০ম শ্রেণির পূর্ণাঙ্গ মডেল টেস্ট। প্রতিটি ক্লাসের টেস্ট আলাদাভাবে কিনতে পারবেন।
+            </p>
+          </div>
+          <span className="text-xs font-bold text-[#C8102E]">৳৫০ • পূর্ণাঙ্গ মডেল টেস্ট</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[5, 6, 7, 8, 9, 10].map((cls) => {
+            const isUnlocked = unlockedClasses.includes(cls) || session?.user?.role === 'ADMIN';
+
+            return (
+              <div
+                key={cls}
+                className="bg-white rounded-3xl p-5 border-t-4 border-[#C8102E] border-slate-200 shadow-sm hover:shadow-lg transition-all duration-200 space-y-4"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="space-y-1">
+                    <span
+                      className={`text-[10px] font-black uppercase px-2 py-0.5 rounded ${
+                        isUnlocked
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          : 'bg-red-50 text-[#C8102E] border border-red-200'
+                      }`}
+                    >
+                      {isUnlocked ? 'আনলকড (Unlocked)' : 'প্রিমিয়াম টেস্ট'}
+                    </span>
+                    <h3 className="text-base font-black text-slate-800">💎 {cls}ম শ্রেণি — Paid Test</h3>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xl font-black text-[#C8102E]">৳৫০</div>
+                    <div className="text-[10px] text-slate-400 font-semibold">এককালীন ফি</div>
+                  </div>
+                </div>
+
+                <p className="text-xs text-slate-500 leading-snug">
+                  পূর্ণাঙ্গ মডেল টেস্ট • অধ্যায়ভিত্তিক স্পেশাল MCQ • বিস্তারিত ফলাফল, র‍্যাংক ও সমাধান।
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() => handleOpenPaidClassTest(cls)}
+                  className={`w-full py-2.5 rounded-xl font-bold text-xs shadow-md transition flex items-center justify-center gap-2 active:scale-98 ${
+                    isUnlocked
+                      ? 'bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white'
+                      : 'bg-gradient-to-r from-[#0A1E3C] to-[#C8102E] hover:from-[#0F284E] hover:to-[#A50D26] text-white'
+                  }`}
+                >
+                  {isUnlocked ? (
+                    <>
+                      <FaCheck className="w-3.5 h-3.5" />
+                      <span>টেস্ট শুরু করুন (Unlocked)</span>
+                    </>
+                  ) : (
+                    <>
+                      <FaLock className="w-3.5 h-3.5" />
+                      <span>💳 Paid Test কিনুন (৳৫০)</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          6. SUBJECT-WISE MODEL TESTS
+      ───────────────────────────────────────────────────────────── */}
+      <section className="space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-200 pb-3">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">
+              {selectedClass}ম শ্রেণির বিষয় নির্বাচন করুন
+            </h2>
+            <p className="text-xs text-slate-500 font-medium">যেকোনো বিষয়ের ওপর মডেল টেস্ট অনুশীলন করুন</p>
+          </div>
+          <span className="text-xs font-bold text-slate-500">নির্বাচিত: {selectedClass}ম শ্রেণি</span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
+          {SUBJECT_LIST.map((sub, idx) => (
+            <div
+              key={sub.name}
+              className="bg-white rounded-2xl p-4 border border-slate-200/90 hover:border-[#C8102E]/40 shadow-xs hover:shadow-md transition text-center space-y-2.5 group"
+            >
+              <div className="text-3xl transition-transform group-hover:scale-110">{sub.icon}</div>
+              <div>
+                <h4 className="text-xs sm:text-sm font-black text-slate-800 truncate">{sub.name}</h4>
+                <p className="text-[11px] font-black text-[#C8102E] mt-0.5">৳৫০</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleStartSubjectTest(sub.name)}
+                className="w-full py-1.5 rounded-xl bg-slate-100 hover:bg-[#C8102E] text-slate-700 hover:text-white font-bold text-xs transition active:scale-95"
+              >
+                টেস্ট দিন
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          7. SPECIAL PACKAGES & PRICING
+      ───────────────────────────────────────────────────────────── */}
+      <section className="space-y-5">
+        <div className="text-center space-y-1">
+          <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">স্পেশাল মডেল টেস্ট প্যাকেজ</h2>
+          <p className="text-xs sm:text-sm text-slate-500 font-medium">
+            বিকাশ বা নগদ পেমেন্ট করে যেকোনো আকর্ষণীয় প্যাকেজ আনলক করুন
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          {/* Card 1 */}
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-md space-y-4 hover:shadow-xl transition">
+            <div className="space-y-1">
+              <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                একক বিষয়
+              </span>
+              <h3 className="text-lg font-black text-slate-800">Single Subject</h3>
+            </div>
+            <div className="text-3xl font-black text-[#C8102E]">৳৫০</div>
+            <p className="text-xs text-slate-500">যেকোনো ১টি বিষয়ের পূর্ণাঙ্গ মডেল টেস্ট ও সমাধান।</p>
+            <ul className="text-xs text-slate-600 space-y-1.5 pt-2 border-t border-slate-100">
+              <li className="flex items-center gap-1.5">✓ ১টি বিষয়ের সকল প্রশ্ন</li>
+              <li className="flex items-center gap-1.5">✓ ইনস্ট্যান্ট ফলাফল ও গ্রেড</li>
+              <li className="flex items-center gap-1.5">✓ ব্যাখ্যাসহ সমাধান</li>
+            </ul>
+            <button
+              type="button"
+              onClick={() => {
+                setPaymentPackageName('Single Subject Package');
+                setPaymentAmount(50);
+                setUnlockSuccessMsg('');
+                setPaymentModalOpen(true);
+              }}
+              className="w-full py-3 rounded-2xl bg-slate-900 hover:bg-black text-white font-black text-xs transition active:scale-98"
+            >
+              প্যাকেজ কিনুন (৳৫০)
+            </button>
+          </div>
+
+          {/* Card 2 (Popular) */}
+          <div className="bg-white rounded-3xl p-6 border-2 border-[#C8102E] shadow-xl space-y-4 relative overflow-hidden transform md:-translate-y-1">
+            <div className="absolute top-0 right-0 bg-[#C8102E] text-white text-[9px] font-black uppercase px-4 py-1 rounded-bl-xl shadow-xs">
+              জনপ্রিয়
+            </div>
+            <div className="space-y-1">
+              <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-red-50 text-[#C8102E] border border-red-200">
+                এক ক্লাসের সব বিষয়
+              </span>
+              <h3 className="text-lg font-black text-slate-800">Full Class Package</h3>
+            </div>
+            <div className="text-3xl font-black text-[#C8102E]">৳১৫০</div>
+            <p className="text-xs text-slate-500">এক ক্লাসের সকল ৬টি বিষয়ের কমপ্লিট মডেল টেস্ট।</p>
+            <ul className="text-xs text-slate-600 space-y-1.5 pt-2 border-t border-slate-100">
+              <li className="flex items-center gap-1.5">✓ সকল বিষয়ের পূর্ণাঙ্গ পরীক্ষা</li>
+              <li className="flex items-center gap-1.5">✓ আনলিমিটেড প্র্যাকটিস</li>
+              <li className="flex items-center gap-1.5">✓ লিডারবোর্ড র‍্যাঙ্কিং</li>
+              <li className="flex items-center gap-1.5">✓ ১০০% সিলেবাস কভারেজ</li>
+            </ul>
+            <button
+              type="button"
+              onClick={() => {
+                setPaymentPackageName('Full Class Package');
+                setPaymentAmount(150);
+                setUnlockSuccessMsg('');
+                setPaymentModalOpen(true);
+              }}
+              className="w-full py-3 rounded-2xl bg-gradient-to-r from-[#9B0D23] via-[#C8102E] to-[#E5254A] text-white font-black text-xs shadow-lg shadow-red-600/30 transition active:scale-98"
+            >
+              প্যাকেজ কিনুন (৳১৫০)
+            </button>
+          </div>
+
+          {/* Card 3 */}
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-md space-y-4 hover:shadow-xl transition">
+            <div className="space-y-1">
+              <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200">
+                অল-ইন-ওয়ান
+              </span>
+              <h3 className="text-lg font-black text-slate-800">Full VIP Package</h3>
+            </div>
+            <div className="text-3xl font-black text-[#C8102E]">৳২০০</div>
+            <p className="text-xs text-slate-500">বিশেষ ছাড়সহ সকল ক্লাসের সকল টেস্ট ও স্পেশাল শিট।</p>
+            <ul className="text-xs text-slate-600 space-y-1.5 pt-2 border-t border-slate-100">
+              <li className="flex items-center gap-1.5">✓ সকল ক্লাস ও বিষয়ের অ্যাক্সেস</li>
+              <li className="flex items-center gap-1.5">✓ মডেল টেস্ট + স্পেশাল সাজেশন</li>
+              <li className="flex items-center gap-1.5">✓ প্রায়োরিটি সাপোর্ট</li>
+            </ul>
+            <button
+              type="button"
+              onClick={() => {
+                setPaymentPackageName('Full VIP Package');
+                setPaymentAmount(200);
+                setUnlockSuccessMsg('');
+                setPaymentModalOpen(true);
+              }}
+              className="w-full py-3 rounded-2xl bg-slate-900 hover:bg-black text-white font-black text-xs transition active:scale-98"
+            >
+              প্যাকেজ কিনুন (৳২০০)
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          8. 🏆 RESULT BOARD / LEADERBOARD SECTION
+      ───────────────────────────────────────────────────────────── */}
+      <section ref={resultsRef} className="space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-200 pb-3">
+          <div>
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 bg-amber-50 px-3 py-0.5 rounded-full border border-amber-200 mb-1">
+              <FaAward /> মেধা তালিকা ও র‍্যাঙ্কিং
+            </div>
+            <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">🏆 Result Board (লিডারবোর্ড)</h2>
+            <p className="text-xs text-slate-500 font-medium">
+              সাম্প্রতিক পরীক্ষার ফলাফল ও সেরা শিক্ষার্থীদের মেডেল তালিকা
+            </p>
+          </div>
+
+          {resultsList.length > 0 && (
+            <button
+              type="button"
+              onClick={handleClearResults}
+              className="text-xs font-bold text-rose-600 hover:text-rose-800 hover:underline"
+            >
+              ফলাফল পরিষ্কার করুন
+            </button>
+          )}
+        </div>
+
+        {/* 4 Medals Highlights */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs text-center space-y-1">
+            <div className="text-2xl">🥇</div>
+            <h4 className="text-xs sm:text-sm font-black text-slate-800">Gold Rank</h4>
+            <p className="text-[10px] text-slate-500">১ম স্থান (১০০% স্কোর)</p>
+          </div>
+          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs text-center space-y-1">
+            <div className="text-2xl">🥈</div>
+            <h4 className="text-xs sm:text-sm font-black text-slate-800">Silver Rank</h4>
+            <p className="text-[10px] text-slate-500">২য় স্থান (৮০%+ স্কোর)</p>
+          </div>
+          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs text-center space-y-1">
+            <div className="text-2xl">🥉</div>
+            <h4 className="text-xs sm:text-sm font-black text-slate-800">Bronze Rank</h4>
+            <p className="text-[10px] text-slate-500">৩য় স্থান (৬০%+ স্কোর)</p>
+          </div>
+          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs text-center space-y-1">
+            <div className="text-2xl">⭐</div>
+            <h4 className="text-xs sm:text-sm font-black text-slate-800">Top 10</h4>
+            <p className="text-[10px] text-slate-500">সেরা অংশগ্রহণকারী</p>
+          </div>
+        </div>
+
+        {/* Result Table */}
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 uppercase text-[11px]">
+                  <th className="py-3 px-4 w-14">Rank</th>
+                  <th className="py-3 px-4">শিক্ষার্থী</th>
+                  <th className="py-3 px-4">ক্লাস</th>
+                  <th className="py-3 px-4">বিষয়/টেস্ট</th>
+                  <th className="py-3 px-4 text-center">স্কোর</th>
+                  <th className="py-3 px-4 text-center">Percentage</th>
+                  <th className="py-3 px-4">মেডেল</th>
+                  <th className="py-3 px-4">তারিখ</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {resultsList.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="py-8 text-center text-slate-400 font-medium">
+                      এখনও কোনো ফলাফল জমা পড়েনি। উপরে টেস্ট দিয়ে সবার আগে লিডারবোর্ডে যুক্ত হোন!
+                    </td>
+                  </tr>
+                ) : (
+                  resultsList.map((res, i) => (
+                    <tr key={res.id || i} className="hover:bg-slate-50/60 transition">
+                      <td className="py-3 px-4 font-black text-slate-800">
+                        {i === 0 ? '👑 ১' : i === 1 ? '🥈 ২' : i === 2 ? '🥉 ৩' : i + 1}
+                      </td>
+                      <td className="py-3 px-4 font-bold text-slate-900">{res.name}</td>
+                      <td className="py-3 px-4 text-slate-600">{res.classGrade}ম শ্রেণি</td>
+                      <td className="py-3 px-4 font-semibold text-slate-700">{res.subject}</td>
+                      <td className="py-3 px-4 text-center font-black text-[#C8102E]">
+                        {res.score}/{res.total}
+                      </td>
+                      <td className="py-3 px-4 text-center font-bold text-emerald-700">{res.percentage}%</td>
+                      <td className="py-3 px-4">
+                        <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                          {res.medal}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-slate-500 text-[11px]">{res.date}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          9. ⚙️ ADMIN MCQ MANAGEMENT PANEL
+      ───────────────────────────────────────────────────────────── */}
+      {isAdminPanelOpen && (
+        <section
+          ref={adminRef}
+          className="bg-slate-900 text-white rounded-3xl p-6 sm:p-10 space-y-6 shadow-2xl border border-slate-800 animate-in fade-in duration-200"
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+            <div>
+              <h3 className="text-xl font-black text-white">⚙️ Advanced MCQ Admin Panel</h3>
+              <p className="text-xs text-slate-400 font-medium">
+                এখান থেকে ক্লাস ও বিষয় নির্বাচন করে এককভাবে বা একসাথে অনেকগুলো (Bulk) MCQ যোগ করতে পারবেন।
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setAdminTab('add')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${
+                  adminTab === 'add' ? 'bg-[#C8102E] text-white' : 'bg-slate-800 text-slate-300'
+                }`}
+              >
+                ➕ MCQ যোগ
+              </button>
+              <button
+                type="button"
+                onClick={() => setAdminTab('bulk')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${
+                  adminTab === 'bulk' ? 'bg-[#C8102E] text-white' : 'bg-slate-800 text-slate-300'
+                }`}
+              >
+                📋 Bulk MCQ
+              </button>
+              <button
+                type="button"
+                onClick={() => setAdminTab('manage')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${
+                  adminTab === 'manage' ? 'bg-[#C8102E] text-white' : 'bg-slate-800 text-slate-300'
+                }`}
+              >
+                🗂️ MCQ তালিকা
+              </button>
+            </div>
+          </div>
+
+          {/* Feedback Message */}
+          {adminMsg && (
+            <div
+              className={`p-3 rounded-xl text-xs font-bold ${
+                adminMsg.type === 'success' ? 'bg-emerald-900/60 text-emerald-300' : 'bg-rose-900/60 text-rose-300'
+              }`}
+            >
+              {adminMsg.text}
+            </div>
+          )}
+
+          {/* Class & Subject Selector */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs font-bold text-slate-300 block mb-1">ক্লাস নির্বাচন</label>
+              <select
+                value={adminClass}
+                onChange={(e) => setAdminClass(Number(e.target.value))}
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"
+              >
+                {[5, 6, 7, 8, 9, 10].map((c) => (
+                  <option key={c} value={c}>
+                    {c}ম শ্রেণি
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="text-xs font-bold text-slate-300 block mb-1">বিষয় নির্বাচন</label>
+              <select
+                value={adminSubject}
+                onChange={(e) => setAdminSubject(e.target.value)}
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"
+              >
+                {SUBJECT_LIST.map((s) => (
+                  <option key={s.name} value={s.name}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* TAB 1: Single MCQ Add */}
+          {adminTab === 'add' && (
+            <form onSubmit={handleAddSingleQuestion} className="space-y-4">
+              <div>
+                <label className="text-xs font-bold text-slate-300 block mb-1">প্রশ্ন লিখুন</label>
+                <textarea
+                  rows={2}
+                  required
+                  value={newQText}
+                  onChange={(e) => setNewQText(e.target.value)}
+                  placeholder="যেমন: বাংলাদেশের জাতীয় কবি কে?"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-xs text-white outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[11px] font-bold text-slate-400 block mb-1">অপশন A</label>
+                  <input
+                    type="text"
+                    required
+                    value={newOpA}
+                    onChange={(e) => setNewOpA(e.target.value)}
+                    placeholder="অপশন A লিখুন"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-bold text-slate-400 block mb-1">অপশন B</label>
+                  <input
+                    type="text"
+                    required
+                    value={newOpB}
+                    onChange={(e) => setNewOpB(e.target.value)}
+                    placeholder="অপশন B লিখুন"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-bold text-slate-400 block mb-1">অপশন C</label>
+                  <input
+                    type="text"
+                    required
+                    value={newOpC}
+                    onChange={(e) => setNewOpC(e.target.value)}
+                    placeholder="অপশন C লিখুন"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-bold text-slate-400 block mb-1">অপশন D</label>
+                  <input
+                    type="text"
+                    required
+                    value={newOpD}
+                    onChange={(e) => setNewOpD(e.target.value)}
+                    placeholder="অপশন D লিখুন"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-slate-300 block mb-1">সঠিক উত্তর</label>
+                  <select
+                    value={newCorrectAns}
+                    onChange={(e) => setNewCorrectAns(Number(e.target.value))}
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"
+                  >
+                    <option value={0}>A (প্রথম অপশন)</option>
+                    <option value={1}>B (দ্বিতীয় অপশন)</option>
+                    <option value={2}>C (তৃতীয় অপশন)</option>
+                    <option value={3}>D (চতুর্থ অপশন)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-300 block mb-1">ব্যাখ্যা (ঐচ্ছিক)</label>
+                  <input
+                    type="text"
+                    value={newExplanation}
+                    onChange={(e) => setNewExplanation(e.target.value)}
+                    placeholder="কেন এই উত্তর সঠিক তা বুঝিয়ে লিখুন"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition"
+              >
+                💾 MCQ Save করুন
+              </button>
+            </form>
+          )}
+
+          {/* TAB 2: Bulk MCQ Import */}
+          {adminTab === 'bulk' && (
+            <form onSubmit={handleAddBulkQuestions} className="space-y-4">
+              <div className="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700 text-xs text-slate-300 space-y-1">
+                <p className="font-bold text-amber-300">📋 Bulk MCQ Format নিয়মাবলী:</p>
+                <p>প্রতি লাইনে একটি করে প্রশ্ন লিখুন: <code className="bg-black/50 px-1.5 py-0.5 rounded text-amber-200">প্রশ্ন | অপশন A | অপশন B | অপশন C | অপশন D | সঠিক উত্তর (A/B/C/D) | ব্যাখ্যা (ঐচ্ছিক)</code></p>
+              </div>
+
+              <textarea
+                rows={8}
+                required
+                value={bulkText}
+                onChange={(e) => setBulkText(e.target.value)}
+                placeholder={`বাংলাদেশের রাজধানী কোনটি? | চট্টগ্রাম | ঢাকা | খুলনা | সিলেট | B | ঢাকা হলো বাংলাদেশের সাংবিধানিক রাজধানী।\n৫ × ৬ = কত? | ২০ | ২৫ | ৩০ | ৩৫ | C | ৫ এর সাথে ৬ গুণ করলে ৩০ হয়।`}
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-xs text-white outline-none font-mono"
+              />
+
+              <button
+                type="submit"
+                className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition"
+              >
+                📋 সব MCQ Save করুন
+              </button>
+            </form>
+          )}
+
+          {/* TAB 3: MCQ List & Management */}
+          {adminTab === 'manage' && (
+            <div className="space-y-3">
+              <p className="text-xs text-slate-400">
+                {adminClass}ম শ্রেণির {adminSubject} বিষয়ের কাস্টম যোগ করা প্রশ্নসমূহ:
+              </p>
+              {(!customQuestions[String(adminClass)]?.[adminSubject] ||
+                customQuestions[String(adminClass)][adminSubject].length === 0) ? (
+                <div className="p-4 rounded-xl bg-slate-800 text-xs text-slate-400 text-center">
+                  এই শ্রেণি ও বিষয়ে এখনও কোনো কাস্টম MCQ যোগ করা হয়নি।
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-72 overflow-y-auto">
+                  {customQuestions[String(adminClass)][adminSubject].map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="p-3 rounded-xl bg-slate-800 border border-slate-700 flex items-start justify-between gap-3"
+                    >
+                      <div className="text-xs space-y-1 min-w-0 flex-1">
+                        <p className="font-bold text-white">
+                          {idx + 1}. {item.q}
+                        </p>
+                        <p className="text-slate-400 text-[11px]">
+                          A: {item.options[0]} | B: {item.options[1]} | C: {item.options[2]} | D: {item.options[3]}
+                        </p>
+                        <p className="text-emerald-400 text-[10px]">
+                          সঠিক: {['A', 'B', 'C', 'D'][item.ans]}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteCustomQuestion(adminClass, adminSubject, idx)}
+                        className="p-1.5 rounded-lg bg-rose-900/60 hover:bg-rose-800 text-rose-300 text-xs transition"
+                        title="Delete Question"
+                      >
+                        <FaTrash className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────
+          10. PAYMENT & ACCESS CODE MODAL
+      ───────────────────────────────────────────────────────────── */}
+      {paymentModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-5 animate-in zoom-in-95">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="space-y-0.5">
+                <span className="text-[10px] font-black uppercase text-[#C8102E] bg-red-50 px-2 py-0.5 rounded border border-red-200">
+                  পেমেন্ট ও আনলক
+                </span>
+                <h3 className="text-base font-black text-slate-800">{paymentPackageName}</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPaymentModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* bKash / Nagad Direct Send Money Card */}
+            <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-2">
+              <p className="text-xs font-bold text-slate-700">বিকাশ / নগদ পার্সোনাল নম্বর:</p>
+              <div className="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-200">
+                <span className="font-black text-lg text-[#C8102E] tracking-wider">০১৭১২৫৯২৫১৯</span>
+                <span className="text-xs font-bold text-slate-500">পরিমাণ: ৳{paymentAmount}</span>
+              </div>
+              <p className="text-[11px] text-slate-500">
+                Send Money সম্পন্ন করে প্রাপ্ত TrxID অথবা অ্যাডমিন থেকে পাওয়া অ্যাক্সেস কোড নিচে লিখুন।
+              </p>
+            </div>
+
+            {/* Verification Form */}
+            <form onSubmit={handleVerifyUnlock} className="space-y-3">
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1">
+                  TrxID অথবা অ্যাক্সেস কোড লিখুন
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    required
+                    value={accessCodeInput}
+                    onChange={(e) => setAccessCodeInput(e.target.value)}
+                    placeholder="যেমন: NOVA50 বা TrxID"
+                    className="w-full bg-slate-50 border border-slate-300 focus:border-[#C8102E] rounded-xl px-3.5 py-2.5 text-xs text-slate-800 outline-none font-mono"
+                  />
+                  <FaKey className="absolute right-3.5 top-3 text-slate-400 w-3.5 h-3.5" />
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1">
+                  💡 ডেমো অ্যাক্সেস কোড: <code className="font-bold text-[#C8102E]">NOVA50</code> বা{' '}
+                  <code className="font-bold text-[#C8102E]">SHIKKHA2026</code>
+                </p>
+              </div>
+
+              {unlockSuccessMsg && (
+                <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200">
+                  {unlockSuccessMsg}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                className="w-full py-3 rounded-2xl bg-[#C8102E] hover:bg-[#A50D26] text-white font-black text-xs shadow-lg transition active:scale-98"
+              >
+                🔓 টেস্ট আনলক করুন
+              </button>
+            </form>
+
+            {/* Helpline Link */}
+            <div className="pt-2 text-center text-xs text-slate-500 border-t border-slate-100 flex items-center justify-center gap-1.5">
+              <span>যেকোনো প্রয়োজনে কল করুন:</span>
+              <a href="tel:01712592519" className="font-bold text-[#C8102E] hover:underline">
+                ০১৭১২৫৯২৫১৯
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
