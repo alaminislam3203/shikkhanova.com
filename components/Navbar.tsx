@@ -235,18 +235,6 @@ export default function Navbar() {
     setMobileSearchOpen(false);
   }, [pathname]);
 
-  // Prevent background scrolling when mobile full-screen menu is open
-  useEffect(() => {
-    if (mobileOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [mobileOpen]);
-
   // Preload DB search items silently in the background once when search opens
   const ensureDbIndexLoaded = () => {
     if (dbFetchedRef.current) return;
@@ -738,229 +726,141 @@ export default function Navbar() {
 
           </div>
 
-          {/* Mobile Navigation Full Screen Drawer (Full Height, No background content visible) */}
+          {/* Mobile Navigation Dropdown */}
           {mobileOpen && (
-            <div className="fixed inset-0 z-50 bg-white flex flex-col lg:hidden animate-in fade-in duration-150">
-              
-              {/* Drawer Top Header Bar */}
-              <div className="h-20 border-b border-slate-200 px-4 sm:px-6 flex justify-between items-center bg-white shrink-0">
-                <Logo size="md" />
+            <div className="lg:hidden py-4 border-t border-slate-200 space-y-1.5 animate-in slide-in-from-top-2 duration-200">
+              {navLinks.map((link) => {
+                const Icon = link.icon;
+                const isChildActive = link.children?.some((c) => pathname === c.href);
+                const active = pathname === link.href || Boolean(isChildActive);
 
-                <div className="flex items-center gap-2">
+                if (link.children) {
+                  return (
+                    <div key={link.href} className="space-y-1">
+                      <button
+                        type="button"
+                        onClick={() => setMobileAboutOpen((prev) => !prev)}
+                        className={`w-full flex items-center justify-between px-4 py-2.5 rounded-sm text-sm font-semibold ${
+                          active
+                            ? 'bg-[#C8102E] text-white font-bold shadow-xs'
+                            : 'text-slate-700 hover:bg-slate-100'
+                        }`}
+                      >
+                        <span>{link.label}</span>
+                        <FaChevronDown
+                          className={`w-3.5 h-3.5 transition-transform ${
+                            mobileAboutOpen ? 'rotate-180' : ''
+                          }`}
+                        />
+                      </button>
+
+                      {mobileAboutOpen && (
+                        <div className="pl-4 space-y-1 border-l-2 border-red-200 ml-4">
+                          {link.children.map((sub) => {
+                            const subActive = pathname === sub.href;
+                            return (
+                              <Link
+                                key={sub.href}
+                                href={sub.href}
+                                onClick={() => setMobileOpen(false)}
+                                className={`block px-3.5 py-2 rounded-sm text-xs font-semibold ${
+                                  subActive
+                                    ? 'bg-[#C8102E] text-white font-bold'
+                                    : 'text-slate-600 hover:bg-red-50 hover:text-[#C8102E]'
+                                }`}
+                              >
+                                {sub.label}
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+
+                return (
                   <Link
-                    href="/notices"
+                    key={link.href}
+                    href={link.href}
                     onClick={() => setMobileOpen(false)}
-                    className="relative p-2 text-slate-700 hover:text-[#C8102E] hover:bg-red-50/60 rounded-xl transition flex items-center justify-center"
-                    aria-label="অফিশিয়াল নোটিশ বোর্ড"
-                    title="নোটিশ বোর্ড"
+                    className={`flex items-center justify-between px-4 py-2.5 rounded-sm text-sm font-semibold ${
+                      active
+                        ? 'bg-[#C8102E] text-white font-bold shadow-xs'
+                        : 'text-slate-700 hover:bg-slate-100'
+                    }`}
                   >
-                    <FaBell className="w-5 h-5 text-[#0A1E3C]" />
-                    <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C8102E] opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[#C8102E]"></span>
-                    </span>
+                    <div className="flex items-center gap-2.5">
+                      {Icon && <Icon className={`w-4 h-4 ${active ? 'text-white' : (link.color || 'text-slate-500')}`} />}
+                      <span>{link.label}</span>
+                    </div>
+                    {link.badge && (
+                      <span className="text-[10px] bg-nova-500 text-white px-2 py-0.5 rounded-full font-bold">
+                        {link.badge}
+                      </span>
+                    )}
                   </Link>
+                );
+              })}
+
+              {session?.user && (
+                <div className="pt-3 mt-2 border-t border-slate-200 space-y-1.5">
+                  <div className="px-4 py-2.5 bg-slate-50 rounded-2xl flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full overflow-hidden border border-brand-500 bg-brand-50 flex items-center justify-center shrink-0">
+                      {session.user.image ? (
+                        <img src={session.user.image} alt="Avatar" className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-xs font-black text-brand-700">
+                          {session.user.name?.charAt(0) || 'U'}
+                        </span>
+                      )}
+                    </div>
+                    <div className="overflow-hidden min-w-0">
+                      <p className="text-xs font-bold text-slate-800 truncate">{session.user.name}</p>
+                      <p className="text-[10px] text-slate-500 font-mono truncate">{session.user.email}</p>
+                    </div>
+                  </div>
+
+                  {session.user.role === 'ADMIN' && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setMobileOpen(false)}
+                      className="block px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-brand-700 hover:bg-brand-800"
+                    >
+                      অ্যাডমিন প্যানেল
+                    </Link>
+                  )}
+
+                  <Link
+                    href="/account"
+                    onClick={() => setMobileOpen(false)}
+                    className="block px-4 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-100"
+                  >
+                  একাউন্ট
+                  </Link>
+
+                  {session.user.role === 'STUDENT' && (
+                    <Link
+                      href="/profile"
+                      onClick={() => setMobileOpen(false)}
+                      className="block px-4 py-2.5 rounded-xl text-sm font-bold text-nova-600 hover:bg-nova-50"
+                    >
+                      আমার ড্যাশবোর্ড ও শিটসমূহ
+                    </Link>
+                  )}
 
                   <button
                     type="button"
-                    onClick={() => setMobileOpen(false)}
-                    className="p-2 text-slate-700 hover:bg-slate-100 rounded-xl transition"
-                    aria-label="মেনু বন্ধ করুন"
+                    onClick={() => {
+                      setMobileOpen(false);
+                      signOut({ callbackUrl: '/' });
+                    }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-bold text-rose-600 hover:bg-rose-50 text-left"
                   >
-                    <FaXmark className="w-6 h-6 text-slate-800" />
+                    <FaArrowRightFromBracket /> লগআউট করুন
                   </button>
                 </div>
-              </div>
-
-              {/* Scrollable Navigation List covering full screen */}
-              <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1.5 pb-24">
-                {navLinks.map((link) => {
-                  const Icon = link.icon;
-                  const isChildActive = link.children?.some((c) => pathname === c.href);
-                  const active = pathname === link.href || Boolean(isChildActive);
-
-                  if (link.children) {
-                    return (
-                      <div key={link.href} className="space-y-1">
-                        <button
-                          type="button"
-                          onClick={() => setMobileAboutOpen((prev) => !prev)}
-                          className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition ${
-                            active
-                              ? 'bg-[#C8102E] text-white font-bold shadow-xs'
-                              : 'text-slate-700 hover:bg-slate-100'
-                          }`}
-                        >
-                          <span>{link.label}</span>
-                          <FaChevronDown
-                            className={`w-3.5 h-3.5 transition-transform ${
-                              mobileAboutOpen ? 'rotate-180' : ''
-                            }`}
-                          />
-                        </button>
-
-                        {mobileAboutOpen && (
-                          <div className="pl-4 space-y-1 border-l-2 border-red-200 ml-4 py-1">
-                            {link.children.map((sub) => {
-                              const subActive = pathname === sub.href;
-                              return (
-                                <Link
-                                  key={sub.href}
-                                  href={sub.href}
-                                  onClick={() => setMobileOpen(false)}
-                                  className={`block px-3.5 py-2.5 rounded-lg text-xs font-semibold transition ${
-                                    subActive
-                                      ? 'bg-[#C8102E] text-white font-bold'
-                                      : 'text-slate-600 hover:bg-red-50 hover:text-[#C8102E]'
-                                  }`}
-                                >
-                                  {sub.label}
-                                </Link>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  }
-
-                  return (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => setMobileOpen(false)}
-                      className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition ${
-                        active
-                          ? 'bg-[#C8102E] text-white font-bold shadow-xs'
-                          : 'text-slate-700 hover:bg-slate-100'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        {Icon && <Icon className={`w-4 h-4 ${active ? 'text-white' : (link.color || 'text-slate-500')}`} />}
-                        <span>{link.label}</span>
-                      </div>
-                      {link.badge && (
-                        <span className="text-[10px] bg-nova-500 text-white px-2 py-0.5 rounded-full font-bold">
-                          {link.badge}
-                        </span>
-                      )}
-                    </Link>
-                  );
-                })}
-
-                {/* If Not Logged In: Login & Register Buttons */}
-                {!session?.user && (
-                  <div className="pt-4 mt-2 border-t border-slate-200 grid grid-cols-2 gap-2.5">
-                    <Link
-                      href="/login"
-                      onClick={() => setMobileOpen(false)}
-                      className="flex items-center justify-center gap-1.5 text-sm font-bold text-brand-800 bg-brand-50 hover:bg-brand-100 py-3 rounded-xl border border-brand-200 transition"
-                    >
-                      <FaRightToBracket /> লগইন
-                    </Link>
-                    <Link
-                      href="/register"
-                      onClick={() => setMobileOpen(false)}
-                      className="flex items-center justify-center gap-1.5 text-sm font-bold text-white bg-gradient-to-r from-nova-500 to-nova-600 hover:from-nova-600 hover:to-nova-700 py-3 rounded-xl shadow-md transition"
-                    >
-                      রেজিস্ট্রেশন
-                    </Link>
-                  </div>
-                )}
-
-                {/* If Logged In: Profile info & buttons */}
-                {session?.user && (
-                  <div className="pt-3 mt-2 border-t border-slate-200 space-y-2">
-                    <div className="px-4 py-3 bg-slate-50 rounded-2xl flex items-center gap-3 border border-slate-200/80">
-                      <div className="w-10 h-10 rounded-full overflow-hidden border border-brand-500 bg-brand-50 flex items-center justify-center shrink-0">
-                        {session.user.image ? (
-                          <img src={session.user.image} alt="Avatar" className="w-full h-full object-cover" />
-                        ) : (
-                          <span className="text-sm font-black text-brand-700">
-                            {session.user.name?.charAt(0) || 'U'}
-                          </span>
-                        )}
-                      </div>
-                      <div className="overflow-hidden min-w-0">
-                        <p className="text-xs font-bold text-slate-800 truncate">{session.user.name}</p>
-                        <p className="text-[10px] text-slate-500 font-mono truncate">{session.user.email}</p>
-                      </div>
-                    </div>
-
-                    {session.user.role === 'ADMIN' && (
-                      <Link
-                        href="/admin"
-                        onClick={() => setMobileOpen(false)}
-                        className="block px-4 py-3 rounded-xl text-sm font-bold text-white bg-brand-700 hover:bg-brand-800 transition text-center"
-                      >
-                        অ্যাডমিন প্যানেল
-                      </Link>
-                    )}
-
-                    <Link
-                      href="/account"
-                      onClick={() => setMobileOpen(false)}
-                      className="block px-4 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-100 bg-slate-50 border border-slate-200/60 transition"
-                    >
-                      একাউন্ট ও সেটিংস
-                    </Link>
-
-                    {session.user.role === 'STUDENT' && (
-                      <Link
-                        href="/profile"
-                        onClick={() => setMobileOpen(false)}
-                        className="block px-4 py-3 rounded-xl text-sm font-bold text-nova-600 hover:bg-nova-50 bg-nova-50/50 border border-nova-100 transition"
-                      >
-                        আমার ড্যাশবোর্ড ও শিটসমূহ
-                      </Link>
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMobileOpen(false);
-                        signOut({ callbackUrl: '/' });
-                      }}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold text-rose-600 hover:bg-rose-50 bg-rose-50/50 border border-rose-100 transition text-left"
-                    >
-                      <FaArrowRightFromBracket /> লগআউট করুন
-                    </button>
-                  </div>
-                )}
-
-                {/* Helpline & Social Links */}
-                <div className="pt-4 mt-3 border-t border-slate-100 space-y-2.5">
-                  <a
-                    href="tel:01712592519"
-                    className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 hover:text-brand-700 transition"
-                  >
-                    <FaPhone className="text-emerald-600 w-3.5 h-3.5" />
-                    <span>হেল্পলাইন: ০১৭১২৫৯২৫১৯</span>
-                  </a>
-
-                  <div className="flex items-center justify-center gap-3 text-xs text-slate-500 pt-1">
-                    <a
-                      href="https://facebook.com/shikkhanova"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-blue-600 hover:underline font-medium"
-                    >
-                      <FaFacebook /> Facebook
-                    </a>
-                    <span>•</span>
-                    <a
-                      href="https://youtube.com/@ShikkhaNova"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-red-600 hover:underline font-medium"
-                    >
-                      <FaYoutube /> YouTube
-                    </a>
-                  </div>
-                </div>
-
-              </div>
-
+              )}
             </div>
           )}
 
