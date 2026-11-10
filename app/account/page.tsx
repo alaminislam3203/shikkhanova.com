@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import AccountNavTabs from '@/components/account/AccountNavTabs';
 import {
   FaUser,
   FaCamera,
@@ -200,8 +201,11 @@ export default function AccountPage() {
   if (!session?.user) return null;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-5 sm:space-y-6">
+    <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
       
+      {/* Account Navigation Tabs */}
+      <AccountNavTabs activeTab="account" />
+
       {/* 1. Top Banner with Compact Profile Header */}
       <div
         style={{

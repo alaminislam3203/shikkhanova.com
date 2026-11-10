@@ -204,7 +204,7 @@ export default function MobileBottomNav() {
                   >
                     {/* User Avatar with Bottom-Right Menu Hamburger Badge */}
                     <div className="relative">
-                      <div className="w-6 h-6 rounded-full overflow-hidden ring-2 ring-slate-400 bg-slate-800 flex items-center justify-center shadow-xs">
+                      <div className="w-7 h-7 rounded-full overflow-hidden ring-[2.5px] ring-slate-400/90 bg-slate-800 flex items-center justify-center shadow-xs">
                         {session.user.image ? (
                           <img
                             src={session.user.image}
@@ -212,14 +212,14 @@ export default function MobileBottomNav() {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <span className="text-[10px] font-black text-white">
+                          <span className="text-[11px] font-black text-white">
                             {session.user.name ? session.user.name.charAt(0) : '🎓'}
                           </span>
                         )}
                       </div>
                       {/* Dark Circular Badge with Hamburger Menu Icon */}
-                      <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-slate-700 text-white flex items-center justify-center ring-1 ring-white shadow-xs">
-                        <FaBars className="w-2 h-2" />
+                      <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-[#475569] text-white flex items-center justify-center ring-2 ring-white shadow-xs">
+                        <FaBars className="w-2.5 h-2.5" />
                       </div>
                     </div>
                   </div>

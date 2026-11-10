@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import AccountNavTabs from '@/components/account/AccountNavTabs';
 import {
   FaFilePdf,
   FaDownload,
@@ -105,8 +106,11 @@ export default function MyNotesPage() {
   if (!session?.user) return null;
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
+    <div className="space-y-4 sm:space-y-6 max-w-6xl mx-auto">
       
+      {/* Account Navigation Tabs */}
+      <AccountNavTabs activeTab="sheets" />
+
       {/* Top Banner */}
       <div
         style={{

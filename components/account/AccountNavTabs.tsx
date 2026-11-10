@@ -73,3 +73,4 @@ export default function AccountNavTabs({ activeTab }: AccountNavTabsProps) {
     </div>
   );
 }
+

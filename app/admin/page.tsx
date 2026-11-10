@@ -15,6 +15,7 @@ import AdminSubjectsManager from '@/components/admin/AdminSubjectsManager';
 import AdminBannersManager from '@/components/admin/AdminBannersManager';
 import AdminAchieversManager from '@/components/admin/AdminAchieversManager';
 import AdminQuizManager from '@/components/admin/AdminQuizManager';
+import AdminGalleryManager from '@/components/admin/AdminGalleryManager';
 import { PurchaseRecord } from '@/types';
 import {
   FaBars,
@@ -89,6 +90,7 @@ export default function AdminPage() {
           'addResult',
           'addPdf',
           'mcqQuiz',
+          'gallery',
           'notices',
           'students',
           'subjects',
@@ -520,6 +522,9 @@ export default function AdminPage() {
 
         {/* TAB 3.5: Manage Notices */}
         {activeTab === 'notices' && <AdminNoticesManager />}
+
+        {/* TAB 3.8: Manage Photo Gallery */}
+        {activeTab === 'gallery' && <AdminGalleryManager />}
 
         {/* TAB 4: Manage & Add Students */}
         {activeTab === 'students' && <AdminStudentsManager />}

@@ -89,8 +89,11 @@ export default function PasswordPage() {
   if (!session?.user) return null;
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-2xl mx-auto space-y-4 sm:space-y-6">
       
+      {/* Account Navigation Tabs */}
+      <AccountNavTabs activeTab="security" />
+
       {/* Top Banner */}
       <div
         style={{

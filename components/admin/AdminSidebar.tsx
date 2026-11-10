@@ -31,6 +31,7 @@ export type AdminTab =
   | 'addPdf'
   | 'mcqQuiz'
   | 'addResult'
+  | 'gallery'
   | 'notices'
   | 'students'
   | 'subjects'
@@ -161,6 +162,13 @@ export default function AdminSidebar({
       label: 'রোল উপস্থিতি (Attendance)',
       sublabel: 'শ্রেণি ৫-১০ হাজিরা গ্রহণ',
       icon: FaUserCheck,
+    },
+    {
+      id: 'gallery',
+      label: 'ফটো গ্যালারি ম্যানেজ',
+      sublabel: 'ছবি আপলোড, এডিট ও ডিলিট',
+      icon: FaImages,
+      badge: 'Photos',
     },
     {
       id: 'notices',

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   FaImages,
@@ -59,7 +59,19 @@ const FEATURED_PHOTOS: GalleryPhoto[] = [
 ];
 
 export default function HomeGallerySection() {
+  const [photos, setPhotos] = useState<GalleryPhoto[]>(FEATURED_PHOTOS);
   const [activePhoto, setActivePhoto] = useState<GalleryPhoto | null>(null);
+
+  useEffect(() => {
+    fetch('/api/gallery', { cache: 'no-store' })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.photos && Array.isArray(data.photos) && data.photos.length > 0) {
+          setPhotos(data.photos.slice(0, 4));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <section className="relative py-8 sm:py-10 space-y-8">
@@ -83,7 +95,7 @@ export default function HomeGallerySection() {
 
       {/* 4-Card Responsive Grid (2 columns on mobile, 4 on lg) */}
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
-        {FEATURED_PHOTOS.map((photo) => (
+        {photos.map((photo) => (
           <div
             key={photo.id}
             onClick={() => setActivePhoto(photo)}
