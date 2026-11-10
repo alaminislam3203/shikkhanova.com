@@ -116,10 +116,10 @@ export default function AdminQuizManager() {
     let updatedList = [...questions];
     if (editingIndex !== null && editingIndex >= 0 && editingIndex < updatedList.length) {
       updatedList[editingIndex] = newQuestion;
-      setMsg({ text: '✅ প্রশ্ন সফলভাবে আপডেট করা হয়েছে!', type: 'success' });
+      setMsg({ text: 'প্রশ্ন সফলভাবে আপডেট করা হয়েছে!', type: 'success' });
     } else {
       updatedList.push(newQuestion);
-      setMsg({ text: '✅ নতুন প্রশ্ন সফলভাবে যুক্ত করা হয়েছে!', type: 'success' });
+      setMsg({ text: 'নতুন প্রশ্ন সফলভাবে যুক্ত করা হয়েছে!', type: 'success' });
     }
 
     persistQuestions(updatedList);
@@ -210,7 +210,7 @@ export default function AdminQuizManager() {
     persistQuestions(updated);
     setBulkText('');
     setMsg({
-      text: `✅ ${addedCount}টি প্রশ্ন সফলভাবে যোগ হয়েছে! ${skippedCount > 0 ? `(${skippedCount}টি লাইন সঠিক ছিল না)` : ''}`,
+      text: `${addedCount}টি প্রশ্ন সফলভাবে যোগ হয়েছে! ${skippedCount > 0 ? `(${skippedCount}টি লাইন সঠিক ছিল না)` : ''}`,
       type: 'success',
     });
     setActiveTab('list');

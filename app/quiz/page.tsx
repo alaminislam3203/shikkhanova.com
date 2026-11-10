@@ -505,7 +505,7 @@ export default function QuizPage() {
                       onClick={handleSubmitTest}
                       className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-black text-sm shadow-xl transition active:scale-95"
                     >
-                      ✅ পরীক্ষা জমা দিন (Submit Test)
+                       পরীক্ষা জমা দিন (Submit Test)
                     </button>
                   </div>
                 ) : (
