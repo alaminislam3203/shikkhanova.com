@@ -102,18 +102,24 @@ async function ensureSeedStudents() {
       where: { role: 'STUDENT' },
     });
 
-    if (count === 0) {
+    if (count < 30) {
+      const local = readLocalStudents();
       const hashedPassword = await bcrypt.hash('123456', 10);
-      for (const s of DEFAULT_STUDENTS_SEED) {
-        const email = `c${s.classGrade}.roll${s.rollNumber}@shikkhanova.com`;
+      for (const s of local) {
+        const email = s.email || `c${s.classGrade}.roll${s.rollNumber}@shikkhanova.com`;
         await prisma.user.upsert({
           where: { email },
-          update: {},
+          update: {
+            name: s.name,
+            phone: s.phone || null,
+            classGrade: s.classGrade,
+            rollNumber: s.rollNumber,
+          },
           create: {
             name: s.name,
             email,
             password: hashedPassword,
-            phone: s.phone,
+            phone: s.phone || null,
             role: 'STUDENT',
             classGrade: s.classGrade,
             rollNumber: s.rollNumber,
