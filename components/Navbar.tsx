@@ -87,7 +87,7 @@ const INSTANT_SITE_INDEX = [
     title: '🏆 মেধা তালিকা ও লিডারবোর্ড (Quiz Leaderboard)',
     subtitle: 'সেরা শিক্ষার্থীদের র‍্যাঙ্কিং, গোল্ড/সিলভার মেডেল ও প্রাপ্ত স্কোর',
     categoryLabel: 'লিডারবোর্ড',
-    href: '/quiz#leaderboard',
+    href: '/leaderboard',
     badge: 'Top Rank',
     keywords: 'leaderboard লিডারবোর্ড মেধা তালিকা র‍্যাঙ্কিং মেডেল রেজাল্ট বোর্ড কুইজ সেরা',
   },
@@ -709,7 +709,7 @@ export default function Navbar() {
 
                         {/* Leaderboard Link */}
                         <Link
-                          href="/quiz#leaderboard"
+                          href="/leaderboard"
                           onClick={() => setDropdownOpen(false)}
                           className="block px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold text-slate-700 hover:text-amber-600 hover:bg-amber-50/70 transition"
                         >
@@ -903,7 +903,7 @@ export default function Navbar() {
                   </Link>
 
                   <Link
-                    href="/quiz#leaderboard"
+                    href="/leaderboard"
                     onClick={() => setMobileOpen(false)}
                     className="flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-amber-50 hover:text-amber-800"
                   >

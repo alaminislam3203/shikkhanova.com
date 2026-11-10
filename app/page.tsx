@@ -4,7 +4,7 @@ import SuccessStoriesSection from '@/components/home/SuccessStoriesSection';
 import ClassSelector from '@/components/home/ClassSelector';
 import FeaturesGrid from '@/components/home/FeaturesGrid';
 import HomeGallerySection from '@/components/home/HomeGallerySection';
-import PaymentBanner from '@/components/home/PaymentBanner';
+
 
 export default function HomePage() {
   return (
@@ -14,7 +14,6 @@ export default function HomePage() {
       <SuccessStoriesSection />
       <FeaturesGrid />
       <HomeGallerySection />
-      <PaymentBanner />
     </div>
   );
 }

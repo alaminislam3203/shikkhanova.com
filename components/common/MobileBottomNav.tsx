@@ -463,7 +463,7 @@ export default function MobileBottomNav() {
                 </Link>
 
                 <Link
-                  href="/quiz#leaderboard"
+                  href="/leaderboard"
                   onClick={() => setIsMenuOpen(false)}
                   className="flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-50 transition group"
                 >

@@ -646,7 +646,7 @@ export default function AccountPage() {
           </div>
 
           {/* Quick Shortcuts Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
             
             <Link
               href="/password"
@@ -660,7 +660,7 @@ export default function AccountPage() {
                   <p className="text-xs sm:text-sm font-black text-slate-800 group-hover:text-[#C8102E] transition">
                     পাসওয়ার্ড ও নিরাপত্তা
                   </p>
-                  <p className="text-[11px] text-slate-500">পাসওয়ার্ড পরিবর্তন ও অ্যাকাউন্ট সুরক্ষা</p>
+                  <p className="text-[10px] text-slate-500">পাসওয়ার্ড পরিবর্তন করুন</p>
                 </div>
               </div>
               <FaArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 transition-transform" />
@@ -678,7 +678,25 @@ export default function AccountPage() {
                   <p className="text-xs sm:text-sm font-black text-slate-800 group-hover:text-[#C8102E] transition">
                     সংগৃহীত শিট ও নোট
                   </p>
-                  <p className="text-[11px] text-slate-500">ক্রয়কৃত শিট ডাউনলোড ও হিস্ট্রি</p>
+                  <p className="text-[10px] text-slate-500">ক্রয়কৃত শিট ডাউনলোড</p>
+                </div>
+              </div>
+              <FaArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 transition-transform" />
+            </Link>
+
+            <Link
+              href="/leaderboard"
+              className="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-amber-500 shadow-xs hover:shadow-md transition flex items-center justify-between group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 group-hover:bg-amber-500 group-hover:text-white transition">
+                  <FaTrophy className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs sm:text-sm font-black text-slate-800 group-hover:text-amber-700 transition">
+                    কুইজ লিডারবোর্ড
+                  </p>
+                  <p className="text-[10px] text-slate-500">মেধাতালিকা ও র‍্যাঙ্কিং</p>
                 </div>
               </div>
               <FaArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 transition-transform" />
