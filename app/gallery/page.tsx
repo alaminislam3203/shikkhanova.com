@@ -95,31 +95,31 @@ export default function PhotoGalleryPage() {
       : GALLERY_ITEMS.filter((item) => item.category === selectedCategory);
 
   return (
-    <div className="space-y-8">
-      {/* Header Banner */}
+    <div className="space-y-5 sm:space-y-8">
+      {/* Header Banner (Compact on Mobile) */}
       <div
         style={{
           background: 'linear-gradient(135deg, #071426 0%, #0A1E3C 55%, #2A0B1E 100%)',
         }}
-        className="relative overflow-hidden text-white p-6 sm:p-10 lg:p-12 rounded-3xl shadow-2xl border-b-4 border-[#C8102E]"
+        className="relative overflow-hidden text-white p-4 sm:p-8 lg:p-12 rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl border-b-4 border-[#C8102E]"
       >
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-3 max-w-2xl">
-            <span className="inline-flex items-center gap-1.5 bg-[#C8102E] text-white text-xs font-bold px-3.5 py-1 rounded-sm uppercase tracking-wider shadow-xs">
-              <FaImages className="w-3.5 h-3.5 text-amber-300" />
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-6">
+          <div className="space-y-2 sm:space-y-3 max-w-2xl">
+            <span className="inline-flex items-center gap-1.5 bg-[#C8102E] text-white text-[10px] sm:text-xs font-bold px-2.5 py-0.5 sm:px-3.5 sm:py-1 rounded-sm uppercase tracking-wider shadow-xs">
+              <FaImages className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300" />
               ফটো গ্যালারি
             </span>
-            <h1 className="text-2xl sm:text-4xl font-black tracking-tight">
+            <h1 className="text-lg sm:text-3xl md:text-4xl font-black tracking-tight leading-snug sm:leading-tight">
               শিক্ষা নোভা একাডেমির মুহূর্তসমূহ
             </h1>
-            <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
+            <p className="text-[11px] sm:text-sm text-slate-200 leading-snug sm:leading-relaxed line-clamp-2 sm:line-clamp-none">
               আমাদের ক্লাসরুম পাঠদান, সাপ্তাহিক ও মাসিক পরীক্ষা, কৃতি শিক্ষার্থী সংবর্ধনা এবং একাডেমিক কার্যক্রমের ছবিসমূহ।
             </p>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-4 text-xs space-y-1 shrink-0">
+          <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-xl sm:rounded-2xl p-2.5 sm:p-4 text-[10px] sm:text-xs shrink-0 flex items-center justify-between md:flex-col md:items-start gap-2.5 md:gap-1.5">
             <p className="text-amber-300 font-bold flex items-center gap-1.5">
-              <FaAward /> স্লোগান: “শিখবো, জিতবো”
+              <FaAward className="text-amber-300" /> স্লোগান: “শিখবো, জিতবো”
             </p>
             <p className="text-slate-200 flex items-center gap-1.5">
               <FaLocationDot className="text-[#EF5350]" /> জুম্মাপাড়া, নীলফামারী সদর
@@ -129,12 +129,12 @@ export default function PhotoGalleryPage() {
       </div>
 
       {/* Category Filter Buttons */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs flex items-center gap-2 overflow-x-auto">
+      <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-slate-200 shadow-xs flex items-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-none">
         {categories.map((cat) => (
           <button
             key={cat.id}
             onClick={() => setSelectedCategory(cat.id)}
-            className={`px-4 py-2 rounded-sm text-xs font-bold transition whitespace-nowrap ${
+            className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-sm text-xs font-bold transition whitespace-nowrap ${
               selectedCategory === cat.id
                 ? 'bg-[#C8102E] text-white shadow-xs'
                 : 'bg-slate-100 text-slate-700 hover:bg-red-50 hover:text-[#C8102E]'
