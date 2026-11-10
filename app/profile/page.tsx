@@ -1,44 +1,29 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   FaUser,
   FaGraduationCap,
   FaFilePdf,
-  FaDownload,
-  FaClock,
   FaAward,
   FaPhone,
   FaEnvelope,
   FaHashtag,
-  FaBookOpen,
+  FaShieldHalved,
+  FaGear,
+  FaClock,
+  FaArrowRightFromBracket,
+  FaUserShield,
+  FaCircleCheck,
 } from 'react-icons/fa6';
 import { HiSparkles } from 'react-icons/hi2';
-
-interface StudentPurchase {
-  id: string;
-  amount: number;
-  paymentMethod: string;
-  trxId: string;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  createdAt: string;
-  pdf: {
-    id: string;
-    title: string;
-    classGrade: number;
-    subject: string;
-    fileUrl: string;
-  };
-}
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [purchases, setPurchases] = useState<StudentPurchase[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -46,61 +31,11 @@ export default function ProfilePage() {
     }
   }, [status, router]);
 
-  useEffect(() => {
-    if (session?.user) {
-      fetchUserPurchases();
-    }
-  }, [session]);
-
-  const fetchUserPurchases = async () => {
-    try {
-      let savedTrxParam = '';
-      try {
-        const savedTrx = JSON.parse(localStorage.getItem('sn_my_trx_ids') || '[]');
-        if (Array.isArray(savedTrx) && savedTrx.length > 0) {
-          savedTrxParam = `?trxIds=${encodeURIComponent(savedTrx.join(','))}`;
-        }
-      } catch {}
-
-      const res = await fetch(`/api/pdfs${savedTrxParam}`, { cache: 'no-store' });
-      const data = await res.json();
-      if (data.pdfs) {
-        // Collect user purchases
-        const userList: StudentPurchase[] = [];
-        data.pdfs.forEach((p: any) => {
-          if (p.purchases && p.purchases.length > 0) {
-            p.purchases.forEach((pur: any) => {
-              userList.push({
-                id: pur.id,
-                amount: pur.amount,
-                paymentMethod: pur.paymentMethod,
-                trxId: pur.trxId,
-                status: pur.status,
-                createdAt: pur.createdAt,
-                pdf: {
-                  id: p.id,
-                  title: p.title,
-                  classGrade: p.classGrade,
-                  subject: p.subject,
-                  fileUrl: p.fileUrl,
-                },
-              });
-            });
-          }
-        });
-        setPurchases(userList);
-      }
-    } catch {
-      // Mock purchases if offline
-    } finally {
-      setLoading(false);
-    }
-  };
-
   if (status === 'loading') {
     return (
-      <div className="py-20 text-center text-slate-500 font-bold">
-        তথ্য লোড হচ্ছে...
+      <div className="py-24 text-center text-slate-500 font-bold space-y-2">
+        <FaClock className="w-8 h-8 text-brand-600 animate-spin mx-auto" />
+        <p className="text-sm">প্রোফাইল লোড হচ্ছে...</p>
       </div>
     );
   }
@@ -108,186 +43,183 @@ export default function ProfilePage() {
   if (!session?.user) return null;
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto">
-      {/* Student Welcome Banner */}
+    <div className="space-y-6 max-w-4xl mx-auto">
+      
+      {/* 1. Student Identity Header Banner */}
       <div
         style={{
           background: 'linear-gradient(135deg, #071426 0%, #0A1E3C 55%, #2A0B1E 100%)',
         }}
-        className="text-white rounded-3xl p-6 sm:p-10 shadow-premium border-b-4 border-[#C8102E] relative overflow-hidden"
+        className="text-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-premium border-b-4 border-[#C8102E] relative overflow-hidden"
       >
         <div className="absolute right-0 top-0 w-80 h-80 bg-nova-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-        <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-brand-600 to-nova-500 text-white flex items-center justify-center font-black text-2xl sm:text-3xl shadow-lg border-2 border-white/20 overflow-hidden shrink-0">
+        <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-5 text-center sm:text-left">
+          
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+            {/* User Avatar */}
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-slate-900 border-2 border-white/30 overflow-hidden flex items-center justify-center shrink-0 shadow-xl ring-2 ring-brand-500/30">
               {session.user.image ? (
-                <img src={session.user.image} alt={session.user.name || 'User'} className="w-full h-full object-cover" />
+                <img
+                  src={session.user.image}
+                  alt={session.user.name || 'User'}
+                  className="w-full h-full object-cover"
+                />
               ) : (
-                <span>{session.user.name ? session.user.name.charAt(0) : '🎓'}</span>
+                <span className="text-3xl sm:text-4xl font-black text-white">
+                  {session.user.name ? session.user.name.charAt(0) : '🎓'}
+                </span>
               )}
             </div>
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl sm:text-2xl font-black">{session.user.name}</h1>
-                <span className="bg-nova-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full uppercase">
-                  {session.user.role === 'ADMIN' ? 'অ্যাডমিন' : session.user.role === 'TEACHER' ? 'শিক্ষক' : 'শিক্ষার্থী'}
+
+            {/* Basic Info */}
+            <div className="space-y-1.5">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                <h1 className="text-xl sm:text-2xl font-black text-white">{session.user.name}</h1>
+                <span className="bg-[#C8102E] text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                  {session.user.role === 'ADMIN' ? 'অ্যাডমিন' : 'শিক্ষার্থী'}
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-blue-200">
                 শিক্ষানোভা একাডেমি • জুম্মাপাড়া, নীলফামারী সদর
               </p>
-              <div className="flex flex-wrap items-center gap-3 pt-1 text-xs text-slate-300">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1 text-xs text-slate-300">
                 {session.user.classGrade && (
-                  <span className="inline-flex items-center gap-1 bg-white/10 px-2.5 py-0.5 rounded-md font-bold">
+                  <span className="inline-flex items-center gap-1 bg-white/10 px-2.5 py-0.5 rounded-lg font-bold border border-white/10">
                     <FaGraduationCap className="text-nova-400" /> শ্রেণি {session.user.classGrade}
                   </span>
                 )}
                 {session.user.rollNumber && (
-                  <span className="inline-flex items-center gap-1 bg-white/10 px-2.5 py-0.5 rounded-md font-bold">
+                  <span className="inline-flex items-center gap-1 bg-white/10 px-2.5 py-0.5 rounded-lg font-bold border border-white/10">
                     <FaHashtag className="text-nova-400" /> রোল {session.user.rollNumber}
                   </span>
                 )}
-                <span className="inline-flex items-center gap-1 bg-white/10 px-2.5 py-0.5 rounded-md font-mono text-[11px]">
+                <span className="inline-flex items-center gap-1 bg-white/10 px-2.5 py-0.5 rounded-lg font-mono text-[11px] border border-white/10">
                   <FaEnvelope className="text-nova-400" /> {session.user.email}
                 </span>
-                <Link
-                  href="/account"
-                  className="inline-flex items-center gap-1 bg-brand-500/30 hover:bg-brand-500/50 text-white px-2.5 py-0.5 rounded-md font-semibold border border-white/20 transition text-[11px]"
-                >
-                  ছবি ও প্রোফাইল পরিবর্তন ⚙️
-                </Link>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2.5">
+          {/* Quick Edit Shortcut */}
+          <div className="shrink-0 flex items-center gap-2">
             <Link
-              href="/results"
-              className="inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition border border-white/15"
+              href="/account"
+              className="inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 active:scale-98 text-white text-xs font-bold px-4 py-2.5 rounded-xl border border-white/15 transition shadow-sm"
             >
-              <FaAward /> ফলাফল দেখুন
-            </Link>
-            <Link
-              href="/attendance"
-              className="inline-flex items-center gap-1.5 bg-nova-500 hover:bg-nova-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-md transition"
-            >
-              <FaClock /> হাজিরা দেখুন
+              <FaGear className="text-nova-400" />
+              <span>প্রোফাইল সেটিংস</span>
             </Link>
           </div>
+
         </div>
       </div>
 
-      {/* Purchased PDFs Section */}
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <div className="space-y-0.5">
-            <h2 className="text-lg sm:text-xl font-black text-slate-800 flex items-center gap-2">
-              <FaFilePdf className="text-slogan-600" /> আমার সংগৃহীত পিডিএফ হ্যান্ডনোট
-            </h2>
-            <p className="text-xs text-slate-500">
-              বিকাশ ও নগদ পেমেন্টের মাধ্যমে সংগৃহীত শিট ও ডাউনলোডের বর্তমান অবস্থা
+      {/* 2. Pure Student Profile Details Grid */}
+      <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-slate-200 shadow-sm space-y-5">
+        <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+          <div>
+            <h2 className="text-base sm:text-lg font-black text-slate-800">ব্যক্তিগত ও একাডেমিক প্রোফাইল</h2>
+            <p className="text-xs text-slate-500">আপনার নিবন্ধিত শিক্ষার্থী প্রোফাইলের পূর্ণ বিবরণ</p>
+          </div>
+          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+            <FaCircleCheck className="w-3.5 h-3.5" /> অ্যাক্টিভ প্রোফাইল
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 text-xs sm:text-sm">
+          
+          <div className="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/80 space-y-1">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">শিক্ষার্থীর পূর্ণ নাম</span>
+            <p className="font-black text-slate-800 text-sm sm:text-base">{session.user.name}</p>
+          </div>
+
+          <div className="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/80 space-y-1">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">নিবন্ধিত ইমেইল</span>
+            <p className="font-mono font-bold text-slate-800 text-xs sm:text-sm">{session.user.email}</p>
+          </div>
+
+          <div className="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/80 space-y-1">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">শ্রেণি (Class Grade)</span>
+            <p className="font-black text-brand-700 text-sm sm:text-base">
+              {session.user.classGrade ? `${session.user.classGrade}ম শ্রেণি` : 'নির্ধারিত নয়'}
             </p>
           </div>
+
+          <div className="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/80 space-y-1">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">শ্রেণির রোল নম্বর</span>
+            <p className="font-black text-brand-700 text-sm sm:text-base">
+              {session.user.rollNumber ? `রোল: ${session.user.rollNumber}` : 'নির্ধারিত নয়'}
+            </p>
+          </div>
+
+          <div className="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/80 space-y-1">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">মোবাইল নম্বর</span>
+            <p className="font-mono font-bold text-slate-800 text-xs sm:text-sm">
+              {session.user.phone || 'যুক্ত করা হয়নি'}
+            </p>
+          </div>
+
+          <div className="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/80 space-y-1">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">একাডেমিক প্রতিষ্ঠান</span>
+            <p className="font-bold text-slate-800 text-xs sm:text-sm">শিক্ষানোভা একাডেমি (Shikkha Nova)</p>
+          </div>
+
+        </div>
+
+        {/* Action Buttons inside Profile */}
+        <div className="pt-2 flex flex-wrap gap-2.5 sm:gap-3">
+          <Link
+            href="/account"
+            className="inline-flex items-center gap-2 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-brand transition active:scale-98"
+          >
+            <FaGear />
+            <span>ছবি ও তথ্য পরিবর্তন করুন</span>
+          </Link>
 
           <Link
-            href="/pdfs"
-            className="text-xs font-bold text-brand-700 hover:text-brand-800 bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-xl border border-brand-200 transition"
+            href="/account"
+            className="inline-flex items-center gap-2 bg-slate-900 hover:bg-black text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow transition active:scale-98"
           >
-            + নতুন শিট নিন
+            <FaShieldHalved />
+            <span>পাসওয়ার্ড পরিবর্তন</span>
+          </Link>
+
+          <Link
+            href="/my-notes"
+            className="inline-flex items-center gap-2 bg-rose-50 hover:bg-rose-100 text-[#C8102E] font-bold text-xs px-4 py-2.5 rounded-xl border border-rose-200 transition active:scale-98"
+          >
+            <FaFilePdf />
+            <span>আমার সংগৃহীত শিট ও নোট</span>
+          </Link>
+
+          <Link
+            href="/results"
+            className="inline-flex items-center gap-2 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs px-4 py-2.5 rounded-xl border border-amber-200 transition active:scale-98"
+          >
+            <FaAward />
+            <span>রেজাল্ট ও মার্কশিট</span>
           </Link>
         </div>
-
-        {loading ? (
-          <div className="bg-white rounded-3xl p-10 text-center border border-slate-200 text-slate-500 text-xs">
-            হ্যান্ডনোট তালিকা লোড হচ্ছে...
-          </div>
-        ) : purchases.length === 0 ? (
-          <div className="bg-white rounded-3xl p-10 text-center border border-slate-200 space-y-3">
-            <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto text-xl text-slate-400">
-              📚
-            </div>
-            <p className="text-sm font-bold text-slate-700">আপনি এখনও কোনো পিডিএফ শিট ক্রয় করেননি</p>
-            <p className="text-xs text-slate-500 max-w-md mx-auto">
-              ৫ম থেকে ১০ম শ্রেণির গণিত, বিজ্ঞান ও ইংরেজির এক্সক্লুসিভ সাজেশন পেতে আমাদের পিডিএফ শপে যান।
-            </p>
-            <Link
-              href="/pdfs"
-              className="inline-flex items-center gap-1.5 bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md transition"
-            >
-              পিডিএফ তালিকা দেখুন
-            </Link>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {purchases.map((pur) => (
-              <div
-                key={pur.id}
-                className="bg-white rounded-3xl border border-slate-200 p-5 shadow-sm space-y-3 flex flex-col justify-between"
-              >
-                <div className="space-y-1.5">
-                  <div className="flex justify-between items-start gap-2">
-                    <span className="text-[11px] font-bold text-brand-700 bg-brand-50 px-2 py-0.5 rounded-md">
-                      Class {pur.pdf.classGrade} • {pur.pdf.subject}
-                    </span>
-                    <span
-                      className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
-                        pur.status === 'APPROVED'
-                          ? 'bg-emerald-100 text-emerald-800'
-                          : pur.status === 'REJECTED'
-                          ? 'bg-rose-100 text-rose-800'
-                          : 'bg-amber-100 text-amber-800'
-                      }`}
-                    >
-                      {pur.status === 'APPROVED'
-                        ? 'অনুমোদিত'
-                        : pur.status === 'REJECTED'
-                        ? 'বাতিল'
-                        : 'যাচাই চলছে'}
-                    </span>
-                  </div>
-
-                  <h3 className="font-bold text-slate-800 text-sm leading-snug">
-                    {pur.pdf.title}
-                  </h3>
-
-                  <div className="text-xs text-slate-500 space-y-1 font-mono">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[11px] font-sans">পেমেন্ট:</span>
-                      <div className="bg-white px-1.5 py-0.5 rounded border border-slate-200 inline-flex items-center shadow-xs">
-                        <img
-                          src={pur.paymentMethod === 'BKASH' ? '/assets/images/bkash.png' : '/assets/images/nagad.png'}
-                          alt={pur.paymentMethod}
-                          className="h-3.5 w-auto object-contain"
-                        />
-                      </div>
-                      <span className="font-bold text-slate-800">৳{pur.amount}</span>
-                    </div>
-                    <div className="text-[11px] text-slate-400">TrxID: {pur.trxId}</div>
-                  </div>
-                </div>
-
-                <div className="pt-2 border-t border-slate-100">
-                  {pur.status === 'APPROVED' ? (
-                    <a
-                      href={`/api/pdfs/download?pdfId=${encodeURIComponent(pur.pdf.id)}&trxIds=${encodeURIComponent(pur.trxId)}`}
-                      download={`${pur.pdf.title}.pdf`}
-                      className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-sm transition"
-                    >
-                      <FaDownload className="w-3.5 h-3.5" /> পেমেন্ট সফল — এখনই ডাউনলোড করুন
-                    </a>
-                  ) : (
-                    <div className="w-full text-center py-2 bg-slate-50 text-slate-500 text-xs font-semibold rounded-xl">
-                      অ্যাডমিন অনুমোদনের পর ডাউনলোড লিংক সক্রিয় হবে
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
+
+      {/* 3. Logout Section */}
+      <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+          <p className="text-xs font-bold text-slate-700">অ্যাকাউন্ট থেকে প্রস্থান করবেন?</p>
+          <p className="text-[11px] text-slate-400">নিরাপদ লগআউটের মাধ্যমে অধিবেশন সমাপ্ত করুন</p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => signOut({ callbackUrl: '/' })}
+          className="inline-flex items-center gap-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs px-4 py-2.5 rounded-xl border border-rose-200 transition active:scale-98"
+        >
+          <FaArrowRightFromBracket />
+          <span>লগআউট করুন</span>
+        </button>
+      </div>
+
     </div>
   );
 }
-
