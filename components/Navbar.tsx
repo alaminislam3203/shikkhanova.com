@@ -147,11 +147,27 @@ const INSTANT_SITE_INDEX = [
   },
   {
     id: 'page-account',
-    title: 'আমার একাউন্ট ও প্রোফাইল সেটিংস',
-    subtitle: 'প্রোফাইল ছবি, নাম, মোবাইল নম্বর ও পাসওয়ার্ড পরিবর্তন',
+    title: 'আমার একাউন্ট ও প্রোফাইল তথ্য',
+    subtitle: 'প্রোফাইল ছবি, নাম, মোবাইল নম্বর ও শ্রেণি-রোল আপডেট',
     categoryLabel: 'একাউন্ট',
     href: '/account',
-    keywords: 'account profile settings photo password একাউন্ট প্রোফাইল ছবি পাসওয়ার্ড',
+    keywords: 'account profile settings photo একাউন্ট প্রোফাইল ছবি তথ্য',
+  },
+  {
+    id: 'page-password',
+    title: 'পাসওয়ার্ড পরিবর্তন ও নিরাপত্তা',
+    subtitle: 'নিরাপত্তা নিশ্চিতকরণ ও নতুন পাসওয়ার্ড আপডেট',
+    categoryLabel: 'পাসওয়ার্ড',
+    href: '/password',
+    keywords: 'password security পাসওয়ার্ড সিকিউরিটি নিরাপত্তা পরিবর্তন',
+  },
+  {
+    id: 'page-my-notes',
+    title: 'আমার সংগৃহীত পিডিএফ হ্যান্ডনোট',
+    subtitle: 'ক্রয়কৃত শিট ডাউনলোড ও হিস্ট্রি',
+    categoryLabel: 'হ্যান্ডনোট',
+    href: '/my-notes',
+    keywords: 'my notes pdf download সংগৃহীত শিট হ্যান্ডনোট ডাউনলোড',
   },
 ];
 
@@ -677,7 +693,17 @@ export default function Navbar() {
                           className="block px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold text-slate-700 hover:text-brand-700 hover:bg-brand-50/70 transition"
                         >
                           <p className="leading-tight">একাউন্ট সেটিংস</p>
-                          <p className="text-[10px] text-slate-400 font-normal mt-0.5">ছবি, তথ্য ও পাসওয়ার্ড পরিবর্তন</p>
+                          <p className="text-[10px] text-slate-400 font-normal mt-0.5">ছবি ও তথ্য পরিবর্তন</p>
+                        </Link>
+
+                        {/* Password Change */}
+                        <Link
+                          href="/password"
+                          onClick={() => setDropdownOpen(false)}
+                          className="block px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-100/70 transition"
+                        >
+                          <p className="leading-tight">পাসওয়ার্ড পরিবর্তন</p>
+                          <p className="text-[10px] text-slate-400 font-normal mt-0.5">নিরাপত্তা ও পাসওয়ার্ড আপডেট</p>
                         </Link>
 
                       </div>
