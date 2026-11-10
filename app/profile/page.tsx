@@ -178,7 +178,7 @@ export default function ProfilePage() {
           </Link>
 
           <Link
-            href="/account"
+            href="/password"
             className="inline-flex items-center gap-2 bg-slate-900 hover:bg-black text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow transition active:scale-98"
           >
             <FaShieldHalved />

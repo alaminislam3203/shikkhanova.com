@@ -11,38 +11,28 @@ import {
   FaPhone,
   FaGraduationCap,
   FaHashtag,
-  FaLock,
   FaCheck,
   FaCircleCheck,
   FaCircleExclamation,
   FaClock,
-  FaFilePdf,
-  FaAward,
-  FaArrowRight,
-  FaArrowRightFromBracket,
   FaShieldHalved,
+  FaArrowRightFromBracket,
   FaUserShield,
-  FaBars,
   FaCloudArrowUp,
-  FaGear,
-  FaBookOpen,
-  FaUserCheck,
+  FaFilePdf,
+  FaArrowRight,
+  FaLock,
 } from 'react-icons/fa6';
 import { HiSparkles } from 'react-icons/hi2';
-
-type AccountTab = 'profile' | 'security' | 'activity';
 
 export default function AccountPage() {
   const { data: session, status, update } = useSession();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [activeTab, setActiveTab] = useState<AccountTab>('profile');
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
-  const [changingPassword, setChangingPassword] = useState(false);
-
   const [msg, setMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
   // Profile Form State
@@ -54,13 +44,6 @@ export default function AccountPage() {
     rollNumber: '',
     image: '',
     role: 'STUDENT',
-  });
-
-  // Password State
-  const [passwords, setPasswords] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
   });
 
   useEffect(() => {
@@ -205,47 +188,6 @@ export default function AccountPage() {
     }
   };
 
-  // Handle Password Change
-  const handlePasswordSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setMsg(null);
-
-    if (passwords.newPassword !== passwords.confirmPassword) {
-      setMsg({ text: 'নতুন পাসওয়ার্ড দুটি মিলছে না', type: 'error' });
-      return;
-    }
-
-    if (passwords.newPassword.length < 6) {
-      setMsg({ text: 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে', type: 'error' });
-      return;
-    }
-
-    setChangingPassword(true);
-
-    try {
-      const res = await fetch('/api/user/profile', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          currentPassword: passwords.currentPassword,
-          newPassword: passwords.newPassword,
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'পাসওয়ার্ড পরিবর্তন ব্যর্থ হয়েছে');
-      }
-
-      setMsg({ text: 'পাসওয়ার্ড সফলভাবে পরিবর্তিত হয়েছে!', type: 'success' });
-      setPasswords({ currentPassword: '', newPassword: '', confirmPassword: '' });
-    } catch (err: any) {
-      setMsg({ text: err.message || 'পাসওয়ার্ড পরিবর্তন ব্যর্থ হয়েছে', type: 'error' });
-    } finally {
-      setChangingPassword(false);
-    }
-  };
-
   if (status === 'loading' || loading) {
     return (
       <div className="py-24 text-center space-y-3">
@@ -257,31 +199,10 @@ export default function AccountPage() {
 
   if (!session?.user) return null;
 
-  const sidebarTabs = [
-    {
-      id: 'profile' as AccountTab,
-      label: 'একাউন্ট',
-      sublabel: 'ছবি, নাম, মোবাইল ও রোল',
-      icon: FaUser,
-    },
-    {
-      id: 'security' as AccountTab,
-      label: 'নিরাপত্তা ও পাসওয়ার্ড',
-      sublabel: 'পাসওয়ার্ড ও নিরাপত্তা',
-      icon: FaShieldHalved,
-    },
-    {
-      id: 'activity' as AccountTab,
-      label: 'আমার শিট ও ফলাফল',
-      sublabel: 'ডাউনলোড ও মার্কশিট',
-      icon: FaBookOpen,
-    },
-  ];
-
   return (
-    <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6">
+    <div className="max-w-4xl mx-auto space-y-5 sm:space-y-6">
       
-      {/* Top Banner with Compact Profile Header */}
+      {/* 1. Top Banner with Compact Profile Header */}
       <div
         style={{
           background: 'linear-gradient(135deg, #071426 0%, #0A1E3C 55%, #2A0B1E 100%)',
@@ -408,494 +329,209 @@ export default function AccountPage() {
         </div>
       )}
 
-      {/* Mobile Navigation Segmented Tabs (Visible on Mobile Screens Only) */}
-      <div className="lg:hidden bg-white rounded-2xl p-1.5 border border-slate-200 shadow-sm grid grid-cols-3 gap-1">
-        {sidebarTabs.map((tab) => {
-          const Icon = tab.icon;
-          const active = activeTab === tab.id;
-          return (
+      {/* 2. Main Profile Edit Card */}
+      <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-slate-200 shadow-sm space-y-5 sm:space-y-6">
+        
+        <div className="border-b border-slate-100 pb-3 sm:pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h2 className="text-base sm:text-lg font-black text-slate-800">ব্যক্তিগত ও একাডেমিক তথ্য পরিবর্তন</h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              আপনার ছবি, নাম, মোবাইল নম্বর এবং শ্রেণি-রোল আপডেট করুন।
+            </p>
+          </div>
+          
+          <Link
+            href="/profile"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-700 hover:text-brand-800 bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-xl border border-brand-200 transition self-start sm:self-auto"
+          >
+            <FaUser className="w-3 h-3" />
+            <span>প্রোফাইল কার্ড দেখুন</span>
+          </Link>
+        </div>
+
+        {/* Photo Upload Card Section */}
+        <div className="p-3 sm:p-4 bg-gradient-to-r from-slate-50 to-blue-50/40 rounded-xl sm:rounded-2xl border border-slate-200/80 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 text-left">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl overflow-hidden border-2 border-brand-600 bg-brand-50 flex items-center justify-center shadow-md shrink-0">
+              {profile.image ? (
+                <img src={profile.image} alt={profile.name} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-xl sm:text-2xl font-black text-brand-700">{profile.name?.charAt(0) || 'U'}</span>
+              )}
+            </div>
+            <div>
+              <h3 className="text-xs sm:text-sm font-black text-slate-800">প্রোফাইল ছবি</h3>
+              <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 line-clamp-1">
+                JPG, PNG বা WebP ফরম্যাট (সর্বোচ্চ ৫MB)
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="bg-brand-700 hover:bg-brand-800 text-white text-[11px] sm:text-xs font-bold px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl shadow-brand transition flex items-center gap-1.5 shrink-0 active:scale-98"
+          >
+            <FaCamera className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+            <span>{uploading ? 'আপলোড হচ্ছে...' : 'ছবি পরিবর্তন'}</span>
+          </button>
+        </div>
+
+        {/* Profile Details Form */}
+        <form onSubmit={handleProfileSubmit} className="space-y-3.5 sm:space-y-4 text-xs sm:text-sm">
+          
+          <div>
+            <label className="block font-bold text-slate-700 mb-1">শিক্ষার্থীর পূর্ণ নাম</label>
+            <input
+              type="text"
+              required
+              value={profile.name}
+              onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+              className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 sm:py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold text-slate-700 mb-1">
+              ইমেইল ঠিকানা <span className="text-slate-400 font-normal">(অপরিবর্তনযোগ্য)</span>
+            </label>
+            <input
+              type="email"
+              disabled
+              value={profile.email}
+              className="w-full bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-2 sm:py-2.5 text-slate-500 font-mono cursor-not-allowed"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
+            <div>
+              <label className="block font-bold text-slate-700 mb-1">শ্রেণি (Class 5 - 10)</label>
+              <select
+                value={profile.classGrade}
+                onChange={(e) => setProfile({ ...profile, classGrade: e.target.value })}
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 sm:px-3.5 py-2 sm:py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition text-xs sm:text-sm"
+              >
+                <option value="5">৫ম শ্রেণি</option>
+                <option value="6">৬ষ্ঠ শ্রেণি</option>
+                <option value="7">৭ম শ্রেণি</option>
+                <option value="8">৮ম শ্রেণি</option>
+                <option value="9">৯ম শ্রেণি</option>
+                <option value="10">১০ম শ্রেণি</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-bold text-slate-700 mb-1">রোল নম্বর</label>
+              <input
+                type="number"
+                value={profile.rollNumber}
+                onChange={(e) => setProfile({ ...profile, rollNumber: e.target.value })}
+                placeholder="যেমন: 1, 5"
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 sm:px-3.5 py-2 sm:py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition text-xs sm:text-sm"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block font-bold text-slate-700 mb-1">মোবাইল নম্বর (অভিভাবক / শিক্ষার্থী)</label>
+            <input
+              type="tel"
+              value={profile.phone}
+              onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+              placeholder="01XXXXXXXXX"
+              className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 sm:py-2.5 font-mono font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition"
+            />
+          </div>
+
+          <div className="pt-2">
             <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id)}
-              className={`py-2 px-1 rounded-xl text-xs font-bold transition-all flex flex-col items-center justify-center gap-1 ${
-                active
-                  ? 'bg-gradient-to-r from-brand-700 to-brand-800 text-white shadow-sm'
-                  : 'text-slate-600 hover:bg-slate-50'
-              }`}
+              type="submit"
+              disabled={savingProfile}
+              className="w-full sm:w-auto bg-brand-700 hover:bg-brand-800 text-white font-bold px-8 py-2.5 sm:py-3 rounded-xl shadow-brand transition active:scale-[0.99] flex items-center justify-center gap-2"
             >
-              <Icon className={`w-3.5 h-3.5 ${active ? 'text-white' : 'text-slate-400'}`} />
-              <span className="truncate text-[11px] font-bold">{tab.label}</span>
+              {savingProfile ? (
+                <>
+                  <FaClock className="w-4 h-4 animate-spin" />
+                  <span>সংরক্ষণ করা হচ্ছে...</span>
+                </>
+              ) : (
+                <>
+                  <FaCheck className="w-4 h-4" />
+                  <span>তথ্য সংরক্ষণ করুন</span>
+                </>
+              )}
             </button>
-          );
-        })}
+          </div>
+
+        </form>
+
       </div>
 
-      {/* Main Layout: Left Sidebar (Desktop) + Right Content Area */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-start">
+      {/* 3. Dedicated Separate Page Links Card */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
         
-        {/* ================= LEFT SIDEBAR (Desktop Only: 4 Cols) ================= */}
-        <aside className="hidden lg:block lg:col-span-4 bg-white rounded-3xl p-5 border border-slate-200/90 shadow-sm space-y-4 lg:sticky lg:top-28">
-          
-          <div className="pb-3 border-b border-slate-100">
-            <h2 className="text-xs font-black text-slate-400 uppercase tracking-wider">অ্যাকাউন্ট মেনু</h2>
-          </div>
-
-          {/* Sidebar Navigation Tabs */}
-          <nav className="space-y-1.5">
-            {sidebarTabs.map((tab) => {
-              const Icon = tab.icon;
-              const active = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`w-full text-left p-3 rounded-2xl text-xs font-bold transition-all flex items-center gap-3 group ${
-                    active
-                      ? 'bg-gradient-to-r from-brand-700 to-brand-800 text-white shadow-brand scale-101 border border-brand-600'
-                      : 'text-slate-700 hover:bg-slate-100/80 hover:text-brand-700'
-                  }`}
-                >
-                  <div
-                    className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition ${
-                      active
-                        ? 'bg-white/20 text-white shadow-inner'
-                        : 'bg-slate-100 text-slate-500 group-hover:bg-brand-50 group-hover:text-brand-700'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-bold leading-tight truncate">{tab.label}</p>
-                    <p className={`text-[10px] font-normal leading-tight mt-0.5 truncate ${
-                      active ? 'text-blue-200' : 'text-slate-400'
-                    }`}>
-                      {tab.sublabel}
-                    </p>
-                  </div>
-                </button>
-              );
-            })}
-          </nav>
-
-          {/* Additional Quick Action Links */}
-          <div className="pt-3 border-t border-slate-100 space-y-1.5">
-            
-            {/* If Admin: Direct shortcut to Admin Panel */}
-            {session.user.role === 'ADMIN' && (
-              <Link
-                href="/admin"
-                className="w-full p-3 rounded-2xl text-xs font-bold text-brand-800 bg-brand-50 hover:bg-brand-100/80 border border-brand-200/60 transition flex items-center gap-3 group"
-              >
-                <div className="w-9 h-9 rounded-xl bg-brand-700 text-white flex items-center justify-center shrink-0 shadow-sm">
-                  <FaUserShield className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="leading-tight">অ্যাডমিন কন্ট্রোল প্যানেল</p>
-                  <p className="text-[10px] text-brand-600 font-normal mt-0.5">ম্যানেজমেন্ট ড্যাশবোর্ড</p>
-                </div>
-              </Link>
-            )}
-
-            {/* Logout Button */}
-            <button
-              type="button"
-              onClick={() => signOut({ callbackUrl: '/' })}
-              className="w-full p-3 rounded-2xl text-xs font-bold text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition flex items-center gap-3 text-left group"
-            >
-              <div className="w-9 h-9 rounded-xl bg-rose-100/80 text-rose-600 flex items-center justify-center shrink-0">
-                <FaArrowRightFromBracket className="w-4 h-4" />
-              </div>
-              <div>
-                <p className="leading-tight">লগআউট করুন</p>
-                <p className="text-[10px] text-rose-400 font-normal mt-0.5">অ্যাকাউন্ট থেকে প্রস্থান</p>
-              </div>
-            </button>
-
-          </div>
-
-          {/* Center Info Box */}
-          <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 text-[11px] text-slate-500 space-y-1">
-            <p className="font-bold text-slate-700">সহায়তা কেন্দ্র:</p>
-            <p className="font-bn-normal text-brand-800 font-bold">০১৭১২৫৯২৫১৯</p>
-            <p className="text-[10px]">জুম্মাপাড়া, নীলফামারী সদর</p>
-          </div>
-
-        </aside>
-
-        {/* ================= RIGHT CONTENT AREA (8 Cols on Desktop / Full Width on Mobile) ================= */}
-        <main className="lg:col-span-8 space-y-4 sm:space-y-6">
-          
-          {/* TAB 1: Profile & Photo */}
-          {activeTab === 'profile' && (
-            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-slate-200 shadow-sm space-y-5 sm:space-y-6 animate-in fade-in duration-150">
-              
-              <div className="border-b border-slate-100 pb-3 sm:pb-4">
-                <h2 className="text-base sm:text-lg font-black text-slate-800">ব্যক্তিগত ও একাডেমিক তথ্য</h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  আপনার ছবি, পুরো নাম, মোবাইল নম্বর এবং শ্রেণি-রোল আপডেট করুন।
-                </p>
-              </div>
-
-              {/* Photo Upload Card Section */}
-              <div className="p-3 sm:p-4 bg-gradient-to-r from-slate-50 to-blue-50/40 rounded-xl sm:rounded-2xl border border-slate-200/80 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3 text-left">
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl overflow-hidden border-2 border-brand-600 bg-brand-50 flex items-center justify-center shadow-md shrink-0">
-                    {profile.image ? (
-                      <img src={profile.image} alt={profile.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-xl sm:text-2xl font-black text-brand-700">{profile.name?.charAt(0) || 'U'}</span>
-                    )}
-                  </div>
-                  <div>
-                    <h3 className="text-xs sm:text-sm font-black text-slate-800">প্রোফাইল ছবি</h3>
-                    <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 line-clamp-1">
-                      JPG, PNG বা WebP ফরম্যাট (সর্বোচ্চ ৫MB)
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={uploading}
-                  className="bg-brand-700 hover:bg-brand-800 text-white text-[11px] sm:text-xs font-bold px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl shadow-brand transition flex items-center gap-1.5 shrink-0"
-                >
-                  <FaCamera className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                  <span>{uploading ? 'আপলোড হচ্ছে...' : 'ছবি পরিবর্তন'}</span>
-                </button>
-              </div>
-
-              {/* Profile Details Form */}
-              <form onSubmit={handleProfileSubmit} className="space-y-3.5 sm:space-y-4 text-xs sm:text-sm">
-                
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">শিক্ষার্থীর পূর্ণ নাম</label>
-                  <input
-                    type="text"
-                    required
-                    value={profile.name}
-                    onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 sm:py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">
-                    ইমেইল ঠিকানা <span className="text-slate-400 font-normal">(অপরিবর্তনযোগ্য)</span>
-                  </label>
-                  <input
-                    type="email"
-                    disabled
-                    value={profile.email}
-                    className="w-full bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-2 sm:py-2.5 text-slate-500 font-mono cursor-not-allowed"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">শ্রেণি (Class 5 - 10)</label>
-                    <select
-                      value={profile.classGrade}
-                      onChange={(e) => setProfile({ ...profile, classGrade: e.target.value })}
-                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 sm:px-3.5 py-2 sm:py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition text-xs sm:text-sm"
-                    >
-                      <option value="5">৫ম শ্রেণি</option>
-                      <option value="6">৬ষ্ঠ শ্রেণি</option>
-                      <option value="7">৭ম শ্রেণি</option>
-                      <option value="8">৮ম শ্রেণি</option>
-                      <option value="9">৯ম শ্রেণি</option>
-                      <option value="10">১০ম শ্রেণি</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">রোল নম্বর</label>
-                    <input
-                      type="number"
-                      value={profile.rollNumber}
-                      onChange={(e) => setProfile({ ...profile, rollNumber: e.target.value })}
-                      placeholder="যেমন: 1, 5"
-                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 sm:px-3.5 py-2 sm:py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition text-xs sm:text-sm"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">মোবাইল নম্বর (অভিভাবক / শিক্ষার্থী)</label>
-                  <input
-                    type="tel"
-                    value={profile.phone}
-                    onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                    placeholder="01XXXXXXXXX"
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 sm:py-2.5 font-mono font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition"
-                  />
-                </div>
-
-                <div className="pt-2">
-                  <button
-                    type="submit"
-                    disabled={savingProfile}
-                    className="w-full sm:w-auto bg-brand-700 hover:bg-brand-800 text-white font-bold px-8 py-2.5 sm:py-3 rounded-xl shadow-brand transition active:scale-[0.99] flex items-center justify-center gap-2"
-                  >
-                    {savingProfile ? (
-                      <>
-                        <FaClock className="w-4 h-4 animate-spin" />
-                        <span>সংরক্ষণ করা হচ্ছে...</span>
-                      </>
-                    ) : (
-                      <>
-                        <FaCheck className="w-4 h-4" />
-                        <span>তথ্য সংরক্ষণ করুন</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-
-              </form>
-
+        {/* Link to Dedicated /password page */}
+        <Link
+          href="/password"
+          className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-slate-800 shadow-xs hover:shadow-md transition flex items-center justify-between group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center shrink-0 group-hover:bg-slate-900 group-hover:text-white transition">
+              <FaLock className="w-4 h-4" />
             </div>
-          )}
-
-          {/* TAB 2: Security & Password */}
-          {activeTab === 'security' && (
-            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-slate-200 shadow-sm space-y-5 sm:space-y-6 animate-in fade-in duration-150">
-              
-              <div className="border-b border-slate-100 pb-3 sm:pb-4">
-                <h2 className="text-base sm:text-lg font-black text-slate-800 flex items-center gap-2">
-                  <FaShieldHalved className="text-brand-700" /> অ্যাকাউন্ট নিরাপত্তা ও পাসওয়ার্ড পরিবর্তন
-                </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  আপনার অ্যাকাউন্টের নিরাপত্তা সুনিশ্চিত রাখতে শক্তিশালী পাসওয়ার্ড ব্যবহার করুন।
-                </p>
-              </div>
-
-              <form onSubmit={handlePasswordSubmit} className="space-y-3.5 sm:space-y-4 max-w-lg text-xs sm:text-sm">
-                
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">বর্তমান পাসওয়ার্ড</label>
-                  <input
-                    type="password"
-                    required
-                    value={passwords.currentPassword}
-                    onChange={(e) => setPasswords({ ...passwords, currentPassword: e.target.value })}
-                    placeholder="আপনার বর্তমান পাসওয়ার্ড দিন"
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 sm:py-2.5 focus:outline-none focus:border-brand-500 focus:bg-white transition"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">নতুন পাসওয়ার্ড</label>
-                  <input
-                    type="password"
-                    required
-                    value={passwords.newPassword}
-                    onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
-                    placeholder="কমপক্ষে ৬ অক্ষরের পাসওয়ার্ড দিন"
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 sm:py-2.5 focus:outline-none focus:border-brand-500 focus:bg-white transition"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">নতুন পাসওয়ার্ড নিশ্চিত করুন</label>
-                  <input
-                    type="password"
-                    required
-                    value={passwords.confirmPassword}
-                    onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
-                    placeholder="পুনরায় নতুন পাসওয়ার্ড লিখুন"
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 sm:py-2.5 focus:outline-none focus:border-brand-500 focus:bg-white transition"
-                  />
-                </div>
-
-                <div className="pt-2">
-                  <button
-                    type="submit"
-                    disabled={changingPassword}
-                    className="w-full sm:w-auto bg-slate-900 hover:bg-black text-white font-bold px-8 py-2.5 sm:py-3 rounded-xl shadow transition active:scale-[0.99] flex items-center justify-center gap-2"
-                  >
-                    {changingPassword ? (
-                      <>
-                        <FaClock className="w-4 h-4 animate-spin" />
-                        <span>আপডেট হচ্ছে...</span>
-                      </>
-                    ) : (
-                      <>
-                        <FaLock className="w-4 h-4" />
-                        <span>পাসওয়ার্ড আপডেট করুন</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-
-              </form>
-
-              <div className="bg-amber-50 p-3.5 sm:p-4 rounded-2xl border border-amber-200/80 text-xs text-amber-900 space-y-1">
-                <p className="font-bold flex items-center gap-1.5">
-                  <HiSparkles className="text-amber-600" /> নিরাপত্তা টিপস:
-                </p>
-                <p>পাসওয়ার্ডে ইংরেজি বড়-ছোট অক্ষর ও সংখ্যা ব্যবহার করুন। আপনার পাসওয়ার্ড অন্য কারো সাথে শেয়ার করবেন না।</p>
-              </div>
-
+            <div>
+              <p className="text-xs sm:text-sm font-black text-slate-800 group-hover:text-[#C8102E] transition">
+                পাসওয়ার্ড ও নিরাপত্তা
+              </p>
+              <p className="text-[11px] text-slate-500">পাসওয়ার্ড পরিবর্তন করতে চান? এখানে ক্লিক করুন</p>
             </div>
-          )}
-
-          {/* TAB 3: Activity & Shortcuts (2 CARDS PER ROW ON MOBILE) */}
-          {activeTab === 'activity' && (
-            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-slate-200 shadow-sm space-y-5 sm:space-y-6 animate-in fade-in duration-150">
-              
-              <div className="border-b border-slate-100 pb-3 sm:pb-4">
-                <h2 className="text-base sm:text-lg font-black text-slate-800">আমার একাডেমিক কার্যক্রম ও শর্টকাট</h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  আপনার সংগৃহীত পিডিএফ হ্যান্ডনোট, পরীক্ষার রেজাল্ট ও মডেল টেস্ট লিংক।
-                </p>
-              </div>
-
-              {/* 2 Cards Per Row on Mobile */}
-              <div className="grid grid-cols-2 sm:grid-cols-2 gap-2.5 sm:gap-4">
-                
-                {/* PDF Materials Shortcut */}
-                <Link
-                  href="/my-notes"
-                  className="p-3 sm:p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50/60 hover:bg-white transition shadow-xs hover:shadow-md group flex flex-col justify-between space-y-2.5 sm:space-y-4"
-                >
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center">
-                      <FaFilePdf className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </div>
-                    <h3 className="text-xs sm:text-base font-black text-slate-800 group-hover:text-brand-700 transition truncate sm:line-clamp-none">
-                      সংগৃহীত পিডিএফ নোট
-                    </h3>
-                    <p className="hidden sm:block text-xs text-slate-500">
-                      আপনার বিকাশ বা নগদ পেমেন্টে অনুমোদিত সকল শিট ও হ্যান্ডনোট ডাউনলোড করুন।
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-brand-700 pt-1.5 sm:pt-2 border-t border-slate-100">
-                    <span>ডাউনলোড পেইজ</span>
-                    <FaArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </Link>
-
-                {/* Exam Result Shortcut */}
-                <Link
-                  href="/results"
-                  className="p-3 sm:p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50/60 hover:bg-white transition shadow-xs hover:shadow-md group flex flex-col justify-between space-y-2.5 sm:space-y-4"
-                >
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
-                      <FaAward className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </div>
-                    <h3 className="text-xs sm:text-base font-black text-slate-800 group-hover:text-brand-700 transition truncate sm:line-clamp-none">
-                     রেজাল্ট ও মার্কশিট
-                    </h3>
-                    <p className="hidden sm:block text-xs text-slate-500">
-                      ক্লাস ও রোল নম্বর দিয়ে অফিশিয়াল গ্রেডশিট, জিপিএ ও সাবজেক্ট মার্কস দেখুন।
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-brand-700 pt-1.5 sm:pt-2 border-t border-slate-100">
-                    <span>মার্কশিট দেখুন</span>
-                    <FaArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </Link>
-
-                {/* Student Profile (Non-Admin) OR Attendance (Admin Only) */}
-                {session?.user?.role === 'ADMIN' ? (
-                  <Link
-                    href="/attendance"
-                    className="p-3 sm:p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50/60 hover:bg-white transition shadow-xs hover:shadow-md group flex flex-col justify-between space-y-2.5 sm:space-y-4"
-                  >
-                    <div className="space-y-1.5 sm:space-y-2">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
-                        <FaUserCheck className="w-4 h-4 sm:w-5 sm:h-5" />
-                      </div>
-                      <h3 className="text-xs sm:text-base font-black text-slate-800 group-hover:text-brand-700 transition truncate sm:line-clamp-none">
-                        রোল হাজিরা (অ্যাডমিন)
-                      </h3>
-                      <p className="hidden sm:block text-xs text-slate-500">
-                        ৫ম থেকে ১০ম শ্রেণি পর্যন্ত তারিখ অনুযায়ী ক্লাসের উপস্থিতি গ্রহণ করুন।
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-brand-700 pt-1.5 sm:pt-2 border-t border-slate-100">
-                      <span>হাজিরা মডিউল</span>
-                      <FaArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </Link>
-                ) : (
-                  <Link
-                    href="/profile"
-                    className="p-3 sm:p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50/60 hover:bg-white transition shadow-xs hover:shadow-md group flex flex-col justify-between space-y-2.5 sm:space-y-4"
-                  >
-                    <div className="space-y-1.5 sm:space-y-2">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-blue-100 text-brand-700 flex items-center justify-center">
-                        <FaUser className="w-4 h-4 sm:w-5 sm:h-5" />
-                      </div>
-                      <h3 className="text-xs sm:text-base font-black text-slate-800 group-hover:text-brand-700 transition truncate sm:line-clamp-none">
-                        আমার প্রোফাইল কার্ড
-                      </h3>
-                      <p className="hidden sm:block text-xs text-slate-500">
-                        আপনার একাডেমিক তথ্য, শ্রেণি ও রোল নম্বর সম্বলিত পরিচিতি কার্ড দেখুন।
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-brand-700 pt-1.5 sm:pt-2 border-t border-slate-100">
-                      <span>প্রোফাইল দেখুন</span>
-                      <FaArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </Link>
-                )}
-
-                {/* PDFs Shop Shortcut */}
-                <Link
-                  href="/pdfs"
-                  className="p-3 sm:p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50/60 hover:bg-white transition shadow-xs hover:shadow-md group flex flex-col justify-between space-y-2.5 sm:space-y-4"
-                >
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-blue-100 text-brand-700 flex items-center justify-center">
-                      <HiSparkles className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </div>
-                    <h3 className="text-xs sm:text-base font-black text-slate-800 group-hover:text-brand-700 transition truncate sm:line-clamp-none">
-                      নোট ও সাজেশন শপ
-                    </h3>
-                    <p className="hidden sm:block text-xs text-slate-500">
-                      অভিজ্ঞ শিক্ষকদের তৈরি ১০০% কমন উপযোগী রঙিন অধ্যায়ভিত্তিক হ্যান্ডনোট।
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-brand-700 pt-1.5 sm:pt-2 border-t border-slate-100">
-                    <span>নোট শপে যান</span>
-                    <FaArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </Link>
-
-              </div>
-
-            </div>
-          )}
-
-          {/* Mobile Quick Action Buttons (Admin & Logout) */}
-          <div className="lg:hidden grid grid-cols-2 gap-2.5 pt-1">
-            {session.user.role === 'ADMIN' && (
-              <Link
-                href="/admin"
-                className="p-3 rounded-2xl text-xs font-bold text-brand-800 bg-brand-50 hover:bg-brand-100/80 border border-brand-200/60 transition flex items-center justify-center gap-2"
-              >
-                <FaUserShield className="w-4 h-4 text-brand-700 shrink-0" />
-                <span>অ্যাডমিন প্যানেল</span>
-              </Link>
-            )}
-            <button
-              type="button"
-              onClick={() => signOut({ callbackUrl: '/' })}
-              className={`p-3 rounded-2xl text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition flex items-center justify-center gap-2 ${
-                session.user.role === 'ADMIN' ? '' : 'col-span-2'
-              }`}
-            >
-              <FaArrowRightFromBracket className="w-4 h-4 shrink-0" />
-              <span>লগআউট করুন</span>
-            </button>
           </div>
+          <FaArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 transition-transform" />
+        </Link>
 
-        </main>
+        {/* Link to Dedicated /my-notes page */}
+        <Link
+          href="/my-notes"
+          className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-[#C8102E] shadow-xs hover:shadow-md transition flex items-center justify-between group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-rose-50 text-[#C8102E] flex items-center justify-center shrink-0 group-hover:bg-[#C8102E] group-hover:text-white transition">
+              <FaFilePdf className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-xs sm:text-sm font-black text-slate-800 group-hover:text-[#C8102E] transition">
+                সংগৃহীত শিট ও নোট
+              </p>
+              <p className="text-[11px] text-slate-500">ক্রয়কৃত শিট ডাউনলোড ও হিস্ট্রি দেখুন</p>
+            </div>
+          </div>
+          <FaArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 transition-transform" />
+        </Link>
 
+      </div>
+
+      {/* 4. Bottom Quick Action Buttons (Admin & Logout) */}
+      <div className="grid grid-cols-2 gap-2.5 pt-1">
+        {session.user.role === 'ADMIN' && (
+          <Link
+            href="/admin"
+            className="p-3 rounded-2xl text-xs font-bold text-brand-800 bg-brand-50 hover:bg-brand-100/80 border border-brand-200/60 transition flex items-center justify-center gap-2"
+          >
+            <FaUserShield className="w-4 h-4 text-brand-700 shrink-0" />
+            <span>অ্যাডমিন প্যানেল</span>
+          </Link>
+        )}
+        <button
+          type="button"
+          onClick={() => signOut({ callbackUrl: '/' })}
+          className={`p-3 rounded-2xl text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition flex items-center justify-center gap-2 ${
+            session.user.role === 'ADMIN' ? '' : 'col-span-2'
+          }`}
+        >
+          <FaArrowRightFromBracket className="w-4 h-4 shrink-0" />
+          <span>লগআউট করুন</span>
+        </button>
       </div>
 
     </div>
