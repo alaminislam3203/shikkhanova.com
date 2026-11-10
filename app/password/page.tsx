@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AccountNavTabs from '@/components/account/AccountNavTabs';
 import {
-import {
   FaLock,
   FaShieldHalved,
   FaCircleCheck,
