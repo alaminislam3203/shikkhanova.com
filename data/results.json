@@ -1,0 +1,15 @@
+[
+  {
+    "id": "res-seed-1",
+    "examTitle": "১ম সাময়িক মূল্যায়ন পরীক্ষা ২০২৬",
+    "classGrade": 7,
+    "rollNumber": 1,
+    "studentName": "রাকিবুল হাসান",
+    "totalMarks": 400,
+    "obtainedMarks": 340,
+    "grade": "A",
+    "gpa": 4.63,
+    "subjectMarks": "[{\"subject\":\"বাংলা\",\"fullMarks\":100,\"obtained\":61,\"grade\":\"A-\",\"gpa\":3.5},{\"subject\":\"ইংরেজি\",\"fullMarks\":100,\"obtained\":86,\"grade\":\"A+\",\"gpa\":5},{\"subject\":\"সাধারণ গণিত\",\"fullMarks\":100,\"obtained\":97,\"grade\":\"A+\",\"gpa\":5},{\"subject\":\"সাধারণ বিজ্ঞান\",\"fullMarks\":100,\"obtained\":96,\"grade\":\"A+\",\"gpa\":5}]",
+    "createdAt": "2026-11-10T18:46:04.328Z"
+  }
+]
