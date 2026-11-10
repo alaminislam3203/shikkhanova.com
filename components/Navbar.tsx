@@ -235,6 +235,18 @@ export default function Navbar() {
     setMobileSearchOpen(false);
   }, [pathname]);
 
+  // Prevent background scrolling when mobile full-screen menu is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen]);
+
   // Preload DB search items silently in the background once when search opens
   const ensureDbIndexLoaded = () => {
     if (dbFetchedRef.current) return;
