@@ -43,7 +43,49 @@ function writeLocalResults(results: any[]) {
   }
 }
 
-// GET: Search student result OR list all class results for Admin
+// Auto-seed results into PostgreSQL if DB table is empty or has fewer than seed records
+async function ensureSeedResults() {
+  try {
+    const count = await prisma.examResult.count();
+    const local = readLocalResults();
+    if (count < local.length && local.length > 0) {
+      for (const r of local) {
+        try {
+          await prisma.examResult.upsert({
+            where: { id: r.id },
+            update: {
+              examTitle: r.examTitle,
+              classGrade: r.classGrade,
+              rollNumber: r.rollNumber,
+              studentName: r.studentName,
+              totalMarks: r.totalMarks,
+              obtainedMarks: r.obtainedMarks,
+              grade: r.grade,
+              gpa: r.gpa,
+              subjectMarks: typeof r.subjectMarks === 'object' ? JSON.stringify(r.subjectMarks) : r.subjectMarks,
+            },
+            create: {
+              id: r.id,
+              examTitle: r.examTitle,
+              classGrade: r.classGrade,
+              rollNumber: r.rollNumber,
+              studentName: r.studentName,
+              totalMarks: r.totalMarks,
+              obtainedMarks: r.obtainedMarks,
+              grade: r.grade,
+              gpa: r.gpa,
+              subjectMarks: typeof r.subjectMarks === 'object' ? JSON.stringify(r.subjectMarks) : r.subjectMarks,
+            },
+          });
+        } catch {}
+      }
+    }
+  } catch (err) {
+    console.warn('ensureSeedResults DB sync check:', err);
+  }
+}
+
+// GET: Search student result OR list all class results for Admin directly from PostgreSQL
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -52,20 +94,33 @@ export async function GET(req: Request) {
     const examTitle = searchParams.get('examTitle');
     const all = searchParams.get('all');
 
+    // Make sure PostgreSQL has the latest seed data
+    await ensureSeedResults();
+
     // 1. Admin Request: Fetch all results for a class or all classes
     if (all === 'true' || (classGrade && !rollNumber)) {
       try {
-        const whereClause = classGrade && classGrade !== 'all' ? { classGrade: parseInt(classGrade) } : {};
+        const whereClause: any = {};
+        if (classGrade && classGrade !== 'all') {
+          whereClause.classGrade = parseInt(classGrade);
+        }
+        if (examTitle && examTitle !== 'all') {
+          whereClause.examTitle = examTitle;
+        }
+
         const results = await prisma.examResult.findMany({
           where: whereClause,
           orderBy: [{ classGrade: 'asc' }, { rollNumber: 'asc' }, { createdAt: 'desc' }],
         });
+
         if (results && results.length > 0) {
           return NextResponse.json({ results: results.map(enrichResultWithProfile) });
         }
-      } catch {}
+      } catch (dbErr) {
+        console.warn('PostgreSQL GET fallback:', dbErr);
+      }
 
-      // Fallback to local file
+      // Local fallback in case DB connection is transiently unreachable
       const local = readLocalResults();
       const filtered = classGrade && classGrade !== 'all'
         ? local.filter((r) => String(r.classGrade) === String(classGrade))
@@ -95,9 +150,11 @@ export async function GET(req: Request) {
       if (results && results.length > 0) {
         return NextResponse.json({ results: results.map(enrichResultWithProfile) });
       }
-    } catch {}
+    } catch (dbErr) {
+      console.warn('PostgreSQL student result search fallback:', dbErr);
+    }
 
-    // Fallback to local file
+    // Local fallback in case DB connection is transiently unreachable
     const local = readLocalResults();
     const matched = local.filter((r) => {
       const matchCls = String(r.classGrade) === String(classGrade);
@@ -112,7 +169,7 @@ export async function GET(req: Request) {
   }
 }
 
-// POST: Save or Update Subject-by-Subject Result (ADMIN only)
+// POST: Save or Update Subject-by-Subject Result directly to PostgreSQL (ADMIN only)
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -161,7 +218,41 @@ export async function POST(req: Request) {
       createdAt: nowIso,
     };
 
-    // 1. Save to local JSON backup
+    // 1. Direct PostgreSQL Upsert
+    let savedInDb = false;
+    try {
+      await prisma.examResult.upsert({
+        where: { id: resultId },
+        update: {
+          examTitle: resultRecord.examTitle,
+          classGrade: cGrade,
+          rollNumber: rNum,
+          studentName: resultRecord.studentName,
+          totalMarks: tMarks,
+          obtainedMarks: oMarks,
+          grade: resultRecord.grade,
+          gpa: fGpa,
+          subjectMarks: subJson,
+        },
+        create: {
+          id: resultId,
+          examTitle: resultRecord.examTitle,
+          classGrade: cGrade,
+          rollNumber: rNum,
+          studentName: resultRecord.studentName,
+          totalMarks: tMarks,
+          obtainedMarks: oMarks,
+          grade: resultRecord.grade,
+          gpa: fGpa,
+          subjectMarks: subJson,
+        },
+      });
+      savedInDb = true;
+    } catch (dbErr) {
+      console.error('PostgreSQL save error:', dbErr);
+    }
+
+    // 2. Keep local file in sync
     const local = readLocalResults();
     const existingIdx = local.findIndex(
       (r) => (id && r.id === id) || (r.classGrade === cGrade && r.rollNumber === rNum && r.examTitle === examTitle)
@@ -173,73 +264,43 @@ export async function POST(req: Request) {
     }
     writeLocalResults(local);
 
-    // 2. Try DB Upsert / Create
-    try {
-      if (id) {
-        await prisma.examResult.update({
-          where: { id },
-          data: {
-            examTitle: resultRecord.examTitle,
-            classGrade: cGrade,
-            rollNumber: rNum,
-            studentName: resultRecord.studentName,
-            totalMarks: tMarks,
-            obtainedMarks: oMarks,
-            grade: resultRecord.grade,
-            gpa: fGpa,
-            subjectMarks: subJson,
-          },
-        });
-      } else {
-        await prisma.examResult.create({
-          data: {
-            examTitle: resultRecord.examTitle,
-            classGrade: cGrade,
-            rollNumber: rNum,
-            studentName: resultRecord.studentName,
-            totalMarks: tMarks,
-            obtainedMarks: oMarks,
-            grade: resultRecord.grade,
-            gpa: fGpa,
-            subjectMarks: subJson,
-          },
-        });
-      }
-    } catch {}
-
     return NextResponse.json({
-      message: 'ফলাফল সফলভাবে সংরক্ষিত হয়েছে!',
-      result: resultRecord,
+      message: savedInDb
+        ? 'ফলাফল PostgreSQL ডেটাবেজে সফলভাবে সংরক্ষিত হয়েছে!'
+        : 'ফলাফল সফলভাবে সংরক্ষিত হয়েছে!',
+      result: enrichResultWithProfile(resultRecord),
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-// DELETE: Remove result by ID (ADMIN only)
+// DELETE: Remove result by ID from PostgreSQL (ADMIN only)
 export async function DELETE(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session || session.user.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'শুধুমাত্র অ্যাডমিন ফলাফল মুছতে পারবেন' }, { status: 403 });
+      return NextResponse.json({ error: 'অননুমোদিত' }, { status: 403 });
     }
 
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
 
     if (!id) {
-      return NextResponse.json({ error: 'ফলাফল আইডি আবশ্যক' }, { status: 400 });
+      return NextResponse.json({ error: 'আইডি প্রয়োজন' }, { status: 400 });
     }
 
-    // 1. Remove from local JSON
-    const local = readLocalResults();
-    const filtered = local.filter((r) => r.id !== id);
-    writeLocalResults(filtered);
-
-    // 2. Remove from DB
+    // 1. Delete from PostgreSQL
     try {
       await prisma.examResult.delete({ where: { id } });
-    } catch {}
+    } catch (dbErr) {
+      console.warn('PostgreSQL delete result warning:', dbErr);
+    }
+
+    // 2. Delete from local backup
+    const local = readLocalResults();
+    const updated = local.filter((r) => r.id !== id);
+    writeLocalResults(updated);
 
     return NextResponse.json({ message: 'ফলাফল সফলভাবে মুছে ফেলা হয়েছে' });
   } catch (error: any) {
