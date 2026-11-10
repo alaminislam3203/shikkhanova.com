@@ -35,7 +35,7 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
         </div>
 
         {/* Institute Header */}
-        <div className="text-center border-b-2 border-[#C8102E] pb-5 space-y-1.5 relative z-10">
+        <div className="text-center border-b-2 border-[#C8102E] pb-5 space-y-2 relative z-10">
           <div className="flex items-center justify-center mb-1">
             <div className="bg-white px-3 py-1.5 rounded-2xl shadow-xs border border-slate-100">
               <Logo size="md" clickable={false} />
@@ -46,41 +46,59 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
             জুম্মাপাড়া, নীলফামারী সদর, নীলফামারী | হেল্পলাইন: <span className="font-bn-normal font-bold text-[#0A1E3C]">০১৭১২৫৯২৫১৯</span>
           </p>
 
-          <div className="inline-flex items-center gap-2 mt-2 bg-[#0A1E3C] border-b-2 border-[#C8102E] text-white text-xs font-bold px-6 py-1.5 rounded-full uppercase shadow-sm">
-            <span>একাডেমিক ফলাফল ও অফিশিয়াল মার্কশিট</span>
-            <span className="text-slate-300">|</span>
-            <span className="text-amber-300">NCTB কারিকুলাম</span>
+          {/* Exam Title Set Prominently in Header */}
+          <div className="pt-1">
+            <div className="inline-flex flex-wrap items-center justify-center gap-2 bg-[#0A1E3C] border-b-2 border-[#C8102E] text-white text-xs sm:text-sm font-bold px-6 py-2 rounded-full uppercase shadow-md">
+              <span className="text-amber-300 font-black">{result.examTitle}</span>
+              <span className="text-slate-400">|</span>
+              <span>একাডেমিক ফলাফল ও অফিশিয়াল মার্কশিট</span>
+            </div>
           </div>
         </div>
 
         {/* Student Profile Info & Status */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 p-4 rounded-2xl border text-xs sm:text-sm relative z-10 bg-slate-50 border-slate-200">
-          <div>
-            <span className="text-[11px] text-slate-500 block font-bold">শিক্ষার্থীর নাম:</span>
-            <strong className="text-slate-900 text-sm sm:text-base font-black truncate block">{result.studentName}</strong>
-          </div>
-          <div>
-            <span className="text-[11px] text-slate-500 block font-bold">শ্রেণি:</span>
-            <strong className="text-brand-700 font-black text-sm sm:text-base">Class {result.classGrade}</strong>
-          </div>
-          <div>
-            <span className="text-[11px] text-slate-500 block font-bold">রোল নম্বর:</span>
-            <strong className="text-nova-600 font-black text-sm sm:text-base">রোল {result.rollNumber}</strong>
-          </div>
-          <div className="sm:col-span-1">
-            <span className="text-[11px] text-slate-500 block font-bold">পরীক্ষার নাম:</span>
-            <strong className="text-slate-800 font-bold text-xs truncate block">{result.examTitle}</strong>
-          </div>
-          <div>
-            <span className="text-[11px] text-slate-500 block font-bold">ফলাফল স্ট্যাটাস:</span>
-            <span
-              className={`inline-flex items-center gap-1 font-black text-xs px-2.5 py-0.5 rounded-full ${
-                isPassed ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-rose-100 text-rose-800 border border-rose-300'
-              }`}
-            >
-              {isPassed ? <FaCircleCheck className="w-3 h-3 text-emerald-600" /> : <FaCircleXmark className="w-3 h-3 text-rose-600" />}
-              {isPassed ? 'উত্তীর্ণ (PASSED)' : 'অনুত্তীর্ণ (FAILED)'}
-            </span>
+        <div className="p-4 sm:p-5 rounded-2xl border text-xs sm:text-sm relative z-10 bg-slate-50 border-slate-200 space-y-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-3">
+            <div>
+              <span className="text-[11px] text-slate-500 block font-bold">শিক্ষার্থীর নাম:</span>
+              <strong className="text-slate-900 text-sm sm:text-base font-black truncate block">{result.studentName}</strong>
+            </div>
+            <div>
+              <span className="text-[11px] text-slate-500 block font-bold">পিতার নাম:</span>
+              <strong className="text-slate-800 text-xs sm:text-sm font-bold truncate block">{result.fatherName || '—'}</strong>
+            </div>
+            <div>
+              <span className="text-[11px] text-slate-500 block font-bold">মাতার নাম:</span>
+              <strong className="text-slate-800 text-xs sm:text-sm font-bold truncate block">{result.motherName || '—'}</strong>
+            </div>
+            <div>
+              <span className="text-[11px] text-slate-500 block font-bold">বিদ্যালয়ের নাম:</span>
+              <strong className="text-slate-800 text-xs sm:text-sm font-bold truncate block">{result.schoolName || '—'}</strong>
+            </div>
+
+            <div>
+              <span className="text-[11px] text-slate-500 block font-bold">জন্ম তারিখ:</span>
+              <strong className="text-slate-800 text-xs sm:text-sm font-bold block">{result.dateOfBirth || '—'}</strong>
+            </div>
+            <div>
+              <span className="text-[11px] text-slate-500 block font-bold">শ্রেণি:</span>
+              <strong className="text-brand-700 font-black text-sm sm:text-base">Class {result.classGrade}</strong>
+            </div>
+            <div>
+              <span className="text-[11px] text-slate-500 block font-bold">রোল নম্বর:</span>
+              <strong className="text-nova-600 font-black text-sm sm:text-base">রোল {result.rollNumber}</strong>
+            </div>
+            <div>
+              <span className="text-[11px] text-slate-500 block font-bold">ফলাফল স্ট্যাটাস:</span>
+              <span
+                className={`inline-flex items-center gap-1 font-black text-xs px-2.5 py-1 rounded-full ${
+                  isPassed ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-rose-100 text-rose-800 border border-rose-300'
+                }`}
+              >
+                {isPassed ? <FaCircleCheck className="w-3 h-3 text-emerald-600" /> : <FaCircleXmark className="w-3 h-3 text-rose-600" />}
+                {isPassed ? 'উত্তীর্ণ (PASSED)' : 'অনুত্তীর্ণ (FAILED)'}
+              </span>
+            </div>
           </div>
         </div>
 
