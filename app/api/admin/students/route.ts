@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import fs from 'fs';
 import path from 'path';
+import { getStudentProfile, saveStudentProfile } from '@/lib/studentProfiles';
 
 export interface StudentRecord {
   id: string;
@@ -11,6 +12,10 @@ export interface StudentRecord {
   phone: string | null;
   classGrade: number;
   rollNumber: number;
+  fatherName?: string;
+  motherName?: string;
+  schoolName?: string;
+  dateOfBirth?: string;
   image?: string | null;
   createdAt?: string;
 }
@@ -152,16 +157,23 @@ export async function GET(req: Request) {
         },
       });
 
-      const students: StudentRecord[] = users.map((u) => ({
-        id: u.id,
-        name: u.name,
-        email: u.email,
-        phone: u.phone || '',
-        classGrade: u.classGrade || 7,
-        rollNumber: u.rollNumber || 1,
-        image: u.image,
-        createdAt: u.createdAt.toISOString(),
-      }));
+      const students: StudentRecord[] = users.map((u) => {
+        const prof = getStudentProfile(u.classGrade || 7, u.rollNumber || 1, u.email);
+        return {
+          id: u.id,
+          name: u.name,
+          email: u.email,
+          phone: u.phone || '',
+          classGrade: u.classGrade || 7,
+          rollNumber: u.rollNumber || 1,
+          fatherName: prof.fatherName,
+          motherName: prof.motherName,
+          schoolName: prof.schoolName,
+          dateOfBirth: prof.dateOfBirth,
+          image: u.image,
+          createdAt: u.createdAt.toISOString(),
+        };
+      });
 
       return NextResponse.json({ students });
     } catch (err) {
@@ -173,6 +185,16 @@ export async function GET(req: Request) {
   if (filterClass) {
     local = local.filter((s) => Number(s.classGrade) === filterClass);
   }
+  local = local.map((s) => {
+    const prof = getStudentProfile(s.classGrade, s.rollNumber, s.email);
+    return {
+      ...s,
+      fatherName: s.fatherName || prof.fatherName,
+      motherName: s.motherName || prof.motherName,
+      schoolName: s.schoolName || prof.schoolName,
+      dateOfBirth: s.dateOfBirth || prof.dateOfBirth,
+    };
+  });
   local.sort((a, b) => a.classGrade - b.classGrade || a.rollNumber - b.rollNumber);
   return NextResponse.json({ students: local });
 }
