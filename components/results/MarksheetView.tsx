@@ -34,6 +34,58 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
           <span className="text-9xl font-black text-brand-900 tracking-widest">SHIKKHANOVA</span>
         </div>
 
+        {/* Top-Right Corner: Bangladesh Education Board Grading System Table Box */}
+        <div className="sm:absolute sm:top-6 sm:right-6 sm:z-20 print:absolute print:top-6 print:right-6 mb-3 sm:mb-0 flex justify-end">
+          <div className="w-[168px] bg-white border border-slate-300 rounded-md overflow-hidden shadow-xs text-[9px]">
+            <table className="w-full border-collapse text-center">
+              <thead>
+                <tr className="bg-[#0A1E3C] text-white font-bold border-b border-slate-300">
+                  <th className="py-1 px-1 border-r border-slate-400/30 text-[8.5px] leading-tight">Letter<br/>Grade</th>
+                  <th className="py-1 px-1 border-r border-slate-400/30 text-[8.5px] leading-tight">Class<br/>Interval (%)</th>
+                  <th className="py-1 px-1 text-[8.5px] leading-tight">Grade<br/>Point</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200 text-slate-800 font-semibold">
+                <tr className="hover:bg-slate-50">
+                  <td className="py-0.5 px-1 border-r border-slate-200 font-black text-emerald-700">A+</td>
+                  <td className="py-0.5 px-1 border-r border-slate-200">80-100</td>
+                  <td className="py-0.5 px-1 font-bold">5</td>
+                </tr>
+                <tr className="hover:bg-slate-50">
+                  <td className="py-0.5 px-1 border-r border-slate-200 font-black text-emerald-600">A</td>
+                  <td className="py-0.5 px-1 border-r border-slate-200">70-79</td>
+                  <td className="py-0.5 px-1 font-bold">4</td>
+                </tr>
+                <tr className="hover:bg-slate-50">
+                  <td className="py-0.5 px-1 border-r border-slate-200 font-black text-blue-600">A-</td>
+                  <td className="py-0.5 px-1 border-r border-slate-200">60-69</td>
+                  <td className="py-0.5 px-1 font-bold">3.5</td>
+                </tr>
+                <tr className="hover:bg-slate-50">
+                  <td className="py-0.5 px-1 border-r border-slate-200 font-black text-amber-600">B</td>
+                  <td className="py-0.5 px-1 border-r border-slate-200">50-59</td>
+                  <td className="py-0.5 px-1 font-bold">3</td>
+                </tr>
+                <tr className="hover:bg-slate-50">
+                  <td className="py-0.5 px-1 border-r border-slate-200 font-black text-orange-600">C</td>
+                  <td className="py-0.5 px-1 border-r border-slate-200">40-49</td>
+                  <td className="py-0.5 px-1 font-bold">2</td>
+                </tr>
+                <tr className="hover:bg-slate-50">
+                  <td className="py-0.5 px-1 border-r border-slate-200 font-black text-amber-800">D</td>
+                  <td className="py-0.5 px-1 border-r border-slate-200">33-39</td>
+                  <td className="py-0.5 px-1 font-bold">1</td>
+                </tr>
+                <tr className="hover:bg-rose-50/50 bg-rose-50/30">
+                  <td className="py-0.5 px-1 border-r border-slate-200 font-black text-rose-600">F</td>
+                  <td className="py-0.5 px-1 border-r border-slate-200">00-32</td>
+                  <td className="py-0.5 px-1 font-bold text-rose-600">0</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         {/* Institute Header */}
         <div className="text-center border-b-2 border-[#C8102E] pb-5 space-y-2 relative z-10">
           <div className="flex items-center justify-center mb-1">
@@ -234,23 +286,6 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
               </tr>
             </tfoot>
           </table>
-        </div>
-
-        {/* Bangladesh Education Board Grading Scale */}
-        <div className="space-y-1.5 relative z-10">
-          <div className="flex items-center justify-between text-[11px] font-bold text-slate-600 px-1">
-            <span>বাংলাদেশ শিক্ষা বোর্ড গ্রেডিং স্কেল (National Grading System):</span>
-            <span className="text-slate-400">পাস মার্ক: ৩৩%</span>
-          </div>
-          <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5 p-2.5 rounded-xl border border-slate-200 text-[10px] text-center font-semibold text-slate-600 bg-slate-50">
-            <div className="p-1 rounded bg-white border border-slate-100">৮০-১০০ = <span className="font-bold text-emerald-700">A+ (5.00)</span></div>
-            <div className="p-1 rounded bg-white border border-slate-100">৭০-৭৯ = <span className="font-bold text-emerald-600">A (4.00)</span></div>
-            <div className="p-1 rounded bg-white border border-slate-100">৬০-৬৯ = <span className="font-bold text-blue-600">A- (3.50)</span></div>
-            <div className="p-1 rounded bg-white border border-slate-100">৫০-৫৯ = <span className="font-bold text-amber-600">B (3.00)</span></div>
-            <div className="p-1 rounded bg-white border border-slate-100">৪০-৪৯ = <span className="font-bold text-orange-600">C (2.00)</span></div>
-            <div className="p-1 rounded bg-white border border-slate-100">৩৩-৩৯ = <span className="font-bold text-amber-800">D (1.00)</span></div>
-            <div className="p-1 rounded bg-rose-50 border border-rose-200">০০-৩২ = <span className="font-bold text-rose-600">F (0.00)</span></div>
-          </div>
         </div>
 
         {/* Official Signatures */}
