@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Logo from '@/components/common/Logo';
 import {
   FaUser,
   FaEnvelope,
@@ -66,10 +65,7 @@ export default function RegisterPage() {
   return (
     <div className="max-w-lg mx-auto my-6 space-y-6">
       
-      <div className="text-center space-y-3">
-        <div className="bg-white rounded-2xl p-2.5 inline-flex items-center shadow-md border border-slate-200">
-          <Logo size="md" />
-        </div>
+      <div className="text-center space-y-2">
         <h1 className="text-2xl sm:text-3xl font-black text-brand-900">
           শিক্ষার্থী <span className="text-nova-500">রেজিস্ট্রেশন</span>
         </h1>

@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Logo from '@/components/common/Logo';
 import {
   FaEnvelope,
   FaLock,
@@ -56,10 +55,7 @@ export default function LoginPage() {
     <div className="max-w-md mx-auto my-8 space-y-6">
       
       {/* Brand Header */}
-      <div className="text-center space-y-3">
-        <div className="bg-white rounded-2xl p-2.5 inline-flex items-center shadow-md border border-slate-200">
-          <Logo size="md" />
-        </div>
+      <div className="text-center space-y-2">
         <h1 className="text-2xl sm:text-3xl font-black text-brand-900">
           শিক্ষানোভা <span className="text-nova-500">লগইন</span>
         </h1>
