@@ -296,9 +296,20 @@ export default function Footer() {
               href="https://merxodevsolutions.pro.bd/"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-bold text-[#0F2C59] hover:text-[#C8102E] transition-colors underline decoration-slate-300 hover:decoration-[#C8102E]"
+              className="inline-flex items-center font-bold tracking-wide py-0.5 text-[#0F2C59] hover:text-[#C8102E] transition-colors"
+              title="Visit Merxo Dev Solutions"
             >
-              Merxo Dev Solutions
+              {'Merxo Dev Solutions'.split('').map((char, index) => (
+                <span
+                  key={index}
+                  className="animate-ocean-wave inline-block"
+                  style={{
+                    animationDelay: `${index * 0.05}s`,
+                  }}
+                >
+                  {char === ' ' ? '\u00A0' : char}
+                </span>
+              ))}
             </a>
           </div>
         </div>

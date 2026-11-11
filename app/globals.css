@@ -143,3 +143,27 @@ input, select, textarea, button, optgroup, option {
     color: #000000 !important;
   }
 }
+
+/* ==========================================================================
+   Ocean Wave Ripple Animation (এক রঙের সাগরের ঢেউ — প্রতি ৫ সেকেন্ড পরপর)
+   ========================================================================== */
+@keyframes oceanWave {
+  0% {
+    transform: translateY(0);
+  }
+  8% {
+    transform: translateY(-5px);
+  }
+  16% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.animate-ocean-wave {
+  display: inline-block;
+  animation: oceanWave 5s ease-in-out infinite;
+  will-change: transform;
+}
