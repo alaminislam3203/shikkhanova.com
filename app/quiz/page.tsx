@@ -312,31 +312,6 @@ export default function QuizPage() {
 
   return (
     <div className="space-y-8 sm:space-y-12 pb-16">
-      {/* Login Required Notice Banner */}
-      {!session?.user && (
-        <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl sm:rounded-3xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm animate-in fade-in">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs">
-              <FaLock className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="text-sm font-black text-amber-950">
-                কুইজ ও মডেল টেস্টে অংশগ্রহণ করতে লগইন আবশ্যক
-              </h4>
-              <p className="text-xs text-amber-800 font-medium">
-                ফ্রি অথবা প্রিমিয়াম যেকোনো মডেল টেস্ট দিতে শিক্ষার্থী হিসেবে লগইন থাকতে হবে।
-              </p>
-            </div>
-          </div>
-          <Link
-            href="/login?callbackUrl=/quiz"
-            className="w-full sm:w-auto px-5 py-2.5 bg-[#0F2C59] hover:bg-[#0A1E3C] text-white text-xs font-black rounded-xl shadow-md transition transform active:scale-95 text-center shrink-0"
-          >
-            লগইন করুন
-          </Link>
-        </div>
-      )}
-
       {/* ─────────────────────────────────────────────────────────────
           1. HERO HEADER SECTION (Compact Banner on Mobile)
       ───────────────────────────────────────────────────────────── */}
@@ -647,7 +622,7 @@ export default function QuizPage() {
           <span className="text-xs font-bold text-slate-400">ফ্রি MCQ • তাৎক্ষণিক স্কোর</span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
           {[5, 6, 7, 8, 9, 10].map((cls) => {
             const isCurrentClass = selectedClass === cls;
             return (
@@ -710,7 +685,7 @@ export default function QuizPage() {
           </span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
           {[5, 6, 7, 8, 9, 10].map((cls) => {
             const isUnlocked = unlockedClasses.includes(cls) || session?.user?.role === 'ADMIN';
 
@@ -789,7 +764,7 @@ export default function QuizPage() {
           <span className="text-xs font-bold text-slate-500">নির্বাচিত: {toBengaliClass(selectedClass)} শ্রেণি</span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5">
           {SUBJECT_LIST.map((sub) => (
             <div
               key={sub.name}

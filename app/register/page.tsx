@@ -81,11 +81,11 @@ export default function RegisterPage() {
     );
   }, [formData, loading]);
 
-  if (status === 'loading' || status === 'authenticated') {
+  if (status === 'authenticated') {
     return (
       <div className="min-h-[50vh] flex flex-col items-center justify-center gap-3">
         <div className="w-8 h-8 border-3 border-[#C8102E] border-t-transparent rounded-full animate-spin" />
-        <p className="text-xs font-bold text-slate-500">যাচাই করা হচ্ছে...</p>
+        <p className="text-xs font-bold text-slate-500">হোমপেজে পাঠানো হচ্ছে...</p>
       </div>
     );
   }
