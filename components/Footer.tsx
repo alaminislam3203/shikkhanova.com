@@ -276,31 +276,45 @@ export default function Footer() {
               পেমেন্ট ও আপডেট
             </h4>
 
-            {/* bKash & Nagad Payment Card */}
+            {/* Payment Methods Card */}
             <div className="bg-white border border-slate-200 p-3.5 rounded-2xl shadow-sm space-y-2">
-              <p className="text-[11px] font-bold text-slate-600">
-                ফি পাঠানোর পার্সোনাল নম্বর:
-              </p>
-              <div className="flex items-center justify-between gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200/90 shadow-2xs">
-                <div className="flex items-center gap-2">
-                  <div className="bg-white px-2 py-1 rounded-md border border-slate-200 shadow-2xs">
-                    <img
-                      src="/assets/images/bkash.png"
-                      alt="bKash"
-                      className="h-4 w-auto object-contain"
-                    />
-                  </div>
-                  <div className="bg-white px-2 py-1 rounded-md border border-slate-200 shadow-2xs">
-                    <img
-                      src="/assets/images/nagad.png"
-                      alt="Nagad"
-                      className="h-4 w-auto object-contain"
-                    />
-                  </div>
-                </div>
+              <div className="flex items-center justify-between gap-1">
+                <p className="text-[11px] font-bold text-slate-600">
+                  ফি পাঠানোর পার্সোনাল নম্বর:
+                </p>
                 <span className="font-bn-normal font-black text-[#C8102E] text-xs sm:text-sm tracking-wider">
                   ০১৭১২৫৯২৫১৯
                 </span>
+              </div>
+              <div className="grid grid-cols-4 gap-1.5 bg-slate-50 p-2 rounded-xl border border-slate-200/90 shadow-2xs">
+                <div className="bg-white px-1.5 py-1 rounded-lg border border-slate-200 shadow-2xs flex items-center justify-center h-7" title="bKash">
+                  <img
+                    src="/assets/images/bkash.png"
+                    alt="bKash"
+                    className="h-4 w-auto object-contain"
+                  />
+                </div>
+                <div className="bg-white px-1.5 py-1 rounded-lg border border-slate-200 shadow-2xs flex items-center justify-center h-7" title="Nagad">
+                  <img
+                    src="/assets/images/nagad.png"
+                    alt="Nagad"
+                    className="h-4 w-auto object-contain"
+                  />
+                </div>
+                <div className="bg-white px-1.5 py-1 rounded-lg border border-slate-200 shadow-2xs flex items-center justify-center h-7" title="Rocket">
+                  <img
+                    src="/assets/images/rocket.png"
+                    alt="Rocket"
+                    className="h-4 w-auto object-contain"
+                  />
+                </div>
+                <div className="bg-white px-1.5 py-1 rounded-lg border border-slate-200 shadow-2xs flex items-center justify-center h-7" title="Upay">
+                  <img
+                    src="/assets/images/upay.png"
+                    alt="Upay"
+                    className="h-4 w-auto object-contain"
+                  />
+                </div>
               </div>
             </div>
 
