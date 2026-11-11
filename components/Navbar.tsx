@@ -6,6 +6,8 @@ import Logo from '@/components/common/Logo';
 import { usePathname, useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { confirmSignOut } from '@/lib/logout';
+import { IoLogInOutline } from 'react-icons/io5';
+import { CiSearch } from 'react-icons/ci';
 import {
   FaYoutube,
   FaFacebook,
@@ -505,79 +507,103 @@ export default function Navbar() {
                 );
               })}
 
-              {/* Global Website Search Box on Right Side of Video Class (rounded-sm, 0ms instant) */}
+              {/* Global Website Search Box (Modern Sleek Pill with Integrated Search Action) */}
               <div className="relative ml-2" ref={searchRef}>
-                <form onSubmit={handleSearchSubmit} className="relative flex items-center">
-                  <FaMagnifyingGlass className="absolute left-3 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onFocus={() => {
-                      setSearchOpen(true);
-                      ensureDbIndexLoaded();
-                    }}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      setSearchOpen(true);
-                      ensureDbIndexLoaded();
-                    }}
-                    placeholder="নোট, রেজাল্ট, ক্লাস খুঁজুন..."
-                    className="w-48 xl:w-56 bg-slate-50 hover:bg-slate-100/80 focus:bg-white border border-slate-300 focus:border-brand-600 rounded-sm pl-8 pr-7 py-1.5 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/15 transition-all"
-                  />
-                  {searchQuery && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSearchQuery('');
-                        setSearchOpen(false);
+                <form
+                  onSubmit={handleSearchSubmit}
+                  className="group relative flex items-center h-9 w-52 xl:w-64 bg-slate-50/90 hover:bg-white focus-within:bg-white border border-slate-200 hover:border-slate-300 focus-within:border-[#0F2C59] focus-within:ring-2 focus-within:ring-[#0F2C59]/10 rounded-full transition-all duration-200 shadow-2xs overflow-hidden"
+                >
+                  <div className="relative flex-1 h-full flex items-center pl-3 pr-1.5">
+                    <CiSearch className="text-slate-400 group-focus-within:text-[#0F2C59] text-base pointer-events-none transition-colors shrink-0" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onFocus={() => {
+                        setSearchOpen(true);
+                        ensureDbIndexLoaded();
                       }}
-                      className="absolute right-2 text-slate-400 hover:text-slate-600 text-xs"
-                    >
-                      ✕
-                    </button>
-                  )}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        setSearchOpen(true);
+                        ensureDbIndexLoaded();
+                      }}
+                      placeholder="নোট, রেজাল্ট, ক্লাস খুঁজুন..."
+                      className="w-full h-full bg-transparent pl-2 pr-1 text-xs font-medium text-slate-800 placeholder:text-slate-400 placeholder:font-normal focus:outline-none"
+                    />
+                    {searchQuery && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSearchQuery('');
+                          setSearchOpen(false);
+                        }}
+                        className="text-slate-400 hover:text-slate-600 p-0.5 rounded-full transition-colors shrink-0"
+                        aria-label="মুছে ফেলুন"
+                      >
+                        <FaXmark className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Integrated Search Action Button (matching merxo-hub) */}
+                  <button
+                    type="submit"
+                    className="h-full px-3 bg-slate-100/80 group-focus-within:bg-[#0F2C59] hover:bg-[#C8102E] text-slate-600 group-focus-within:text-white hover:text-white flex items-center justify-center transition-colors border-l border-slate-200/90 cursor-pointer shrink-0"
+                    aria-label="অনুসন্ধান"
+                    title="অনুসন্ধান করুন"
+                  >
+                    <CiSearch className="text-base font-bold" />
+                  </button>
                 </form>
 
                 {/* Instant 0ms Global Search Results Dropdown */}
                 {searchOpen && (
-                  <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-sm shadow-2xl border border-slate-200 py-2 z-50 max-h-96 overflow-y-auto">
-                    <div className="px-3.5 py-1.5 border-b border-slate-100 flex items-center justify-between text-[11px] font-bold text-slate-400">
-                      <span>
+                  <div className="absolute right-0 mt-2.5 w-80 sm:w-96 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-200/90 py-2.5 z-50 max-h-96 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="px-4 py-2 border-b border-slate-100 flex items-center justify-between text-xs font-bold text-slate-500">
+                      <span className="flex items-center gap-1.5 text-slate-700">
+                        <HiSparkles className="text-[#C8102E] text-sm" />
                         {searchQuery.trim()
-                          ? `"${searchQuery}" এর সার্চ ফলাফল`
+                          ? `"${searchQuery}" এর ফলাফল`
                           : 'দ্রুত এক্সপ্লোর করুন'}
+                      </span>
+                      <span className="text-[10px] font-medium text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
+                        {searchResults.length} টি রেজাল্ট
                       </span>
                     </div>
 
                     {searchResults.length === 0 ? (
-                      <div className="p-6 text-center text-xs text-slate-500">
-                        কোনো ফলাফল পাওয়া যায়নি। অন্য কি-ওয়ার্ড দিয়ে চেষ্টা করুন।
+                      <div className="py-8 px-4 text-center">
+                        <div className="w-10 h-10 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-2">
+                          <CiSearch className="text-xl" />
+                        </div>
+                        <p className="text-xs font-bold text-slate-700">কোনো ফলাফল পাওয়া যায়নি</p>
+                        <p className="text-[11px] text-slate-400 mt-1">অন্য কি-ওয়ার্ড বা বিষয়ের নাম দিয়ে চেষ্টা করুন</p>
                       </div>
                     ) : (
-                      <div className="divide-y divide-slate-100">
+                      <div className="p-1.5 space-y-1">
                         {searchResults.map((item) => (
                           <Link
                             key={item.id}
                             href={item.href}
                             onClick={() => setSearchOpen(false)}
-                            className="px-3.5 py-2.5 hover:bg-brand-50/60 flex items-start justify-between gap-3 transition block"
+                            className="px-3 py-2 rounded-xl hover:bg-slate-50 group flex items-start justify-between gap-3 transition-colors block border border-transparent hover:border-slate-100"
                           >
                             <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-1.5">
-                                <span className="text-[10px] font-black uppercase px-1.5 py-0.5 rounded-sm bg-slate-100 text-brand-700 border border-slate-200">
+                              <div className="flex items-center gap-2 mb-0.5">
+                                <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-md bg-[#0F2C59]/10 text-[#0F2C59] border border-[#0F2C59]/15 shrink-0">
                                   {item.categoryLabel}
                                 </span>
-                                <p className="text-xs font-bold text-slate-800 truncate">
+                                <p className="text-xs font-bold text-slate-800 group-hover:text-[#C8102E] transition-colors truncate">
                                   {item.title}
                                 </p>
                               </div>
-                              <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                              <p className="text-[11px] text-slate-500 truncate">
                                 {item.subtitle}
                               </p>
                             </div>
 
                             {item.badge && (
-                              <span className="text-[10px] font-black px-2 py-0.5 rounded-sm bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
                                 {item.badge}
                               </span>
                             )}
@@ -639,20 +665,13 @@ export default function Navbar() {
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <Link
-                    href="/login"
-                    className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-700 hover:text-brand-800 bg-brand-50 hover:bg-brand-100 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl border border-brand-200 transition"
-                  >
-                    <FaRightToBracket /> লগইন
-                  </Link>
-                  <Link
-                    href="/register"
-                    className="hidden sm:inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-nova-500 to-nova-600 hover:from-nova-600 hover:to-nova-700 px-3.5 py-2 rounded-xl shadow-md shadow-nova-500/20 transition"
-                  >
-                    রেজিস্ট্রেশন
-                  </Link>
-                </div>
+                <Link
+                  href="/login"
+                  className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-400 px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold text-slate-800 hover:text-[#C8102E] shadow-2xs hover:shadow-xs transition-all duration-200 active:scale-95 group"
+                >
+                  <IoLogInOutline className="w-4 h-4 sm:w-5 sm:h-5 text-slate-600 group-hover:text-[#C8102E] transition-colors" />
+                  <span>লগইন</span>
+                </Link>
               )}
 
               {/* Mobile Menu Toggle */}
@@ -828,44 +847,53 @@ export default function Navbar() {
           {mobileSearchOpen && (
             <div
               ref={mobileSearchContainerRef}
-              className="lg:hidden border-t border-slate-200/90 bg-white/98 backdrop-blur-md px-3 py-3 pb-4 shadow-xl transition-all duration-300 animate-in slide-in-from-top-3 fade-in"
+              className="lg:hidden border-t border-slate-200/90 bg-white/98 backdrop-blur-md px-3.5 py-3 shadow-xl transition-all duration-300 animate-in slide-in-from-top-3 fade-in"
             >
               <form onSubmit={handleMobileSearchSubmit} className="relative">
-                <div className="relative flex items-center">
-                  <FaMagnifyingGlass className="absolute left-3.5 text-slate-400 w-4 h-4 pointer-events-none" />
-                  <input
-                    ref={mobileSearchInputRef}
-                    type="search"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="ক্লাস, বিষয়, শিট, রেজাল্ট খুঁজুন..."
-                    className="w-full pl-10 pr-10 py-2.5 bg-slate-100 hover:bg-slate-100/80 focus:bg-white text-slate-900 placeholder-slate-400 text-sm font-semibold rounded-xl border border-slate-200 focus:border-[#C8102E] focus:outline-none focus:ring-2 focus:ring-[#C8102E]/20 transition-all shadow-inner"
-                  />
-                  {searchQuery ? (
-                    <button
-                      type="button"
-                      onClick={() => setSearchQuery('')}
-                      className="absolute right-3 p-1 text-slate-400 hover:text-slate-600 rounded-full"
-                      aria-label="ক্লিয়ার করুন"
-                    >
-                      <FaXmark className="w-4 h-4" />
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setMobileSearchOpen(false)}
-                      className="absolute right-2.5 p-1 text-slate-400 hover:text-[#C8102E] rounded-full"
-                      aria-label="সার্চ বন্ধ করুন"
-                    >
-                      <FaXmark className="w-4 h-4" />
-                    </button>
-                  )}
+                <div className="relative flex items-center h-11 bg-slate-50 hover:bg-white focus-within:bg-white border border-slate-200 focus-within:border-[#0F2C59] focus-within:ring-2 focus-within:ring-[#0F2C59]/10 rounded-full transition-all overflow-hidden shadow-2xs">
+                  <div className="relative flex-1 h-full flex items-center pl-3.5 pr-2">
+                    <CiSearch className="text-slate-400 text-lg pointer-events-none shrink-0" />
+                    <input
+                      ref={mobileSearchInputRef}
+                      type="search"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="ক্লাস, বিষয়, শিট, রেজাল্ট খুঁজুন..."
+                      className="w-full h-full bg-transparent pl-2.5 pr-1 text-slate-900 placeholder:text-slate-400 text-xs font-semibold focus:outline-none"
+                    />
+                    {searchQuery ? (
+                      <button
+                        type="button"
+                        onClick={() => setSearchQuery('')}
+                        className="p-1 text-slate-400 hover:text-slate-600 rounded-full transition-colors"
+                        aria-label="ক্লিয়ার করুন"
+                      >
+                        <FaXmark className="w-3.5 h-3.5" />
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setMobileSearchOpen(false)}
+                        className="p-1 text-slate-400 hover:text-[#C8102E] rounded-full transition-colors"
+                        aria-label="সার্চ বন্ধ করুন"
+                      >
+                        <FaXmark className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                  <button
+                    type="submit"
+                    className="h-full px-4 bg-slate-100 hover:bg-[#0F2C59] text-slate-600 hover:text-white flex items-center justify-center border-l border-slate-200 transition-colors shrink-0"
+                    aria-label="অনুসন্ধান"
+                  >
+                    <CiSearch className="text-lg font-bold" />
+                  </button>
                 </div>
               </form>
 
               {/* Instant Search Results Dropdown */}
-              <div className="mt-2.5 max-h-72 overflow-y-auto divide-y divide-slate-100 rounded-xl bg-slate-50 border border-slate-200 shadow-inner">
-                <div className="px-3 py-1.5 bg-slate-100/90 text-[10px] font-bold text-slate-500 uppercase tracking-wider flex justify-between items-center">
+              <div className="mt-2.5 max-h-72 overflow-y-auto divide-y divide-slate-100 rounded-2xl bg-white border border-slate-200/90 shadow-md">
+                <div className="px-3.5 py-2 bg-slate-50 text-[10px] font-bold text-slate-500 uppercase tracking-wider flex justify-between items-center rounded-t-2xl">
                   <span>{searchQuery ? 'অনুসন্ধানের ফলাফল' : 'জনপ্রিয় অনুসন্ধান'}</span>
                   <span className="text-[10px] text-slate-400 font-normal">ট্যাপ করে প্রবেশ করুন</span>
                 </div>
@@ -882,11 +910,11 @@ export default function Navbar() {
                         setMobileSearchOpen(false);
                         setSearchQuery('');
                       }}
-                      className="px-3.5 py-2.5 hover:bg-red-50/80 flex items-start justify-between gap-2.5 transition active:bg-red-100/60"
+                      className="px-3.5 py-2.5 hover:bg-slate-50 active:bg-slate-100 flex items-start justify-between gap-2.5 transition"
                     >
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-white text-[#C8102E] border border-red-200 shrink-0 shadow-2xs">
+                          <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-[#0F2C59]/10 text-[#0F2C59] border border-[#0F2C59]/15 shrink-0 shadow-2xs">
                             {item.categoryLabel}
                           </span>
                           <p className="text-xs font-bold text-slate-800 truncate">

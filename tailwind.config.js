@@ -50,9 +50,13 @@ module.exports = {
       },
       fontFamily: {
         sans: [
-          'var(--font-exo2)',
           'var(--font-hind-siliguri)',
+          'var(--font-exo2)',
           'system-ui',
+          'sans-serif',
+        ],
+        hindSiliguri: [
+          'var(--font-hind-siliguri)',
           'sans-serif',
         ],
         bn: [

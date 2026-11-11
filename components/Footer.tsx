@@ -154,6 +154,12 @@ export default function Footer() {
                   <span>ভিডিও ক্লাস</span>
                 </Link>
               </li>
+              <li>
+                <Link href="/contact-us" className="hover:text-[#C8102E] transition-colors flex items-center gap-1.5 group">
+                  <FaChevronRight className="w-2.5 h-2.5 text-slate-400 group-hover:text-[#C8102E] group-hover:translate-x-0.5 transition-all" />
+                  <span>যোগাযোগ করুন</span>
+                </Link>
+              </li>
             </ul>
           </div>
 

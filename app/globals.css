@@ -8,8 +8,8 @@
 }
 
 body {
-  /* Exo 2 renders all English/Latin text; Hind Siliguri automatically renders all Bangla text */
-  font-family: var(--font-exo2), var(--font-hind-siliguri), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* Hind Siliguri renders all Bangla text primarily, matching Merxo Hub font elegance */
+  font-family: var(--font-hind-siliguri), var(--font-exo2), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: #F4F6F9;
   color: #1A202C;
   line-height: 1.65;
@@ -17,7 +17,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-exo2), var(--font-hind-siliguri), sans-serif;
+  font-family: var(--font-hind-siliguri), var(--font-exo2), sans-serif;
   letter-spacing: -0.01em;
 }
 
