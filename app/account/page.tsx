@@ -52,6 +52,7 @@ export default function AccountPage() {
     motherName: '',
     schoolName: '',
     dateOfBirth: '',
+    religion: 'ইসলাম',
     image: '',
     role: 'STUDENT',
   });
@@ -86,6 +87,7 @@ export default function AccountPage() {
           motherName: data.user.motherName || '',
           schoolName: data.user.schoolName || '',
           dateOfBirth: data.user.dateOfBirth || '',
+          religion: data.user.religion || 'ইসলাম',
           image: data.user.image || session?.user?.image || '',
           role: data.user.role || 'STUDENT',
         });
@@ -183,6 +185,7 @@ export default function AccountPage() {
           motherName: profile.motherName,
           schoolName: profile.schoolName,
           dateOfBirth: profile.dateOfBirth,
+          religion: profile.religion,
         }),
       });
 
@@ -596,7 +599,7 @@ export default function AccountPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block font-bold text-slate-700 mb-1.5">শ্রেণি (Class 5 - 10)</label>
                   <select
@@ -622,6 +625,18 @@ export default function AccountPage() {
                     placeholder="যেমন: 1, 5, 12"
                     className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition text-xs sm:text-sm"
                   />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1.5">ধর্ম (ধর্মীয় বই নির্ধারণ)</label>
+                  <select
+                    value={profile.religion || 'ইসলাম'}
+                    onChange={(e) => setProfile({ ...profile, religion: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition text-xs sm:text-sm"
+                  >
+                    <option value="ইসলাম">ইসলাম</option>
+                    <option value="হিন্দু">হিন্দু</option>
+                  </select>
                 </div>
               </div>
 

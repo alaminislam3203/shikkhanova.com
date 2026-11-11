@@ -62,6 +62,7 @@ export async function GET() {
         motherName: prof.motherName,
         schoolName: prof.schoolName,
         dateOfBirth: prof.dateOfBirth,
+        religion: prof.religion || 'ইসলাম',
         image: (user as any).image || null,
         createdAt: user.createdAt,
       },
@@ -90,6 +91,7 @@ export async function PATCH(req: Request) {
       motherName,
       schoolName,
       dateOfBirth,
+      religion,
     } = body;
 
     if (session.user.id === 'admin-master-id') {
@@ -125,8 +127,8 @@ export async function PATCH(req: Request) {
 
     const clsNum = classGrade ? parseInt(classGrade) : (session.user as any)?.classGrade || 7;
     const rollNum = rollNumber ? parseInt(rollNumber) : (session.user as any)?.rollNumber || 1;
-    if (fatherName !== undefined || motherName !== undefined || schoolName !== undefined || dateOfBirth !== undefined) {
-      saveStudentProfile(clsNum, rollNum, { fatherName, motherName, schoolName, dateOfBirth }, session.user.email);
+    if (fatherName !== undefined || motherName !== undefined || schoolName !== undefined || dateOfBirth !== undefined || religion !== undefined) {
+      saveStudentProfile(clsNum, rollNum, { fatherName, motherName, schoolName, dateOfBirth, religion }, session.user.email);
     }
 
     // Handle Password Change if requested

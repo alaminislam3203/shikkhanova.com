@@ -30,6 +30,7 @@ export default function ProfilePage() {
     motherName?: string;
     schoolName?: string;
     dateOfBirth?: string;
+    religion?: string;
   }>({});
 
   useEffect(() => {
@@ -49,6 +50,7 @@ export default function ProfilePage() {
               motherName: d.user.motherName,
               schoolName: d.user.schoolName,
               dateOfBirth: d.user.dateOfBirth,
+              religion: d.user.religion,
             });
           }
         })
@@ -203,6 +205,11 @@ export default function ProfilePage() {
           <div className="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/80 space-y-1">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">জন্ম তারিখ</span>
             <p className="font-bold text-slate-800 text-xs sm:text-sm">{extraProfile.dateOfBirth || 'নির্ধারিত নয়'}</p>
+          </div>
+
+          <div className="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/80 space-y-1">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">ধর্ম (Religion)</span>
+            <p className="font-bold text-slate-800 text-xs sm:text-sm">{extraProfile.religion || 'ইসলাম'}</p>
           </div>
 
           <div className="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/80 space-y-1">
