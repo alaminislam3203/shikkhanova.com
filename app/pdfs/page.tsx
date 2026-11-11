@@ -240,15 +240,45 @@ export default function PdfsPage() {
         <div className="rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg border border-slate-200/80 bg-white">
           <a
             href="tel:01712592519"
-            aria-label="বিকাশ বা নগদ নম্বরে ফি পাঠাতে কল করুন ০১৭১২৫৯২৫১৯"
+            aria-label="বিকাশ, নগদ, রকেট বা উপায় নম্বরে ফি পাঠাতে কল করুন ০১৭১২৫৯২৫১৯"
             className="block w-full group"
           >
             <img
               src="/banners/pdf-page-banner.png"
-              alt="৫ম থেকে ১০ম শ্রেণির স্মার্ট হ্যান্ডনোট ও এক্সক্লুসিভ সাজেশন • বিকাশ ও নগদ: 01712592519"
+              alt="৫ম থেকে ১০ম শ্রেণির স্মার্ট হ্যান্ডনোট ও এক্সক্লুসিভ সাজেশন • বিকাশ, নগদ, রকেট, উপায়: 01712592519"
               className="w-full h-auto object-cover group-hover:scale-[1.005] transition-transform duration-300"
             />
           </a>
+        </div>
+
+        {/* Accepted MFS Payment Methods Strip */}
+        <div className="bg-gradient-to-r from-[#07172C] via-[#0F2C59] to-[#07172C] text-white rounded-2xl sm:rounded-3xl p-3 sm:p-4 shadow-md border border-slate-700/40 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-3 text-center sm:text-left">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shrink-0 hidden sm:inline-block animate-pulse"></span>
+            <div>
+              <h4 className="text-xs sm:text-sm font-black text-white flex items-center justify-center sm:justify-start gap-1.5">
+                <span>হ্যান্ডনোট ও সাজেশন পেমেন্ট মাধ্যম</span>
+              </h4>
+              <p className="text-[11px] text-slate-300 font-medium">
+                সেন্ড মানি করার পার্সোনাল নম্বর: <strong className="text-amber-300 font-mono font-black text-xs sm:text-sm">01712592519</strong>
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            <div className="h-8 sm:h-9 px-2.5 bg-white rounded-xl flex items-center justify-center shadow-xs border border-white/80" title="bKash">
+              <img src="/assets/images/bkash.png" alt="bKash" className="h-5 sm:h-6 w-auto object-contain" />
+            </div>
+            <div className="h-8 sm:h-9 px-2.5 bg-white rounded-xl flex items-center justify-center shadow-xs border border-white/80" title="Nagad">
+              <img src="/assets/images/nagad.png" alt="Nagad" className="h-5 sm:h-6 w-auto object-contain" />
+            </div>
+            <div className="h-8 sm:h-9 px-2.5 bg-white rounded-xl flex items-center justify-center shadow-xs border border-white/80" title="Rocket">
+              <img src="/assets/images/rocket.png" alt="Rocket" className="h-5 sm:h-6 w-auto object-contain" />
+            </div>
+            <div className="h-8 sm:h-9 px-2.5 bg-white rounded-xl flex items-center justify-center shadow-xs border border-white/80" title="Upay">
+              <img src="/assets/images/upay.png" alt="Upay" className="h-5 sm:h-6 w-auto object-contain" />
+            </div>
+          </div>
         </div>
       </div>
 

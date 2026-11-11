@@ -318,7 +318,11 @@ export default function PurchasesTable({
                               src={
                                 pur.paymentMethod === 'BKASH'
                                   ? '/assets/images/bkash.png'
-                                  : '/assets/images/nagad.png'
+                                  : pur.paymentMethod === 'NAGAD'
+                                  ? '/assets/images/nagad.png'
+                                  : pur.paymentMethod === 'ROCKET'
+                                  ? '/assets/images/rocket.png'
+                                  : '/assets/images/upay.png'
                               }
                               alt={pur.paymentMethod}
                               className="h-3.5 w-auto object-contain"

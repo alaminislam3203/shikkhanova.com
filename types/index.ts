@@ -63,7 +63,7 @@ export interface VideoItem {
 export interface PurchaseRecord {
   id: string;
   amount: number;
-  paymentMethod: 'BKASH' | 'NAGAD';
+  paymentMethod: 'BKASH' | 'NAGAD' | 'ROCKET' | 'UPAY';
   senderPhone: string;
   trxId: string;
   status: 'PENDING' | 'APPROVED' | 'REJECTED';

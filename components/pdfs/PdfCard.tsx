@@ -199,12 +199,18 @@ export default function PdfCard({ pdf, onBuyClick, onRefreshStatus }: PdfCardPro
               >
                 {isFreePdf ? 'সবার জন্য উন্মুক্ত' : 'বিশেষ ছাড়'}
               </span>
-              <div className="flex items-center justify-end gap-1.5">
-                <div className="bg-white px-1.5 py-0.5 rounded-md border border-slate-200/80 shadow-xs flex items-center">
-                  <img src="/assets/images/bkash.png" alt="bKash" className="h-3.5 w-auto object-contain" />
+              <div className="flex items-center justify-end gap-1">
+                <div className="bg-white px-1 py-0.5 rounded border border-slate-200/80 shadow-xs flex items-center" title="bKash">
+                  <img src="/assets/images/bkash.png" alt="bKash" className="h-3 sm:h-3.5 w-auto object-contain" />
                 </div>
-                <div className="bg-white px-1.5 py-0.5 rounded-md border border-slate-200/80 shadow-xs flex items-center">
-                  <img src="/assets/images/nagad.png" alt="Nagad" className="h-3.5 w-auto object-contain" />
+                <div className="bg-white px-1 py-0.5 rounded border border-slate-200/80 shadow-xs flex items-center" title="Nagad">
+                  <img src="/assets/images/nagad.png" alt="Nagad" className="h-3 sm:h-3.5 w-auto object-contain" />
+                </div>
+                <div className="bg-white px-1 py-0.5 rounded border border-slate-200/80 shadow-xs flex items-center" title="Rocket">
+                  <img src="/assets/images/rocket.png" alt="Rocket" className="h-3 sm:h-3.5 w-auto object-contain" />
+                </div>
+                <div className="bg-white px-1 py-0.5 rounded border border-slate-200/80 shadow-xs flex items-center" title="Upay">
+                  <img src="/assets/images/upay.png" alt="Upay" className="h-3 sm:h-3.5 w-auto object-contain" />
                 </div>
               </div>
             </div>

@@ -27,7 +27,7 @@ export default function PdfPurchaseModal({
   userEmail = '',
 }: PdfPurchaseModalProps) {
   const { data: session } = useSession();
-  const [paymentMethod, setPaymentMethod] = useState<'BKASH' | 'NAGAD'>('BKASH');
+  const [paymentMethod, setPaymentMethod] = useState<'BKASH' | 'NAGAD' | 'ROCKET' | 'UPAY'>('BKASH');
   const [senderPhone, setSenderPhone] = useState<string>(userPhone || session?.user?.phone || '');
   const [trxId, setTrxId] = useState<string>('');
   const [name, setName] = useState<string>(userName || session?.user?.name || '');
@@ -129,49 +129,94 @@ export default function PdfPurchaseModal({
             <label className="block text-xs font-bold text-slate-700 mb-1.5">
               পেমেন্ট মাধ্যম বেছে নিন
             </label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
               <button
                 type="button"
                 onClick={() => setPaymentMethod('BKASH')}
-                className={`p-3 rounded-2xl border-2 text-left flex items-center gap-2.5 transition ${
+                className={`p-2.5 rounded-2xl border-2 text-center flex flex-col items-center justify-center gap-1.5 transition ${
                   paymentMethod === 'BKASH'
-                    ? 'border-bkash bg-pink-50/50'
-                    : 'border-slate-200 hover:border-slate-300'
+                    ? 'border-[#E2136E] bg-pink-50/70 shadow-xs'
+                    : 'border-slate-200 hover:border-slate-300 bg-white'
                 }`}
               >
-                <div className="w-11 h-8 rounded-lg bg-white p-1 flex items-center justify-center shadow-xs border border-slate-200/80">
+                <div className="w-12 h-8 rounded-lg bg-white p-1 flex items-center justify-center shadow-xs border border-slate-200/80">
                   <img src="/assets/images/bkash.png" alt="bKash" className="h-full w-auto object-contain" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-slate-800">bKash Personal</p>
-                  <p className="text-[11px] font-bn-normal font-bold text-slate-600">০১৭১২৫৯২৫১৯</p>
+                  <p className="text-xs font-bold text-slate-800">bKash</p>
+                  <p className="text-[10px] text-slate-500 font-medium">Personal</p>
                 </div>
               </button>
 
               <button
                 type="button"
                 onClick={() => setPaymentMethod('NAGAD')}
-                className={`p-3 rounded-2xl border-2 text-left flex items-center gap-2.5 transition ${
+                className={`p-2.5 rounded-2xl border-2 text-center flex flex-col items-center justify-center gap-1.5 transition ${
                   paymentMethod === 'NAGAD'
-                    ? 'border-nagad bg-orange-50/50'
-                    : 'border-slate-200 hover:border-slate-300'
+                    ? 'border-[#F7941D] bg-orange-50/70 shadow-xs'
+                    : 'border-slate-200 hover:border-slate-300 bg-white'
                 }`}
               >
-                <div className="w-11 h-8 rounded-lg bg-white p-1 flex items-center justify-center shadow-xs border border-slate-200/80">
+                <div className="w-12 h-8 rounded-lg bg-white p-1 flex items-center justify-center shadow-xs border border-slate-200/80">
                   <img src="/assets/images/nagad.png" alt="Nagad" className="h-full w-auto object-contain" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-slate-800">Nagad Personal</p>
-                  <p className="text-[11px] font-bn-normal font-bold text-slate-600">০১৭১২৫৯২৫১৯</p>
+                  <p className="text-xs font-bold text-slate-800">Nagad</p>
+                  <p className="text-[10px] text-slate-500 font-medium">Personal</p>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('ROCKET')}
+                className={`p-2.5 rounded-2xl border-2 text-center flex flex-col items-center justify-center gap-1.5 transition ${
+                  paymentMethod === 'ROCKET'
+                    ? 'border-[#8C3494] bg-purple-50/70 shadow-xs'
+                    : 'border-slate-200 hover:border-slate-300 bg-white'
+                }`}
+              >
+                <div className="w-12 h-8 rounded-lg bg-white p-1 flex items-center justify-center shadow-xs border border-slate-200/80">
+                  <img src="/assets/images/rocket.png" alt="Rocket" className="h-full w-auto object-contain" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-800">Rocket</p>
+                  <p className="text-[10px] text-slate-500 font-medium">Personal</p>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('UPAY')}
+                className={`p-2.5 rounded-2xl border-2 text-center flex flex-col items-center justify-center gap-1.5 transition ${
+                  paymentMethod === 'UPAY'
+                    ? 'border-[#0081C9] bg-sky-50/70 shadow-xs'
+                    : 'border-slate-200 hover:border-slate-300 bg-white'
+                }`}
+              >
+                <div className="w-12 h-8 rounded-lg bg-white p-1 flex items-center justify-center shadow-xs border border-slate-200/80">
+                  <img src="/assets/images/upay.png" alt="Upay" className="h-full w-auto object-contain" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-800">Upay</p>
+                  <p className="text-[10px] text-slate-500 font-medium">Personal</p>
                 </div>
               </button>
             </div>
           </div>
 
-          <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 text-[11px] text-slate-600 space-y-1">
-            <p className="font-bold text-slate-800">টাকা পাঠানোর নির্দেশিকা:</p>
+          <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 text-[11px] text-slate-600 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-slate-800">টাকা পাঠানোর পার্সোনাল নম্বর:</span>
+              <span className="font-mono font-black text-xs text-[#0F2C59] bg-white px-2.5 py-0.5 rounded-lg border border-slate-300/80 shadow-xs">
+                01712592519
+              </span>
+            </div>
             <p>
-              আপনার {paymentMethod === 'BKASH' ? 'বিকাশ' : 'নগদ'} থেকে <strong className="font-bn-normal text-slate-900">০১৭১২৫৯২৫১৯</strong> নম্বরে সেন্ড মানি করে <strong>৳{pdf.price}</strong> টাকা পাঠান। এরপর নিচের ফর্মে TrxID ও ফোন দিয়ে সাবমিট করুন।
+              আপনার {
+                paymentMethod === 'BKASH' ? 'বিকাশ' :
+                paymentMethod === 'NAGAD' ? 'নগদ' :
+                paymentMethod === 'ROCKET' ? 'রকেট' : 'উপায়'
+              } অ্যাকাউন্ট থেকে <strong className="font-bn-normal text-slate-900">০১৭১২৫৯২৫১৯</strong> নম্বরে সেন্ড মানি করে <strong>৳{pdf.price}</strong> টাকা পাঠান। এরপর নিচের ফর্মে TrxID ও ফোন নম্বর দিয়ে সাবমিট করুন।
             </p>
           </div>
 

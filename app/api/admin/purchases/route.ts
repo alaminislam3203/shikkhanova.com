@@ -37,7 +37,17 @@ export async function GET(req: Request) {
       orderBy: { createdAt: 'desc' },
     });
 
-    return NextResponse.json({ purchases });
+    const mappedPurchases = purchases.map((pur) => {
+      let resolvedMethod = pur.paymentMethod as string;
+      if (pur.note?.includes('Method: ROCKET')) resolvedMethod = 'ROCKET';
+      else if (pur.note?.includes('Method: UPAY')) resolvedMethod = 'UPAY';
+      return {
+        ...pur,
+        paymentMethod: resolvedMethod,
+      };
+    });
+
+    return NextResponse.json({ purchases: mappedPurchases });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

@@ -129,15 +129,22 @@ export async function POST(req: Request) {
       studentId = adminUser.id;
     }
 
+    const methodStr = String(paymentMethod || '').toUpperCase();
+    const isNagad = methodStr === 'NAGAD';
+    const isRocket = methodStr === 'ROCKET';
+    const isUpay = methodStr === 'UPAY';
+    const note = isRocket ? 'Method: ROCKET' : isUpay ? 'Method: UPAY' : null;
+
     const purchase = await prisma.pdfPurchase.create({
       data: {
         studentId,
         pdfId,
         amount: parseFloat(amount || '50'),
-        paymentMethod: paymentMethod === 'NAGAD' ? PaymentMethod.NAGAD : PaymentMethod.BKASH,
+        paymentMethod: isNagad ? PaymentMethod.NAGAD : PaymentMethod.BKASH,
         senderPhone,
         trxId: cleanTrx,
         status: PaymentStatus.PENDING,
+        note,
       },
     });
 
