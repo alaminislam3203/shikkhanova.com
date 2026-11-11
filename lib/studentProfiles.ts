@@ -6,6 +6,7 @@ export interface StudentProfileExtra {
   motherName?: string;
   schoolName?: string;
   dateOfBirth?: string;
+  religion?: 'ইসলাম' | 'হিন্দু' | string;
 }
 
 const PROFILES_PATH = path.join(process.cwd(), 'data', 'student_profiles.json');
