@@ -686,175 +686,188 @@ export default function Navbar() {
 
           </div>
 
-          {/* Mobile Navigation Dropdown */}
-          {mobileOpen && (
-            <div className="lg:hidden py-4 border-t border-slate-200 space-y-1.5 animate-in slide-in-from-top-2 duration-200">
-              {navLinks.map((link) => {
-                const Icon = link.icon;
-                const isChildActive = link.children?.some((c) => pathname === c.href);
-                const active = pathname === link.href || Boolean(isChildActive);
+          {/* Mobile Navigation Dropdown (Smooth Top-to-Bottom Slide Animation) */}
+          <div
+            className={`lg:hidden grid transition-all duration-300 ease-in-out ${
+              mobileOpen
+                ? 'grid-rows-[1fr] opacity-100 border-t border-slate-200 shadow-xl'
+                : 'grid-rows-[0fr] opacity-0 border-t-0 pointer-events-none'
+            }`}
+          >
+            <div className="overflow-hidden">
+              <div className="py-4 space-y-1.5 px-0.5">
+                {navLinks.map((link) => {
+                  const Icon = link.icon;
+                  const isChildActive = link.children?.some((c) => pathname === c.href);
+                  const active = pathname === link.href || Boolean(isChildActive);
 
-                if (link.children) {
-                  return (
-                    <div key={link.href} className="space-y-1">
-                      <button
-                        type="button"
-                        onClick={() => setMobileAboutOpen((prev) => !prev)}
-                        className={`w-full flex items-center justify-between px-4 py-2.5 rounded-sm text-sm font-semibold ${
-                          active
-                            ? 'bg-[#C8102E] text-white font-bold shadow-xs'
-                            : 'text-slate-700 hover:bg-slate-100'
-                        }`}
-                      >
-                        <span>{link.label}</span>
-                        <FaChevronDown
-                          className={`w-3.5 h-3.5 transition-transform ${
-                            mobileAboutOpen ? 'rotate-180' : ''
+                  if (link.children) {
+                    return (
+                      <div key={link.href} className="space-y-1">
+                        <button
+                          type="button"
+                          onClick={() => setMobileAboutOpen((prev) => !prev)}
+                          className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                            active
+                              ? 'bg-[#C8102E] text-white font-bold shadow-xs'
+                              : 'text-slate-700 hover:bg-slate-100'
                           }`}
-                        />
-                      </button>
+                        >
+                          <span>{link.label}</span>
+                          <FaChevronDown
+                            className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                              mobileAboutOpen ? 'rotate-180' : ''
+                            }`}
+                          />
+                        </button>
 
-                      {mobileAboutOpen && (
-                        <div className="pl-4 space-y-1 border-l-2 border-red-200 ml-4">
-                          {link.children.map((sub) => {
-                            const subActive = pathname === sub.href;
-                            return (
-                              <Link
-                                key={sub.href}
-                                href={sub.href}
-                                onClick={() => setMobileOpen(false)}
-                                className={`block px-3.5 py-2 rounded-sm text-xs font-semibold ${
-                                  subActive
-                                    ? 'bg-[#C8102E] text-white font-bold'
-                                    : 'text-slate-600 hover:bg-red-50 hover:text-[#C8102E]'
-                                }`}
-                              >
-                                {sub.label}
-                              </Link>
-                            );
-                          })}
+                        {/* Smooth accordion dropdown for sub-items */}
+                        <div
+                          className={`grid transition-all duration-200 ease-in-out ${
+                            mobileAboutOpen ? 'grid-rows-[1fr] opacity-100 mt-1' : 'grid-rows-[0fr] opacity-0'
+                          }`}
+                        >
+                          <div className="overflow-hidden pl-4 space-y-1 border-l-2 border-red-200 ml-4">
+                            {link.children.map((sub) => {
+                              const subActive = pathname === sub.href;
+                              return (
+                                <Link
+                                  key={sub.href}
+                                  href={sub.href}
+                                  onClick={() => setMobileOpen(false)}
+                                  className={`block px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
+                                    subActive
+                                      ? 'bg-[#C8102E] text-white font-bold'
+                                      : 'text-slate-600 hover:bg-red-50 hover:text-[#C8102E]'
+                                  }`}
+                                >
+                                  {sub.label}
+                                </Link>
+                              );
+                            })}
+                          </div>
                         </div>
-                      )}
-                    </div>
-                  );
-                }
+                      </div>
+                    );
+                  }
 
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setMobileOpen(false)}
-                    className={`flex items-center justify-between px-4 py-2.5 rounded-sm text-sm font-semibold ${
-                      active
-                        ? 'bg-[#C8102E] text-white font-bold shadow-xs'
-                        : 'text-slate-700 hover:bg-slate-100'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      {Icon && <Icon className={`w-4 h-4 ${active ? 'text-white' : (link.color || 'text-slate-500')}`} />}
-                      <span>{link.label}</span>
-                    </div>
-                    {link.badge && (
-                      <span className="text-[10px] bg-nova-500 text-white px-2 py-0.5 rounded-full font-bold">
-                        {link.badge}
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
-
-              {session?.user && (
-                <div className="pt-3 mt-2 border-t border-slate-200 space-y-1.5">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMobileOpen(false);
-                      setDrawerOpen(true);
-                    }}
-                    className="w-full text-left px-4 py-2.5 bg-slate-50 hover:bg-slate-100 rounded-2xl flex items-center gap-3 transition"
-                  >
-                    <div className="w-9 h-9 rounded-full overflow-hidden border border-brand-500 bg-brand-50 flex items-center justify-center shrink-0">
-                      {session.user.image ? (
-                        <img src={session.user.image} alt="Avatar" className="w-full h-full object-cover" />
-                      ) : (
-                        <span className="text-xs font-black text-brand-700">
-                          {session.user.name?.charAt(0) || 'U'}
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setMobileOpen(false)}
+                      className={`flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                        active
+                          ? 'bg-[#C8102E] text-white font-bold shadow-xs'
+                          : 'text-slate-700 hover:bg-slate-100'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        {Icon && <Icon className={`w-4 h-4 ${active ? 'text-white' : (link.color || 'text-slate-500')}`} />}
+                        <span>{link.label}</span>
+                      </div>
+                      {link.badge && (
+                        <span className="text-[10px] bg-nova-500 text-white px-2 py-0.5 rounded-full font-bold">
+                          {link.badge}
                         </span>
                       )}
-                    </div>
-                    <div className="overflow-hidden min-w-0 flex-1">
-                      <p className="text-xs font-bold text-slate-800 truncate uppercase">{session.user.name}</p>
-                      <p className="text-[10px] text-slate-500 font-mono truncate">{session.user.email}</p>
-                    </div>
-                    <span className="text-xs text-brand-600 font-bold shrink-0">আমার অ্যাকাউন্ট →</span>
-                  </button>
-
-                  {session.user.role === 'ADMIN' && (
-                    <Link
-                      href="/admin"
-                      onClick={() => setMobileOpen(false)}
-                      className="block px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-brand-700 hover:bg-brand-800"
-                    >
-                      অ্যাডমিন প্যানেল
                     </Link>
-                  )}
+                  );
+                })}
 
-                  <Link
-                    href="/account"
-                    onClick={() => setMobileOpen(false)}
-                    className="block px-4 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-100"
-                  >
-                  একাউন্ট
-                  </Link>
-
-                  <Link
-                    href="/leaderboard"
-                    onClick={() => setMobileOpen(false)}
-                    className="flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-amber-50 hover:text-amber-800"
-                  >
-                    <span>🏆 লিডারবোর্ড (মেধাতালিকা)</span>
-                    <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
-                      Rank
-                    </span>
-                  </Link>
-
-                  {session.user.role === 'STUDENT' && (
-                    <Link
-                      href="/profile"
-                      onClick={() => setMobileOpen(false)}
-                      className="block px-4 py-2.5 rounded-xl text-sm font-bold text-nova-600 hover:bg-nova-50"
+                {session?.user && (
+                  <div className="pt-3 mt-2 border-t border-slate-200 space-y-1.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMobileOpen(false);
+                        setDrawerOpen(true);
+                      }}
+                      className="w-full text-left px-4 py-2.5 bg-slate-50 hover:bg-slate-100 rounded-2xl flex items-center gap-3 transition"
                     >
-                      আমার ড্যাশবোর্ড ও শিটসমূহ
+                      <div className="w-9 h-9 rounded-full overflow-hidden border border-brand-500 bg-brand-50 flex items-center justify-center shrink-0">
+                        {session.user.image ? (
+                          <img src={session.user.image} alt="Avatar" className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="text-xs font-black text-brand-700">
+                            {session.user.name?.charAt(0) || 'U'}
+                          </span>
+                        )}
+                      </div>
+                      <div className="overflow-hidden min-w-0 flex-1">
+                        <p className="text-xs font-bold text-slate-800 truncate uppercase">{session.user.name}</p>
+                        <p className="text-[10px] text-slate-500 font-mono truncate">{session.user.email}</p>
+                      </div>
+                      <span className="text-xs text-brand-600 font-bold shrink-0">আমার অ্যাকাউন্ট →</span>
+                    </button>
+
+                    {session.user.role === 'ADMIN' && (
+                      <Link
+                        href="/admin"
+                        onClick={() => setMobileOpen(false)}
+                        className="block px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-brand-700 hover:bg-brand-800"
+                      >
+                        অ্যাডমিন প্যানেল
+                      </Link>
+                    )}
+
+                    <Link
+                      href="/account"
+                      onClick={() => setMobileOpen(false)}
+                      className="block px-4 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-100"
+                    >
+                      একাউন্ট
                     </Link>
-                  )}
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMobileOpen(false);
-                      confirmSignOut();
-                    }}
-                    className="w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-bold text-rose-600 hover:bg-rose-50 text-left cursor-pointer"
-                  >
-                    <FaArrowRightFromBracket /> লগআউট করুন
-                  </button>
-                </div>
-              )}
+                    <Link
+                      href="/leaderboard"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-amber-50 hover:text-amber-800"
+                    >
+                      <span>🏆 লিডারবোর্ড (মেধাতালিকা)</span>
+                      <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
+                        Rank
+                      </span>
+                    </Link>
 
-              {!session?.user && (
-                <div className="pt-3 mt-2 border-t border-slate-200">
-                  <Link
-                    href="/login"
-                    onClick={() => setMobileOpen(false)}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-[#0F2C59] hover:bg-[#C8102E] transition-colors shadow-sm"
-                  >
-                    <IoLogInOutline className="w-5 h-5" />
-                    <span>লগইন করুন</span>
-                  </Link>
-                </div>
-              )}
+                    {session.user.role === 'STUDENT' && (
+                      <Link
+                        href="/profile"
+                        onClick={() => setMobileOpen(false)}
+                        className="block px-4 py-2.5 rounded-xl text-sm font-bold text-nova-600 hover:bg-nova-50"
+                      >
+                        আমার ড্যাশবোর্ড ও শিটসমূহ
+                      </Link>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMobileOpen(false);
+                        confirmSignOut();
+                      }}
+                      className="w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-bold text-rose-600 hover:bg-rose-50 text-left cursor-pointer"
+                    >
+                      <FaArrowRightFromBracket /> লগআউট করুন
+                    </button>
+                  </div>
+                )}
+
+                {!session?.user && (
+                  <div className="pt-3 mt-2 border-t border-slate-200">
+                    <Link
+                      href="/login"
+                      onClick={() => setMobileOpen(false)}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-[#0F2C59] hover:bg-[#C8102E] transition-colors shadow-sm"
+                    >
+                      <IoLogInOutline className="w-5 h-5" />
+                      <span>লগইন করুন</span>
+                    </Link>
+                  </div>
+                )}
+              </div>
             </div>
-          )}
+          </div>
 
           {/* Mobile Animated Search Box (Opened directly beneath sticky navbar) */}
           {mobileSearchOpen && (
