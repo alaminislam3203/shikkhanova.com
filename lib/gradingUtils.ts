@@ -13,13 +13,21 @@ export interface SubjectMarkEntry {
 /**
  * Get NCTB standard CQ and MCQ marks for a subject
  */
-export function getSubjectCqMcq(sub: {
-  subject: string;
-  fullMarks: number;
-  obtained: number;
-  cq?: number;
-  mcq?: number;
-}): { cq: string | number; mcq: string | number } {
+export function getSubjectCqMcq(
+  sub: {
+    subject: string;
+    fullMarks: number;
+    obtained: number;
+    cq?: number;
+    mcq?: number;
+  },
+  classGrade?: number
+): { cq: string | number; mcq: string | number } {
+  // Class 5 has NO separate CQ / MCQ in primary school NCTB standard
+  if (classGrade === 5) {
+    return { cq: '—', mcq: '—' };
+  }
+
   // 1. If explicit CQ or MCQ is provided
   if (sub.cq !== undefined && sub.cq !== null && sub.mcq !== undefined && sub.mcq !== null) {
     return { cq: sub.cq, mcq: sub.mcq };

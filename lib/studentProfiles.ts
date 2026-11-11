@@ -101,6 +101,7 @@ export function getStudentProfile(
     motherName: matched.motherName?.trim() || defaultMother,
     schoolName: matched.schoolName?.trim() || defaultSchool,
     dateOfBirth: matched.dateOfBirth?.trim() || defaultDob,
+    religion: matched.religion?.trim() || 'ইসলাম',
   };
 }
 
@@ -120,6 +121,7 @@ export function saveStudentProfile(
     motherName: extra.motherName !== undefined ? extra.motherName : existing.motherName,
     schoolName: extra.schoolName !== undefined ? extra.schoolName : existing.schoolName,
     dateOfBirth: extra.dateOfBirth !== undefined ? extra.dateOfBirth : existing.dateOfBirth,
+    religion: extra.religion !== undefined ? extra.religion : existing.religion || 'ইসলাম',
   };
 
   all[key] = updated;

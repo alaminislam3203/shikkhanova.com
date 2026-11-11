@@ -35,6 +35,7 @@ export default function RegisterPage() {
     phone: '',
     classGrade: '7',
     rollNumber: '',
+    religion: 'ইসলাম',
     schoolName: '',
     fatherName: '',
     motherName: '',
@@ -296,8 +297,8 @@ export default function RegisterPage() {
                   />
                 </div>
 
-                {/* Class & Roll Grid */}
-                <div className="grid grid-cols-2 gap-3">
+                {/* Class, Roll & Religion Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
                       <FiBook />
@@ -332,7 +333,22 @@ export default function RegisterPage() {
                       onChange={handleChange}
                       className="w-full border border-[#ccc] rounded-[5px] p-[10px] text-sm bg-transparent focus:outline-none focus:border-[#0F2C59] transition font-mono"
                       style={{ paddingLeft: '28px' }}
-                    />
+                    >
+                    </input>
+                  </div>
+
+                  {/* Religion (ধর্ম) Selector */}
+                  <div className="relative">
+                    <select
+                      name="religion"
+                      required
+                      value={formData.religion}
+                      onChange={handleChange}
+                      className="w-full border border-[#ccc] rounded-[5px] p-[10px] text-sm bg-white focus:outline-none focus:border-[#0F2C59] transition font-bold text-slate-800"
+                    >
+                      <option value="ইসলাম">ধর্ম: ইসলাম</option>
+                      <option value="হিন্দু">ধর্ম: হিন্দু</option>
+                    </select>
                   </div>
                 </div>
               </div>

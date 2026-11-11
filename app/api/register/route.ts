@@ -18,6 +18,7 @@ export async function POST(req: Request) {
       motherName,
       schoolName,
       dateOfBirth,
+      religion,
     } = body;
 
     if (!name || !email || !password) {
@@ -57,11 +58,11 @@ export async function POST(req: Request) {
       },
     });
 
-    // Save extra profile details (Father, Mother, School, DOB)
+    // Save extra profile details (Father, Mother, School, DOB, Religion)
     saveStudentProfile(
       numClass,
       numRoll,
-      { fatherName, motherName, schoolName, dateOfBirth },
+      { fatherName, motherName, schoolName, dateOfBirth, religion: religion || 'ইসলাম' },
       cleanEmail
     );
 

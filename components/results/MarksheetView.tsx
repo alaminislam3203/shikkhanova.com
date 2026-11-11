@@ -426,7 +426,7 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
               let hasAnyMcq = false;
 
               result.subjects.forEach((sub) => {
-                const { cq, mcq } = getSubjectCqMcq(sub);
+                const { cq, mcq } = getSubjectCqMcq(sub, result.classGrade);
                 if (typeof cq === 'number') {
                   totalCq += cq;
                   hasAnyCq = true;
@@ -474,7 +474,7 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
                   </thead>
                   <tbody className="divide-y divide-slate-200 text-xs">
                     {result.subjects.map((sub, idx) => {
-                      const { cq, mcq } = getSubjectCqMcq(sub);
+                      const { cq, mcq } = getSubjectCqMcq(sub, result.classGrade);
                       return (
                         <tr key={idx} className="hover:bg-slate-50/50">
                           <td className="py-1.5 px-2 border border-slate-300 text-center font-mono font-bold text-slate-600 text-xs">

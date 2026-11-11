@@ -67,6 +67,7 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
   const [group, setGroup] = useState<string>('সকল বিভাগ');
   const [rollNumber, setRollNumber] = useState<string>(formData?.rollNumber || '1');
   const [studentName, setStudentName] = useState<string>(formData?.studentName || '');
+  const [religion, setReligion] = useState<'ইসলাম' | 'হিন্দু'>('ইসলাম');
   const [editingResultId, setEditingResultId] = useState<string | null>(null);
 
   // Class Students from Database / Local
@@ -79,6 +80,7 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
       motherName?: string;
       schoolName?: string;
       dateOfBirth?: string;
+      religion?: string;
     }>
   >([]);
   const [studentSearchQuery, setStudentSearchQuery] = useState<string>('');
@@ -140,14 +142,17 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
     }
   };
 
-  // Re-generate NCTB subject rows whenever class or group changes
+  // Re-generate NCTB subject rows whenever class, group, or religion changes
   useEffect(() => {
     if (editingResultId) return; // Do not overwrite if currently editing an existing record
 
     const availableNctb = DEFAULT_NCTB_SUBJECTS.filter((s) => {
       if (s.classGrade !== classGrade) return false;
       if (classGrade >= 9) {
-        return s.group === 'সকল বিভাগ' || s.group === group;
+        if (s.group !== 'সকল বিভাগ' && s.group !== group) return false;
+      }
+      if (s.religion) {
+        return s.religion === religion;
       }
       return true;
     });
@@ -168,14 +173,17 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
     });
 
     setSubjectRows(rows);
-  }, [classGrade, group, editingResultId]);
+  }, [classGrade, group, religion, editingResultId]);
 
-  // Match student name on roll number change
+  // Match student name and religion on roll number change
   const handleRollChange = (rollVal: string) => {
     setRollNumber(rollVal);
     const matched = classStudents.find((s) => String(s.rollNumber) === rollVal.trim());
     if (matched) {
       setStudentName(matched.name);
+      if (matched.religion) {
+        setReligion(matched.religion === 'হিন্দু' ? 'হিন্দু' : 'ইসলাম');
+      }
     }
   };
 
@@ -472,8 +480,8 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
           </div>
         </div>
 
-        {/* Class, Group, Roll, and Name Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Class, Group, Religion, Roll, and Name Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
           
           {/* Class Grade */}
           <div className="space-y-1">
@@ -484,7 +492,7 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
                 setClassGrade(parseInt(e.target.value));
                 setEditingResultId(null);
               }}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-bold bg-white focus:border-[#C8102E] focus:outline-none"
+              className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-bold bg-white focus:border-[#C8102E] focus:outline-none"
             >
               <option value={5}>৫ম শ্রেণি (Class 5)</option>
               <option value={6}>৬ষ্ঠ শ্রেণি (Class 6)</option>
@@ -504,13 +512,28 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
               disabled={classGrade < 9}
               value={group}
               onChange={(e) => setGroup(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-bold bg-white focus:border-[#C8102E] focus:outline-none disabled:bg-slate-100 disabled:text-slate-400"
+              className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-bold bg-white focus:border-[#C8102E] focus:outline-none disabled:bg-slate-100 disabled:text-slate-400"
             >
               {GROUP_OPTIONS.map((g) => (
                 <option key={g.id} value={g.id}>
                   {g.label}
                 </option>
               ))}
+            </select>
+          </div>
+
+          {/* Religion (ধর্ম) Selector */}
+          <div className="space-y-1">
+            <label className="block text-xs font-bold text-slate-700">
+              ধর্ম (Religion)
+            </label>
+            <select
+              value={religion}
+              onChange={(e) => setReligion(e.target.value as 'ইসলাম' | 'হিন্দু')}
+              className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-bold bg-white focus:border-[#C8102E] focus:outline-none text-slate-800"
+            >
+              <option value="ইসলাম">ইসলাম</option>
+              <option value="হিন্দু">হিন্দু</option>
             </select>
           </div>
 
@@ -525,7 +548,7 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
               value={rollNumber}
               onChange={(e) => handleRollChange(e.target.value)}
               placeholder="যেমন: 1, 5"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-bold focus:border-[#C8102E] focus:outline-none"
+              className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-bold focus:border-[#C8102E] focus:outline-none"
             />
           </div>
 
@@ -540,7 +563,7 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
               value={studentName}
               onChange={(e) => setStudentName(e.target.value)}
               placeholder="শিক্ষার্থীর পূর্ণ নাম"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-bold focus:border-[#C8102E] focus:outline-none"
+              className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-bold focus:border-[#C8102E] focus:outline-none"
             />
           </div>
 
