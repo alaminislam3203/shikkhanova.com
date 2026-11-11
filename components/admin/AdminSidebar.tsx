@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
+import { confirmSignOut } from '@/lib/logout';
 import Logo from '@/components/common/Logo';
 import {
   FaAward,
@@ -412,9 +413,9 @@ export default function AdminSidebar({
 
             <button
               type="button"
-              onClick={() => signOut({ callbackUrl: '/' })}
+              onClick={() => confirmSignOut()}
               title="লগআউট করুন"
-              className="inline-flex items-center justify-center gap-1.5 bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white font-bold py-2.5 px-3 rounded-xl text-xs transition border border-rose-200/70"
+              className="inline-flex items-center justify-center gap-1.5 bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white font-bold py-2.5 px-3 rounded-xl text-xs transition border border-rose-200/70 cursor-pointer"
             >
               <FaArrowRightFromBracket className="w-3.5 h-3.5 shrink-0" />
               <span className={isCollapsed ? 'lg:hidden' : ''}>লগআউট</span>
