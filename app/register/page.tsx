@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
+import toast from 'react-hot-toast';
 import Link from 'next/link';
 import {
   FaUser,
@@ -60,10 +62,24 @@ export default function RegisterPage() {
         throw new Error(data.error || 'রেজিস্ট্রেশন ব্যর্থ হয়েছে');
       }
 
-      setSuccess('ভর্তি ও রেজিস্ট্রেশন সফল হয়েছে! লগইন পেজে নিয়ে যাওয়া হচ্ছে...');
-      setTimeout(() => {
-        router.push('/login');
-      }, 1500);
+      setSuccess('রেজিস্ট্রেশন সফল হয়েছে! অ্যাকাউন্টে প্রবেশ করা হচ্ছে...');
+      toast.success('অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! শিক্ষানোভাতে স্বাগতম।');
+
+      // Auto login student immediately after account creation
+      const loginRes = await signIn('credentials', {
+        redirect: false,
+        email: formData.email.trim().toLowerCase(),
+        password: formData.password,
+      });
+
+      if (loginRes?.error) {
+        setTimeout(() => {
+          router.push('/login');
+        }, 1200);
+      } else {
+        router.push('/profile');
+        router.refresh();
+      }
     } catch (err: any) {
       setError(err.message || 'সমস্যা হয়েছে');
       setLoading(false);

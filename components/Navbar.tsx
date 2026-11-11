@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Logo from '@/components/common/Logo';
 import { usePathname, useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
+import { confirmSignOut } from '@/lib/logout';
 import {
   FaYoutube,
   FaFacebook,
@@ -822,9 +823,9 @@ export default function Navbar() {
                     type="button"
                     onClick={() => {
                       setMobileOpen(false);
-                      signOut({ callbackUrl: '/' });
+                      confirmSignOut();
                     }}
-                    className="w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-bold text-rose-600 hover:bg-rose-50 text-left"
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-bold text-rose-600 hover:bg-rose-50 text-left cursor-pointer"
                   >
                     <FaArrowRightFromBracket /> লগআউট করুন
                   </button>
@@ -1096,15 +1097,15 @@ export default function Navbar() {
               </div>
             </nav>
 
-            {/* 3. Logout Action (in Red) */}
+            {/* 3. Logout Action (in Red with Hot Toast Confirmation) */}
             <div className="pt-3 border-t border-slate-100">
               <button
                 type="button"
                 onClick={() => {
                   setDrawerOpen(false);
-                  signOut({ callbackUrl: '/' });
+                  confirmSignOut();
                 }}
-                className="w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-sm font-bold text-red-500 hover:bg-red-50 transition text-left"
+                className="w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-sm font-bold text-red-500 hover:bg-red-50 transition text-left cursor-pointer"
               >
                 <FaArrowRightFromBracket className="w-4 h-4 text-red-500 shrink-0" />
                 <span>লগ আউট</span>

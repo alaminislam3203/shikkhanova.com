@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useSession, signOut } from 'next-auth/react';
+import { confirmSignOut } from '@/lib/logout';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -428,8 +429,8 @@ export default function AccountPage() {
             <div className="pt-2 mt-2 border-t border-slate-100">
               <button
                 type="button"
-                onClick={() => signOut({ callbackUrl: '/' })}
-                className="w-full flex items-center justify-center gap-2 p-2.5 rounded-xl bg-rose-50 hover:bg-rose-100/80 text-rose-600 text-xs font-bold transition active:scale-98"
+                onClick={() => confirmSignOut()}
+                className="w-full flex items-center justify-center gap-2 p-2.5 rounded-xl bg-rose-50 hover:bg-rose-100/80 text-rose-600 text-xs font-bold transition active:scale-98 cursor-pointer"
               >
                 <FaArrowRightFromBracket className="w-3.5 h-3.5" />
                 <span>লগআউট করুন</span>

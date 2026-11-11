@@ -126,7 +126,7 @@ export default function RootLayout({
     <html lang="bn" className={`scroll-smooth ${exo2.variable} ${hindSiliguri.variable}`}>
       <body className="min-h-screen bg-[#F4F6F9] text-[#1E293B] font-sans antialiased selection:bg-[#C8102E] selection:text-white">
         <AuthProvider>
-          <Toaster position="center" />
+          <Toaster position="top-center" containerStyle={{ zIndex: 99999 }} />
           <AppLayout>{children}</AppLayout>
         </AuthProvider>
       </body>
