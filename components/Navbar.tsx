@@ -190,6 +190,32 @@ const INSTANT_SITE_INDEX = [
   },
 ];
 
+interface NavLinkItem {
+  href: string;
+  label: string;
+  icon?: any;
+  color?: string;
+  badge?: string;
+  children?: { href: string; label: string }[];
+}
+
+const navLinks: NavLinkItem[] = [
+  {
+    href: '/about',
+    label: 'আমাদের সম্পর্কে',
+    children: [
+      { href: '/about', label: 'শিক্ষা নোভা সম্পর্কে' },
+      { href: '/chairman-message', label: 'চেয়ারম্যানের বার্তা' },
+    ],
+  },
+  { href: '/quiz', label: 'মডেল টেস্ট', badge: 'MCQ' },
+  { href: '/notices', label: 'নোটিশ' },
+  { href: '/results', label: 'রেজাল্ট' },
+  { href: '/pdfs', label: 'শিট ও নোট' },
+  { href: '/gallery', label: 'ফটো গ্যালারি' },
+  { href: '/videos', label: 'ভিডিও ক্লাস', icon: FaYoutube, color: 'text-red-500' },
+];
+
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -345,32 +371,6 @@ export default function Navbar() {
       router.push(searchResults[0].href);
     }
   };
-
-  interface NavLinkItem {
-    href: string;
-    label: string;
-    icon?: any;
-    color?: string;
-    badge?: string;
-    children?: { href: string; label: string }[];
-  }
-
-  const navLinks: NavLinkItem[] = [
-    {
-      href: '/about',
-      label: 'আমাদের সম্পর্কে',
-      children: [
-        { href: '/about', label: 'শিক্ষা নোভা সম্পর্কে' },
-        { href: '/chairman-message', label: 'চেয়ারম্যানের বার্তা' },
-      ],
-    },
-    { href: '/quiz', label: 'মডেল টেস্ট', badge: 'MCQ' },
-    { href: '/notices', label: 'নোটিশ' },
-    { href: '/results', label: 'রেজাল্ট' },
-    { href: '/pdfs', label: 'শিট ও নোট' },
-    { href: '/gallery', label: 'ফটো গ্যালারি' },
-    { href: '/videos', label: 'ভিডিও ক্লাস', icon: FaYoutube, color: 'text-red-500' },
-  ];
 
   return (
     <>
