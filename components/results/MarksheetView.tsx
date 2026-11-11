@@ -1,14 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  FaPrint,
-  FaCircleCheck,
-  FaCircleXmark,
-  FaExpand,
-  FaCompress,
-  FaFileLines,
-} from 'react-icons/fa6';
+import { FaPrint, FaCircleCheck, FaCircleXmark, FaFileLines } from 'react-icons/fa6';
 import Logo from '@/components/common/Logo';
 import { MarksheetData } from '@/types';
 
@@ -18,23 +11,23 @@ interface MarksheetViewProps {
 
 export default function MarksheetView({ result }: MarksheetViewProps) {
   const isPassed = result.grade !== 'F' && result.gpa > 0;
-  
-  // Mobile View Mode: 'fit' (scales to fit phone screen width) or 'full' (100% A4 size with scroll)
-  const [viewMode, setViewMode] = useState<'fit' | 'full'>('full');
-  const [scale, setScale] = useState<number>(1);
+
+  // Fully static A4 canvas (794px = 210mm at 96 DPI)
+  // On mobile/tablet screens, auto-scales down proportionally so nothing ever breaks
   const wrapperRef = useRef<HTMLDivElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState<number>(1);
   const [scaledHeight, setScaledHeight] = useState<number | undefined>(undefined);
 
-  // Auto-calculate scale when in 'fit' mode on mobile/tablet
   useEffect(() => {
-    const updateScale = () => {
+    const handleResize = () => {
       if (!wrapperRef.current || !sheetRef.current) return;
       const containerWidth = wrapperRef.current.clientWidth;
-      const BASE_A4_WIDTH = 794; // Exact standard 210mm A4 width in pixels at 96 DPI
+      const BASE_A4_WIDTH = 794;
 
-      if (containerWidth < BASE_A4_WIDTH && viewMode === 'fit') {
-        const nextScale = containerWidth / BASE_A4_WIDTH;
+      if (containerWidth < BASE_A4_WIDTH) {
+        // Automatically shrink proportionally to fit mobile screen without any breaking
+        const nextScale = Math.max(0.35, (containerWidth - 6) / BASE_A4_WIDTH);
         setScale(nextScale);
         setScaledHeight(sheetRef.current.scrollHeight * nextScale);
       } else {
@@ -43,13 +36,22 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
       }
     };
 
-    updateScale();
-    window.addEventListener('resize', updateScale);
-    return () => window.removeEventListener('resize', updateScale);
-  }, [viewMode, result]);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    let observer: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined' && wrapperRef.current) {
+      observer = new ResizeObserver(handleResize);
+      observer.observe(wrapperRef.current);
+    }
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (observer) observer.disconnect();
+    };
+  }, [result]);
 
   const handlePrint = () => {
-    // Close any open dropdowns before printing
     if (typeof document !== 'undefined') {
       document.body.click();
     }
@@ -92,72 +94,45 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
         }
       `}</style>
 
-      {/* Control Bar: Mode Toggle & Print Button (Hidden on Print) */}
-      <div className="no-print bg-slate-900 text-white p-3 sm:p-4 rounded-2xl shadow-md flex flex-wrap items-center justify-between gap-3 max-w-[794px] mx-auto border border-slate-800">
-        <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-200">
-          <FaFileLines className="w-4 h-4 text-amber-400" />
-          <span>অফিশিয়াল A4 পেজ ফরম্যাট (Portrait)</span>
+      {/* Top Action Toolbar */}
+      <div className="no-print flex items-center justify-between gap-3 max-w-[794px] mx-auto px-1">
+        <div className="flex items-center gap-2 text-xs font-bold text-slate-600">
+          <FaFileLines className="w-4 h-4 text-brand-700" />
+          <span>অফিশিয়াল A4 পেজ মার্কশিট (Portrait Format)</span>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Mobile Screen Fit Toggle */}
-          <div className="sm:hidden flex items-center bg-slate-800 rounded-xl p-1 border border-slate-700">
-            <button
-              type="button"
-              onClick={() => setViewMode('fit')}
-              className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 ${
-                viewMode === 'fit'
-                  ? 'bg-amber-400 text-slate-950 shadow-xs'
-                  : 'text-slate-300 hover:text-white'
-              }`}
-              title="স্ক্রিনে সম্পূর্ণ পেজ ফিট করুন"
-            >
-              <FaCompress className="w-3 h-3" />
-              <span>ফিট</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode('full')}
-              className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 ${
-                viewMode === 'full'
-                  ? 'bg-amber-400 text-slate-950 shadow-xs'
-                  : 'text-slate-300 hover:text-white'
-              }`}
-              title="আসল ১০০% A4 সাইজে দেখুন"
-            >
-              <FaExpand className="w-3 h-3" />
-              <span>১০০%</span>
-            </button>
-          </div>
-
-          {/* Print Button */}
-          <button
-            type="button"
-            onClick={handlePrint}
-            className="px-4 sm:px-5 py-2 bg-gradient-to-r from-[#C8102E] to-[#A50D26] hover:from-[#A50D26] hover:to-black text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition flex items-center gap-2 transform active:scale-95 cursor-pointer"
-          >
-            <FaPrint className="w-3.5 h-3.5" />
-            <span>প্রিন্ট / PDF</span>
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={handlePrint}
+          className="px-5 py-2.5 bg-gradient-to-r from-[#0A1E3C] to-[#C8102E] hover:from-[#050E1D] hover:to-[#A50D26] text-white font-bold text-xs sm:text-sm rounded-xl shadow-brand hover:shadow-xl transition flex items-center gap-2 transform active:scale-95 cursor-pointer"
+        >
+          <FaPrint className="w-3.5 h-3.5 text-amber-300" />
+          <span>অফিশিয়াল মার্কশিট প্রিন্ট / PDF সংরক্ষণ করুন</span>
+        </button>
       </div>
 
-      {/* A4 Sheet Container Wrapper (Ensures No Elements Ever Break on Mobile or Desktop) */}
+      {/* Scaled Wrapper for Mobile / Tablet View (Maintains 100% Static A4 Canvas) */}
       <div
         ref={wrapperRef}
-        className="w-full overflow-x-auto pb-6 scrollbar-thin flex justify-center"
+        className="w-full overflow-hidden flex justify-center items-start"
         style={{
           height: scaledHeight ? `${scaledHeight}px` : 'auto',
         }}
       >
+        {/* ============================================================== */}
+        {/* STATIC A4 DOCUMENT CANVAS (794px Standard Width, 100% Static)  */}
+        {/* ============================================================== */}
         <div
           id="printableArea"
           ref={sheetRef}
           style={{
+            width: '794px',
+            minWidth: '794px',
+            maxWidth: '794px',
             transform: scale !== 1 ? `scale(${scale})` : undefined,
             transformOrigin: 'top center',
           }}
-          className="w-[794px] min-w-[794px] min-h-[1080px] bg-white p-8 sm:p-10 border border-slate-300 shadow-2xl rounded-2xl relative overflow-hidden space-y-5 print:w-full print:min-w-0 print:min-h-0 print:p-0 print:border-none print:shadow-none print:rounded-none"
+          className="bg-white p-8 border border-slate-300 shadow-2xl rounded-2xl relative overflow-hidden space-y-4 select-none print:w-full print:min-w-0 print:p-0 print:border-none print:shadow-none print:rounded-none"
         >
           {/* Subtle Institute Watermark */}
           <div className="absolute inset-0 flex items-center justify-center opacity-[0.035] pointer-events-none select-none">
@@ -224,22 +199,22 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
             </div>
           </div>
 
-          {/* Institute Header */}
-          <div className="text-center border-b-2 border-[#C8102E] pb-4 space-y-2 relative z-10 pr-40">
+          {/* Institute Header (pr-44 reserves space for top-right grading table) */}
+          <div className="text-center border-b-2 border-[#C8102E] pb-3.5 space-y-2 relative z-10 pr-44">
             <div className="flex items-center justify-center mb-1">
               <div className="bg-white px-3 py-1.5 rounded-2xl shadow-xs border border-slate-100">
                 <Logo size="md" clickable={false} />
               </div>
             </div>
 
-            <p className="text-xs sm:text-sm text-slate-600 font-semibold">
+            <p className="text-xs text-slate-600 font-semibold">
               জুম্মাপাড়া, নীলফামারী সদর, নীলফামারী | হেল্পলাইন:{' '}
               <span className="font-bn-normal font-bold text-[#0A1E3C]">০১৭১২৫৯২৫১৯</span>
             </p>
 
             {/* Exam Title Set Prominently in Header */}
             <div className="pt-0.5">
-              <div className="inline-flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 bg-[#0A1E3C] border-b-2 border-[#C8102E] text-white text-[11px] sm:text-xs font-bold px-4 sm:px-5 py-1 sm:py-1.5 rounded-full uppercase shadow-sm">
+              <div className="inline-flex items-center justify-center gap-2 bg-[#0A1E3C] border-b-2 border-[#C8102E] text-white text-[11px] font-bold px-4 py-1 rounded-full uppercase shadow-sm">
                 <span className="text-amber-300 font-black">{result.examTitle}</span>
                 <span className="text-slate-400">|</span>
                 <span>একাডেমিক ফলাফল ও অফিশিয়াল মার্কশিট</span>
@@ -247,83 +222,83 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
             </div>
           </div>
 
-          {/* Student Profile Info & Status */}
-          <div className="p-4 rounded-2xl border text-xs sm:text-sm relative z-10 bg-slate-50 border-slate-200 space-y-3.5">
+          {/* Student Profile Info & Status (Static 100% Fixed Layout) */}
+          <div className="p-4 rounded-xl border text-xs relative z-10 bg-slate-50 border-slate-200 space-y-3">
             {/* Top Section: ১টি কলামে উপর-নিচ (শিক্ষার্থীর নাম, পিতার নাম, মাতার নাম, বিদ্যালয়ের নাম) */}
-            <div className="space-y-2 border-b border-slate-200/80 pb-3">
+            <div className="space-y-1.5 border-b border-slate-200/80 pb-2.5">
               <div className="flex items-start">
-                <span className="w-28 sm:w-32 shrink-0 text-slate-600 font-bold text-xs sm:text-sm">
+                <span className="w-32 shrink-0 text-slate-600 font-bold text-xs">
                   শিক্ষার্থীর নাম:
                 </span>
-                <span className="text-slate-900 text-sm sm:text-base font-black truncate">
+                <span className="text-slate-900 text-sm font-black truncate">
                   {result.studentName}
                 </span>
               </div>
 
               <div className="flex items-start">
-                <span className="w-28 sm:w-32 shrink-0 text-slate-600 font-bold text-xs sm:text-sm">
+                <span className="w-32 shrink-0 text-slate-600 font-bold text-xs">
                   পিতার নাম:
                 </span>
-                <span className="text-slate-800 text-xs sm:text-sm font-bold truncate">
+                <span className="text-slate-800 text-xs font-bold truncate">
                   {result.fatherName || '—'}
                 </span>
               </div>
 
               <div className="flex items-start">
-                <span className="w-28 sm:w-32 shrink-0 text-slate-600 font-bold text-xs sm:text-sm">
+                <span className="w-32 shrink-0 text-slate-600 font-bold text-xs">
                   মাতার নাম:
                 </span>
-                <span className="text-slate-800 text-xs sm:text-sm font-bold truncate">
+                <span className="text-slate-800 text-xs font-bold truncate">
                   {result.motherName || '—'}
                 </span>
               </div>
 
               <div className="flex items-start">
-                <span className="w-28 sm:w-32 shrink-0 text-slate-600 font-bold text-xs sm:text-sm">
+                <span className="w-32 shrink-0 text-slate-600 font-bold text-xs">
                   বিদ্যালয়ের নাম:
                 </span>
-                <span className="text-slate-800 text-xs sm:text-sm font-bold">
+                <span className="text-slate-800 text-xs font-bold">
                   {result.schoolName || '—'}
                 </span>
               </div>
             </div>
 
             {/* Bottom Section: বিদ্যালয়ের নামের নিচে ৪টি কলামে (শ্রেণি, রোল নম্বর, জন্ম তারিখ, ফলাফল স্ট্যাটাস) */}
-            <div className="grid grid-cols-4 gap-3 pt-0.5">
-              <div className="bg-white p-2.5 rounded-xl border border-slate-200 shadow-xs">
-                <span className="text-[11px] text-slate-500 font-bold block mb-0.5">শ্রেণি:</span>
-                <strong className="text-brand-700 font-black text-sm block">
+            <div className="grid grid-cols-4 gap-2.5 pt-0.5">
+              <div className="bg-white p-2 rounded-lg border border-slate-200 shadow-xs">
+                <span className="text-[10px] text-slate-500 font-bold block mb-0.5">শ্রেণি:</span>
+                <strong className="text-brand-700 font-black text-xs block">
                   Class {result.classGrade}
                 </strong>
               </div>
 
-              <div className="bg-white p-2.5 rounded-xl border border-slate-200 shadow-xs">
-                <span className="text-[11px] text-slate-500 font-bold block mb-0.5">রোল নম্বর:</span>
-                <strong className="text-nova-600 font-black text-sm block">
+              <div className="bg-white p-2 rounded-lg border border-slate-200 shadow-xs">
+                <span className="text-[10px] text-slate-500 font-bold block mb-0.5">রোল নম্বর:</span>
+                <strong className="text-nova-600 font-black text-xs block">
                   রোল {result.rollNumber}
                 </strong>
               </div>
 
-              <div className="bg-white p-2.5 rounded-xl border border-slate-200 shadow-xs">
-                <span className="text-[11px] text-slate-500 font-bold block mb-0.5">জন্ম তারিখ:</span>
+              <div className="bg-white p-2 rounded-lg border border-slate-200 shadow-xs">
+                <span className="text-[10px] text-slate-500 font-bold block mb-0.5">জন্ম তারিখ:</span>
                 <strong className="text-slate-800 font-bold text-xs block">
                   {result.dateOfBirth || '—'}
                 </strong>
               </div>
 
-              <div className="bg-white p-2.5 rounded-xl border border-slate-200 shadow-xs">
-                <span className="text-[11px] text-slate-500 font-bold block mb-1">ফলাফল স্ট্যাটাস:</span>
+              <div className="bg-white p-2 rounded-lg border border-slate-200 shadow-xs">
+                <span className="text-[10px] text-slate-500 font-bold block mb-0.5">ফলাফল স্ট্যাটাস:</span>
                 <span
-                  className={`inline-flex items-center gap-1 font-black text-[11px] px-2 py-0.5 rounded-full ${
+                  className={`inline-flex items-center gap-1 font-black text-[10px] px-2 py-0.5 rounded-full ${
                     isPassed
                       ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
                       : 'bg-rose-100 text-rose-800 border border-rose-300'
                   }`}
                 >
                   {isPassed ? (
-                    <FaCircleCheck className="w-3 h-3 text-emerald-600" />
+                    <FaCircleCheck className="w-2.5 h-2.5 text-emerald-600" />
                   ) : (
-                    <FaCircleXmark className="w-3 h-3 text-rose-600" />
+                    <FaCircleXmark className="w-2.5 h-2.5 text-rose-600" />
                   )}
                   {isPassed ? 'উত্তীর্ণ' : 'অনুত্তীর্ণ'}
                 </span>
@@ -331,44 +306,44 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
             </div>
           </div>
 
-          {/* Subject-by-Subject Marks Table */}
+          {/* Subject-by-Subject Marks Table (Static 100% Fixed Table) */}
           <div className="relative z-10">
             <table className="w-full text-left border-collapse border border-slate-300">
               <thead>
-                <tr className="text-slate-800 text-xs font-bold uppercase border-b border-slate-300 bg-slate-100">
-                  <th className="py-2 px-3 border border-slate-300 text-center w-16">কোড</th>
-                  <th className="py-2 px-4 border border-slate-300">বিষয় (NCTB Subject)</th>
-                  <th className="py-2 px-3 border border-slate-300 text-center w-20">পূর্ণমান</th>
-                  <th className="py-2 px-3 border border-slate-300 text-center w-24">প্রাপ্ত নম্বর</th>
-                  <th className="py-2 px-3 border border-slate-300 text-center w-24">লেটার গ্রেড</th>
-                  <th className="py-2 px-3 border border-slate-300 text-center w-20">জিপিএ (GP)</th>
+                <tr className="text-slate-800 text-[11px] font-bold uppercase border-b border-slate-300 bg-slate-100">
+                  <th className="py-1.5 px-3 border border-slate-300 text-center w-16">কোড</th>
+                  <th className="py-1.5 px-4 border border-slate-300">বিষয় (NCTB Subject)</th>
+                  <th className="py-1.5 px-3 border border-slate-300 text-center w-20">পূর্ণমান</th>
+                  <th className="py-1.5 px-3 border border-slate-300 text-center w-24">প্রাপ্ত নম্বর</th>
+                  <th className="py-1.5 px-3 border border-slate-300 text-center w-24">লেটার গ্রেড</th>
+                  <th className="py-1.5 px-3 border border-slate-300 text-center w-20">জিপিএ (GP)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 text-xs">
                 {result.subjects.map((sub, idx) => (
                   <tr key={idx} className="hover:bg-slate-50/50">
-                    <td className="py-2 px-3 border border-slate-300 text-center font-mono font-bold text-slate-600 text-xs">
+                    <td className="py-1.5 px-3 border border-slate-300 text-center font-mono font-bold text-slate-600 text-xs">
                       {sub.code || `০${idx + 1}`}
                     </td>
-                    <td className="py-2 px-4 border border-slate-300 font-bold text-slate-800">
+                    <td className="py-1.5 px-4 border border-slate-300 font-bold text-slate-800">
                       <div className="flex items-center justify-between">
                         <span>{sub.subject}</span>
                         {sub.isFourthSubject && (
-                          <span className="text-[10px] bg-purple-100 text-purple-700 font-bold px-2 py-0.5 rounded-full ml-2">
+                          <span className="text-[9px] bg-purple-100 text-purple-700 font-bold px-1.5 py-0.5 rounded-full ml-2">
                             ৪র্থ বিষয়
                           </span>
                         )}
                       </div>
                     </td>
-                    <td className="py-2 px-3 border border-slate-300 text-center text-slate-600 font-semibold">
+                    <td className="py-1.5 px-3 border border-slate-300 text-center text-slate-600 font-semibold">
                       {sub.fullMarks}
                     </td>
-                    <td className="py-2 px-3 border border-slate-300 text-center font-black text-slate-900">
+                    <td className="py-1.5 px-3 border border-slate-300 text-center font-black text-slate-900">
                       {sub.obtained}
                     </td>
-                    <td className="py-2 px-3 border border-slate-300 text-center font-black">
+                    <td className="py-1.5 px-3 border border-slate-300 text-center font-black">
                       <span
-                        className={`inline-block px-2.5 py-0.5 rounded text-xs ${
+                        className={`inline-block px-2 py-0.5 rounded text-xs ${
                           sub.grade === 'A+'
                             ? 'bg-emerald-100 text-emerald-800 font-black'
                             : sub.grade === 'F'
@@ -379,7 +354,7 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
                         {sub.grade}
                       </span>
                     </td>
-                    <td className="py-2 px-3 border border-slate-300 text-center font-black text-brand-700">
+                    <td className="py-1.5 px-3 border border-slate-300 text-center font-black text-brand-700">
                       {sub.gpa.toFixed(2)}
                     </td>
                   </tr>
@@ -387,18 +362,18 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
               </tbody>
               <tfoot>
                 <tr className="font-bold text-slate-900 border-t-2 border-slate-400 bg-blue-50/80">
-                  <td colSpan={2} className="py-2.5 px-4 border border-slate-300 text-xs font-black text-[#0A1E3C]">
+                  <td colSpan={2} className="py-2 px-4 border border-slate-300 text-xs font-black text-[#0A1E3C]">
                     সর্বমোট ফলাফল (Total Evaluation)
                   </td>
-                  <td className="py-2.5 px-3 border border-slate-300 text-center text-slate-700 font-bold text-xs">
+                  <td className="py-2 px-3 border border-slate-300 text-center text-slate-700 font-bold text-xs">
                     {result.totalMarks}
                   </td>
-                  <td className="py-2.5 px-3 border border-slate-300 text-center text-brand-800 font-black text-sm">
+                  <td className="py-2 px-3 border border-slate-300 text-center text-brand-800 font-black text-sm">
                     {result.obtainedMarks}
                   </td>
-                  <td className="py-2.5 px-3 border border-slate-300 text-center font-black text-sm">
+                  <td className="py-2 px-3 border border-slate-300 text-center font-black text-sm">
                     <span
-                      className={`inline-block px-3 py-0.5 rounded-md text-xs font-black ${
+                      className={`inline-block px-2.5 py-0.5 rounded text-xs font-black ${
                         result.grade === 'A+'
                           ? 'bg-emerald-600 text-white'
                           : result.grade === 'F'
@@ -409,7 +384,7 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
                       {result.grade}
                     </span>
                   </td>
-                  <td className="py-2.5 px-3 border border-slate-300 text-center text-brand-800 font-black text-sm">
+                  <td className="py-2 px-3 border border-slate-300 text-center text-brand-800 font-black text-sm">
                     {result.gpa.toFixed(2)}
                   </td>
                 </tr>
@@ -417,22 +392,18 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
             </table>
           </div>
 
-          {/* Official Signatures with signature.png */}
-          <div className="pt-8 flex justify-between items-end text-center text-xs font-bold text-slate-700 relative z-10">
+          {/* Official Signatures with signature.png (Static 3-Column Parallel Placement) */}
+          <div className="pt-6 flex justify-between items-end text-center text-xs font-bold text-slate-700 relative z-10">
             {/* 1. শ্রেণি শিক্ষকের স্বাক্ষর */}
             <div className="space-y-1 w-40">
-              <div className="h-12 flex items-end justify-center">
-                {/* Space holder so lines align horizontally */}
-              </div>
+              <div className="h-12 flex items-end justify-center"></div>
               <div className="w-36 border-b border-slate-400 mx-auto"></div>
               <p className="text-[11px] text-slate-800 font-bold">শ্রেণি শিক্ষকের স্বাক্ষর</p>
             </div>
 
             {/* 2. অভিভাবকের স্বাক্ষর */}
             <div className="space-y-1 w-40">
-              <div className="h-12 flex items-end justify-center">
-                {/* Space holder so lines align horizontally */}
-              </div>
+              <div className="h-12 flex items-end justify-center"></div>
               <div className="w-36 border-b border-slate-400 mx-auto"></div>
               <p className="text-[11px] text-slate-800 font-bold">অভিভাবকের স্বাক্ষর</p>
             </div>
