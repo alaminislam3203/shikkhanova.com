@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 import {
   RawQuestion,
   SUBJECT_LIST,
@@ -89,10 +90,11 @@ export default function AdminQuizManager() {
       .catch(() => {});
   }, []);
 
-  // Save Quiz Prices Handler
+  // Save Quiz Prices Handler with Instant Toast Feedback
   const handleSavePrices = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSavingPrices(true);
+    const saveToastId = toast.loading('সব মূল্য সংরক্ষণ ও আপডেট করা হচ্ছে...');
     try {
       const res = await fetch('/api/quiz/prices', {
         method: 'POST',
@@ -102,23 +104,36 @@ export default function AdminQuizManager() {
       const data = await res.json();
       if (res.ok) {
         saveStoredQuizPrices(prices);
+        toast.success(data.message || 'কুইজ ও প্যাকেজের সকল মূল্য সফলভাবে সংরক্ষিত হয়েছে!', {
+          id: saveToastId,
+          duration: 4000,
+        });
         setMsg({ text: '✅ কুইজ ও প্যাকেজের মূল্য সফলভাবে সংরক্ষণ ও আপডেট করা হয়েছে!', type: 'success' });
       } else {
+        toast.error(data.error || 'মূল্য সংরক্ষণ ব্যর্থ হয়েছে। আবার চেষ্টা করুন।', {
+          id: saveToastId,
+        });
         setMsg({ text: data.error || 'মূল্য সংরক্ষণ ব্যর্থ হয়েছে।', type: 'error' });
       }
     } catch (err: any) {
+      toast.error(err.message || 'নেটওয়ার্ক সংযোগে সমস্যা হয়েছে।', {
+        id: saveToastId,
+      });
       setMsg({ text: err.message || 'নেটওয়ার্ক সংযোগে সমস্যা হয়েছে।', type: 'error' });
     } finally {
       setIsSavingPrices(false);
     }
   };
 
-  // Reset Prices to Defaults
+  // Reset Prices to Defaults with Toast
   const handleResetPricesToDefault = () => {
     if (!confirm('আপনি কি সকল কুইজ ও প্যাকেজের মূল্য মূল ডিফল্ট ফি-তে ফিরিয়ে নিতে চান?')) return;
     setPrices(DEFAULT_QUIZ_PRICES);
     saveStoredQuizPrices(DEFAULT_QUIZ_PRICES);
-    setMsg({ text: '🔄 কুইজের মূল্য ডিফল্ট অবস্থায় ফিরিয়ে আনা হয়েছে। সংরক্ষণ করতে "মূল্য সংরক্ষণ করুন" বাটনে ক্লিক করুন।', type: 'success' });
+    toast.success('কুইজের মূল্য ডিফল্ট অবস্থায় ফিরিয়ে আনা হয়েছে। সংরক্ষণ করতে "সব মূল্য সংরক্ষণ করুন" বাটনে ক্লিক করুন।', {
+      duration: 4000,
+    });
+    setMsg({ text: '🔄 কুইজের মূল্য ডিফল্ট অবস্থায় ফিরিয়ে আনা হয়েছে। সংরক্ষণ করতে "সব মূল্য সংরক্ষণ করুন" বাটনে ক্লিক করুন।', type: 'success' });
   };
 
   // Load questions whenever category, class, or subject changes
