@@ -284,6 +284,80 @@ export default function AdminQuizManager() {
     toast.success('প্যাকেজসমূহ ডিফল্ট অবস্থায় ফিরিয়ে আনা হয়েছে।');
   };
 
+  // 🖼️ Cover Image Handlers
+  const handleCoverUpload = async (key: string, file: File, type: 'classes' | 'subjects') => {
+    if (!file) return;
+    setUploadingTarget(`${type}_${key}`);
+    const uploadToastId = toast.loading('কভার ছবি আপলোড হচ্ছে...');
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        setCovers((prev) => ({
+          ...prev,
+          [type]: {
+            ...prev[type],
+            [key]: data.url,
+          },
+        }));
+        toast.success('ছবি আপলোড সফল হয়েছে! সংরক্ষণ করতে "কভার ইমেজ সংরক্ষণ করুন" চাপুন।', {
+          id: uploadToastId,
+          duration: 4000,
+        });
+      } else {
+        toast.error(data.error || 'ছবি আপলোড ব্যর্থ হয়েছে।', { id: uploadToastId });
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'আপলোডে সমস্যা হয়েছে।', { id: uploadToastId });
+    } finally {
+      setUploadingTarget(null);
+    }
+  };
+
+  const handleRemoveCover = (key: string, type: 'classes' | 'subjects') => {
+    setCovers((prev) => {
+      const nextType = { ...prev[type] };
+      delete nextType[key];
+      return {
+        ...prev,
+        [type]: nextType,
+      };
+    });
+    toast.success('কভার ইমেজ সরানো হয়েছে। স্থায়ী করতে "কভার ইমেজ সংরক্ষণ করুন" বাটনে ক্লিক করুন।');
+  };
+
+  const handleSaveCovers = async () => {
+    setIsSavingCovers(true);
+    const saveToastId = toast.loading('কভার ইমেজ সংরক্ষণ ও আপডেট করা হচ্ছে...');
+    try {
+      const res = await fetch('/api/quiz/covers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ covers }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        saveStoredQuizCovers(covers);
+        toast.success(data.message || 'সকল কভার ইমেজ সফলভাবে সংরক্ষিত হয়েছে!', {
+          id: saveToastId,
+          duration: 4000,
+        });
+        setMsg({ text: 'কুইজ কার্ডের কভার ইমেজ সফলভাবে সংরক্ষণ ও আপডেট করা হয়েছে!', type: 'success' });
+      } else {
+        toast.error(data.error || 'কভার ইমেজ সংরক্ষণ ব্যর্থ হয়েছে।', { id: saveToastId });
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'নেটওয়ার্কে সমস্যা হয়েছে।', { id: saveToastId });
+    } finally {
+      setIsSavingCovers(false);
+    }
+  };
+
   // Load questions whenever category, class, or subject changes
   useEffect(() => {
     loadCurrentQuestions();
