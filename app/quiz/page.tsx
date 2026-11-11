@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -69,6 +69,16 @@ export default function QuizPage() {
   const [selectedClass, setSelectedClass] = useState<number>(6);
   const [selectedGroup, setSelectedGroup] = useState<AcademicGroup>('science');
   const [selectedSubject, setSelectedSubject] = useState<string>('বাংলা ১ম পত্র');
+
+  const currentSubjects = useMemo(() => {
+    try {
+      if (typeof getSubjectsForClassAndGroup === 'function') {
+        const list = getSubjectsForClassAndGroup(selectedClass, selectedGroup);
+        if (Array.isArray(list) && list.length > 0) return list;
+      }
+    } catch {}
+    return [];
+  }, [selectedClass, selectedGroup]);
 
   // Active Quiz State
   const [isTestActive, setIsTestActive] = useState<boolean>(false);
@@ -947,7 +957,7 @@ export default function QuizPage() {
 
         {/* Subjects Cards Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5">
-          {getSubjectsForClassAndGroup(selectedClass, selectedGroup).map((sub) => (
+          {currentSubjects.map((sub) => (
             <div
               key={sub.name}
               className="bg-white rounded-2xl p-4 border border-slate-200/90 hover:border-[#C8102E]/40 shadow-xs hover:shadow-md transition text-center space-y-2.5 group flex flex-col justify-between"
