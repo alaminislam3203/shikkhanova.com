@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,37 +7,41 @@
 /* ==========================================================================
    Bangla Digits Font Fix (০ ১ ২ ৩ ৪ ৫ ৬ ৭ ৮ ৯)
    Fixes the notorious Hind Siliguri issue where Bengali numeral '১' is drawn
-   with an open teardrop/hook that is unreadable or looks like a comma/quote.
-   Using unicode-range U+09E6-U+09EF ensures ONLY Bengali digits use this font,
-   while all Bengali letters and words remain in beautiful Hind Siliguri.
+   with an open teardrop/hook that looks like a comma/apostrophe.
+   
+   Using unicode-range U+09E6-U+09EF targets ONLY Bengali digits (০-৯) with
+   Noto Sans Bengali / Kalpurush / SolaimanLipi (which render '১' with a crisp,
+   standard circular loop), while all Bengali words, sentences, headings and labels
+   remain in beautiful Hind Siliguri.
+   
+   NOTE: Windows system font "Nirmala UI" is deliberately EXCLUDED because Nirmala
+   also draws '১' with an open hook/teardrop.
    ========================================================================== */
 @font-face {
   font-family: 'BanglaNumberFix';
-  src: local('Nirmala UI Bold'),
-       local('Nirmala UI Semibold'),
+  src: url('https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-bengali@5.1.0/files/noto-sans-bengali-bengali-700-normal.woff2') format('woff2'),
+       url('https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-bengali@5.1.0/files/noto-sans-bengali-700-normal.woff2') format('woff2'),
        local('SolaimanLipi Bold'),
        local('SolaimanLipi'),
        local('Kalpurush'),
        local('Noto Sans Bengali Bold'),
-       local('Noto Sans Bengali'),
-       local('Kohinoor Bangla Bold'),
-       local('Kohinoor Bangla'),
-       local('Vrinda');
+       local('Noto Sans Bengali');
   font-weight: 600 900;
   font-style: normal;
+  font-display: swap;
   unicode-range: U+09E6-U+09EF;
 }
 
 @font-face {
   font-family: 'BanglaNumberFix';
-  src: local('Nirmala UI'),
+  src: url('https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-bengali@5.1.0/files/noto-sans-bengali-bengali-400-normal.woff2') format('woff2'),
+       url('https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-bengali@5.1.0/files/noto-sans-bengali-400-normal.woff2') format('woff2'),
        local('SolaimanLipi'),
        local('Kalpurush'),
-       local('Noto Sans Bengali'),
-       local('Kohinoor Bangla'),
-       local('Vrinda');
+       local('Noto Sans Bengali');
   font-weight: 100 500;
   font-style: normal;
+  font-display: swap;
   unicode-range: U+09E6-U+09EF;
 }
 

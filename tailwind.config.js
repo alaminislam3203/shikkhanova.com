@@ -71,6 +71,7 @@ module.exports = {
           'sans-serif',
         ],
         mono: [
+          'BanglaNumberFix',
           'var(--font-exo2)',
           'monospace',
         ],

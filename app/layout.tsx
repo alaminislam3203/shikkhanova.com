@@ -124,6 +124,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="bn" className={`scroll-smooth ${exo2.variable} ${hindSiliguri.variable}`}>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet"
+        />
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-bengali@5.1.0/index.css"
+        />
+      </head>
       <body className="min-h-screen bg-[#F4F6F9] text-[#1E293B] font-sans antialiased selection:bg-[#C8102E] selection:text-white">
         <AuthProvider>
           <Toaster
