@@ -9,6 +9,71 @@ interface MarksheetViewProps {
   result: MarksheetData;
 }
 
+// Convert Bengali or raw student name to clean English for premium international transcript filename
+function toEnglishStudentName(name: string): string {
+  if (!name) return 'Student';
+  if (/[a-zA-Z]/.test(name)) {
+    return name.replace(/[^a-zA-Z0-9\s.-]/g, '').trim();
+  }
+
+  const commonMap: Record<string, string> = {
+    'হাসিবুর রহমান': 'Hasibur Rahman',
+    'মো: হাসিবুর রহমান': 'Md Hasibur Rahman',
+    'ফারজানা আক্তার মীম': 'Farzana Akter Mim',
+    'ফারজানা আক্তার': 'Farzana Akter',
+    'তানভীর আহমেদ': 'Tanvir Ahmed',
+    'রাকিবুল হাসান': 'Rakibul Hasan',
+    'মেহেদী হাসান শুভ': 'Mehedi Hasan Shuvo',
+    'মেহেদী হাসান': 'Mehedi Hasan',
+    'সুমাইয়া জাহান': 'Sumaiya Jahan',
+    'আরিয়ান ইসলাম': 'Ariyan Islam',
+    'রিয়া চৌধুরী': 'Riya Chowdhury',
+    'সামিহা রহমান': 'Samiha Rahman',
+    'নাফিসা আহমেদ': 'Nafisa Ahmed',
+    'তানিয়া সুলতানা': 'Tania Sultana',
+    'কাজী আনিকা': 'Kazi Anika',
+    'রফিক হাসান': 'Rafiq Hasan',
+    'মায়া আক্তার': 'Maya Akhtar',
+    'নাদিয়া সুলতানা': 'Nadia Sultana',
+    'আইসিকুর রহমান': 'Aisikur Rahman',
+    'মো: মনসুর': 'Md Monsur',
+    'মনসুর আলী': 'Monsur Ali',
+  };
+
+  if (commonMap[name.trim()]) return commonMap[name.trim()];
+
+  // Phonetic transliteration map
+  const charMap: Record<string, string> = {
+    'অ': 'A', 'আ': 'A', 'ই': 'I', 'ঈ': 'I', 'উ': 'U', 'ঊ': 'U', 'ঋ': 'R', 'এ': 'E', 'ঐ': 'Oi', 'ও': 'O', 'ঔ': 'Ou',
+    'ক': 'k', 'খ': 'kh', 'গ': 'g', 'ঘ': 'gh', 'ঙ': 'ng',
+    'চ': 'ch', 'ছ': 'chh', 'জ': 'j', 'ঝ': 'jh', 'ঞ': 'n',
+    'ট': 't', 'ঠ': 'th', 'ড': 'd', 'ঢ': 'dh', 'ণ': 'n',
+    'ত': 't', 'থ': 'th', 'দ': 'd', 'ধ': 'dh', 'ন': 'n',
+    'প': 'p', 'ফ': 'f', 'ব': 'b', 'ভ': 'bh', 'ম': 'm',
+    'য': 'y', 'র': 'r', 'ল': 'l', 'শ': 'sh', 'ষ': 'sh', 'স': 's', 'হ': 'h',
+    'ড়': 'r', 'ঢ়': 'rh', 'য়': 'y', 'ৎ': 't', 'ং': 'ng', 'ঃ': '', 'ঁ': '',
+    'া': 'a', 'ি': 'i', 'ী': 'ee', 'ু': 'u', 'ূ': 'oo', 'ৃ': 'ri', 'ে': 'e', 'ৈ': 'oi', 'ো': 'o', 'ৌ': 'ou', '্': '',
+  };
+
+  let transliterated = '';
+  for (let i = 0; i < name.length; i++) {
+    const ch = name[i];
+    if (charMap[ch] !== undefined) {
+      transliterated += charMap[ch];
+    } else if (/[\s.-]/.test(ch)) {
+      transliterated += ch;
+    }
+  }
+
+  const clean = transliterated
+    .split(/\s+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ')
+    .trim();
+
+  return clean || name;
+}
+
 export default function MarksheetView({ result }: MarksheetViewProps) {
   const isPassed = result.grade !== 'F' && result.gpa > 0;
 
@@ -19,6 +84,24 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
   const [scale, setScale] = useState<number>(1);
   const [scaledHeight, setScaledHeight] = useState<number | undefined>(undefined);
   const [isPrinting, setIsPrinting] = useState<boolean>(false);
+  const originalTitleRef = useRef<string>('');
+
+  // Premium English Dynamic Title for Marksheet PDF / Print filename
+  const studentEnglishName = toEnglishStudentName(result.studentName);
+  const dynamicPdfTitle = `ShikkhaNova - Academic Transcript - ${studentEnglishName} - Class ${result.classGrade} (Roll ${result.rollNumber})`;
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      originalTitleRef.current = document.title;
+      document.title = dynamicPdfTitle;
+    }
+
+    return () => {
+      if (typeof document !== 'undefined' && originalTitleRef.current) {
+        document.title = originalTitleRef.current;
+      }
+    };
+  }, [dynamicPdfTitle]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -46,8 +129,15 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
       observer.observe(wrapperRef.current);
     }
 
-    const onBefore = () => setIsPrinting(true);
-    const onAfter = () => setIsPrinting(false);
+    const onBefore = () => {
+      if (typeof document !== 'undefined') {
+        document.title = dynamicPdfTitle;
+      }
+      setIsPrinting(true);
+    };
+    const onAfter = () => {
+      setIsPrinting(false);
+    };
     window.addEventListener('beforeprint', onBefore);
     window.addEventListener('afterprint', onAfter);
 
@@ -57,11 +147,12 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
       window.removeEventListener('afterprint', onAfter);
       if (observer) observer.disconnect();
     };
-  }, [result]);
+  }, [result, dynamicPdfTitle]);
 
   const handlePrint = () => {
     if (typeof document !== 'undefined') {
       document.body.click();
+      document.title = dynamicPdfTitle;
     }
     setIsPrinting(true);
     setTimeout(() => {
