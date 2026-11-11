@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import {
@@ -20,6 +20,9 @@ import {
   DEFAULT_QUIZ_PRICES,
   getStoredQuizPrices,
   saveStoredQuizPrices,
+  AcademicGroup,
+  QuizSubjectItem,
+  getSubjectsForClassAndGroup,
 } from '@/lib/defaultQuizData';
 import {
   FaPlus,
@@ -45,7 +48,19 @@ type QuizCategory = 'free' | 'paid' | 'subject';
 export default function AdminQuizManager() {
   const [category, setCategory] = useState<QuizCategory>('free');
   const [selectedClass, setSelectedClass] = useState<number>(6);
+  const [selectedGroup, setSelectedGroup] = useState<AcademicGroup>('science');
   const [selectedSubject, setSelectedSubject] = useState<string>('বাংলা ১ম পত্র');
+
+  const availableSubjects = useMemo(() => {
+    return getSubjectsForClassAndGroup(selectedClass, selectedGroup);
+  }, [selectedClass, selectedGroup]);
+
+  // Keep selectedSubject in sync with available subjects
+  useEffect(() => {
+    if (availableSubjects.length > 0 && !availableSubjects.some((s) => s.name === selectedSubject)) {
+      setSelectedSubject(availableSubjects[0].name);
+    }
+  }, [availableSubjects, selectedSubject]);
 
   const [activeTab, setActiveTab] = useState<'list' | 'add' | 'bulk' | 'prices'>('list');
   const [questions, setQuestions] = useState<RawQuestion[]>([]);
@@ -426,7 +441,7 @@ export default function AdminQuizManager() {
                 onChange={(e) => setSelectedSubject(e.target.value)}
                 className="w-full bg-slate-50 border border-slate-300 focus:border-[#C8102E] rounded-2xl px-3.5 py-2.5 text-xs text-slate-800 font-bold outline-none"
               >
-                {SUBJECT_LIST.map((s) => (
+                {availableSubjects.map((s) => (
                   <option key={s.name} value={s.name}>
                     {s.icon} {s.name}
                   </option>
@@ -441,6 +456,77 @@ export default function AdminQuizManager() {
               </div>
             )}
           </div>
+
+          {/* Academic Group Selector for Class 9-10 (Science / Humanities / Commerce / Compulsory) */}
+          {category === 'subject' && (selectedClass === 9 || selectedClass === 10) && (
+            <div className="col-span-1 md:col-span-3 pt-3 border-t border-slate-200/80">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-2">
+                <span className="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                  <span>🎓 {toBengaliClass(selectedClass)} শ্রেণির বিভাগ নির্বাচন:</span>
+                  <span className="text-[10px] bg-red-50 text-[#C8102E] font-bold px-2 py-0.5 rounded-full border border-red-200">
+                    বিভাগভিত্তিক MCQ ম্যানেজমেন্ট
+                  </span>
+                </span>
+                <span className="text-[10px] text-slate-500 font-semibold">
+                  নির্বাচিত বিভাগের বিষয়গুলো পাশের ড্রপডাউনে স্বয়ংক্রিয়ভাবে লোড হবে
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedGroup('science')}
+                  className={`p-2.5 rounded-xl text-xs font-black transition border flex items-center justify-center gap-2 ${
+                    selectedGroup === 'science'
+                      ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                      : 'bg-white text-slate-700 hover:bg-blue-50 hover:border-blue-200 border-slate-200'
+                  }`}
+                >
+                  <span className="text-base">⚛️</span>
+                  <span>বিজ্ঞান বিভাগ</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedGroup('humanities')}
+                  className={`p-2.5 rounded-xl text-xs font-black transition border flex items-center justify-center gap-2 ${
+                    selectedGroup === 'humanities'
+                      ? 'bg-amber-600 text-white border-amber-600 shadow-sm'
+                      : 'bg-white text-slate-700 hover:bg-amber-50 hover:border-amber-200 border-slate-200'
+                  }`}
+                >
+                  <span className="text-base">📜</span>
+                  <span>মানবিক বিভাগ</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedGroup('commerce')}
+                  className={`p-2.5 rounded-xl text-xs font-black transition border flex items-center justify-center gap-2 ${
+                    selectedGroup === 'commerce'
+                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                      : 'bg-white text-slate-700 hover:bg-emerald-50 hover:border-emerald-200 border-slate-200'
+                  }`}
+                >
+                  <span className="text-base">💼</span>
+                  <span>ব্যবসায় শিক্ষা</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedGroup('compulsory')}
+                  className={`p-2.5 rounded-xl text-xs font-black transition border flex items-center justify-center gap-2 ${
+                    selectedGroup === 'compulsory'
+                      ? 'bg-[#0A1E3C] text-white border-[#0A1E3C] shadow-sm'
+                      : 'bg-white text-slate-700 hover:bg-slate-100 hover:border-slate-300 border-slate-200'
+                  }`}
+                >
+                  <span className="text-base">🌐</span>
+                  <span>আবশ্যিক বিষয়</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

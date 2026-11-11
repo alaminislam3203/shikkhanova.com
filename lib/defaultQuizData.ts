@@ -409,8 +409,51 @@ export const PAID_CLASS_QUESTIONS: Record<number, RawQuestion[]> = {
   ],
 };
 
-// 📚 Subject-wise Questions Data
-export const SUBJECT_LIST = [
+// 📚 Subject-wise Questions Data & Group Structures
+export type AcademicGroup = 'science' | 'humanities' | 'commerce' | 'compulsory';
+
+export interface QuizSubjectItem {
+  name: string;
+  icon: string;
+  color: string;
+  group?: AcademicGroup;
+}
+
+export const COMPULSORY_SUBJECTS_9_10: QuizSubjectItem[] = [
+  { name: 'বাংলা ১ম পত্র', icon: '📖', color: 'from-rose-500 to-red-600', group: 'compulsory' },
+  { name: 'বাংলা ২য় পত্র', icon: '📝', color: 'from-amber-500 to-rose-600', group: 'compulsory' },
+  { name: 'ইংরেজি ১ম পত্র', icon: '🔤', color: 'from-blue-500 to-indigo-600', group: 'compulsory' },
+  { name: 'ইংরেজি ২য় পত্র', icon: '✍️', color: 'from-cyan-500 to-sky-600', group: 'compulsory' },
+  { name: 'সাধারণ গণিত', icon: '➗', color: 'from-emerald-500 to-teal-600', group: 'compulsory' },
+  { name: 'তথ্য ও যোগাযোগ প্রযুক্তি (ICT)', icon: '💻', color: 'from-cyan-500 to-blue-600', group: 'compulsory' },
+  { name: 'ইসলাম ও নৈতিক শিক্ষা', icon: '🕌', color: 'from-emerald-600 to-green-700', group: 'compulsory' },
+  { name: 'হিন্দুধর্ম ও নৈতিক শিক্ষা', icon: '🛕', color: 'from-amber-600 to-orange-700', group: 'compulsory' },
+];
+
+export const SCIENCE_SUBJECTS_9_10: QuizSubjectItem[] = [
+  { name: 'পদার্থবিজ্ঞান', icon: '⚛️', color: 'from-sky-500 to-blue-700', group: 'science' },
+  { name: 'রসায়ন', icon: '🧪', color: 'from-emerald-500 to-teal-700', group: 'science' },
+  { name: 'জীববিজ্ঞান', icon: '🧬', color: 'from-green-500 to-emerald-700', group: 'science' },
+  { name: 'উচ্চতর গণিত', icon: '📐', color: 'from-indigo-500 to-purple-700', group: 'science' },
+  { name: 'বাংলাদেশ ও বিশ্বপরিচয়', icon: '🌍', color: 'from-amber-500 to-orange-600', group: 'science' },
+];
+
+export const HUMANITIES_SUBJECTS_9_10: QuizSubjectItem[] = [
+  { name: 'বাংলাদেশের ইতিহাস ও বিশ্বসভ্যতা', icon: '🏛️', color: 'from-amber-600 to-yellow-800', group: 'humanities' },
+  { name: 'ভূগোল ও পরিবেশ', icon: '🗺️', color: 'from-teal-500 to-emerald-700', group: 'humanities' },
+  { name: 'পৌরনীতি ও নাগরিকতা', icon: '⚖️', color: 'from-rose-500 to-red-700', group: 'humanities' },
+  { name: 'অর্থনীতি', icon: '📈', color: 'from-blue-500 to-cyan-700', group: 'humanities' },
+  { name: 'সাধারণ বিজ্ঞান', icon: '🔬', color: 'from-purple-500 to-violet-700', group: 'humanities' },
+];
+
+export const COMMERCE_SUBJECTS_9_10: QuizSubjectItem[] = [
+  { name: 'হিসাববিজ্ঞান', icon: '📊', color: 'from-emerald-600 to-teal-800', group: 'commerce' },
+  { name: 'ব্যবসায় উদ্যোগ', icon: '🏢', color: 'from-indigo-600 to-blue-800', group: 'commerce' },
+  { name: 'ফিন্যান্স ও ব্যাংকিং', icon: '🏦', color: 'from-cyan-600 to-sky-800', group: 'commerce' },
+  { name: 'সাধারণ বিজ্ঞান', icon: '🔬', color: 'from-purple-500 to-violet-700', group: 'commerce' },
+];
+
+export const JUNIOR_SUBJECTS_5_8: QuizSubjectItem[] = [
   { name: 'বাংলা ১ম পত্র', icon: '📖', color: 'from-rose-500 to-red-600' },
   { name: 'বাংলা ২য় পত্র', icon: '📝', color: 'from-amber-500 to-rose-600' },
   { name: 'ইংরেজি ১ম পত্র', icon: '🔤', color: 'from-blue-500 to-indigo-600' },
@@ -419,7 +462,58 @@ export const SUBJECT_LIST = [
   { name: 'বিজ্ঞান', icon: '🔬', color: 'from-purple-500 to-violet-600' },
   { name: 'বাংলাদেশ ও বিশ্বপরিচয়', icon: '🌍', color: 'from-amber-500 to-orange-600' },
   { name: 'ICT', icon: '💻', color: 'from-cyan-500 to-blue-600' },
+  { name: 'ইসলাম ও নৈতিক শিক্ষা', icon: '🕌', color: 'from-emerald-600 to-green-700' },
+  { name: 'হিন্দুধর্ম ও নৈতিক শিক্ষা', icon: '🛕', color: 'from-amber-600 to-orange-700' },
 ];
+
+export function getSubjectsForClassAndGroup(
+  classGrade: number,
+  group?: AcademicGroup | 'all'
+): QuizSubjectItem[] {
+  if (classGrade <= 8) {
+    if (classGrade === 5) {
+      return [
+        { name: 'বাংলা', icon: '📖', color: 'from-rose-500 to-red-600' },
+        { name: 'ইংরেজি', icon: '🔤', color: 'from-blue-500 to-indigo-600' },
+        { name: 'প্রাথমিক গণিত', icon: '➗', color: 'from-emerald-500 to-teal-600' },
+        { name: 'প্রাথমিক বিজ্ঞান', icon: '🔬', color: 'from-purple-500 to-violet-600' },
+        { name: 'বাংলাদেশ ও বিশ্বপরিচয়', icon: '🌍', color: 'from-amber-500 to-orange-600' },
+        { name: 'ইসলাম ও নৈতিক শিক্ষা', icon: '🕌', color: 'from-emerald-600 to-green-700' },
+        { name: 'হিন্দুধর্ম ও নৈতিক শিক্ষা', icon: '🛕', color: 'from-amber-600 to-orange-700' },
+      ];
+    }
+    return JUNIOR_SUBJECTS_5_8;
+  }
+
+  // Class 9-10
+  if (group === 'science') return SCIENCE_SUBJECTS_9_10;
+  if (group === 'humanities') return HUMANITIES_SUBJECTS_9_10;
+  if (group === 'commerce') return COMMERCE_SUBJECTS_9_10;
+  if (group === 'compulsory') return COMPULSORY_SUBJECTS_9_10;
+
+  // If 'all' or undefined, return science + humanities + commerce + compulsory combined without duplicates
+  const allSubs: QuizSubjectItem[] = [
+    ...SCIENCE_SUBJECTS_9_10,
+    ...HUMANITIES_SUBJECTS_9_10,
+    ...COMMERCE_SUBJECTS_9_10,
+    ...COMPULSORY_SUBJECTS_9_10,
+  ];
+
+  const seen = new Set<string>();
+  return allSubs.filter((item) => {
+    if (seen.has(item.name)) return false;
+    seen.add(item.name);
+    return true;
+  });
+}
+
+// Fallback legacy SUBJECT_LIST
+export const SUBJECT_LIST = [
+  ...JUNIOR_SUBJECTS_5_8,
+  ...SCIENCE_SUBJECTS_9_10,
+  ...HUMANITIES_SUBJECTS_9_10,
+  ...COMMERCE_SUBJECTS_9_10,
+].filter((v, i, a) => a.findIndex((t) => t.name === v.name) === i);
 
 export const SUBJECT_QUESTIONS: Record<string, RawQuestion[]> = {
   'বাংলা ১ম পত্র': [
@@ -750,6 +844,355 @@ export const SUBJECT_QUESTIONS: Record<string, RawQuestion[]> = {
       ],
       ans: 0,
       explanation: 'HTML = Hyper Text Markup Language।',
+    },
+  ],
+  'তথ্য ও যোগাযোগ প্রযুক্তি (ICT)': [
+    {
+      q: 'কম্পিউটারের মস্তিষ্ক কাকে বলা হয়?',
+      options: ['Monitor', 'RAM', 'CPU', 'Hard Disk'],
+      ans: 2,
+      explanation: 'CPU (Central Processing Unit) কম্পিউটারের মস্তিষ্ক।',
+    },
+    {
+      q: 'কোনটি ইনপুট ডিভাইস?',
+      options: ['Monitor', 'Printer', 'Keyboard', 'Speaker'],
+      ans: 2,
+      explanation: 'কিবোর্ড একটি ইনপুট ডিভাইস।',
+    },
+    {
+      q: 'ROM-এর পূর্ণরূপ কী?',
+      options: ['Read Only Memory', 'Random Only Memory', 'Rapid Output Memory', 'Read Output Mode'],
+      ans: 0,
+      explanation: 'ROM = Read Only Memory।',
+    },
+    {
+      q: 'IP Address-এর পূর্ণরূপ কী?',
+      options: ['Internal Protocol', 'Internet Protocol', 'Instant Packet', 'Inter Process'],
+      ans: 1,
+      explanation: 'IP = Internet Protocol।',
+    },
+    {
+      q: 'HTML-এর পূর্ণরূপ কী?',
+      options: [
+        'Hyper Text Markup Language',
+        'High Tech Modern Language',
+        'Hyperlink Text Management List',
+        'Home Tool Markup Line',
+      ],
+      ans: 0,
+      explanation: 'HTML = Hyper Text Markup Language।',
+    },
+  ],
+  'সাধারণ গণিত': [
+    {
+      q: 'সকল বাস্তব সংখ্যার সেটকে কী দিয়ে প্রকাশ করা হয়?',
+      options: ['N', 'Z', 'Q', 'R'],
+      ans: 3,
+      explanation: 'বাস্তব সংখ্যার সেটকে R (Real Number) প্রতীক দিয়ে প্রকাশ করা হয়।',
+    },
+    {
+      q: 'সমকোণী ত্রিভুজের বৃহত্তম বাহুকে কী বলে?',
+      options: ['ভূমি', 'লম্ব', 'অতিভুজ', 'উচ্চতা'],
+      ans: 2,
+      explanation: 'সমকোণী ত্রিভুজের সমকোণের বিপরীত বাহু তথা বৃহত্তম বাহুকে অতিভুজ বলে।',
+    },
+    {
+      q: '(a + b)² - (a - b)² = কত?',
+      options: ['2(a² + b²)', '4ab', '2ab', 'a² - b²'],
+      ans: 1,
+      explanation: 'বীজগণিতের সূত্রানুযায়ী (a + b)² - (a - b)² = 4ab।',
+    },
+    {
+      q: 'বৃত্তের পরিধি ও ব্যাসের অনুপাতকে কী বলে?',
+      options: ['পাই (π)', 'থিটা (θ)', 'আলফা (α)', 'বিটা (β)'],
+      ans: 0,
+      explanation: 'বৃত্তের পরিধি ও ব্যাসের অনুপাত একটি ধ্রুবক সংখ্যা, যাকে π (পাই) বলা হয়।',
+    },
+  ],
+  পদার্থবিজ্ঞান: [
+    {
+      q: 'কাজের আন্তর্জাতিক একক (SI Unit) কোনটি?',
+      options: ['নিউটন', 'প্যাসকেল', 'জুল (Joule)', 'ওয়াট'],
+      ans: 2,
+      explanation: 'কাজের এসআই একক হলো জুল (Joule)। বল ও সরণের গুণফল হলো কাজ।',
+    },
+    {
+      q: 'শূন্য মাধ্যমে আলোর বেগ প্রতি সেকেন্ডে প্রায় কত?',
+      options: ['৩ × ১০⁶ মিটার', '৩ × ১০⁸ মিটার', '৩ × ১০¹⁰ মিটার', '৩ × ১০⁴ মিটার'],
+      ans: 1,
+      explanation: 'শূন্য মাধ্যমে আলোর গতিবেগ সেকেন্ডে প্রায় ৩ × ১০⁸ মিটার (২৯৯,৭৯২,৪৫৮ মি./সে.)।',
+    },
+    {
+      q: 'নিউটনের গতির ১ম সূত্র থেকে কোন বিষয়ের ধারণা পাওয়া যায়?',
+      options: ['ত্বরণ', 'বল ও জড়তা', 'ভরবেগ', 'শক্তি'],
+      ans: 1,
+      explanation: 'নিউটনের ১ম সূত্র জড়তা এবং বলের গুণগত সংজ্ঞা প্রদান করে।',
+    },
+    {
+      q: 'শব্দ তরঙ্গের প্রকারভেদ কোনটি?',
+      options: ['অনুদৈর্ঘ্য তরঙ্গ', 'অনূপ্রস্থ তরঙ্গ', 'তড়িৎচৌম্বকীয় তরঙ্গ', 'আলোক তরঙ্গ'],
+      ans: 0,
+      explanation: 'শব্দ হলো একটি যান্ত্রিক অনুদৈর্ঘ্য (Longitudinal) তরঙ্গ যা মাধ্যমের সংকোচন ও প্রসারণের মাধ্যমে সঞ্চালিত হয়।',
+    },
+  ],
+  রসায়ন: [
+    {
+      q: 'আধুনিক পর্যায় সারণির জনক কে?',
+      options: ['দিমিত্রি মেন্দেলিফ', 'জন ডাল্টন', 'রাদারফোর্ড', 'হেনরি মোসলে'],
+      ans: 0,
+      explanation: '১৮৬৯ সালে রাশিয়ান বিজ্ঞানী দিমিত্রি মেন্দেলিফ প্রথম সফল পর্যায় সারণি তৈরি করেন।',
+    },
+    {
+      q: 'পানির রাসায়নিক সংকেত কোনটি?',
+      options: ['H₂O', 'H₂O₂', 'HO', 'H₃O'],
+      ans: 0,
+      explanation: 'দুটি হাইড্রোজেন ও একটি অক্সিজেন পরমাণু যুক্ত হয়ে পানি (H₂O) গঠিত হয়।',
+    },
+    {
+      q: 'সোডিয়ামের ল্যাটিন নাম কী?',
+      options: ['Kalium', 'Natrium', 'Ferrum', 'Cuprum'],
+      ans: 1,
+      explanation: 'সোডিয়ামের ল্যাটিন নাম হলো Natrium (Na)।',
+    },
+    {
+      q: 'ক্ষার দ্রবণে লাল লিটমাস পেপারের বর্ণ কেমন হয়?',
+      options: ['লাল', 'হলুদ', 'নীল', 'সবুজ'],
+      ans: 2,
+      explanation: 'ক্ষারীয় মাধ্যমে লাল লিটমাস পেপারের বর্ণ পরিবর্তিত হয়ে নীল রঙ ধারণ করে।',
+    },
+  ],
+  জীববিজ্ঞান: [
+    {
+      q: 'জীবদেহের গঠন ও কাজের একককে কী বলে?',
+      options: ['টিস্যু', 'কোষ (Cell)', 'অঙ্গ', 'তন্ত্র'],
+      ans: 1,
+      explanation: 'সকল জীবের শারীরিক গঠন ও জৈবিক ক্রিয়ার মৌলিক একক হলো কোষ।',
+    },
+    {
+      q: 'কোষের ‘পাওয়ার হাউস’ বা শক্তিকেন্দ্র কোনটি?',
+      options: ['রাইবোসোম', 'লাইসোসোম', 'মাইটোকন্ড্রিয়া', 'গলজি বডি'],
+      ans: 2,
+      explanation: 'শ্বসন প্রক্রিয়ায় শক্তি উৎপাদিত ও সংরক্ষিত হওয়ায় মাইটোকন্ড্রিয়াকে কোষের পাওয়ার হাউস বলা হয়।',
+    },
+    {
+      q: 'রক্তের কোন উপাদান অক্সিজেন পরিবহনে সহায়তা করে?',
+      options: ['শ্বেত রক্তকণিকা', 'অণুচক্রিকা', 'হিমোগ্লোবিন', 'রক্তরস'],
+      ans: 2,
+      explanation: 'লোহিত রক্তকণিকায় থাকা হিমোগ্লোবিন অক্সিজেনের সাথে যুক্ত হয়ে অক্সিহিমোগ্লোবিনরূপে সারা দেহে অক্সিজেন পৌঁছে দেয়।',
+    },
+    {
+      q: 'উদ্ভিদের সালোকসংশ্লেষণ প্রক্রিয়ায় কোন গ্যাস নির্গত হয়?',
+      options: ['কার্বন ডাই-অক্সাইড', 'অক্সিজেন (O₂)', 'নাইট্রোজেন', 'মিথেন'],
+      ans: 1,
+      explanation: 'সালোকসংশ্লেষণের আলোক পর্যায়ে পানি ভেঙে উপজাত হিসেবে অক্সিজেন নির্গত হয়।',
+    },
+  ],
+  'উচ্চতর গণিত': [
+    {
+      q: 'স্থানাঙ্ক জ্যামিতিতে মূলবিন্দুর স্থানাঙ্ক কত?',
+      options: ['(১, ১)', '(০, ০)', '(১, ০)', '(০, ১)'],
+      ans: 1,
+      explanation: 'কার্তেসীয় স্থানাঙ্ক ব্যবস্থায় উভয় অক্ষের ছেদবিন্দু তথা মূলবিন্দুর স্থানাঙ্ক (০, ০)।',
+    },
+    {
+      q: 'sin²θ + cos²θ = কত?',
+      options: ['০', '১', '-১', '২'],
+      ans: 1,
+      explanation: 'ত্রিকোণমিতিক মৌলিক অভেদ অনুযায়ী যে কোনো কোণ θ-এর জন্য sin²θ + cos²θ = ১।',
+    },
+    {
+      q: 'দ্বিপদী উপপাদ্য কোন গণিতবিদ আবিষ্কার করেন?',
+      options: ['স্যার আইজ্যাক নিউটন', 'ইউক্লিড', 'পীথাগোরাস', 'গাউস'],
+      ans: 0,
+      explanation: 'যেকোনো ঘাতের জন্য দ্বিপদী উপপাদ্যের সাধারণীকরণ আবিষ্কার করেন আইজ্যাক নিউটন।',
+    },
+    {
+      q: 'কোনো ভেক্টরের মান শূন্য হলে তাকে কী ভেক্টর বলে?',
+      options: ['একক ভেক্টর', 'নাল বা শূন্য ভেক্টর', 'বিপ্রতীপ ভেক্টর', 'স্বাধীন ভেক্টর'],
+      ans: 1,
+      explanation: 'যে ভেক্টরের মান শূন্য এবং যার সুনির্দিষ্ট দিক নেই তাকে শূন্য বা নাল ভেক্টর বলে।',
+    },
+  ],
+  হিসাববিজ্ঞান: [
+    {
+      q: 'হিসাববিজ্ঞানের জনক কে?',
+      options: ['লুকা প্যাসিওলি', 'অ্যাডাম স্মিথ', 'এফ ডব্লিউ টেলর', 'ফিলিপ কোটলার'],
+      ans: 0,
+      explanation: '১৪৯৪ সালে ইতালির গণিতবিদ লুকা প্যাসিওলি দুতরফা দাখিলা পদ্ধতির ওপর প্রথম বই রচনা করেন।',
+    },
+    {
+      q: 'মৌলিক হিসাব সমীকরণটি কোনটি?',
+      options: ['A = L - E', 'A = L + E', 'L = A + E', 'E = A + L'],
+      ans: 1,
+      explanation: 'মৌলিক হিসাব সমীকরণ: সম্পদ (Assets) = দায় (Liabilities) + মালিকানাস্বত্ব (Equity)।',
+    },
+    {
+      q: 'ব্যবসায়ের প্রাথমিক বই বা আদি বই কোনটি?',
+      options: ['খতিয়ান', 'জাবেদা (Journal)', 'রেওয়ামিল', 'নগদান বই'],
+      ans: 1,
+      explanation: 'লেনদেন সংঘটিত হওয়ার পর তারিখের ক্রমানুসারে ডেবিট-ক্রেডিট বিশ্লেষণ করে সর্বপ্রথম জাবেদায় লেখা হয়।',
+    },
+    {
+      q: 'কোনটি চলতি সম্পদ?',
+      options: ['যন্ত্রপাতি', 'আসবাবপত্র', 'দেনাদার বা প্রাপ্য হিসাব', 'দালানকোঠা'],
+      ans: 2,
+      explanation: 'যে সম্পদ এক বছরের মধ্যে সহজে নগদে রূপান্তর করা যায় (যেমন: দেনাদার, নগদ তহবিল) তা চলতি সম্পদ।',
+    },
+  ],
+  'ব্যবসায় উদ্যোগ': [
+    {
+      q: 'ব্যবসায় উদ্যোগের মূল ভিত্তি কী?',
+      options: ['ঝুঁকি গ্রহণ ও উদ্ভাবন', 'শুধুমাত্র ঋণ গ্রহণ', 'বিজ্ঞাপন প্রচার', 'কম পুঁজিতে ব্যবসা'],
+      ans: 0,
+      explanation: 'উদ্ভাবনী ধারণা ও মুনাফা অর্জনের উদ্দেশ্যে ঝুঁকি গ্রহণই হলো ব্যবসায় উদ্যোগের মূল উপাদান।',
+    },
+    {
+      q: 'একমালিকানা ব্যবসায়ের সবচেয়ে বড় সুবিধা কোনটি?',
+      options: ['সীমাবদ্ধ দায়', 'সহজ গঠন ও দ্রুত সিদ্ধান্ত', 'অসীম স্থায়িত্ব', 'অধিক মূলধন'],
+      ans: 1,
+      explanation: 'একমালিকানা ব্যবসায় আইনগত ঝামেলা ছাড়াই সহজে গঠন করা যায় এবং মালিক একাই দ্রুত সিদ্ধান্ত নিতে পারেন।',
+    },
+    {
+      q: 'অংশীদারি ব্যবসায়ের মূল ভিত্তি কোনটি?',
+      options: ['নিবন্ধন', 'চুক্তি', 'বিজ্ঞাপন', 'মূলধন'],
+      ans: 1,
+      explanation: 'চুক্তিই হলো অংশীদারি ব্যবসায়ের মূল ভিত্তি (The foundation of partnership is agreement)।',
+    },
+    {
+      q: 'SWOT বিশ্লেষণে ‘S’ দ্বারা কী বোঝায়?',
+      options: ['Strategy', 'Strength (শক্তি/সামর্থ্য)', 'Sales', 'Service'],
+      ans: 1,
+      explanation: 'SWOT = Strengths (শক্তি), Weaknesses (দুর্বলতা), Opportunities (সুযোগ), Threats (হুমকি)।',
+    },
+  ],
+  'ফিন্যান্স ও ব্যাংকিং': [
+    {
+      q: 'অর্থায়নের মূল উদ্দেশ্য কোনটি?',
+      options: ['বিক্রয় বৃদ্ধি', 'সম্পদ সর্বাধিকরণ', 'কর্মী নিয়োগ', 'বিজ্ঞাপন প্রদান'],
+      ans: 1,
+      explanation: 'আধুনিক অর্থায়নের চূড়ান্ত ও প্রধান লক্ষ্য হলো প্রতিষ্ঠানের সম্পদ সর্বাধিকরণ (Wealth Maximization)।',
+    },
+    {
+      q: 'বাংলাদেশের কেন্দ্রীয় ব্যাংকের নাম কী?',
+      options: ['সোনালী ব্যাংক', 'বাংলাদেশ ব্যাংক', 'জনতা ব্যাংক', 'অগ্রণী ব্যাংক'],
+      ans: 1,
+      explanation: 'বাংলাদেশ ব্যাংক হলো দেশের শীর্ষ আর্থিক প্রতিষ্ঠান ও কেন্দ্রীয় ব্যাংক।',
+    },
+    {
+      q: 'বাণিজ্যিক ব্যাংকের প্রধান আয়ের উৎস কোনটি?',
+      options: ['ঋণের সুদের ব্যবধান (Spread)', 'লকার ভাড়া', 'চেক বই বিক্রয়', 'কমিশন'],
+      ans: 0,
+      explanation: 'আমানতের বিপরীতে প্রদত্ত সুদ এবং ঋণের ওপর ধার্যকৃত সুদের পার্থক্যই হলো ব্যাংকের মূল মুনাফা।',
+    },
+  ],
+  'বাংলাদেশের ইতিহাস ও বিশ্বসভ্যতা': [
+    {
+      q: 'ঐতিহাসিক পলাশীর যুদ্ধ কত সালে সংঘটিত হয়েছিল?',
+      options: ['১৭৫৭ সালের ২৩ জুন', '১৭৬৪ সালের ২২ অক্টোবর', '১৭৬১ সালের ১৪ জানুয়ারি', '১৭৯৩ সালের ১ মে'],
+      ans: 0,
+      explanation: '১৭৫৭ সালের ২৩ জুন ভাগীরথী নদীর তীরে নবাব সিরাজউদ্দৌলা ও রবার্ট ক্লাইভের মধ্যে পলাশীর যুদ্ধ হয়।',
+    },
+    {
+      q: 'বঙ্গভঙ্গ কত সালে রদ বা বাতিল করা হয়?',
+      options: ['১৯০৫ সালে', '১৯০৬ সালে', '১৯১১ সালে', '১৯৪৭ সালে'],
+      ans: 2,
+      explanation: 'তীব্র স্বদেশী আন্দোলনের মুখে ব্রিটিশ সরকার ১৯১১ সালে বঙ্গভঙ্গ রদ ঘোষণা করে।',
+    },
+    {
+      q: 'বাঙালি জাতির মুক্তির সনদ ‘ছয় দফা’ কত সালে ঘোষিত হয়?',
+      options: ['১৯৫২', '১৯৬৬', '১৯৬৯', '১৯৭১'],
+      ans: 1,
+      explanation: '১৯৬৬ সালে বঙ্গবন্ধু শেখ মুজিবুর রহমান ঐতিহাসিক ছয় দফা কর্মসূচি ঘোষণা করেন।',
+    },
+  ],
+  'পৌরনীতি ও নাগরিকতা': [
+    {
+      q: '‘Civics’ শব্দটি কোন ল্যাটিন শব্দদ্বয় থেকে এসেছে?',
+      options: ['Civis ও Civitas', 'Civil ও City', 'Citizen ও State', 'Civilian ও Policy'],
+      ans: 0,
+      explanation: 'Civis (নাগরিক) এবং Civitas (নগররাষ্ট্র) থেকে ইংরেজি Civics শব্দের উৎপত্তি।',
+    },
+    {
+      q: 'রাষ্ট্রের সবচেয়ে গুরুত্বপূর্ণ এবং চূড়ান্ত উপাদান কোনটি?',
+      options: ['নির্দিষ্ট ভূখণ্ড', 'জনসমষ্টি', 'সরকার', 'সার্বভৌমত্ব'],
+      ans: 3,
+      explanation: 'সার্বভৌমত্ব হলো রাষ্ট্রের সর্বোচ্চ ও চরম ক্ষমতা, যার বলে রাষ্ট্র অভ্যন্তরীণ ও বাহ্যিক নিয়ন্ত্রণ বজায় রাখে।',
+    },
+    {
+      q: 'পরিবার গঠনের প্রধান পূর্বশর্ত কোনটি?',
+      options: ['অর্থ উপার্জন', 'বিবাহবন্ধন', 'গৃহনির্মাণ', 'সম্পদ বণ্টন'],
+      ans: 1,
+      explanation: 'বিবাহবন্ধন হলো সমাজস্বীকৃত পরিবার গঠনের আদি ও প্রধান ভিত্তি।',
+    },
+  ],
+  'ভূগোল ও পরিবেশ': [
+    {
+      q: 'পৃথিবীর মোট জলভাগের পরিমাণ শতকরা প্রায় কত?',
+      options: ['২৯ ভাগ', '৫১ ভাগ', '৭১ ভাগ', '৮১ ভাগ'],
+      ans: 2,
+      explanation: 'পৃথিবীর পৃষ্ঠের প্রায় ৭১ ভাগ পানি বা জলভাগ এবং ২৯ ভাগ স্থলভাগ।',
+    },
+    {
+      q: 'বায়ুমণ্ডলের সর্বনিম্ন ও মানবজীবনের জন্য সবচেয়ে গুরুত্বপূর্ণ স্তরের নাম কী?',
+      options: ['স্ট্র্যাটোস্ফিয়ার', 'ট্রপোস্ফিয়ার', 'মেসোস্ফিয়ার', 'থার্মোস্ফিয়ার'],
+      ans: 1,
+      explanation: 'ভূপৃষ্ঠ সংলগ্ন প্রথম স্তরটি হলো ট্রপোস্ফিয়ার, যেখানে মেঘ, বৃষ্টি ও ঝড়ঝঞ্ঝা ঘটে থাকে।',
+    },
+  ],
+  অর্থনীতি: [
+    {
+      q: 'আধুনিক অর্থনীতির জনক কাকে বলা হয়?',
+      options: ['অ্যাডাম স্মিথ', 'পল স্যামুয়েলসন', 'আলফ্রেড মার্শাল', 'জন মেনার্ড কেইনস'],
+      ans: 0,
+      explanation: '১৭৭৬ সালে ‘Wealth of Nations’ গ্রন্থের রচয়িতা অ্যাডাম স্মিথকে অর্থনীতির জনক বলা হয়।',
+    },
+    {
+      q: 'চাহিদা বিধির মূল শর্ত কোনটি?',
+      options: ['দাম বাড়লে চাহিদা বাড়ে', 'দাম বাড়লে চাহিদা কমে', 'আয় বাড়লে দাম কমে', 'যোগান বাড়লে দাম বাড়ে'],
+      ans: 1,
+      explanation: 'অন্যান্য অবস্থা অপরিবর্তিত থাকলে কোনো দ্রব্যের দাম বাড়লে চাহিদা হ্রাস পায় এবং দাম কমলে চাহিদা বৃদ্ধি পায়।',
+    },
+  ],
+  'সাধারণ বিজ্ঞান': [
+    {
+      q: 'বায়ুমণ্ডলে অক্সিজেনের পরিমাণ শতকরা প্রায় কত?',
+      options: ['৭৮.০৮%', '২০.৯৫%', '০.০৪%', '০.৯৩%'],
+      ans: 1,
+      explanation: 'বাতাসে নাইট্রোজেনের পরিমাণ প্রায় ৭৮% এবং অক্সিজেন প্রায় ২১% (২০.৯৫%)।',
+    },
+    {
+      q: 'কোন ভিটামিনের অভাবে মানবদেহে রাতকানা রোগ হয়?',
+      options: ['ভিটামিন এ', 'ভিটামিন বি', 'ভিটামিন সি', 'ভিটামিন ডি'],
+      ans: 0,
+      explanation: 'ভিটামিন এ-এর অভাবে চোখের রেটিনার রোডোপসিন তৈরি বিঘ্নিত হয় এবং রাতকানা রোগ দেখা দেয়।',
+    },
+  ],
+  'ইসলাম ও নৈতিক শিক্ষা': [
+    {
+      q: '‘ঈমান’ শব্দের আভিধানিক অর্থ কী?',
+      options: ['বিশ্বাস স্থাপন করা', 'ইবাদত করা', 'দান করা', 'ন্যায়বিচার করা'],
+      ans: 0,
+      explanation: 'ইসলামের মূল বিষয়গুলোর প্রতি অন্তরে দৃঢ় বিশ্বাস স্থাপন করাকে ঈমান বলে।',
+    },
+    {
+      q: 'ইসলামের স্তম্ভ কয়টি?',
+      options: ['৩টি', '৪টি', '৫টি', '৬টি'],
+      ans: 2,
+      explanation: 'ইসলামের স্তম্ভ ৫টি: কালিমা, নামাজ, রোজা, হজ ও জাকাত।',
+    },
+  ],
+  'হিন্দুধর্ম ও নৈতিক শিক্ষা': [
+    {
+      q: 'সনাতন ধর্মের মূল ধর্মগ্রন্থ কোনটি?',
+      options: ['বেদ', 'গীতা', 'রামায়ণ', 'মহাভারত'],
+      ans: 0,
+      explanation: 'বেদ হলো সনাতন হিন্দুধর্মের আদি ও প্রধান ধর্মগ্রন্থ।',
+    },
+    {
+      q: 'শ্রীমদ্ভগবদ্গীতা কোন মহাকাব্যের অংশ?',
+      options: ['রামায়ণ', 'মহাভারত', 'উপনিষদ', 'বেদ'],
+      ans: 1,
+      explanation: 'শ্রীমদ্ভগবদ্গীতা মহাভারতের ভীষ্মপর্বের অন্তর্গত একটি পবিত্র অংশ।',
     },
   ],
 };
