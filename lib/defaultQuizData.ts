@@ -411,8 +411,10 @@ export const PAID_CLASS_QUESTIONS: Record<number, RawQuestion[]> = {
 
 // 📚 Subject-wise Questions Data
 export const SUBJECT_LIST = [
-  { name: 'বাংলা', icon: '📖', color: 'from-rose-500 to-red-600' },
-  { name: 'ইংরেজি', icon: '🔤', color: 'from-blue-500 to-indigo-600' },
+  { name: 'বাংলা ১ম পত্র', icon: '📖', color: 'from-rose-500 to-red-600' },
+  { name: 'বাংলা ২য় পত্র', icon: '📝', color: 'from-amber-500 to-rose-600' },
+  { name: 'ইংরেজি ১ম পত্র', icon: '🔤', color: 'from-blue-500 to-indigo-600' },
+  { name: 'ইংরেজি ২য় পত্র', icon: '✍️', color: 'from-cyan-500 to-sky-600' },
   { name: 'গণিত', icon: '➗', color: 'from-emerald-500 to-teal-600' },
   { name: 'বিজ্ঞান', icon: '🔬', color: 'from-purple-500 to-violet-600' },
   { name: 'বাংলাদেশ ও বিশ্বপরিচয়', icon: '🌍', color: 'from-amber-500 to-orange-600' },
@@ -420,6 +422,139 @@ export const SUBJECT_LIST = [
 ];
 
 export const SUBJECT_QUESTIONS: Record<string, RawQuestion[]> = {
+  'বাংলা ১ম পত্র': [
+    {
+      q: '‘বিদ্রোহী’ কবিতার কবি কে?',
+      options: ['কাজী নজরুল ইসলাম', 'রবীন্দ্রনাথ ঠাকুর', 'জসীমউদ্দীন', 'সুকান্ত ভট্টাচার্য'],
+      ans: 0,
+      explanation: 'কাজী নজরুল ইসলাম রচিত ‘বিদ্রোহী’ কবিতাটি বাংলা সাহিত্যের এক অনন্য সৃষ্টি।',
+    },
+    {
+      q: '‘সোনার তরী’ কাব্যগ্রন্থটি কার লেখা?',
+      options: ['রবীন্দ্রনাথ ঠাকুর', 'জীবনানন্দ দাশ', 'মাইকেল মধুসূদন দত্ত', 'কাজী নজরুল ইসলাম'],
+      ans: 0,
+      explanation: '‘সোনার তরী’ বিশ্বকবি রবীন্দ্রনাথ ঠাকুরের অন্যতম শ্রেষ্ঠ কাব্যগ্রন্থ।',
+    },
+    {
+      q: '‘লালসালু’ উপন্যাসের কেন্দ্রীয় চরিত্রের নাম কী?',
+      options: ['মজিদ', 'খালেক ব্যাপারী', 'রহিমা', 'জমিলা'],
+      ans: 0,
+      explanation: 'সৈয়দ ওয়ালীউল্লাহ্ রচিত ‘লালসালু’ উপন্যাসের মূল চরিত্র ভণ্ড পীর মজিদ।',
+    },
+    {
+      q: '‘কবর’ কবিতাটি কোন কবির অমর সৃষ্টি?',
+      options: ['জসীমউদ্দীন', 'ফররুখ আহমদ', 'কায়কোবাদ', 'শামসুর রাহমান'],
+      ans: 0,
+      explanation: 'পল্লীকবি জসীমউদ্দীনের বিখ্যাত ‘কবর’ কবিতাটি ‘রাখালী’ কাব্যগ্রন্থের অন্তর্গত।',
+    },
+    {
+      q: '‘মানুষ মুহম্মদ (স.)’ প্রবন্ধটি কার লেখা?',
+      options: ['মোহাম্মদ ওয়াজেদ আলী', 'ড. মুহম্মদ শহীদুল্লাহ্', 'মুহম্মদ এনামুল হক', 'আবুল ফজল'],
+      ans: 0,
+      explanation: 'প্রাবন্ধিক মোহাম্মদ ওয়াজেদ আলী রচিত ‘মানুষ মুহম্মদ (স.)’ একটি বিখ্যাত জীবনীমূলক প্রবন্ধ।',
+    },
+  ],
+  'বাংলা ২য় পত্র': [
+    {
+      q: 'বাংলা বর্ণমালায় মোট বর্ণ কয়টি?',
+      options: ['৪৯টি', '৫০টি', '৫১টি', '৫২টি'],
+      ans: 1,
+      explanation: 'বাংলা বর্ণমালায় মোট ৫০টি বর্ণ রয়েছে (১১টি স্বরবর্ণ এবং ৩৯টি ব্যঞ্জনবর্ণ)।',
+    },
+    {
+      q: '‘সততা’ শব্দটি কোন পদ?',
+      options: ['বিশেষ্য', 'বিশেষণ', 'সর্বনাম', 'ক্রিয়া'],
+      ans: 0,
+      explanation: 'সততা হলো একটি গুণবাচক বিশেষ্য (Abstract Noun) পদ।',
+    },
+    {
+      q: '‘সন্ধি’ শব্দের আভিধানিক অর্থ কী?',
+      options: ['মিলন', 'বিচ্ছেদ', 'শব্দ তৈরি', 'ধ্বনি পরিবর্তন'],
+      ans: 0,
+      explanation: 'পাশাপাশি দুটি ধ্বনির পারস্পরিক মিলনকে ব্যাকরণে ‘সন্ধি’ বলা হয়।',
+    },
+    {
+      q: '‘সূর্য’ শব্দের সমার্থক শব্দ কোনটি?',
+      options: ['ভানু', 'শশী', 'অম্বু', 'মারুত'],
+      ans: 0,
+      explanation: 'সূর্য = ভানু, রবি, তপন, ভাস্কর, দিনমণি, দিবাকর।',
+    },
+    {
+      q: 'বাংলা ভাষায় যোজক বা অব্যয় পদ কয়টি প্রধান ভাগে বিভক্ত?',
+      options: ['৩ ভাগে', '৪ ভাগে', '৫ ভাগে', '৬ ভাগে'],
+      ans: 1,
+      explanation: 'বাংলা ভাষায় যোজক বা অব্যয় প্রধানত চার শ্রেণিতে বিভক্ত।',
+    },
+  ],
+  'ইংরেজি ১ম পত্র': [
+    {
+      q: 'What is the synonym of the word "Courage"?',
+      options: ['Bravery', 'Fear', 'Weakness', 'Cowardice'],
+      ans: 0,
+      explanation: 'Courage and Bravery both mean mental or moral strength to face fear.',
+    },
+    {
+      q: 'What is the antonym of "Generous"?',
+      options: ['Miserly', 'Kind', 'Helpful', 'Polite'],
+      ans: 0,
+      explanation: 'Generous means liberal and kind; its antonym is Miserly (stingy/narrow-minded).',
+    },
+    {
+      q: 'The word "Delightful" means —',
+      options: ['Charming', 'Sad', 'Boring', 'Painful'],
+      ans: 0,
+      explanation: 'Delightful refers to giving great pleasure or charm.',
+    },
+    {
+      q: 'What is the noun form of "Beautiful"?',
+      options: ['Beauty', 'Beautify', 'Beautifully', 'Beauteous'],
+      ans: 0,
+      explanation: 'Beauty is the noun form of the adjective Beautiful.',
+    },
+    {
+      q: 'Choose the correct spelling:',
+      options: ['Accommodation', 'Acommodation', 'Accomodation', 'Acomodation'],
+      ans: 0,
+      explanation: 'The correct spelling is "Accommodation" with double c and double m.',
+    },
+  ],
+  'ইংরেজি ২য় পত্র': [
+    {
+      q: 'She has been living in Dhaka ______ five years.',
+      options: ['for', 'since', 'from', 'in'],
+      ans: 0,
+      explanation: 'Period of time (সময়কাল) বোঝাতে Present Perfect Continuous Tense-এ "for" বসে।',
+    },
+    {
+      q: 'Which one is the superlative degree of "Good"?',
+      options: ['Best', 'Better', 'Goodest', 'Most good'],
+      ans: 0,
+      explanation: 'Degree comparison: Good (Positive) -> Better (Comparative) -> Best (Superlative).',
+    },
+    {
+      q: 'Neither the teacher nor the students ______ present in the class.',
+      options: ['were', 'was', 'is', 'has been'],
+      ans: 0,
+      explanation: 'In "neither...nor" structures, the verb agrees with the closer subject ("students" -> plural "were").',
+    },
+    {
+      q: 'Identify the part of speech of the underlined word: "He runs fast."',
+      options: ['Adverb', 'Adjective', 'Verb', 'Noun'],
+      ans: 0,
+      explanation: 'Here "fast" modifies the verb "runs", describing how he runs, so it is an Adverb.',
+    },
+    {
+      q: 'Change the voice: "He wrote a letter."',
+      options: [
+        'A letter was written by him.',
+        'A letter is written by him.',
+        'A letter has been written by him.',
+        'A letter had written by him.',
+      ],
+      ans: 0,
+      explanation: 'Past Indefinite passive structure: Object + was/were + V3 + by + Subject.',
+    },
+  ],
   বাংলা: [
     {
       q: 'বাংলা বর্ণমালায় স্বরবর্ণ কয়টি?',

@@ -55,7 +55,7 @@ export default function QuizPage() {
 
   // Navigation / Filter States
   const [selectedClass, setSelectedClass] = useState<number>(6);
-  const [selectedSubject, setSelectedSubject] = useState<string>('বাংলা');
+  const [selectedSubject, setSelectedSubject] = useState<string>('বাংলা ১ম পত্র');
 
   // Active Quiz State
   const [isTestActive, setIsTestActive] = useState<boolean>(false);

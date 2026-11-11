@@ -45,7 +45,7 @@ type QuizCategory = 'free' | 'paid' | 'subject';
 export default function AdminQuizManager() {
   const [category, setCategory] = useState<QuizCategory>('free');
   const [selectedClass, setSelectedClass] = useState<number>(6);
-  const [selectedSubject, setSelectedSubject] = useState<string>('বাংলা');
+  const [selectedSubject, setSelectedSubject] = useState<string>('বাংলা ১ম পত্র');
 
   const [activeTab, setActiveTab] = useState<'list' | 'add' | 'bulk' | 'prices'>('list');
   const [questions, setQuestions] = useState<RawQuestion[]>([]);
