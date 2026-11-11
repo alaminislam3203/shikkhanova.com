@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import toast from 'react-hot-toast';
-import { signOut } from 'next-auth/react';
+import React from "react";
+import toast from "react-hot-toast";
+import { signOut } from "next-auth/react";
 
 /**
  * Triggers a custom Hot Toast modal matching the user's design for logout confirmation.
@@ -16,11 +16,12 @@ export const confirmSignOut = () => {
       <div
         className={`${
           t.visible
-            ? 'animate-in fade-in slide-in-from-top-4 duration-200'
-            : 'animate-out fade-out slide-out-to-top-4 duration-150'
+            ? "animate-in fade-in slide-in-from-top-4 duration-200"
+            : "animate-out fade-out slide-out-to-top-4 duration-150"
         } bg-white shadow-2xl rounded-2xl p-5 sm:p-6 border border-slate-200/80 w-[360px] max-w-[92vw] pointer-events-auto transition-all`}
         style={{
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+          boxShadow:
+            "0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
         }}
       >
         <h3 className="text-base sm:text-lg font-bold text-slate-900 leading-tight">
@@ -42,9 +43,9 @@ export const confirmSignOut = () => {
             type="button"
             onClick={() => {
               toast.dismiss(t.id);
-              signOut({ callbackUrl: '/' });
+              signOut({ callbackUrl: "/" });
             }}
-            className="px-4 py-2 text-xs sm:text-sm font-bold text-white bg-[#E53E3E] hover:bg-red-700 rounded-xl transition shadow-xs cursor-pointer active:scale-95"
+            className="px-4 py-2 text-xs sm:text-sm font-bold text-red-500 bg-[#E53E3E] hover:bg-[#C53030] rounded-xl transition-all shadow-sm cursor-pointer active:scale-95"
           >
             হ্যাঁ, লগ আউট করুন
           </button>
@@ -52,9 +53,9 @@ export const confirmSignOut = () => {
       </div>
     ),
     {
-      id: 'logout-confirmation-toast',
+      id: "logout-confirmation-toast",
       duration: 60000,
-      position: 'top-center',
-    }
+      position: "top-center",
+    },
   );
 };
