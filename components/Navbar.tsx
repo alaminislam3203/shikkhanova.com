@@ -634,7 +634,7 @@ export default function Navbar() {
               </Link>
 
               {session?.user ? (
-                <div className="relative">
+                <div className="hidden lg:block relative">
                   {/* Profile Trigger Button - Avatar Only */}
                   <button
                     type="button"
@@ -1037,7 +1037,7 @@ export default function Navbar() {
               </div>
             )}
 
-            {/* Navigation Menu List */}
+            {/* Navigation Menu List (Shikkha Nova Educational Features Only) */}
             <nav className="space-y-1.5">
               {/* Admin Panel (if admin) */}
               {session?.user?.role === 'ADMIN' && (
@@ -1051,15 +1051,17 @@ export default function Navbar() {
                 </Link>
               )}
 
-              {/* Dashboard */}
-              <Link
-                href="/account"
-                onClick={() => setDrawerOpen(false)}
-                className="group flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:text-slate-950 hover:bg-slate-50 transition"
-              >
-                <FaUser className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors shrink-0" />
-                <span>ড্যাশবোর্ড</span>
-              </Link>
+              {/* Student Dashboard & Sheets */}
+              {session?.user?.role === 'STUDENT' && (
+                <Link
+                  href="/profile"
+                  onClick={() => setDrawerOpen(false)}
+                  className="group flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:text-slate-950 hover:bg-slate-50 transition"
+                >
+                  <FaUser className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors shrink-0" />
+                  <span>আমার ড্যাশবোর্ড ও শিটসমূহ</span>
+                </Link>
+              )}
 
               {/* Account Settings */}
               <Link
@@ -1071,27 +1073,27 @@ export default function Navbar() {
                 <span>অ্যাকাউন্ট সেটিংস</span>
               </Link>
 
-              {/* My Orders / Notes */}
+              {/* Exam Results & Marksheet */}
               <Link
-                href="/my-notes"
+                href="/results"
                 onClick={() => setDrawerOpen(false)}
                 className="group flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:text-slate-950 hover:bg-slate-50 transition"
               >
-                <FaCartShopping className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors shrink-0" />
-                <span>আমার অর্ডার</span>
+                <FaAward className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors shrink-0" />
+                <span>আমার রেজাল্ট ও মার্কশিট</span>
               </Link>
 
-              {/* Saved Address / Profile */}
+              {/* PDF Handnotes & Sheets */}
               <Link
-                href="/profile"
+                href="/pdfs"
                 onClick={() => setDrawerOpen(false)}
                 className="group flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:text-slate-950 hover:bg-slate-50 transition"
               >
-                <FaLocationDot className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors shrink-0" />
-                <span>সংরক্ষিত ঠিকানা</span>
+                <FaFilePdf className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors shrink-0" />
+                <span>পিডিএফ নোট ও হ্যান্ডনোট</span>
               </Link>
 
-              {/* Leaderboard */}
+              {/* Quiz Leaderboard */}
               <Link
                 href="/leaderboard"
                 onClick={() => setDrawerOpen(false)}
@@ -1105,27 +1107,6 @@ export default function Navbar() {
                   Top
                 </span>
               </Link>
-
-              {/* Review */}
-              <Link
-                href="/about"
-                onClick={() => setDrawerOpen(false)}
-                className="group flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:text-slate-950 hover:bg-slate-50 transition"
-              >
-                <FaRegCommentDots className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors shrink-0" />
-                <span>রিভিউ</span>
-              </Link>
-
-              {/* Wishlist (with Soon badge) */}
-              <div className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 cursor-not-allowed select-none">
-                <div className="flex items-center gap-3.5">
-                  <FaRegHeart className="w-4 h-4 text-slate-400 shrink-0" />
-                  <span>উইশলিস্ট</span>
-                </div>
-                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-700">
-                  Soon
-                </span>
-              </div>
             </nav>
 
             {/* 3. Logout Action (in Red with Hot Toast Confirmation) */}
@@ -1141,16 +1122,6 @@ export default function Navbar() {
                 <FaArrowRightFromBracket className="w-4 h-4 text-red-500 shrink-0" />
                 <span>লগ আউট</span>
               </button>
-            </div>
-          </div>
-
-          {/* 4. Footer: Language */}
-          <div className="border-t border-slate-100 px-5 py-4 flex items-center justify-between text-sm font-medium text-slate-700 bg-slate-50/50 mt-auto">
-            <span>Language</span>
-            <div className="flex items-center gap-1.5 font-semibold text-slate-800">
-              <FaGlobe className="w-4 h-4 text-slate-600" />
-              <span>বাংলা</span>
-              <FaChevronDown className="w-2.5 h-2.5 text-slate-400" />
             </div>
           </div>
         </aside>
