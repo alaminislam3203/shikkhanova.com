@@ -23,6 +23,11 @@ import {
   AcademicGroup,
   QuizSubjectItem,
   getSubjectsForClassAndGroup,
+  QuizPackageItem,
+  DEFAULT_QUIZ_PACKAGES,
+  getStoredQuizPackages,
+  saveStoredQuizPackages,
+  PackageUnlockScope,
 } from '@/lib/defaultQuizData';
 import {
   FaPlus,
@@ -65,8 +70,9 @@ export default function AdminQuizManager() {
   const [activeTab, setActiveTab] = useState<'list' | 'add' | 'bulk' | 'prices'>('list');
   const [questions, setQuestions] = useState<RawQuestion[]>([]);
 
-  // Quiz Pricing Management State (SSR safe)
+  // Quiz Pricing & Special Packages Management State (SSR safe)
   const [prices, setPrices] = useState<QuizPrices>(DEFAULT_QUIZ_PRICES);
+  const [packages, setPackages] = useState<QuizPackageItem[]>(DEFAULT_QUIZ_PACKAGES);
   const [isSavingPrices, setIsSavingPrices] = useState<boolean>(false);
 
   // Add / Edit Form State
@@ -85,12 +91,19 @@ export default function AdminQuizManager() {
   // Notification message
   const [msg, setMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
-  // Load quiz prices safely after mount
+  // Load quiz prices and packages safely after mount
   useEffect(() => {
     try {
       const stored = getStoredQuizPrices();
       if (stored) {
         setPrices(stored);
+      }
+    } catch {}
+
+    try {
+      const storedPkgs = getStoredQuizPackages();
+      if (storedPkgs && storedPkgs.length > 0) {
+        setPackages(storedPkgs);
       }
     } catch {}
 
@@ -103,32 +116,53 @@ export default function AdminQuizManager() {
         }
       })
       .catch(() => {});
+
+    fetch('/api/quiz/packages')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.packages && Array.isArray(data.packages)) {
+          setPackages(data.packages);
+          saveStoredQuizPackages(data.packages);
+        }
+      })
+      .catch(() => {});
   }, []);
 
-  // Save Quiz Prices Handler with Instant Toast Feedback
+  // Save Quiz Prices & Special Packages Handler with Instant Toast Feedback
   const handleSavePrices = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSavingPrices(true);
-    const saveToastId = toast.loading('সব মূল্য সংরক্ষণ ও আপডেট করা হচ্ছে...');
+    const saveToastId = toast.loading('সব মূল্য ও প্যাকেজ সংরক্ষণ করা হচ্ছে...');
     try {
-      const res = await fetch('/api/quiz/prices', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(prices),
-      });
-      const data = await res.json();
-      if (res.ok) {
+      const [resPrices, resPackages] = await Promise.all([
+        fetch('/api/quiz/prices', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(prices),
+        }),
+        fetch('/api/quiz/packages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ packages }),
+        }),
+      ]);
+
+      const dataPrices = await resPrices.json();
+      const dataPackages = await resPackages.json();
+
+      if (resPrices.ok && resPackages.ok) {
         saveStoredQuizPrices(prices);
-        toast.success(data.message || 'কুইজ ও প্যাকেজের সকল মূল্য সফলভাবে সংরক্ষিত হয়েছে!', {
+        saveStoredQuizPackages(packages);
+        toast.success(dataPackages.message || 'কুইজ ও স্পেশাল প্যাকেজ সফলভাবে সংরক্ষিত হয়েছে!', {
           id: saveToastId,
           duration: 4000,
         });
-        setMsg({ text: 'কুইজ ও প্যাকেজের মূল্য সফলভাবে সংরক্ষণ ও আপডেট করা হয়েছে!', type: 'success' });
+        setMsg({ text: 'কুইজের মূল্য ও স্পেশাল মডেল টেস্ট প্যাকেজ সফলভাবে সংরক্ষণ ও আপডেট করা হয়েছে!', type: 'success' });
       } else {
-        toast.error(data.error || 'মূল্য সংরক্ষণ ব্যর্থ হয়েছে। আবার চেষ্টা করুন।', {
+        toast.error(dataPrices.error || dataPackages.error || 'মূল্য বা প্যাকেজ সংরক্ষণ ব্যর্থ হয়েছে।', {
           id: saveToastId,
         });
-        setMsg({ text: data.error || 'মূল্য সংরক্ষণ ব্যর্থ হয়েছে।', type: 'error' });
+        setMsg({ text: dataPrices.error || dataPackages.error || 'সংরক্ষণ ব্যর্থ হয়েছে।', type: 'error' });
       }
     } catch (err: any) {
       toast.error(err.message || 'নেটওয়ার্ক সংযোগে সমস্যা হয়েছে।', {
@@ -149,6 +183,48 @@ export default function AdminQuizManager() {
       duration: 4000,
     });
     setMsg({ text: '🔄 কুইজের মূল্য ডিফল্ট অবস্থায় ফিরিয়ে আনা হয়েছে। সংরক্ষণ করতে "সব মূল্য সংরক্ষণ করুন" বাটনে ক্লিক করুন।', type: 'success' });
+  };
+
+  // Package Management Handlers
+  const handleAddNewPackage = () => {
+    const newPkg: QuizPackageItem = {
+      id: `pkg_${Date.now()}`,
+      title: 'নতুন স্পেশাল প্যাকেজ',
+      badge: 'স্পেশাল অফার',
+      tagline: 'মডেল টেস্ট ও পূর্ণাঙ্গ সমাধানের বিশেষ অফার।',
+      price: 100,
+      originalPrice: 180,
+      features: [
+        'পূর্ণাঙ্গ মডেল টেস্ট অ্যাক্সেস',
+        'তাৎক্ষণিক স্কোর ও গ্রেড শিট',
+        'ব্যাখ্যাসহ প্রতিটি প্রশ্নের সঠিক উত্তর',
+      ],
+      unlockScope: 'single_class',
+      isPopular: false,
+      isActive: true,
+      accentColor: 'red',
+    };
+    setPackages((prev) => [...prev, newPkg]);
+    toast.success('নতুন প্যাকেজ কার্ড যুক্ত করা হয়েছে! তথ্য পূরণ করে সংরক্ষণ বাটনে ক্লিক করুন।');
+  };
+
+  const handleUpdatePackage = (id: string, updates: Partial<QuizPackageItem>) => {
+    setPackages((prev) =>
+      prev.map((pkg) => (pkg.id === id ? { ...pkg, ...updates } : pkg))
+    );
+  };
+
+  const handleDeletePackage = (id: string) => {
+    if (!confirm('আপনি কি এই প্যাকেজটি মুছে ফেলতে চান?')) return;
+    setPackages((prev) => prev.filter((p) => p.id !== id));
+    toast.success('প্যাকেজটি তালিকা থেকে মুছে ফেলা হয়েছে।');
+  };
+
+  const handleResetPackagesToDefault = () => {
+    if (!confirm('আপনি কি স্পেশাল মডেল টেস্ট প্যাকেজসমূহ মূল ডিফল্ট তালিকায় ফিরিয়ে নিতে চান?')) return;
+    setPackages(DEFAULT_QUIZ_PACKAGES);
+    saveStoredQuizPackages(DEFAULT_QUIZ_PACKAGES);
+    toast.success('প্যাকেজসমূহ ডিফল্ট অবস্থায় ফিরিয়ে আনা হয়েছে।');
   };
 
   // Load questions whenever category, class, or subject changes
@@ -1074,105 +1150,220 @@ export default function AdminQuizManager() {
             </div>
           </div>
 
-          {/* Section 3: Special Packages Pricing */}
-          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
-            <div>
-              <h4 className="text-sm font-black text-slate-800 flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
-                স্পেশাল মডেল টেস্ট প্যাকেজসমূহ (Special Bundles)
-              </h4>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">
-                কুইজ পেজের নিচের ৩টি স্পেশাল প্যাকেজ কার্ডের মূল্য এখান থেকে কাস্টমাইজ করুন।
-              </p>
+          {/* Section 3: Dynamic Special Packages Manager */}
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+              <div>
+                <h4 className="text-sm sm:text-base font-black text-slate-800 flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse" />
+                  <span>স্পেশাল মডেল টেস্ট প্যাকেজসমূহ (Dynamic Package Manager)</span>
+                </h4>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">
+                  কুইজ পেজের ৩টি বা ততোধিক স্পেশাল অফার প্যাকেজের নাম, মূল্য, ফিচার ও সক্রিয় অবস্থা ডাইনামিকভাবে ম্যানেজ করুন।
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleResetPackagesToDefault}
+                  className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs transition"
+                >
+                  ডিফল্ট প্যাকেজ
+                </button>
+                <button
+                  type="button"
+                  onClick={handleAddNewPackage}
+                  className="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-sm transition flex items-center gap-1.5"
+                >
+                  <FaPlus className="w-3 h-3" />
+                  <span>প্যাকেজ যোগ করুন</span>
+                </button>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Package 1 */}
-              <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
-                    প্যাকেজ ১
-                  </span>
-                  <span className="text-xs font-black text-slate-700">Single Subject</span>
-                </div>
-                <p className="text-[11px] text-slate-500">যেকোনো ১টি বিষয়ের টেস্ট ও সমাধান।</p>
-                <div className="relative pt-1">
-                  <span className="absolute left-3.5 top-3.5 text-sm font-black text-slate-400">৳</span>
-                  <input
-                    type="number"
-                    min="0"
-                    step="5"
-                    required
-                    value={prices.packages.singleSubject ?? 50}
-                    onChange={(e) => {
-                      const val = Math.max(0, Number(e.target.value) || 0);
-                      setPrices((prev) => ({
-                        ...prev,
-                        packages: { ...prev.packages, singleSubject: val },
-                      }));
-                    }}
-                    className="w-full bg-white border border-slate-300 focus:border-[#C8102E] rounded-xl pl-8 pr-3 py-2 text-sm font-black text-slate-900 outline-none"
-                  />
-                </div>
-              </div>
+            {/* Packages Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+              {packages.map((pkg, idx) => (
+                <div
+                  key={pkg.id || idx}
+                  className={`rounded-2xl border-2 p-4 sm:p-5 space-y-3.5 transition-all relative ${
+                    pkg.isActive
+                      ? pkg.isPopular
+                        ? 'bg-red-50/40 border-[#C8102E] shadow-sm'
+                        : 'bg-white border-slate-200 shadow-xs'
+                      : 'bg-slate-50/70 border-dashed border-slate-300 opacity-70'
+                  }`}
+                >
+                  {/* Card Header: Active Toggle & Delete */}
+                  <div className="flex items-center justify-between gap-2 pb-2 border-b border-slate-100">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                        #{idx + 1}
+                      </span>
+                      <label className="inline-flex items-center gap-1.5 cursor-pointer text-xs font-bold">
+                        <input
+                          type="checkbox"
+                          checked={pkg.isActive}
+                          onChange={(e) => handleUpdatePackage(pkg.id, { isActive: e.target.checked })}
+                          className="rounded text-emerald-600 focus:ring-emerald-500 w-3.5 h-3.5"
+                        />
+                        <span className={pkg.isActive ? 'text-emerald-700' : 'text-slate-400'}>
+                          {pkg.isActive ? 'সক্রিয় (Active)' : 'বন্ধ (Hidden)'}
+                        </span>
+                      </label>
+                    </div>
 
-              {/* Package 2 */}
-              <div className="bg-red-50/50 border-2 border-[#C8102E]/40 p-4 rounded-2xl space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-red-100 text-[#C8102E] font-black">
-                    জনপ্রিয় প্যাকেজ
-                  </span>
-                  <span className="text-xs font-black text-slate-800">Full Class Package</span>
-                </div>
-                <p className="text-[11px] text-slate-500">এক ক্লাসের সকল বিষয়ের কমপ্লিট টেস্ট।</p>
-                <div className="relative pt-1">
-                  <span className="absolute left-3.5 top-3.5 text-sm font-black text-slate-400">৳</span>
-                  <input
-                    type="number"
-                    min="0"
-                    step="5"
-                    required
-                    value={prices.packages.fullClass ?? 150}
-                    onChange={(e) => {
-                      const val = Math.max(0, Number(e.target.value) || 0);
-                      setPrices((prev) => ({
-                        ...prev,
-                        packages: { ...prev.packages, fullClass: val },
-                      }));
-                    }}
-                    className="w-full bg-white border border-red-300 focus:border-[#C8102E] rounded-xl pl-8 pr-3 py-2 text-sm font-black text-[#C8102E] outline-none"
-                  />
-                </div>
-              </div>
+                    <button
+                      type="button"
+                      onClick={() => handleDeletePackage(pkg.id)}
+                      title="প্যাকেজ মুছুন"
+                      className="text-slate-400 hover:text-rose-600 p-1 transition"
+                    >
+                      <FaTrash className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
 
-              {/* Package 3 */}
-              <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200">
-                    অল-ইন-ওয়ান
-                  </span>
-                  <span className="text-xs font-black text-slate-700">Full VIP Package</span>
+                  {/* Title & Badge */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                        প্যাকেজের নাম (Title)
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={pkg.title}
+                        onChange={(e) => handleUpdatePackage(pkg.id, { title: e.target.value })}
+                        placeholder="যেমন: Full Class Package"
+                        className="w-full bg-slate-50 border border-slate-300 focus:border-[#C8102E] rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                        ব্যাজ (Badge)
+                      </label>
+                      <input
+                        type="text"
+                        value={pkg.badge || ''}
+                        onChange={(e) => handleUpdatePackage(pkg.id, { badge: e.target.value })}
+                        placeholder="যেমন: জনপ্রিয় অফার"
+                        className="w-full bg-slate-50 border border-slate-300 focus:border-[#C8102E] rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Pricing: Current & Original */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                        বর্তমান মূল্য (৳)
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-2.5 top-1.5 text-xs font-black text-slate-400">৳</span>
+                        <input
+                          type="number"
+                          min="0"
+                          step="5"
+                          required
+                          value={pkg.price}
+                          onChange={(e) => {
+                            const val = Math.max(0, Number(e.target.value) || 0);
+                            handleUpdatePackage(pkg.id, { price: val });
+                          }}
+                          className="w-full bg-slate-50 border border-slate-300 focus:border-[#C8102E] rounded-xl pl-6 pr-2 py-1.5 text-xs font-black text-[#C8102E] outline-none"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                        আসল মূল্য (ছাড়ের জন্য)
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-2.5 top-1.5 text-xs font-black text-slate-400">৳</span>
+                        <input
+                          type="number"
+                          min="0"
+                          step="5"
+                          value={pkg.originalPrice ?? ''}
+                          onChange={(e) => {
+                            const val = e.target.value ? Math.max(0, Number(e.target.value)) : undefined;
+                            handleUpdatePackage(pkg.id, { originalPrice: val });
+                          }}
+                          placeholder="ঐচ্ছিক"
+                          className="w-full bg-slate-50 border border-slate-300 focus:border-[#C8102E] rounded-xl pl-6 pr-2 py-1.5 text-xs font-bold text-slate-500 outline-none"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Tagline */}
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                      সংক্ষিপ্ত বিবরণ (Tagline)
+                    </label>
+                    <input
+                      type="text"
+                      value={pkg.tagline}
+                      onChange={(e) => handleUpdatePackage(pkg.id, { tagline: e.target.value })}
+                      placeholder="প্যাকেজের সারসংক্ষেপ..."
+                      className="w-full bg-slate-50 border border-slate-300 focus:border-[#C8102E] rounded-xl px-2.5 py-1.5 text-xs text-slate-700 outline-none"
+                    />
+                  </div>
+
+                  {/* Scope & Popular Checkbox */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                        আনলক স্কোপ
+                      </label>
+                      <select
+                        value={pkg.unlockScope}
+                        onChange={(e) => handleUpdatePackage(pkg.id, { unlockScope: e.target.value as any })}
+                        className="w-full bg-slate-50 border border-slate-300 focus:border-[#C8102E] rounded-xl px-2 py-1.5 text-xs font-bold text-slate-800 outline-none"
+                      >
+                        <option value="single_class">এক ক্লাসের সব বিষয়</option>
+                        <option value="all_classes">৫ম-১০ম সকল ক্লাস (VIP)</option>
+                        <option value="single_subject">একক বিষয়</option>
+                      </select>
+                    </div>
+
+                    <div className="flex items-center pt-4">
+                      <label className="inline-flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-800">
+                        <input
+                          type="checkbox"
+                          checked={pkg.isPopular}
+                          onChange={(e) => handleUpdatePackage(pkg.id, { isPopular: e.target.checked })}
+                          className="rounded text-[#C8102E] focus:ring-[#C8102E] w-4 h-4"
+                        />
+                        <span>জনপ্রিয় ব্যাজ দেখাবে</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Feature Bullet Points (Multiline Editor) */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-[11px] font-bold text-slate-700">
+                        প্যাকেজের সুবিধাসমূহ (প্রতি লাইনে একটি)
+                      </label>
+                      <span className="text-[10px] text-slate-400 font-semibold">
+                        {pkg.features.length}টি ফিচার
+                      </span>
+                    </div>
+                    <textarea
+                      rows={3}
+                      value={pkg.features.join('\n')}
+                      onChange={(e) => {
+                        const feats = e.target.value.split('\n').filter((l) => l.trim().length > 0);
+                        handleUpdatePackage(pkg.id, { features: feats });
+                      }}
+                      placeholder="১টি বিষয়ের সকল প্রশ্ন&#10;ইনস্ট্যান্ট ফলাফল ও গ্রেড&#10;ব্যাখ্যাসহ সমাধান"
+                      className="w-full bg-slate-50 border border-slate-300 focus:border-[#C8102E] rounded-xl p-2.5 text-xs text-slate-800 outline-none leading-relaxed"
+                    />
+                  </div>
                 </div>
-                <p className="text-[11px] text-slate-500">সকল ক্লাসের টেস্ট ও স্পেশাল সাজেশন।</p>
-                <div className="relative pt-1">
-                  <span className="absolute left-3.5 top-3.5 text-sm font-black text-slate-400">৳</span>
-                  <input
-                    type="number"
-                    min="0"
-                    step="5"
-                    required
-                    value={prices.packages.vipAll ?? 200}
-                    onChange={(e) => {
-                      const val = Math.max(0, Number(e.target.value) || 0);
-                      setPrices((prev) => ({
-                        ...prev,
-                        packages: { ...prev.packages, vipAll: val },
-                      }));
-                    }}
-                    className="w-full bg-white border border-slate-300 focus:border-[#C8102E] rounded-xl pl-8 pr-3 py-2 text-sm font-black text-slate-900 outline-none"
-                  />
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 
@@ -1192,7 +1383,7 @@ export default function AdminQuizManager() {
               className="px-8 py-3 rounded-2xl bg-gradient-to-r from-[#9B0D23] via-[#C8102E] to-[#E5254A] hover:opacity-95 text-white font-black text-sm shadow-lg transition active:scale-98 disabled:opacity-50 flex items-center gap-2"
             >
               <FaFloppyDisk className="w-4 h-4" />
-              <span>{isSavingPrices ? 'সংরক্ষণ হচ্ছে...' : 'সব মূল্য সংরক্ষণ করুন'}</span>
+              <span>{isSavingPrices ? 'সংরক্ষণ হচ্ছে...' : 'সব মূল্য ও প্যাকেজ সংরক্ষণ করুন'}</span>
             </button>
           </div>
         </form>

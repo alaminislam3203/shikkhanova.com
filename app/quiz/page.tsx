@@ -20,6 +20,11 @@ import {
   AcademicGroup,
   QuizSubjectItem,
   getSubjectsForClassAndGroup,
+  QuizPackageItem,
+  DEFAULT_QUIZ_PACKAGES,
+  getStoredQuizPackages,
+  saveStoredQuizPackages,
+  PackageUnlockScope,
 } from '@/lib/defaultQuizData';
 import {
   FaAward,
@@ -81,12 +86,14 @@ export default function QuizPage() {
 
   // Dynamic Quiz Pricing State (SSR safe: defaults match between server and client initially)
   const [quizPrices, setQuizPrices] = useState<QuizPrices>(DEFAULT_QUIZ_PRICES);
+  const [quizPackages, setQuizPackages] = useState<QuizPackageItem[]>(DEFAULT_QUIZ_PACKAGES);
 
   // Payment / Unlock Modal
   const [paymentModalOpen, setPaymentModalOpen] = useState<boolean>(false);
   const [paymentTargetClass, setPaymentTargetClass] = useState<number>(6);
   const [paymentPackageName, setPaymentPackageName] = useState<string>('Paid Model Test');
   const [paymentAmount, setPaymentAmount] = useState<number>(50);
+  const [selectedPackageScope, setSelectedPackageScope] = useState<PackageUnlockScope>('single_class');
   const [accessCodeInput, setAccessCodeInput] = useState<string>('');
   const [unlockSuccessMsg, setUnlockSuccessMsg] = useState<string>('');
 
@@ -94,12 +101,19 @@ export default function QuizPage() {
   const testAreaRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  // Hydrate and fetch latest prices safely after mount
+  // Hydrate and fetch latest prices and packages safely after mount
   useEffect(() => {
     try {
       const stored = getStoredQuizPrices();
       if (stored) {
         setQuizPrices(stored);
+      }
+    } catch {}
+
+    try {
+      const storedPkgs = getStoredQuizPackages();
+      if (storedPkgs && storedPkgs.length > 0) {
+        setQuizPackages(storedPkgs);
       }
     } catch {}
 
@@ -109,6 +123,16 @@ export default function QuizPage() {
         if (data?.prices) {
           setQuizPrices(data.prices);
           saveStoredQuizPrices(data.prices);
+        }
+      })
+      .catch(() => {});
+
+    fetch('/api/quiz/packages')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.packages && Array.isArray(data.packages)) {
+          setQuizPackages(data.packages);
+          saveStoredQuizPackages(data.packages);
         }
       })
       .catch(() => {});
@@ -283,7 +307,12 @@ export default function QuizPage() {
     const isTrxValid = code.length >= 6;
 
     if (isCodeValid || isTrxValid) {
-      const updated = Array.from(new Set([...unlockedClasses, paymentTargetClass]));
+      const classesToUnlock =
+        selectedPackageScope === 'all_classes'
+          ? [5, 6, 7, 8, 9, 10]
+          : [paymentTargetClass];
+
+      const updated = Array.from(new Set([...unlockedClasses, ...classesToUnlock]));
       setUnlockedClasses(updated);
       try {
         if (session?.user?.id) {
@@ -291,13 +320,17 @@ export default function QuizPage() {
         }
       } catch {}
 
-      setUnlockSuccessMsg(`🎉 অভিনন্দন! ${toBengaliClass(paymentTargetClass)} শ্রেণির প্রিমিয়াম মডেল টেস্ট সফলভাবে আনলক হয়েছে!`);
+      setUnlockSuccessMsg(
+        selectedPackageScope === 'all_classes'
+          ? '🎉 অভিনন্দন! ৫ম থেকে ১০ম সকল শ্রেণির প্রিমিয়াম মডেল টেস্ট সফলভাবে আনলক হয়েছে!'
+          : `🎉 অভিনন্দন! ${toBengaliClass(paymentTargetClass)} শ্রেণির প্রিমিয়াম মডেল টেস্ট সফলভাবে আনলক হয়েছে!`
+      );
       setTimeout(() => {
         setPaymentModalOpen(false);
         handleStartPaidAfterUnlock(paymentTargetClass);
       }, 1400);
     } else {
-      toast.error('অনুগ্রহ করে সঠিক অ্যাক্সেস কোড অথবা বিকাশ/নগদ TrxID প্রদান করুন।');
+      toast.error('অনুগ্রহ করে সঠিক অ্যাক্সেস কোড অথবা বিকাশ/নগদ/রকেট/উপায় TrxID প্রদান করুন।');
     }
   };
 
@@ -897,109 +930,99 @@ export default function QuizPage() {
       ───────────────────────────────────────────────────────────── */}
       <section className="space-y-5">
         <div className="text-center space-y-1">
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#C8102E] bg-red-50 px-3 py-0.5 rounded-full border border-red-200 mb-1">
+            <FaGem /> বিশেষ অফার ও প্যাকেজ
+          </div>
           <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">স্পেশাল মডেল টেস্ট প্যাকেজ</h2>
           <p className="text-xs sm:text-sm text-slate-500 font-medium">
-            বিকাশ বা নগদ পেমেন্ট করে যেকোনো আকর্ষণীয় প্যাকেজ আনলক করুন
+            বিকাশ, নগদ, রকেট বা উপায় পেমেন্ট করে যেকোনো আকর্ষণীয় প্যাকেজ আনলক করুন
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {/* Card 1 */}
-          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-md space-y-4 hover:shadow-xl transition">
-            <div className="space-y-1">
-              <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
-                একক বিষয়
-              </span>
-              <h3 className="text-lg font-black text-slate-800">Single Subject</h3>
-            </div>
-            <div className="text-3xl font-black text-[#C8102E]">
-              ৳{quizPrices.packages.singleSubject || 50}
-            </div>
-            <p className="text-xs text-slate-500">যেকোনো ১টি বিষয়ের পূর্ণাঙ্গ মডেল টেস্ট ও সমাধান।</p>
-            <ul className="text-xs text-slate-600 space-y-1.5 pt-2 border-t border-slate-100">
-              <li className="flex items-center gap-1.5">✓ ১টি বিষয়ের সকল প্রশ্ন</li>
-              <li className="flex items-center gap-1.5">✓ ইনস্ট্যান্ট ফলাফল ও গ্রেড</li>
-              <li className="flex items-center gap-1.5">✓ ব্যাখ্যাসহ সমাধান</li>
-            </ul>
-            <button
-              type="button"
-              onClick={() => {
-                setPaymentPackageName('Single Subject Package');
-                setPaymentAmount(quizPrices.packages.singleSubject || 50);
-                setUnlockSuccessMsg('');
-                setPaymentModalOpen(true);
-              }}
-              className="w-full py-3 rounded-2xl bg-slate-900 hover:bg-black text-white font-black text-xs transition active:scale-98"
-            >
-              প্যাকেজ কিনুন (৳{quizPrices.packages.singleSubject || 50})
-            </button>
-          </div>
+          {quizPackages
+            .filter((pkg) => pkg.isActive)
+            .map((pkg) => {
+              const isPopular = pkg.isPopular;
+              const discountPct =
+                pkg.originalPrice && pkg.originalPrice > pkg.price
+                  ? Math.round(((pkg.originalPrice - pkg.price) / pkg.originalPrice) * 100)
+                  : null;
 
-          {/* Card 2 (Popular) */}
-          <div className="bg-white rounded-3xl p-6 border-2 border-[#C8102E] shadow-xl space-y-4 relative overflow-hidden transform md:-translate-y-1">
-            <div className="absolute top-0 right-0 bg-[#C8102E] text-white text-[9px] font-black uppercase px-4 py-1 rounded-bl-xl shadow-xs">
-              জনপ্রিয়
-            </div>
-            <div className="space-y-1">
-              <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-red-50 text-[#C8102E] border border-red-200">
-                এক ক্লাসের সব বিষয়
-              </span>
-              <h3 className="text-lg font-black text-slate-800">Full Class Package</h3>
-            </div>
-            <div className="text-3xl font-black text-[#C8102E]">
-              ৳{quizPrices.packages.fullClass || 150}
-            </div>
-            <p className="text-xs text-slate-500">এক ক্লাসের সকল ৬টি বিষয়ের কমপ্লিট মডেল টেস্ট।</p>
-            <ul className="text-xs text-slate-600 space-y-1.5 pt-2 border-t border-slate-100">
-              <li className="flex items-center gap-1.5">✓ সকল বিষয়ের পূর্ণাঙ্গ পরীক্ষা</li>
-              <li className="flex items-center gap-1.5">✓ আনলিমিটেড প্র্যাকটিস</li>
-              <li className="flex items-center gap-1.5">✓ লিডারবোর্ড র‍্যাঙ্কিং</li>
-              <li className="flex items-center gap-1.5">✓ ১০০% সিলেবাস কভারেজ</li>
-            </ul>
-            <button
-              type="button"
-              onClick={() => {
-                setPaymentPackageName('Full Class Package');
-                setPaymentAmount(quizPrices.packages.fullClass || 150);
-                setUnlockSuccessMsg('');
-                setPaymentModalOpen(true);
-              }}
-              className="w-full py-3 rounded-2xl bg-gradient-to-r from-[#9B0D23] via-[#C8102E] to-[#E5254A] text-white font-black text-xs shadow-lg shadow-red-600/30 transition active:scale-98"
-            >
-              প্যাকেজ কিনুন (৳{quizPrices.packages.fullClass || 150})
-            </button>
-          </div>
+              return (
+                <div
+                  key={pkg.id}
+                  className={`bg-white rounded-3xl p-6 transition-all duration-300 space-y-4 relative flex flex-col justify-between ${
+                    isPopular
+                      ? 'border-2 border-[#C8102E] shadow-xl md:-translate-y-1.5'
+                      : 'border border-slate-200 shadow-md hover:shadow-xl hover:border-slate-300'
+                  }`}
+                >
+                  {isPopular && (
+                    <div className="absolute top-0 right-0 bg-gradient-to-r from-[#9B0D23] to-[#C8102E] text-white text-[10px] font-black uppercase px-4 py-1 rounded-bl-2xl shadow-xs">
+                      {pkg.badge || 'জনপ্রিয় অফার'}
+                    </div>
+                  )}
 
-          {/* Card 3 */}
-          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-md space-y-4 hover:shadow-xl transition">
-            <div className="space-y-1">
-              <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200">
-                অল-ইন-ওয়ান
-              </span>
-              <h3 className="text-lg font-black text-slate-800">Full VIP Package</h3>
-            </div>
-            <div className="text-3xl font-black text-[#C8102E]">
-              ৳{quizPrices.packages.vipAll || 200}
-            </div>
-            <p className="text-xs text-slate-500">বিশেষ ছাড়সহ সকল ক্লাসের সকল টেস্ট ও স্পেশাল শিট।</p>
-            <ul className="text-xs text-slate-600 space-y-1.5 pt-2 border-t border-slate-100">
-              <li className="flex items-center gap-1.5">✓ সকল ক্লাস ও বিষয়ের অ্যাক্সেস</li>
-              <li className="flex items-center gap-1.5">✓ মডেল টেস্ট + স্পেশাল সাজেশন</li>
-              <li className="flex items-center gap-1.5">✓ প্রায়োরিটি সাপোর্ট</li>
-            </ul>
-            <button
-              type="button"
-              onClick={() => {
-                setPaymentPackageName('Full VIP Package');
-                setPaymentAmount(quizPrices.packages.vipAll || 200);
-                setUnlockSuccessMsg('');
-                setPaymentModalOpen(true);
-              }}
-              className="w-full py-3 rounded-2xl bg-slate-900 hover:bg-black text-white font-black text-xs transition active:scale-98"
-            >
-              প্যাকেজ কিনুন (৳{quizPrices.packages.vipAll || 200})
-            </button>
-          </div>
+                  <div className="space-y-3">
+                    <div className="space-y-1">
+                      {!isPopular && pkg.badge && (
+                        <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 inline-block">
+                          {pkg.badge}
+                        </span>
+                      )}
+                      <h3 className="text-lg font-black text-slate-900">{pkg.title}</h3>
+                    </div>
+
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-black text-[#C8102E]">৳{pkg.price}</span>
+                      {pkg.originalPrice && pkg.originalPrice > pkg.price && (
+                        <span className="text-sm font-bold text-slate-400 line-through">
+                          ৳{pkg.originalPrice}
+                        </span>
+                      )}
+                      {discountPct && (
+                        <span className="text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded">
+                          {discountPct}% ছাড়
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-xs text-slate-500 leading-relaxed">{pkg.tagline}</p>
+
+                    <ul className="text-xs text-slate-600 space-y-2 pt-3 border-t border-slate-100">
+                      {pkg.features.map((feat, fIdx) => (
+                        <li key={fIdx} className="flex items-start gap-2">
+                          <span className="text-emerald-600 font-black shrink-0 mt-0.5">✓</span>
+                          <span className="leading-snug">{feat}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPaymentPackageName(pkg.title);
+                        setPaymentAmount(pkg.price);
+                        setSelectedPackageScope(pkg.unlockScope);
+                        setPaymentTargetClass(selectedClass);
+                        setUnlockSuccessMsg('');
+                        setPaymentModalOpen(true);
+                      }}
+                      className={`w-full py-3 rounded-2xl font-black text-xs transition active:scale-98 cursor-pointer ${
+                        isPopular
+                          ? 'bg-gradient-to-r from-[#9B0D23] via-[#C8102E] to-[#E5254A] text-white shadow-lg shadow-red-600/30 hover:opacity-95'
+                          : 'bg-slate-900 hover:bg-black text-white'
+                      }`}
+                    >
+                      প্যাকেজ কিনুন (৳{pkg.price})
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
         </div>
       </section>
 
@@ -1126,17 +1149,67 @@ export default function QuizPage() {
               </button>
             </div>
 
-            {/* bKash / Nagad Direct Send Money Card */}
-            <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-2">
-              <p className="text-xs font-bold text-slate-700">বিকাশ / নগদ পার্সোনাল নম্বর:</p>
-              <div className="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-200">
-                <span className="font-black text-lg text-[#C8102E] tracking-wider">০১৭১২৫৯২৫১৯</span>
-                <span className="text-xs font-bold text-slate-500">পরিমাণ: ৳{paymentAmount}</span>
+            {/* MFS Direct Send Money Card */}
+            <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-2.5">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-bold text-slate-700">বিকাশ / নগদ / রকেট / উপায় পার্সোনাল নম্বর:</p>
+                <div className="flex items-center gap-1.5">
+                  <div className="bg-white px-1 py-0.5 rounded border border-slate-200 shadow-xs flex items-center">
+                    <img src="/assets/images/bkash.png" alt="bKash" className="h-3.5 w-auto object-contain" />
+                  </div>
+                  <div className="bg-white px-1 py-0.5 rounded border border-slate-200 shadow-xs flex items-center">
+                    <img src="/assets/images/nagad.png" alt="Nagad" className="h-3.5 w-auto object-contain" />
+                  </div>
+                  <div className="bg-white px-1 py-0.5 rounded border border-slate-200 shadow-xs flex items-center">
+                    <img src="/assets/images/rocket.png" alt="Rocket" className="h-3.5 w-auto object-contain" />
+                  </div>
+                  <div className="bg-white px-1 py-0.5 rounded border border-slate-200 shadow-xs flex items-center">
+                    <img src="/assets/images/upay.png" alt="Upay" className="h-3.5 w-auto object-contain" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-200 shadow-xs">
+                <span className="font-mono font-black text-base text-[#0F2C59] tracking-wider">01712592519</span>
+                <span className="text-xs font-black text-[#C8102E] bg-red-50 px-2 py-0.5 rounded border border-red-100">
+                  নির্ধারিত ফি: ৳{paymentAmount}
+                </span>
               </div>
               <p className="text-[11px] text-slate-500">
-                Send Money সম্পন্ন করে প্রাপ্ত TrxID অথবা অ্যাডমিন থেকে পাওয়া অ্যাক্সেস কোড নিচে লিখুন।
+                যেকোনো মাধ্যম থেকে Send Money করে পাওয়া TrxID অথবা অ্যাডমিন অ্যাক্সেস কোড নিচে লিখুন।
               </p>
             </div>
+
+            {/* Scope / Class Target Selection */}
+            {selectedPackageScope === 'all_classes' ? (
+              <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 p-3 rounded-xl text-xs text-purple-900 font-bold flex items-center gap-2">
+                <span className="text-base">🌟</span>
+                <span>এই অল-ইন-ওয়ান প্যাকেজটি কিনলে ৫ম থেকে ১০ম সকল শ্রেণির সব মডেল টেস্ট সম্পূর্ণ আনলক হবে!</span>
+              </div>
+            ) : (
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-xs">
+                  <label className="font-bold text-slate-700">কোন শ্রেণির জন্য আনলক করতে চান?</label>
+                  <span className="font-black text-[#C8102E]">{toBengaliClass(paymentTargetClass)} শ্রেণি</span>
+                </div>
+                <div className="grid grid-cols-6 gap-1.5">
+                  {[5, 6, 7, 8, 9, 10].map((cls) => (
+                    <button
+                      key={cls}
+                      type="button"
+                      onClick={() => setPaymentTargetClass(cls)}
+                      className={`py-1.5 rounded-xl text-xs font-black transition border ${
+                        paymentTargetClass === cls
+                          ? 'bg-[#C8102E] text-white border-[#C8102E] shadow-xs'
+                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                      }`}
+                    >
+                      {toBengaliClass(cls)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Verification Form */}
             <form onSubmit={handleVerifyUnlock} className="space-y-3">
