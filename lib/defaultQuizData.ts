@@ -705,4 +705,61 @@ export function saveStoredSubjectQuestions(
   } catch {}
 }
 
+// ─── 💎 Paid Quiz Price Settings Structure ───
+export interface QuizPrices {
+  classPrices: Record<number, number>; // e.g. 5: 50, 6: 50, 7: 50, 8: 50, 9: 50, 10: 50
+  subjectPrice: number; // e.g. 50
+  packages: {
+    singleSubject: number; // e.g. 50
+    fullClass: number; // e.g. 150
+    vipAll: number; // e.g. 200
+  };
+}
+
+export const DEFAULT_QUIZ_PRICES: QuizPrices = {
+  classPrices: {
+    5: 50,
+    6: 50,
+    7: 50,
+    8: 50,
+    9: 50,
+    10: 50,
+  },
+  subjectPrice: 50,
+  packages: {
+    singleSubject: 50,
+    fullClass: 150,
+    vipAll: 200,
+  },
+};
+
+export function getStoredQuizPrices(): QuizPrices {
+  if (typeof window === 'undefined') return DEFAULT_QUIZ_PRICES;
+  try {
+    const raw = localStorage.getItem('sn_quiz_prices_v1');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        return {
+          classPrices: { ...DEFAULT_QUIZ_PRICES.classPrices, ...(parsed.classPrices || {}) },
+          subjectPrice: Number(parsed.subjectPrice) || 50,
+          packages: {
+            singleSubject: Number(parsed.packages?.singleSubject) || 50,
+            fullClass: Number(parsed.packages?.fullClass) || 150,
+            vipAll: Number(parsed.packages?.vipAll) || 200,
+          },
+        };
+      }
+    }
+  } catch {}
+  return DEFAULT_QUIZ_PRICES;
+}
+
+export function saveStoredQuizPrices(prices: QuizPrices): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem('sn_quiz_prices_v1', JSON.stringify(prices));
+  } catch {}
+}
+
 
