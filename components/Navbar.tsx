@@ -226,9 +226,7 @@ export default function Navbar() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [aboutMenuOpen, setAboutMenuOpen] = useState(false);
   const [mobileAboutOpen, setMobileAboutOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const aboutDropdownRef = useRef<HTMLDivElement>(null);
-  const userMenuRef = useRef<HTMLDivElement>(null);
 
   // Instant 0ms Global Website Search State
   const [searchQuery, setSearchQuery] = useState('');
@@ -287,9 +285,6 @@ export default function Navbar() {
       if (aboutDropdownRef.current && !aboutDropdownRef.current.contains(event.target as Node)) {
         setAboutMenuOpen(false);
       }
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
-        setUserMenuOpen(false);
-      }
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setSearchOpen(false);
       }
@@ -312,7 +307,6 @@ export default function Navbar() {
   // Close menus on route navigation
   useEffect(() => {
     setDrawerOpen(false);
-    setUserMenuOpen(false);
     setAboutMenuOpen(false);
     setMobileOpen(false);
     setSearchOpen(false);
@@ -640,17 +634,17 @@ export default function Navbar() {
               </Link>
 
               {session?.user ? (
-                <div className="hidden lg:block relative" ref={userMenuRef}>
+                <div className="hidden lg:block relative">
                   {/* Profile Trigger Button - Avatar Only */}
                   <button
                     type="button"
-                    onClick={() => setUserMenuOpen((prev) => !prev)}
+                    onClick={() => setDrawerOpen(true)}
                     className={`rounded-full p-0.5 transition-all focus:outline-none ${
-                      userMenuOpen || drawerOpen
+                      drawerOpen
                         ? 'ring-2 ring-brand-600 ring-offset-2 ring-offset-white'
                         : 'hover:ring-2 hover:ring-brand-500/50 hover:ring-offset-1'
                     }`}
-                    aria-expanded={userMenuOpen}
+                    aria-expanded={drawerOpen}
                     aria-label="আমার অ্যাকাউন্ট"
                     title={session.user.name || 'আমার অ্যাকাউন্ট'}
                   >
@@ -669,108 +663,6 @@ export default function Navbar() {
                       )}
                     </div>
                   </button>
-
-                  {/* Desktop Instant Profile Dropdown */}
-                  {userMenuOpen && (
-                    <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-slate-200/90 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                      {/* User Header */}
-                      <div className="px-4 py-2.5 border-b border-slate-100 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center shrink-0 shadow-2xs">
-                          {session.user.image ? (
-                            <img
-                              src={session.user.image}
-                              alt={session.user.name || 'User'}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <span className="text-base font-black text-slate-700">
-                              {session.user.name?.charAt(0) || 'U'}
-                            </span>
-                          )}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-xs font-bold text-slate-900 truncate uppercase">
-                            {session.user.name}
-                          </p>
-                          <p className="text-[11px] text-slate-500 font-mono truncate mt-0.5">
-                            {session.user.email}
-                          </p>
-                          {session.user.role && (
-                            <span
-                              className={`inline-block text-[9px] font-black px-2 py-0.5 rounded-full mt-1 ${
-                                session.user.role === 'ADMIN'
-                                  ? 'bg-rose-50 text-rose-700 border border-rose-200'
-                                  : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                              }`}
-                            >
-                              {session.user.role === 'ADMIN' ? '👑 অ্যাডমিন' : '🎓 শিক্ষার্থী'}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Dropdown Links */}
-                      <div className="py-1 text-xs">
-                        {session.user.role === 'ADMIN' && (
-                          <Link
-                            href="/admin"
-                            onClick={() => setUserMenuOpen(false)}
-                            className="flex items-center gap-2.5 px-4 py-2 font-bold text-brand-700 bg-brand-50/70 hover:bg-brand-100/70 transition"
-                          >
-                            <FaShieldHalved className="w-3.5 h-3.5 text-brand-700" />
-                            <span>অ্যাডমিন প্যানেল</span>
-                          </Link>
-                        )}
-                        <Link
-                          href="/profile"
-                          onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-2.5 px-4 py-2 font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-950 transition"
-                        >
-                          <FaUser className="w-3.5 h-3.5 text-slate-400" />
-                          <span>আমার প্রোফাইল কার্ড</span>
-                        </Link>
-                        <Link
-                          href="/account"
-                          onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-2.5 px-4 py-2 font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-950 transition"
-                        >
-                          <FaGear className="w-3.5 h-3.5 text-slate-400" />
-                          <span>অ্যাকাউন্ট সেটিংস</span>
-                        </Link>
-                        <Link
-                          href="/results"
-                          onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-2.5 px-4 py-2 font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-950 transition"
-                        >
-                          <FaAward className="w-3.5 h-3.5 text-slate-400" />
-                          <span>রেজাল্ট ও মার্কশিট</span>
-                        </Link>
-                        <Link
-                          href="/my-notes"
-                          onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-2.5 px-4 py-2 font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-950 transition"
-                        >
-                          <FaFilePdf className="w-3.5 h-3.5 text-slate-400" />
-                          <span>সংগৃহীত শিট ও নোট</span>
-                        </Link>
-                      </div>
-
-                      {/* Logout Action (Calls Hot Toast Confirmation) */}
-                      <div className="pt-1.5 border-t border-slate-100">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setUserMenuOpen(false);
-                            confirmSignOut();
-                          }}
-                          className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 transition text-left cursor-pointer"
-                        >
-                          <FaArrowRightFromBracket className="w-3.5 h-3.5 text-red-500" />
-                          <span>লগ আউট</span>
-                        </button>
-                      </div>
-                    </div>
-                  )}
                 </div>
               ) : (
                 <Link
