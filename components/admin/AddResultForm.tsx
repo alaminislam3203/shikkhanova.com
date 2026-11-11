@@ -686,14 +686,18 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
                 <th className="py-3 px-3 w-14 text-center">কোড</th>
                 <th className="py-3 px-3.5">বিষয় (NCTB Subject)</th>
                 <th className="py-3 px-2 text-center w-16">পূর্ণমান</th>
-                <th className="py-3 px-2 text-center w-24 bg-amber-50/70 text-amber-950 font-black">
-                  CQ (সৃজনশীল)
-                </th>
-                <th className="py-3 px-2 text-center w-24 bg-blue-50/70 text-blue-950 font-black">
-                  MCQ (নৈর্ব্যক্তিক)
-                </th>
-                <th className="py-3 px-2 text-center w-24 bg-emerald-50/70 text-emerald-950 font-black">
-                  মোট প্রাপ্ত
+                {classGrade !== 5 && (
+                  <>
+                    <th className="py-3 px-2 text-center w-24 bg-amber-50/70 text-amber-950 font-black">
+                      CQ (সৃজনশীল)
+                    </th>
+                    <th className="py-3 px-2 text-center w-24 bg-blue-50/70 text-blue-950 font-black">
+                      MCQ (নৈর্ব্যক্তিক)
+                    </th>
+                  </>
+                )}
+                <th className="py-3 px-2 text-center w-28 bg-emerald-50/70 text-emerald-950 font-black">
+                  {classGrade === 5 ? 'প্রাপ্ত নম্বর' : 'মোট প্রাপ্ত'}
                 </th>
                 <th className="py-3 px-2.5 text-center w-20">গ্রেড</th>
                 <th className="py-3 px-2.5 text-center w-20">জিপিএ</th>
@@ -736,43 +740,46 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
                       {row.fullMarks}
                     </td>
 
-                    {/* CQ Input */}
-                    <td className="py-2 px-2 text-center">
-                      {noCqMcq ? (
-                        <span className="text-slate-400 font-bold text-xs" title={isClass5 ? '৫ম শ্রেণির ক্ষেত্রে পৃথক CQ/MCQ প্রযোজ্য নয়' : 'ইংরেজি বিষয়ের ক্ষেত্রে পৃথক CQ/MCQ প্রযোজ্য নয়'}>—</span>
-                      ) : (
-                        <div className="relative inline-block w-20">
-                          <input
-                            type="number"
-                            min="0"
-                            max={maxCq}
-                            value={row.cq === undefined || row.cq === 0 ? '' : row.cq}
-                            onChange={(e) => handleCqChange(idx, e.target.value)}
-                            placeholder={`max ${maxCq}`}
-                            className="w-full px-2 py-1.5 rounded-lg border border-amber-300 bg-amber-50/40 text-slate-900 text-center font-black text-xs focus:outline-none focus:ring-2 focus:ring-amber-400"
-                          />
-                        </div>
-                      )}
-                    </td>
+                    {/* CQ & MCQ Inputs (Class 6-10 Only) */}
+                    {!isClass5 && (
+                      <>
+                        <td className="py-2 px-2 text-center">
+                          {noCqMcq ? (
+                            <span className="text-slate-400 font-bold text-xs" title="ইংরেজি বিষয়ের ক্ষেত্রে পৃথক CQ/MCQ প্রযোজ্য নয়">—</span>
+                          ) : (
+                            <div className="relative inline-block w-20">
+                              <input
+                                type="number"
+                                min="0"
+                                max={maxCq}
+                                value={row.cq === undefined || row.cq === 0 ? '' : row.cq}
+                                onChange={(e) => handleCqChange(idx, e.target.value)}
+                                placeholder={`max ${maxCq}`}
+                                className="w-full px-2 py-1.5 rounded-lg border border-amber-300 bg-amber-50/40 text-slate-900 text-center font-black text-xs focus:outline-none focus:ring-2 focus:ring-amber-400"
+                              />
+                            </div>
+                          )}
+                        </td>
 
-                    {/* MCQ Input */}
-                    <td className="py-2 px-2 text-center">
-                      {noCqMcq ? (
-                        <span className="text-slate-400 font-bold text-xs" title={isClass5 ? '৫ম শ্রেণির ক্ষেত্রে পৃথক CQ/MCQ প্রযোজ্য নয়' : 'ইংরেজি বিষয়ের ক্ষেত্রে পৃথক CQ/MCQ প্রযোজ্য নয়'}>—</span>
-                      ) : (
-                        <div className="relative inline-block w-20">
-                          <input
-                            type="number"
-                            min="0"
-                            max={maxMcq}
-                            value={row.mcq === undefined || row.mcq === 0 ? '' : row.mcq}
-                            onChange={(e) => handleMcqChange(idx, e.target.value)}
-                            placeholder={`max ${maxMcq}`}
-                            className="w-full px-2 py-1.5 rounded-lg border border-blue-300 bg-blue-50/40 text-slate-900 text-center font-black text-xs focus:outline-none focus:ring-2 focus:ring-blue-400"
-                          />
-                        </div>
-                      )}
-                    </td>
+                        <td className="py-2 px-2 text-center">
+                          {noCqMcq ? (
+                            <span className="text-slate-400 font-bold text-xs" title="ইংরেজি বিষয়ের ক্ষেত্রে পৃথক CQ/MCQ প্রযোজ্য নয়">—</span>
+                          ) : (
+                            <div className="relative inline-block w-20">
+                              <input
+                                type="number"
+                                min="0"
+                                max={maxMcq}
+                                value={row.mcq === undefined || row.mcq === 0 ? '' : row.mcq}
+                                onChange={(e) => handleMcqChange(idx, e.target.value)}
+                                placeholder={`max ${maxMcq}`}
+                                className="w-full px-2 py-1.5 rounded-lg border border-blue-300 bg-blue-50/40 text-slate-900 text-center font-black text-xs focus:outline-none focus:ring-2 focus:ring-blue-400"
+                              />
+                            </div>
+                          )}
+                        </td>
+                      </>
+                    )}
 
                     {/* Total Obtained Marks Input */}
                     <td className="py-2 px-2 text-center">

@@ -431,6 +431,7 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
           {/* ============================================================ */}
           <div className="relative z-10">
             {(() => {
+              const isClass5 = result.classGrade === 5;
               let totalCq = 0;
               let totalMcq = 0;
               let hasAnyCq = false;
@@ -451,37 +452,62 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
               return (
                 <table className="w-full text-left border-collapse border border-slate-300">
                   <thead>
-                    <tr className="text-slate-800 text-[11px] font-bold uppercase bg-slate-100">
-                      <th rowSpan={2} className="py-2 px-2 border border-slate-300 text-center w-12 text-[10px]">
-                        কোড
-                      </th>
-                      <th rowSpan={2} className="py-2 px-3 border border-slate-300 text-[11px]">
-                        বিষয় (NCTB Subject)
-                      </th>
-                      <th rowSpan={2} className="py-2 px-2 border border-slate-300 text-center w-14 text-[10px]">
-                        পূর্ণমান
-                      </th>
-                      <th colSpan={3} className="py-1 px-2 border border-slate-300 text-center bg-slate-200/80 text-slate-900 text-[11px] font-black tracking-wide">
-                        প্রাপ্ত নম্বর (Marks Obtained)
-                      </th>
-                      <th rowSpan={2} className="py-2 px-2 border border-slate-300 text-center w-16 text-[10px]">
-                        লেটার গ্রেড
-                      </th>
-                      <th rowSpan={2} className="py-2 px-2 border border-slate-300 text-center w-14 text-[10px]">
-                        জিপিএ (GP)
-                      </th>
-                    </tr>
-                    <tr className="text-slate-700 text-[10px] font-bold uppercase bg-slate-50">
-                      <th className="py-1 px-1.5 border border-slate-300 text-center w-14 text-[10px] font-black text-amber-950 bg-amber-50/70">
-                        CQ (সৃজনশীল)
-                      </th>
-                      <th className="py-1 px-1.5 border border-slate-300 text-center w-14 text-[10px] font-black text-blue-950 bg-blue-50/70">
-                        MCQ (নৈর্ব্যক্তিক)
-                      </th>
-                      <th className="py-1 px-1.5 border border-slate-300 text-center w-14 text-[10px] font-black text-emerald-950 bg-emerald-50/70">
-                        মোট প্রাপ্ত
-                      </th>
-                    </tr>
+                    {isClass5 ? (
+                      <tr className="text-slate-800 text-[11px] font-bold uppercase bg-slate-100">
+                        <th className="py-2.5 px-2 border border-slate-300 text-center w-12 text-[10px]">
+                          কোড
+                        </th>
+                        <th className="py-2.5 px-3 border border-slate-300 text-[11px]">
+                          বিষয় (NCTB Subject)
+                        </th>
+                        <th className="py-2.5 px-2 border border-slate-300 text-center w-16 text-[10px]">
+                          পূর্ণমান
+                        </th>
+                        <th className="py-2.5 px-3 border border-slate-300 text-center w-28 bg-emerald-50/70 text-emerald-950 font-black text-[11px]">
+                          প্রাপ্ত নম্বর (Marks Obtained)
+                        </th>
+                        <th className="py-2.5 px-2 border border-slate-300 text-center w-16 text-[10px]">
+                          লেটার গ্রেড
+                        </th>
+                        <th className="py-2.5 px-2 border border-slate-300 text-center w-14 text-[10px]">
+                          জিপিএ (GP)
+                        </th>
+                      </tr>
+                    ) : (
+                      <>
+                        <tr className="text-slate-800 text-[11px] font-bold uppercase bg-slate-100">
+                          <th rowSpan={2} className="py-2 px-2 border border-slate-300 text-center w-12 text-[10px]">
+                            কোড
+                          </th>
+                          <th rowSpan={2} className="py-2 px-3 border border-slate-300 text-[11px]">
+                            বিষয় (NCTB Subject)
+                          </th>
+                          <th rowSpan={2} className="py-2 px-2 border border-slate-300 text-center w-14 text-[10px]">
+                            পূর্ণমান
+                          </th>
+                          <th colSpan={3} className="py-1 px-2 border border-slate-300 text-center bg-slate-200/80 text-slate-900 text-[11px] font-black tracking-wide">
+                            প্রাপ্ত নম্বর (Marks Obtained)
+                          </th>
+                          <th rowSpan={2} className="py-2 px-2 border border-slate-300 text-center w-16 text-[10px]">
+                            লেটার গ্রেড
+                          </th>
+                          <th rowSpan={2} className="py-2 px-2 border border-slate-300 text-center w-14 text-[10px]">
+                            জিপিএ (GP)
+                          </th>
+                        </tr>
+                        <tr className="text-slate-700 text-[10px] font-bold uppercase bg-slate-50">
+                          <th className="py-1 px-1.5 border border-slate-300 text-center w-14 text-[10px] font-black text-amber-950 bg-amber-50/70">
+                            CQ (সৃজনশীল)
+                          </th>
+                          <th className="py-1 px-1.5 border border-slate-300 text-center w-14 text-[10px] font-black text-blue-950 bg-blue-50/70">
+                            MCQ (নৈর্ব্যক্তিক)
+                          </th>
+                          <th className="py-1 px-1.5 border border-slate-300 text-center w-14 text-[10px] font-black text-emerald-950 bg-emerald-50/70">
+                            মোট প্রাপ্ত
+                          </th>
+                        </tr>
+                      </>
+                    )}
                   </thead>
                   <tbody className="divide-y divide-slate-200 text-xs">
                     {result.subjects.map((sub, idx) => {
@@ -504,14 +530,18 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
                           <td className="py-1.5 px-2 border border-slate-300 text-center text-slate-600 font-semibold text-xs">
                             {sub.fullMarks}
                           </td>
-                          {/* CQ (সৃজনশীল) */}
-                          <td className="py-1.5 px-1.5 border border-slate-300 text-center font-bold text-slate-700 font-mono text-xs">
-                            {cq}
-                          </td>
-                          {/* MCQ (নৈর্ব্যক্তিক) */}
-                          <td className="py-1.5 px-1.5 border border-slate-300 text-center font-bold text-slate-700 font-mono text-xs">
-                            {mcq}
-                          </td>
+                          {!isClass5 && (
+                            <>
+                              {/* CQ (সৃজনশীল) */}
+                              <td className="py-1.5 px-1.5 border border-slate-300 text-center font-bold text-slate-700 font-mono text-xs">
+                                {cq}
+                              </td>
+                              {/* MCQ (নৈর্ব্যক্তিক) */}
+                              <td className="py-1.5 px-1.5 border border-slate-300 text-center font-bold text-slate-700 font-mono text-xs">
+                                {mcq}
+                              </td>
+                            </>
+                          )}
                           {/* মোট প্রাপ্ত */}
                           <td className="py-1.5 px-1.5 border border-slate-300 text-center font-black text-slate-900 bg-slate-50/50 text-xs">
                             {sub.obtained}
@@ -544,12 +574,16 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
                       <td className="py-2 px-2 border border-slate-300 text-center text-slate-700 font-bold text-xs">
                         {result.totalMarks}
                       </td>
-                      <td className="py-2 px-1.5 border border-slate-300 text-center text-amber-950 font-bold text-xs font-mono">
-                        {hasAnyCq ? totalCq : '—'}
-                      </td>
-                      <td className="py-2 px-1.5 border border-slate-300 text-center text-blue-950 font-bold text-xs font-mono">
-                        {hasAnyMcq ? totalMcq : '—'}
-                      </td>
+                      {!isClass5 && (
+                        <>
+                          <td className="py-2 px-1.5 border border-slate-300 text-center text-amber-950 font-bold text-xs font-mono">
+                            {hasAnyCq ? totalCq : '—'}
+                          </td>
+                          <td className="py-2 px-1.5 border border-slate-300 text-center text-blue-950 font-bold text-xs font-mono">
+                            {hasAnyMcq ? totalMcq : '—'}
+                          </td>
+                        </>
+                      )}
                       <td className="py-2 px-1.5 border border-slate-300 text-center text-brand-800 font-black text-sm font-mono">
                         {result.obtainedMarks}
                       </td>
