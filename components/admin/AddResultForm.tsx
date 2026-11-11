@@ -185,7 +185,8 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
     setSubjectRows((prev) => {
       const updated = [...prev];
       const target = updated[index];
-      const maxCq = target.fullMarks === 100 ? 70 : target.fullMarks === 50 ? 25 : target.fullMarks;
+      const isBangla2nd = target.subject.includes('বাংলা ২য় পত্র');
+      const maxCq = target.fullMarks === 100 ? 70 : target.fullMarks === 50 ? (isBangla2nd ? 30 : 25) : target.fullMarks;
       const cappedCq = numericCq !== undefined ? Math.min(maxCq, numericCq) : undefined;
       const mcqVal = target.mcq || 0;
       const totalObtained = Math.min(target.fullMarks, (cappedCq || 0) + mcqVal);
@@ -207,7 +208,8 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
     setSubjectRows((prev) => {
       const updated = [...prev];
       const target = updated[index];
-      const maxMcq = target.fullMarks === 100 ? 30 : target.fullMarks === 50 ? 25 : Math.round(target.fullMarks * 0.3);
+      const isBangla2nd = target.subject.includes('বাংলা ২য় পত্র');
+      const maxMcq = target.fullMarks === 100 ? 30 : target.fullMarks === 50 ? (isBangla2nd ? 20 : 25) : Math.round(target.fullMarks * 0.3);
       const cappedMcq = numericMcq !== undefined ? Math.min(maxMcq, numericMcq) : undefined;
       const cqVal = target.cq || 0;
       const totalObtained = Math.min(target.fullMarks, cqVal + (cappedMcq || 0));
