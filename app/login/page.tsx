@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useMemo, Suspense } from 'react';
-import { signIn } from 'next-auth/react';
+import React, { useState, useMemo, useEffect, Suspense } from 'react';
+import { signIn, useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
@@ -11,6 +11,14 @@ function LoginFormInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
+  const { data: session, status } = useSession();
+
+  // If already logged in, block entry to /login and redirect
+  useEffect(() => {
+    if (status === 'authenticated') {
+      router.replace(callbackUrl);
+    }
+  }, [status, router, callbackUrl]);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,6 +30,15 @@ function LoginFormInner() {
     const validEmail = /\S+@\S+\.\S+/.test(email);
     return validEmail && password.length >= 6 && !loading;
   }, [email, password, loading]);
+
+  if (status === 'loading' || status === 'authenticated') {
+    return (
+      <div className="min-h-[50vh] flex flex-col items-center justify-center gap-3">
+        <div className="w-8 h-8 border-3 border-[#C8102E] border-t-transparent rounded-full animate-spin" />
+        <p className="text-xs font-bold text-slate-500">যাচাই করা হচ্ছে...</p>
+      </div>
+    );
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
