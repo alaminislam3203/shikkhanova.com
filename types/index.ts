@@ -15,6 +15,8 @@ export interface SubjectMark {
   subject: string;
   fullMarks: number;
   obtained: number;
+  cq?: number;
+  mcq?: number;
   grade: string;
   gpa: number;
   isFourthSubject?: boolean;

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FaPrint, FaCircleCheck, FaCircleXmark, FaFileLines } from 'react-icons/fa6';
 import Logo from '@/components/common/Logo';
 import { MarksheetData } from '@/types';
+import { getSubjectCqMcq } from '@/lib/gradingUtils';
 
 interface MarksheetViewProps {
   result: MarksheetData;
@@ -415,91 +416,153 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
           </div>
 
           {/* ============================================================ */}
-          {/* SUBJECT MARKS TABLE (Static 100% Fixed Table)                 */}
+          {/* SUBJECT MARKS TABLE (NCTB Formatted with Separated CQ & MCQ)  */}
           {/* ============================================================ */}
           <div className="relative z-10">
-            <table className="w-full text-left border-collapse border border-slate-300">
-              <thead>
-                <tr className="text-slate-800 text-[11px] font-bold uppercase border-b border-slate-300 bg-slate-100">
-                  <th className="py-1.5 px-3 border border-slate-300 text-center w-16">কোড</th>
-                  <th className="py-1.5 px-4 border border-slate-300">বিষয় (NCTB Subject)</th>
-                  <th className="py-1.5 px-3 border border-slate-300 text-center w-20">পূর্ণমান</th>
-                  <th className="py-1.5 px-3 border border-slate-300 text-center w-24">প্রাপ্ত নম্বর</th>
-                  <th className="py-1.5 px-3 border border-slate-300 text-center w-24">লেটার গ্রেড</th>
-                  <th className="py-1.5 px-3 border border-slate-300 text-center w-20">জিপিএ (GP)</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-200 text-xs">
-                {result.subjects.map((sub, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50/50">
-                    <td className="py-1.5 px-3 border border-slate-300 text-center font-mono font-bold text-slate-600 text-xs">
-                      {sub.code || `০${idx + 1}`}
-                    </td>
-                    <td className="py-1.5 px-4 border border-slate-300 font-bold text-slate-800">
-                      <div className="flex items-center justify-between">
-                        <span>{sub.subject}</span>
-                        {sub.isFourthSubject && (
-                          <span className="text-[9px] bg-purple-100 text-purple-700 font-bold px-1.5 py-0.5 rounded-full ml-2">
-                            ৪র্থ বিষয়
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="py-1.5 px-3 border border-slate-300 text-center text-slate-600 font-semibold">
-                      {sub.fullMarks}
-                    </td>
-                    <td className="py-1.5 px-3 border border-slate-300 text-center font-black text-slate-900">
-                      {sub.obtained}
-                    </td>
-                    <td className="py-1.5 px-3 border border-slate-300 text-center font-black">
-                      <span
-                        className={`inline-block px-2 py-0.5 rounded text-xs ${
-                          sub.grade === 'A+'
-                            ? 'bg-emerald-100 text-emerald-800 font-black'
-                            : sub.grade === 'F'
-                            ? 'bg-rose-100 text-rose-800 font-black'
-                            : 'text-slate-800 font-bold'
-                        }`}
-                      >
-                        {sub.grade}
-                      </span>
-                    </td>
-                    <td className="py-1.5 px-3 border border-slate-300 text-center font-black text-brand-700">
-                      {sub.gpa.toFixed(2)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot>
-                <tr className="font-bold text-slate-900 border-t-2 border-slate-400 bg-blue-50/80">
-                  <td colSpan={2} className="py-2 px-4 border border-slate-300 text-xs font-black text-[#0A1E3C]">
-                    সর্বমোট ফলাফল (Total Evaluation)
-                  </td>
-                  <td className="py-2 px-3 border border-slate-300 text-center text-slate-700 font-bold text-xs">
-                    {result.totalMarks}
-                  </td>
-                  <td className="py-2 px-3 border border-slate-300 text-center text-brand-800 font-black text-sm">
-                    {result.obtainedMarks}
-                  </td>
-                  <td className="py-2 px-3 border border-slate-300 text-center font-black text-sm">
-                    <span
-                      className={`inline-block px-2.5 py-0.5 rounded text-xs font-black ${
-                        result.grade === 'A+'
-                          ? 'bg-emerald-600 text-white'
-                          : result.grade === 'F'
-                          ? 'bg-rose-600 text-white'
-                          : 'bg-brand-800 text-white'
-                      }`}
-                    >
-                      {result.grade}
-                    </span>
-                  </td>
-                  <td className="py-2 px-3 border border-slate-300 text-center text-brand-800 font-black text-sm">
-                    {result.gpa.toFixed(2)}
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
+            {(() => {
+              let totalCq = 0;
+              let totalMcq = 0;
+              let hasAnyCq = false;
+              let hasAnyMcq = false;
+
+              result.subjects.forEach((sub) => {
+                const { cq, mcq } = getSubjectCqMcq(sub);
+                if (typeof cq === 'number') {
+                  totalCq += cq;
+                  hasAnyCq = true;
+                }
+                if (typeof mcq === 'number') {
+                  totalMcq += mcq;
+                  hasAnyMcq = true;
+                }
+              });
+
+              return (
+                <table className="w-full text-left border-collapse border border-slate-300">
+                  <thead>
+                    <tr className="text-slate-800 text-[11px] font-bold uppercase bg-slate-100">
+                      <th rowSpan={2} className="py-2 px-2 border border-slate-300 text-center w-12 text-[10px]">
+                        কোড
+                      </th>
+                      <th rowSpan={2} className="py-2 px-3 border border-slate-300 text-[11px]">
+                        বিষয় (NCTB Subject)
+                      </th>
+                      <th rowSpan={2} className="py-2 px-2 border border-slate-300 text-center w-14 text-[10px]">
+                        পূর্ণমান
+                      </th>
+                      <th colSpan={3} className="py-1 px-2 border border-slate-300 text-center bg-slate-200/80 text-slate-900 text-[11px] font-black tracking-wide">
+                        প্রাপ্ত নম্বর (Marks Obtained)
+                      </th>
+                      <th rowSpan={2} className="py-2 px-2 border border-slate-300 text-center w-16 text-[10px]">
+                        লেটার গ্রেড
+                      </th>
+                      <th rowSpan={2} className="py-2 px-2 border border-slate-300 text-center w-14 text-[10px]">
+                        জিপিএ (GP)
+                      </th>
+                    </tr>
+                    <tr className="text-slate-700 text-[10px] font-bold uppercase bg-slate-50">
+                      <th className="py-1 px-1.5 border border-slate-300 text-center w-14 text-[10px] font-black text-amber-950 bg-amber-50/70">
+                        CQ (সৃজনশীল)
+                      </th>
+                      <th className="py-1 px-1.5 border border-slate-300 text-center w-14 text-[10px] font-black text-blue-950 bg-blue-50/70">
+                        MCQ (নৈর্ব্যক্তিক)
+                      </th>
+                      <th className="py-1 px-1.5 border border-slate-300 text-center w-14 text-[10px] font-black text-emerald-950 bg-emerald-50/70">
+                        মোট প্রাপ্ত
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 text-xs">
+                    {result.subjects.map((sub, idx) => {
+                      const { cq, mcq } = getSubjectCqMcq(sub);
+                      return (
+                        <tr key={idx} className="hover:bg-slate-50/50">
+                          <td className="py-1.5 px-2 border border-slate-300 text-center font-mono font-bold text-slate-600 text-xs">
+                            {sub.code || `০${idx + 1}`}
+                          </td>
+                          <td className="py-1.5 px-3 border border-slate-300 font-bold text-slate-800">
+                            <div className="flex items-center justify-between">
+                              <span>{sub.subject}</span>
+                              {sub.isFourthSubject && (
+                                <span className="text-[9px] bg-purple-100 text-purple-700 font-bold px-1.5 py-0.5 rounded-full ml-2">
+                                  ৪র্থ বিষয়
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="py-1.5 px-2 border border-slate-300 text-center text-slate-600 font-semibold text-xs">
+                            {sub.fullMarks}
+                          </td>
+                          {/* CQ (সৃজনশীল) */}
+                          <td className="py-1.5 px-1.5 border border-slate-300 text-center font-bold text-slate-700 font-mono text-xs">
+                            {cq}
+                          </td>
+                          {/* MCQ (নৈর্ব্যক্তিক) */}
+                          <td className="py-1.5 px-1.5 border border-slate-300 text-center font-bold text-slate-700 font-mono text-xs">
+                            {mcq}
+                          </td>
+                          {/* মোট প্রাপ্ত */}
+                          <td className="py-1.5 px-1.5 border border-slate-300 text-center font-black text-slate-900 bg-slate-50/50 text-xs">
+                            {sub.obtained}
+                          </td>
+                          <td className="py-1.5 px-2 border border-slate-300 text-center font-black">
+                            <span
+                              className={`inline-block px-2 py-0.5 rounded text-xs ${
+                                sub.grade === 'A+'
+                                  ? 'bg-emerald-100 text-emerald-800 font-black'
+                                  : sub.grade === 'F'
+                                  ? 'bg-rose-100 text-rose-800 font-black'
+                                  : 'text-slate-800 font-bold'
+                              }`}
+                            >
+                              {sub.grade}
+                            </span>
+                          </td>
+                          <td className="py-1.5 px-2 border border-slate-300 text-center font-black text-brand-700">
+                            {sub.gpa.toFixed(2)}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                  <tfoot>
+                    <tr className="font-bold text-slate-900 border-t-2 border-slate-400 bg-blue-50/80">
+                      <td colSpan={2} className="py-2 px-3 border border-slate-300 text-xs font-black text-[#0A1E3C]">
+                        সর্বমোট ফলাফল (Total Evaluation)
+                      </td>
+                      <td className="py-2 px-2 border border-slate-300 text-center text-slate-700 font-bold text-xs">
+                        {result.totalMarks}
+                      </td>
+                      <td className="py-2 px-1.5 border border-slate-300 text-center text-amber-950 font-bold text-xs font-mono">
+                        {hasAnyCq ? totalCq : '—'}
+                      </td>
+                      <td className="py-2 px-1.5 border border-slate-300 text-center text-blue-950 font-bold text-xs font-mono">
+                        {hasAnyMcq ? totalMcq : '—'}
+                      </td>
+                      <td className="py-2 px-1.5 border border-slate-300 text-center text-brand-800 font-black text-sm font-mono">
+                        {result.obtainedMarks}
+                      </td>
+                      <td className="py-2 px-2 border border-slate-300 text-center font-black text-sm">
+                        <span
+                          className={`inline-block px-2.5 py-0.5 rounded text-xs font-black ${
+                            result.grade === 'A+'
+                              ? 'bg-emerald-600 text-white'
+                              : result.grade === 'F'
+                              ? 'bg-rose-600 text-white'
+                              : 'bg-brand-800 text-white'
+                          }`}
+                        >
+                          {result.grade}
+                        </span>
+                      </td>
+                      <td className="py-2 px-2 border border-slate-300 text-center text-brand-800 font-black text-sm">
+                        {result.gpa.toFixed(2)}
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              );
+            })()}
           </div>
 
           {/* ============================================================ */}

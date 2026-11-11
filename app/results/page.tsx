@@ -88,9 +88,11 @@ export default function ResultsPage() {
               subject: p.subject || p.subjectName,
               fullMarks: p.fullMarks || 100,
               obtained: p.obtained ?? p.obtainedMarks ?? 0,
+              cq: p.cq !== undefined && p.cq !== null && p.cq !== '' ? Number(p.cq) : undefined,
+              mcq: p.mcq !== undefined && p.mcq !== null && p.mcq !== '' ? Number(p.mcq) : undefined,
               grade: p.grade || 'F',
               gpa: typeof p.gpa === 'number' ? p.gpa : parseFloat(p.gpa) || 0,
-              isFourthSubject: Boolean(p.isFourthSubject),
+              isFourthSubject: Boolean(p.isFourthSubject || p.isOptional),
             }));
           }
         } catch {

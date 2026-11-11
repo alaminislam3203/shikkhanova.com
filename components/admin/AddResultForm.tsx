@@ -179,7 +179,51 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
     }
   };
 
-  // Handle single subject obtained mark change
+  // Handle CQ (সৃজনশীল) mark change
+  const handleCqChange = (index: number, val: string) => {
+    const numericCq = val === '' ? undefined : Math.max(0, parseFloat(val) || 0);
+    setSubjectRows((prev) => {
+      const updated = [...prev];
+      const target = updated[index];
+      const maxCq = target.fullMarks === 100 ? 70 : target.fullMarks === 50 ? 25 : target.fullMarks;
+      const cappedCq = numericCq !== undefined ? Math.min(maxCq, numericCq) : undefined;
+      const mcqVal = target.mcq || 0;
+      const totalObtained = Math.min(target.fullMarks, (cappedCq || 0) + mcqVal);
+      const { grade, gpa } = calculateSubjectGradeAndGpa(totalObtained, target.fullMarks);
+      updated[index] = {
+        ...target,
+        cq: cappedCq,
+        obtained: totalObtained,
+        grade,
+        gpa,
+      };
+      return updated;
+    });
+  };
+
+  // Handle MCQ (নৈর্ব্যক্তিক) mark change
+  const handleMcqChange = (index: number, val: string) => {
+    const numericMcq = val === '' ? undefined : Math.max(0, parseFloat(val) || 0);
+    setSubjectRows((prev) => {
+      const updated = [...prev];
+      const target = updated[index];
+      const maxMcq = target.fullMarks === 100 ? 30 : target.fullMarks === 50 ? 25 : Math.round(target.fullMarks * 0.3);
+      const cappedMcq = numericMcq !== undefined ? Math.min(maxMcq, numericMcq) : undefined;
+      const cqVal = target.cq || 0;
+      const totalObtained = Math.min(target.fullMarks, cqVal + (cappedMcq || 0));
+      const { grade, gpa } = calculateSubjectGradeAndGpa(totalObtained, target.fullMarks);
+      updated[index] = {
+        ...target,
+        mcq: cappedMcq,
+        obtained: totalObtained,
+        grade,
+        gpa,
+      };
+      return updated;
+    });
+  };
+
+  // Handle single subject obtained mark change (direct override)
   const handleSubjectMarkChange = (index: number, val: string) => {
     const numericVal = Math.max(0, parseFloat(val) || 0);
     setSubjectRows((prev) => {
@@ -614,24 +658,36 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 uppercase text-[11px]">
-                <th className="py-3 px-3.5 w-16 text-center">কোড</th>
+                <th className="py-3 px-3 w-14 text-center">কোড</th>
                 <th className="py-3 px-3.5">বিষয় (NCTB Subject)</th>
-                <th className="py-3 px-3.5 text-center w-24">পূর্ণমান</th>
-                <th className="py-3 px-3.5 text-center w-36">প্রাপ্ত নম্বর</th>
-                <th className="py-3 px-3.5 text-center w-24">গ্রেড</th>
-                <th className="py-3 px-3.5 text-center w-24">জিপিএ</th>
+                <th className="py-3 px-2 text-center w-16">পূর্ণমান</th>
+                <th className="py-3 px-2 text-center w-24 bg-amber-50/70 text-amber-950 font-black">
+                  CQ (সৃজনশীল)
+                </th>
+                <th className="py-3 px-2 text-center w-24 bg-blue-50/70 text-blue-950 font-black">
+                  MCQ (নৈর্ব্যক্তিক)
+                </th>
+                <th className="py-3 px-2 text-center w-24 bg-emerald-50/70 text-emerald-950 font-black">
+                  মোট প্রাপ্ত
+                </th>
+                <th className="py-3 px-2.5 text-center w-20">গ্রেড</th>
+                <th className="py-3 px-2.5 text-center w-20">জিপিএ</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {subjectRows.map((row, idx) => {
                 const isFailed = row.obtained > 0 && row.grade === 'F';
+                const isEnglish = row.subject.toLowerCase().includes('english') || row.subject.toLowerCase().includes('ইংরেজি');
+                const maxCq = row.fullMarks === 100 ? 70 : row.fullMarks === 50 ? 25 : row.fullMarks;
+                const maxMcq = row.fullMarks === 100 ? 30 : row.fullMarks === 50 ? 25 : Math.round(row.fullMarks * 0.3);
+
                 return (
                   <tr
                     key={row.code || idx}
                     className={`hover:bg-slate-50/70 transition ${isFailed ? 'bg-rose-50/40' : ''}`}
                   >
                     {/* Subject Code */}
-                    <td className="py-2.5 px-3.5 text-center font-mono font-bold text-slate-500">
+                    <td className="py-2.5 px-3 text-center font-mono font-bold text-slate-500">
                       {row.code || `${idx + 1}`}
                     </td>
 
@@ -648,13 +704,51 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
                     </td>
 
                     {/* Full Marks */}
-                    <td className="py-2.5 px-3.5 text-center font-bold text-slate-500">
+                    <td className="py-2.5 px-2 text-center font-bold text-slate-500">
                       {row.fullMarks}
                     </td>
 
-                    {/* Obtained Marks Input */}
-                    <td className="py-2.5 px-3.5 text-center">
-                      <div className="relative inline-block w-28">
+                    {/* CQ Input */}
+                    <td className="py-2 px-2 text-center">
+                      {isEnglish ? (
+                        <span className="text-slate-400 font-bold text-xs" title="ইংরেজি বিষয়ের ক্ষেত্রে পৃথক CQ/MCQ প্রযোজ্য নয়">—</span>
+                      ) : (
+                        <div className="relative inline-block w-20">
+                          <input
+                            type="number"
+                            min="0"
+                            max={maxCq}
+                            value={row.cq === undefined || row.cq === 0 ? '' : row.cq}
+                            onChange={(e) => handleCqChange(idx, e.target.value)}
+                            placeholder={`max ${maxCq}`}
+                            className="w-full px-2 py-1.5 rounded-lg border border-amber-300 bg-amber-50/40 text-slate-900 text-center font-black text-xs focus:outline-none focus:ring-2 focus:ring-amber-400"
+                          />
+                        </div>
+                      )}
+                    </td>
+
+                    {/* MCQ Input */}
+                    <td className="py-2 px-2 text-center">
+                      {isEnglish ? (
+                        <span className="text-slate-400 font-bold text-xs" title="ইংরেজি বিষয়ের ক্ষেত্রে পৃথক CQ/MCQ প্রযোজ্য নয়">—</span>
+                      ) : (
+                        <div className="relative inline-block w-20">
+                          <input
+                            type="number"
+                            min="0"
+                            max={maxMcq}
+                            value={row.mcq === undefined || row.mcq === 0 ? '' : row.mcq}
+                            onChange={(e) => handleMcqChange(idx, e.target.value)}
+                            placeholder={`max ${maxMcq}`}
+                            className="w-full px-2 py-1.5 rounded-lg border border-blue-300 bg-blue-50/40 text-slate-900 text-center font-black text-xs focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          />
+                        </div>
+                      )}
+                    </td>
+
+                    {/* Total Obtained Marks Input */}
+                    <td className="py-2 px-2 text-center">
+                      <div className="relative inline-block w-20">
                         <input
                           type="number"
                           min="0"
@@ -662,7 +756,7 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
                           value={row.obtained === 0 ? '' : row.obtained}
                           onChange={(e) => handleSubjectMarkChange(idx, e.target.value)}
                           placeholder="0"
-                          className={`w-full px-3 py-1.5 rounded-lg border text-center font-black text-sm transition focus:outline-none ${
+                          className={`w-full px-2 py-1.5 rounded-lg border text-center font-black text-xs transition focus:outline-none ${
                             row.obtained > 0 && row.grade === 'F'
                               ? 'border-rose-400 bg-rose-50 text-rose-700 focus:ring-2 focus:ring-rose-200'
                               : 'border-slate-300 bg-white text-slate-900 focus:border-[#C8102E] focus:ring-2 focus:ring-[#C8102E]/20'
@@ -672,7 +766,7 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
                     </td>
 
                     {/* Letter Grade */}
-                    <td className="py-2.5 px-3.5 text-center">
+                    <td className="py-2.5 px-2.5 text-center">
                       <span
                         className={`inline-block px-2.5 py-0.5 rounded-md font-black text-xs ${
                           row.grade === 'A+'
@@ -695,7 +789,7 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
                     </td>
 
                     {/* GPA Point */}
-                    <td className="py-2.5 px-3.5 text-center font-black text-slate-700">
+                    <td className="py-2.5 px-2.5 text-center font-black text-slate-700">
                       {row.gpa.toFixed(2)}
                     </td>
                   </tr>

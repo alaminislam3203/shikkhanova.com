@@ -3,9 +3,66 @@ export interface SubjectMarkEntry {
   subject: string;
   fullMarks: number;
   obtained: number;
+  cq?: number;
+  mcq?: number;
   grade: string;
   gpa: number;
   isOptional?: boolean;
+}
+
+/**
+ * Get NCTB standard CQ and MCQ marks for a subject
+ */
+export function getSubjectCqMcq(sub: {
+  subject: string;
+  fullMarks: number;
+  obtained: number;
+  cq?: number;
+  mcq?: number;
+}): { cq: string | number; mcq: string | number } {
+  // 1. If explicit CQ or MCQ is provided
+  if (sub.cq !== undefined && sub.cq !== null && sub.mcq !== undefined && sub.mcq !== null) {
+    return { cq: sub.cq, mcq: sub.mcq };
+  }
+  if (sub.cq !== undefined && sub.cq !== null) {
+    return { cq: sub.cq, mcq: sub.mcq ?? '—' };
+  }
+  if (sub.mcq !== undefined && sub.mcq !== null) {
+    return { cq: sub.cq ?? '—', mcq: sub.mcq };
+  }
+
+  // 2. English / ইংরেজি has no separate CQ/MCQ in NCTB board format
+  const name = sub.subject.toLowerCase();
+  if (name.includes('english') || name.includes('ইংরেজি')) {
+    return { cq: '—', mcq: '—' };
+  }
+
+  // 3. Fallback for older records where only total obtained was entered
+  const obtained = sub.obtained || 0;
+  if (obtained === 0) {
+    return { cq: 0, mcq: 0 };
+  }
+
+  // 100 mark subjects (NCTB: CQ 70, MCQ 30)
+  if (sub.fullMarks === 100) {
+    const mcq = Math.min(30, Math.max(0, Math.round(obtained * 0.3)));
+    const cq = Math.min(70, Math.max(0, obtained - mcq));
+    return { cq, mcq };
+  }
+
+  // 50 mark subjects (NCTB: CQ/Practical 25, MCQ 25)
+  if (sub.fullMarks === 50) {
+    const mcq = Math.min(25, Math.max(0, Math.round(obtained * 0.5)));
+    const cq = Math.min(25, Math.max(0, obtained - mcq));
+    return { cq, mcq };
+  }
+
+  // Any other full marks (70% CQ, 30% MCQ)
+  const maxMcq = Math.round(sub.fullMarks * 0.3);
+  const maxCq = sub.fullMarks - maxMcq;
+  const mcq = Math.min(maxMcq, Math.max(0, Math.round(obtained * 0.3)));
+  const cq = Math.min(maxCq, Math.max(0, obtained - mcq));
+  return { cq, mcq };
 }
 
 export interface CalculatedResultSummary {
