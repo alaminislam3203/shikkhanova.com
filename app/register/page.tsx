@@ -48,21 +48,6 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  if (status === 'loading' || status === 'authenticated') {
-    return (
-      <div className="min-h-[50vh] flex flex-col items-center justify-center gap-3">
-        <div className="w-8 h-8 border-3 border-[#C8102E] border-t-transparent rounded-full animate-spin" />
-        <p className="text-xs font-bold text-slate-500">যাচাই করা হচ্ছে...</p>
-      </div>
-    );
-  }
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
   // Password strength calculation matching Merxo Hub
   const passScore = useMemo(() => {
     let s = 0;
@@ -95,6 +80,21 @@ export default function RegisterPage() {
       !loading
     );
   }, [formData, loading]);
+
+  if (status === 'loading' || status === 'authenticated') {
+    return (
+      <div className="min-h-[50vh] flex flex-col items-center justify-center gap-3">
+        <div className="w-8 h-8 border-3 border-[#C8102E] border-t-transparent rounded-full animate-spin" />
+        <p className="text-xs font-bold text-slate-500">যাচাই করা হচ্ছে...</p>
+      </div>
+    );
+  }
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
