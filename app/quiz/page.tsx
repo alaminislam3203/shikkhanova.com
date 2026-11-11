@@ -185,9 +185,6 @@ export default function QuizPage() {
     setActiveTestBadge(`📖 ${subjectName}`);
     scrollTo(testAreaRef);
   };
-    setActiveTestBadge(`📖 ${subjectName}`);
-    scrollTo(testAreaRef);
-  };
 
   // Submit Active Test
   const handleSubmitTest = () => {
