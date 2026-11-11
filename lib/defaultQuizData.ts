@@ -1340,4 +1340,101 @@ export function saveStoredQuizPrices(prices: QuizPrices): void {
   } catch {}
 }
 
+// ─── 📦 Dynamic Special Model Test Packages Structure ───
+export type PackageUnlockScope = 'single_subject' | 'single_class' | 'all_classes';
+
+export interface QuizPackageItem {
+  id: string;
+  title: string;
+  badge?: string;
+  tagline: string;
+  price: number;
+  originalPrice?: number;
+  features: string[];
+  unlockScope: PackageUnlockScope;
+  isPopular?: boolean;
+  isActive: boolean;
+  accentColor?: 'blue' | 'red' | 'purple' | 'emerald' | 'amber';
+}
+
+export const DEFAULT_QUIZ_PACKAGES: QuizPackageItem[] = [
+  {
+    id: 'single_subject',
+    title: 'Single Subject',
+    badge: 'একক বিষয়',
+    tagline: 'যেকোনো ১টি বিষয়ের পূর্ণাঙ্গ মডেল টেস্ট ও সমাধান।',
+    price: 50,
+    originalPrice: 80,
+    features: [
+      '১টি বিষয়ের সকল প্রশ্ন ও অধ্যায়ভিত্তিক MCQ',
+      'ইনস্ট্যান্ট ফলাফল ও গ্রেড শিট',
+      'ব্যাখ্যাসহ প্রতিটি প্রশ্নের সঠিক উত্তর',
+      'আনলিমিটেড রি-টেস্ট দেওয়ার সুযোগ',
+    ],
+    unlockScope: 'single_subject',
+    isPopular: false,
+    isActive: true,
+    accentColor: 'blue',
+  },
+  {
+    id: 'full_class',
+    title: 'Full Class Package',
+    badge: 'জনপ্রিয় অফার',
+    tagline: 'এক ক্লাসের সকল বিষয়ের কমপ্লিট স্পেশাল মডেল টেস্ট।',
+    price: 150,
+    originalPrice: 250,
+    features: [
+      'সকল বিষয়ের পূর্ণাঙ্গ মডেল টেস্ট',
+      'অধ্যায়ভিত্তিক স্পেশাল কুইজ ব্যাংক',
+      'মেধা তালিকা / লিডারবোর্ড র‍্যাঙ্কিং ও মেডেল',
+      '১০০% সিলেবাস ও নতুন কারিকুলাম কভারেজ',
+      '২৪/৭ যেকোনো সময় পরীক্ষা দেওয়ার সুযোগ',
+    ],
+    unlockScope: 'single_class',
+    isPopular: true,
+    isActive: true,
+    accentColor: 'red',
+  },
+  {
+    id: 'vip_all',
+    title: 'Full VIP Package',
+    badge: 'সর্বোচ্চ ছাড় • অল-ইন-ওয়ান',
+    tagline: '৫ম থেকে ১০ম শ্রেণির সকল বিষয়ের টেস্ট ও এক্সক্লুসিভ সাজেশন।',
+    price: 200,
+    originalPrice: 400,
+    features: [
+      '৫ম থেকে ১০ম সকল ক্লাসের আনলিমিটেড টেস্ট',
+      'সবগুলো ক্লাসের সকল বিষয় একসাথে সম্পূর্ণ আনলক',
+      'মডেল টেস্ট + স্পেশাল সাজেশন সাপোর্ট',
+      'লাইভ মেধা তালিকা ও পারফরম্যান্স অ্যানালাইসিস',
+      'লাইফটাইম VIP সুবিধা ও প্রায়োরিটি সাপোর্ট',
+    ],
+    unlockScope: 'all_classes',
+    isPopular: false,
+    isActive: true,
+    accentColor: 'purple',
+  },
+];
+
+export function getStoredQuizPackages(): QuizPackageItem[] {
+  if (typeof window === 'undefined') return DEFAULT_QUIZ_PACKAGES;
+  try {
+    const raw = localStorage.getItem('sn_quiz_packages_v1');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch {}
+  return DEFAULT_QUIZ_PACKAGES;
+}
+
+export function saveStoredQuizPackages(packages: QuizPackageItem[]): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem('sn_quiz_packages_v1', JSON.stringify(packages));
+  } catch {}
+}
+
 
