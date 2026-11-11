@@ -654,16 +654,6 @@ export default function Navbar() {
                   </Link>
                 </div>
               )}
-                    <FaRightToBracket /> লগইন
-                  </Link>
-                  <Link
-                    href="/register"
-                    className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-nova-500 to-nova-600 hover:from-nova-600 hover:to-nova-700 px-3.5 py-2 rounded-xl shadow-md shadow-nova-500/20 transition"
-                  >
-                    রেজিস্ট্রেশন
-                  </Link>
-                </div>
-              )}
 
               {/* Mobile Menu Toggle */}
               <button
