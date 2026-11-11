@@ -25,6 +25,10 @@ import {
   getStoredQuizPackages,
   saveStoredQuizPackages,
   PackageUnlockScope,
+  QuizCovers,
+  DEFAULT_QUIZ_COVERS,
+  getStoredQuizCovers,
+  saveStoredQuizCovers,
 } from '@/lib/defaultQuizData';
 import {
   FaAward,
@@ -87,6 +91,7 @@ export default function QuizPage() {
   // Dynamic Quiz Pricing State (SSR safe: defaults match between server and client initially)
   const [quizPrices, setQuizPrices] = useState<QuizPrices>(DEFAULT_QUIZ_PRICES);
   const [quizPackages, setQuizPackages] = useState<QuizPackageItem[]>(DEFAULT_QUIZ_PACKAGES);
+  const [quizCovers, setQuizCovers] = useState<QuizCovers>(DEFAULT_QUIZ_COVERS);
 
   // Payment / Unlock Modal
   const [paymentModalOpen, setPaymentModalOpen] = useState<boolean>(false);
@@ -133,6 +138,23 @@ export default function QuizPage() {
         if (data?.packages && Array.isArray(data.packages)) {
           setQuizPackages(data.packages);
           saveStoredQuizPackages(data.packages);
+        }
+      })
+      .catch(() => {});
+
+    try {
+      const storedCovers = getStoredQuizCovers();
+      if (storedCovers) {
+        setQuizCovers(storedCovers);
+      }
+    } catch {}
+
+    fetch('/api/quiz/covers')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.covers && typeof data.covers === 'object') {
+          setQuizCovers(data.covers);
+          saveStoredQuizCovers(data.covers);
         }
       })
       .catch(() => {});
@@ -678,6 +700,17 @@ export default function QuizPage() {
                 }`}
               >
                 <div className="space-y-1.5 sm:space-y-2">
+                  {/* Optional Cover Image */}
+                  {quizCovers.classes[cls] && (
+                    <div className="w-full aspect-video rounded-xl sm:rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/80 mb-2 relative group">
+                      <img
+                        src={quizCovers.classes[cls]}
+                        alt={`${toBengaliClass(cls)} শ্রেণি`}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  )}
+
                   <div className="flex items-start justify-between gap-1">
                     <div className="space-y-0.5 min-w-0">
                       <span className="text-[9px] sm:text-[10px] font-black uppercase px-1.5 sm:px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 inline-block">
@@ -740,6 +773,17 @@ export default function QuizPage() {
                 className="bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-5 border-t-4 border-[#C8102E] border-slate-200 shadow-sm hover:shadow-lg transition-all duration-200 space-y-2.5 sm:space-y-4 flex flex-col justify-between"
               >
                 <div className="space-y-1.5 sm:space-y-2">
+                  {/* Optional Cover Image */}
+                  {quizCovers.classes[cls] && (
+                    <div className="w-full aspect-video rounded-xl sm:rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/80 mb-2 relative group">
+                      <img
+                        src={quizCovers.classes[cls]}
+                        alt={`${toBengaliClass(cls)} শ্রেণি`}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  )}
+
                   <div className="flex items-start justify-between gap-1">
                     <div className="space-y-0.5 min-w-0">
                       <span
@@ -908,7 +952,18 @@ export default function QuizPage() {
               key={sub.name}
               className="bg-white rounded-2xl p-4 border border-slate-200/90 hover:border-[#C8102E]/40 shadow-xs hover:shadow-md transition text-center space-y-2.5 group flex flex-col justify-between"
             >
-              <div className="text-3xl transition-transform group-hover:scale-110">{sub.icon}</div>
+              {/* Optional Subject Cover Image or Icon */}
+              {quizCovers.subjects[sub.name] ? (
+                <div className="w-full aspect-video rounded-xl overflow-hidden bg-slate-100 border border-slate-200/80 mb-1 relative">
+                  <img
+                    src={quizCovers.subjects[sub.name]}
+                    alt={sub.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+              ) : (
+                <div className="text-3xl transition-transform group-hover:scale-110">{sub.icon}</div>
+              )}
               <div>
                 <h4 className="text-xs sm:text-sm font-black text-slate-800 line-clamp-1">{sub.name}</h4>
                 <p className="text-[11px] font-black text-[#C8102E] mt-0.5">৳{quizPrices.subjectPrice || 50}</p>
