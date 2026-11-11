@@ -165,40 +165,65 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
 
   return (
     <div className="space-y-4">
-      {/* Print Specific CSS: Ensures perfect full A4 single-page print on both desktop and mobile browsers */}
+      {/* Print Specific CSS: Enforces strict 1-page A4 print output on mobile & desktop browsers */}
       <style jsx global>{`
         @media print {
           @page {
             size: A4 portrait;
-            margin: 8mm 10mm;
+            margin: 6mm 8mm 6mm 8mm;
           }
           html,
           body {
             width: 100% !important;
-            height: auto !important;
+            height: 100% !important;
+            max-height: 100% !important;
             margin: 0 !important;
             padding: 0 !important;
+            overflow: hidden !important;
             background: white !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
+
+          /* Hide all external page elements (nav, footer, search forms, buttons) */
+          body * {
+            visibility: hidden !important;
+          }
+
           header,
           nav,
           footer,
+          aside,
           .no-print {
             display: none !important;
           }
+
+          /* Only show and isolate the A4 Marksheet Sheet at the top of Page 1 */
+          #printableArea,
+          #printableArea * {
+            visibility: visible !important;
+          }
+
           #printableArea {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            right: 0 !important;
             transform: none !important;
             width: 100% !important;
             max-width: 100% !important;
             min-width: 0 !important;
-            margin: 0 auto !important;
-            padding: 0 !important;
+            margin: 0 !important;
+            padding: 4mm 6mm !important;
             border: none !important;
             box-shadow: none !important;
             border-radius: 0 !important;
             page-break-inside: avoid !important;
+            break-inside: avoid-page !important;
+            page-break-after: avoid !important;
+            break-after: avoid-page !important;
+            page-break-before: avoid !important;
+            break-before: avoid-page !important;
           }
         }
       `}</style>
@@ -216,7 +241,7 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
           className="px-5 py-2.5 bg-gradient-to-r from-[#0A1E3C] to-[#C8102E] hover:from-[#050E1D] hover:to-[#A50D26] text-white font-bold text-xs sm:text-sm rounded-xl shadow-brand hover:shadow-xl transition flex items-center gap-2 transform active:scale-95 cursor-pointer"
         >
           <FaPrint className="w-3.5 h-3.5 text-amber-300" />
-          <span>প্রিন্ট করুন</span>
+          <span>Print Korun</span>
         </button>
       </div>
 
