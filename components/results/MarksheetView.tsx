@@ -241,7 +241,7 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
           className="px-5 py-2.5 bg-gradient-to-r from-[#0A1E3C] to-[#C8102E] hover:from-[#050E1D] hover:to-[#A50D26] text-white font-bold text-xs sm:text-sm rounded-xl shadow-brand hover:shadow-xl transition flex items-center gap-2 transform active:scale-95 cursor-pointer"
         >
           <FaPrint className="w-3.5 h-3.5 text-amber-300" />
-          <span>Print Korun</span>
+          <span>প্রিন্ট করুন</span>
         </button>
       </div>
 
