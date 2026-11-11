@@ -680,8 +680,9 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
               {subjectRows.map((row, idx) => {
                 const isFailed = row.obtained > 0 && row.grade === 'F';
                 const isEnglish = row.subject.toLowerCase().includes('english') || row.subject.toLowerCase().includes('ইংরেজি');
-                const maxCq = row.fullMarks === 100 ? 70 : row.fullMarks === 50 ? 25 : row.fullMarks;
-                const maxMcq = row.fullMarks === 100 ? 30 : row.fullMarks === 50 ? 25 : Math.round(row.fullMarks * 0.3);
+                const isBangla2nd50 = row.subject.includes('বাংলা') && row.fullMarks === 50;
+                const maxCq = row.fullMarks === 100 ? 70 : isBangla2nd50 ? 30 : row.fullMarks === 50 ? 25 : row.fullMarks;
+                const maxMcq = row.fullMarks === 100 ? 30 : isBangla2nd50 ? 20 : row.fullMarks === 50 ? 25 : Math.round(row.fullMarks * 0.3);
 
                 return (
                   <tr
