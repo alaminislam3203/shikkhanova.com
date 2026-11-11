@@ -1437,4 +1437,39 @@ export function saveStoredQuizPackages(packages: QuizPackageItem[]): void {
   } catch {}
 }
 
+// ─── 🖼️ Quiz Card Optional Cover Images Structure ───
+export interface QuizCovers {
+  classes: Record<string, string>; // e.g. { "5": "url", "10": "url" }
+  subjects: Record<string, string>; // e.g. { "পদার্থবিজ্ঞান": "url" }
+}
+
+export const DEFAULT_QUIZ_COVERS: QuizCovers = {
+  classes: {},
+  subjects: {},
+};
+
+export function getStoredQuizCovers(): QuizCovers {
+  if (typeof window === 'undefined') return DEFAULT_QUIZ_COVERS;
+  try {
+    const raw = localStorage.getItem('sn_quiz_covers_v1');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        return {
+          classes: parsed.classes || {},
+          subjects: parsed.subjects || {},
+        };
+      }
+    }
+  } catch {}
+  return DEFAULT_QUIZ_COVERS;
+}
+
+export function saveStoredQuizCovers(covers: QuizCovers): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem('sn_quiz_covers_v1', JSON.stringify(covers));
+  } catch {}
+}
+
 
