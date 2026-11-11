@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
-import Link from 'next/link';
-import toast from 'react-hot-toast';
+import React, { useState, useEffect, useMemo } from "react";
+import Link from "next/link";
+import toast from "react-hot-toast";
 import {
   RawQuestion,
   SUBJECT_LIST,
@@ -37,7 +37,7 @@ import {
   DEFAULT_QUIZ_COVERS,
   getStoredQuizCovers,
   saveStoredQuizCovers,
-} from '@/lib/defaultQuizData';
+} from "@/lib/defaultQuizData";
 import {
   FaPlus,
   FaTrash,
@@ -57,19 +57,20 @@ import {
   FaTag,
   FaImage,
   FaCloudArrowUp,
-} from 'react-icons/fa6';
+} from "react-icons/fa6";
 
-type QuizCategory = 'free' | 'paid' | 'subject';
+type QuizCategory = "free" | "paid" | "subject";
 
 export default function AdminQuizManager() {
-  const [category, setCategory] = useState<QuizCategory>('free');
+  const [category, setCategory] = useState<QuizCategory>("free");
   const [selectedClass, setSelectedClass] = useState<number>(6);
-  const [selectedGroup, setSelectedGroup] = useState<AcademicGroup>('science');
-  const [selectedSubject, setSelectedSubject] = useState<string>('বাংলা ১ম পত্র');
+  const [selectedGroup, setSelectedGroup] = useState<AcademicGroup>("science");
+  const [selectedSubject, setSelectedSubject] =
+    useState<string>("বাংলা ১ম পত্র");
 
   const availableSubjects = useMemo(() => {
     try {
-      if (typeof getSubjectsForClassAndGroup === 'function') {
+      if (typeof getSubjectsForClassAndGroup === "function") {
         const list = getSubjectsForClassAndGroup(selectedClass, selectedGroup);
         if (Array.isArray(list) && list.length > 0) return list;
       }
@@ -79,37 +80,64 @@ export default function AdminQuizManager() {
     if (selectedClass <= 8) {
       if (selectedClass === 5) {
         return [
-          { name: 'বাংলা', icon: '📖', color: 'from-rose-500 to-red-600' },
-          { name: 'ইংরেজি', icon: '🔤', color: 'from-blue-500 to-indigo-600' },
-          { name: 'প্রাথমিক গণিত', icon: '➗', color: 'from-emerald-500 to-teal-600' },
-          { name: 'প্রাথমিক বিজ্ঞান', icon: '🔬', color: 'from-purple-500 to-violet-600' },
-          { name: 'বাংলাদেশ ও বিশ্বপরিচয়', icon: '🌍', color: 'from-amber-500 to-orange-600' },
-          { name: 'ইসলাম ও নৈতিক শিক্ষা', icon: '🕌', color: 'from-emerald-600 to-green-700' },
-          { name: 'হিন্দুধর্ম ও নৈতিক শিক্ষা', icon: '🛕', color: 'from-amber-600 to-orange-700' },
+          { name: "বাংলা", icon: "📖", color: "from-rose-500 to-red-600" },
+          { name: "ইংরেজি", icon: "🔤", color: "from-blue-500 to-indigo-600" },
+          {
+            name: "প্রাথমিক গণিত",
+            icon: "➗",
+            color: "from-emerald-500 to-teal-600",
+          },
+          {
+            name: "প্রাথমিক বিজ্ঞান",
+            icon: "🔬",
+            color: "from-purple-500 to-violet-600",
+          },
+          {
+            name: "বাংলাদেশ ও বিশ্বপরিচয়",
+            icon: "🌍",
+            color: "from-amber-500 to-orange-600",
+          },
+          {
+            name: "ইসলাম ও নৈতিক শিক্ষা",
+            icon: "🕌",
+            color: "from-emerald-600 to-green-700",
+          },
+          {
+            name: "হিন্দুধর্ম ও নৈতিক শিক্ষা",
+            icon: "🛕",
+            color: "from-amber-600 to-orange-700",
+          },
         ];
       }
       return JUNIOR_SUBJECTS_5_8 || [];
     }
 
-    if (selectedGroup === 'science') return SCIENCE_SUBJECTS_9_10 || [];
-    if (selectedGroup === 'humanities') return HUMANITIES_SUBJECTS_9_10 || [];
-    if (selectedGroup === 'commerce') return COMMERCE_SUBJECTS_9_10 || [];
+    if (selectedGroup === "science") return SCIENCE_SUBJECTS_9_10 || [];
+    if (selectedGroup === "humanities") return HUMANITIES_SUBJECTS_9_10 || [];
+    if (selectedGroup === "commerce") return COMMERCE_SUBJECTS_9_10 || [];
     return COMPULSORY_SUBJECTS_9_10 || [];
   }, [selectedClass, selectedGroup]);
 
   // Keep selectedSubject in sync with available subjects
   useEffect(() => {
-    if (availableSubjects.length > 0 && !availableSubjects.some((s) => s.name === selectedSubject)) {
+    if (
+      availableSubjects.length > 0 &&
+      !availableSubjects.some((s) => s.name === selectedSubject)
+    ) {
       setSelectedSubject(availableSubjects[0].name);
     }
   }, [availableSubjects, selectedSubject]);
 
-  const [activeTab, setActiveTab] = useState<'list' | 'add' | 'bulk' | 'prices' | 'covers'>('list');
+  const [activeTab, setActiveTab] = useState<
+    "list" | "add" | "bulk" | "prices" | "covers"
+  >("list");
   const [questions, setQuestions] = useState<RawQuestion[]>([]);
 
   // Quiz Pricing & Special Packages Management State (SSR safe)
   const [prices, setPrices] = useState<QuizPrices>(DEFAULT_QUIZ_PRICES);
-  const [packages, setPackages] = useState<QuizPackageItem[]>(DEFAULT_QUIZ_PACKAGES);
+  const [packages, setPackages] = useState<QuizPackageItem[]>(
+    DEFAULT_QUIZ_PACKAGES,
+  );
   const [covers, setCovers] = useState<QuizCovers>(DEFAULT_QUIZ_COVERS);
   const [isSavingPrices, setIsSavingPrices] = useState<boolean>(false);
   const [isSavingCovers, setIsSavingCovers] = useState<boolean>(false);
@@ -117,19 +145,22 @@ export default function AdminQuizManager() {
 
   // Add / Edit Form State
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [formQ, setFormQ] = useState<string>('');
-  const [formA, setFormA] = useState<string>('');
-  const [formB, setFormB] = useState<string>('');
-  const [formC, setFormC] = useState<string>('');
-  const [formD, setFormD] = useState<string>('');
+  const [formQ, setFormQ] = useState<string>("");
+  const [formA, setFormA] = useState<string>("");
+  const [formB, setFormB] = useState<string>("");
+  const [formC, setFormC] = useState<string>("");
+  const [formD, setFormD] = useState<string>("");
   const [formAns, setFormAns] = useState<number>(0);
-  const [formExplanation, setFormExplanation] = useState<string>('');
+  const [formExplanation, setFormExplanation] = useState<string>("");
 
   // Bulk State
-  const [bulkText, setBulkText] = useState<string>('');
+  const [bulkText, setBulkText] = useState<string>("");
 
   // Notification message
-  const [msg, setMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  const [msg, setMsg] = useState<{
+    text: string;
+    type: "success" | "error";
+  } | null>(null);
 
   // Load quiz prices and packages safely after mount
   useEffect(() => {
@@ -147,7 +178,7 @@ export default function AdminQuizManager() {
       }
     } catch {}
 
-    fetch('/api/quiz/prices')
+    fetch("/api/quiz/prices")
       .then((res) => res.json())
       .then((data) => {
         if (data?.prices) {
@@ -157,7 +188,7 @@ export default function AdminQuizManager() {
       })
       .catch(() => {});
 
-    fetch('/api/quiz/packages')
+    fetch("/api/quiz/packages")
       .then((res) => res.json())
       .then((data) => {
         if (data?.packages && Array.isArray(data.packages)) {
@@ -174,10 +205,10 @@ export default function AdminQuizManager() {
       }
     } catch {}
 
-    fetch('/api/quiz/covers')
+    fetch("/api/quiz/covers")
       .then((res) => res.json())
       .then((data) => {
-        if (data?.covers && typeof data.covers === 'object') {
+        if (data?.covers && typeof data.covers === "object") {
           setCovers(data.covers);
           saveStoredQuizCovers(data.covers);
         }
@@ -189,17 +220,19 @@ export default function AdminQuizManager() {
   const handleSavePrices = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSavingPrices(true);
-    const saveToastId = toast.loading('সব মূল্য ও প্যাকেজ সংরক্ষণ করা হচ্ছে...');
+    const saveToastId = toast.loading(
+      "সব মূল্য ও প্যাকেজ সংরক্ষণ করা হচ্ছে...",
+    );
     try {
       const [resPrices, resPackages] = await Promise.all([
-        fetch('/api/quiz/prices', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        fetch("/api/quiz/prices", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(prices),
         }),
-        fetch('/api/quiz/packages', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        fetch("/api/quiz/packages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ packages }),
         }),
       ]);
@@ -210,22 +243,41 @@ export default function AdminQuizManager() {
       if (resPrices.ok && resPackages.ok) {
         saveStoredQuizPrices(prices);
         saveStoredQuizPackages(packages);
-        toast.success(dataPackages.message || 'কুইজ ও স্পেশাল প্যাকেজ সফলভাবে সংরক্ষিত হয়েছে!', {
-          id: saveToastId,
-          duration: 4000,
+        toast.success(
+          dataPackages.message ||
+            "কুইজ ও স্পেশাল প্যাকেজ সফলভাবে সংরক্ষিত হয়েছে!",
+          {
+            id: saveToastId,
+            duration: 4000,
+          },
+        );
+        setMsg({
+          text: "কুইজের মূল্য ও স্পেশাল মডেল টেস্ট প্যাকেজ সফলভাবে সংরক্ষণ ও আপডেট করা হয়েছে!",
+          type: "success",
         });
-        setMsg({ text: 'কুইজের মূল্য ও স্পেশাল মডেল টেস্ট প্যাকেজ সফলভাবে সংরক্ষণ ও আপডেট করা হয়েছে!', type: 'success' });
       } else {
-        toast.error(dataPrices.error || dataPackages.error || 'মূল্য বা প্যাকেজ সংরক্ষণ ব্যর্থ হয়েছে।', {
-          id: saveToastId,
+        toast.error(
+          dataPrices.error ||
+            dataPackages.error ||
+            "মূল্য বা প্যাকেজ সংরক্ষণ ব্যর্থ হয়েছে।",
+          {
+            id: saveToastId,
+          },
+        );
+        setMsg({
+          text:
+            dataPrices.error || dataPackages.error || "সংরক্ষণ ব্যর্থ হয়েছে।",
+          type: "error",
         });
-        setMsg({ text: dataPrices.error || dataPackages.error || 'সংরক্ষণ ব্যর্থ হয়েছে।', type: 'error' });
       }
     } catch (err: any) {
-      toast.error(err.message || 'নেটওয়ার্ক সংযোগে সমস্যা হয়েছে।', {
+      toast.error(err.message || "নেটওয়ার্ক সংযোগে সমস্যা হয়েছে।", {
         id: saveToastId,
       });
-      setMsg({ text: err.message || 'নেটওয়ার্ক সংযোগে সমস্যা হয়েছে।', type: 'error' });
+      setMsg({
+        text: err.message || "নেটওয়ার্ক সংযোগে সমস্যা হয়েছে।",
+        type: "error",
+      });
     } finally {
       setIsSavingPrices(false);
     }
@@ -233,67 +285,92 @@ export default function AdminQuizManager() {
 
   // Reset Prices to Defaults with Toast
   const handleResetPricesToDefault = () => {
-    if (!confirm('আপনি কি সকল কুইজ ও প্যাকেজের মূল্য মূল ডিফল্ট ফি-তে ফিরিয়ে নিতে চান?')) return;
+    if (
+      !confirm(
+        "আপনি কি সকল কুইজ ও প্যাকেজের মূল্য মূল ডিফল্ট ফি-তে ফিরিয়ে নিতে চান?",
+      )
+    )
+      return;
     setPrices(DEFAULT_QUIZ_PRICES);
     saveStoredQuizPrices(DEFAULT_QUIZ_PRICES);
-    toast.success('কুইজের মূল্য ডিফল্ট অবস্থায় ফিরিয়ে আনা হয়েছে। সংরক্ষণ করতে "সব মূল্য সংরক্ষণ করুন" বাটনে ক্লিক করুন।', {
-      duration: 4000,
+    toast.success(
+      'কুইজের মূল্য ডিফল্ট অবস্থায় ফিরিয়ে আনা হয়েছে। সংরক্ষণ করতে "সব মূল্য সংরক্ষণ করুন" বাটনে ক্লিক করুন।',
+      {
+        duration: 4000,
+      },
+    );
+    setMsg({
+      text: '🔄 কুইজের মূল্য ডিফল্ট অবস্থায় ফিরিয়ে আনা হয়েছে। সংরক্ষণ করতে "সব মূল্য সংরক্ষণ করুন" বাটনে ক্লিক করুন।',
+      type: "success",
     });
-    setMsg({ text: '🔄 কুইজের মূল্য ডিফল্ট অবস্থায় ফিরিয়ে আনা হয়েছে। সংরক্ষণ করতে "সব মূল্য সংরক্ষণ করুন" বাটনে ক্লিক করুন।', type: 'success' });
   };
 
   // Package Management Handlers
   const handleAddNewPackage = () => {
     const newPkg: QuizPackageItem = {
       id: `pkg_${Date.now()}`,
-      title: 'নতুন স্পেশাল প্যাকেজ',
-      badge: 'স্পেশাল অফার',
-      tagline: 'মডেল টেস্ট ও পূর্ণাঙ্গ সমাধানের বিশেষ অফার।',
+      title: "নতুন স্পেশাল প্যাকেজ",
+      badge: "স্পেশাল অফার",
+      tagline: "মডেল টেস্ট ও পূর্ণাঙ্গ সমাধানের বিশেষ অফার।",
       price: 100,
       originalPrice: 180,
       features: [
-        'পূর্ণাঙ্গ মডেল টেস্ট অ্যাক্সেস',
-        'তাৎক্ষণিক স্কোর ও গ্রেড শিট',
-        'ব্যাখ্যাসহ প্রতিটি প্রশ্নের সঠিক উত্তর',
+        "পূর্ণাঙ্গ মডেল টেস্ট অ্যাক্সেস",
+        "তাৎক্ষণিক স্কোর ও গ্রেড শিট",
+        "ব্যাখ্যাসহ প্রতিটি প্রশ্নের সঠিক উত্তর",
       ],
-      unlockScope: 'single_class',
+      unlockScope: "single_class",
       isPopular: false,
       isActive: true,
-      accentColor: 'red',
+      accentColor: "red",
     };
     setPackages((prev) => [...prev, newPkg]);
-    toast.success('নতুন প্যাকেজ কার্ড যুক্ত করা হয়েছে! তথ্য পূরণ করে সংরক্ষণ বাটনে ক্লিক করুন।');
+    toast.success(
+      "নতুন প্যাকেজ কার্ড যুক্ত করা হয়েছে! তথ্য পূরণ করে সংরক্ষণ বাটনে ক্লিক করুন।",
+    );
   };
 
-  const handleUpdatePackage = (id: string, updates: Partial<QuizPackageItem>) => {
+  const handleUpdatePackage = (
+    id: string,
+    updates: Partial<QuizPackageItem>,
+  ) => {
     setPackages((prev) =>
-      prev.map((pkg) => (pkg.id === id ? { ...pkg, ...updates } : pkg))
+      prev.map((pkg) => (pkg.id === id ? { ...pkg, ...updates } : pkg)),
     );
   };
 
   const handleDeletePackage = (id: string) => {
-    if (!confirm('আপনি কি এই প্যাকেজটি মুছে ফেলতে চান?')) return;
+    if (!confirm("আপনি কি এই প্যাকেজটি মুছে ফেলতে চান?")) return;
     setPackages((prev) => prev.filter((p) => p.id !== id));
-    toast.success('প্যাকেজটি তালিকা থেকে মুছে ফেলা হয়েছে।');
+    toast.success("প্যাকেজটি তালিকা থেকে মুছে ফেলা হয়েছে।");
   };
 
   const handleResetPackagesToDefault = () => {
-    if (!confirm('আপনি কি স্পেশাল মডেল টেস্ট প্যাকেজসমূহ মূল ডিফল্ট তালিকায় ফিরিয়ে নিতে চান?')) return;
+    if (
+      !confirm(
+        "আপনি কি স্পেশাল মডেল টেস্ট প্যাকেজসমূহ মূল ডিফল্ট তালিকায় ফিরিয়ে নিতে চান?",
+      )
+    )
+      return;
     setPackages(DEFAULT_QUIZ_PACKAGES);
     saveStoredQuizPackages(DEFAULT_QUIZ_PACKAGES);
-    toast.success('প্যাকেজসমূহ ডিফল্ট অবস্থায় ফিরিয়ে আনা হয়েছে।');
+    toast.success("প্যাকেজসমূহ ডিফল্ট অবস্থায় ফিরিয়ে আনা হয়েছে।");
   };
 
   // 🖼️ Cover Image Handlers
-  const handleCoverUpload = async (key: string, file: File, type: 'classes' | 'subjects') => {
+  const handleCoverUpload = async (
+    key: string,
+    file: File,
+    type: "classes" | "subjects",
+  ) => {
     if (!file) return;
     setUploadingTarget(`${type}_${key}`);
-    const uploadToastId = toast.loading('কভার ছবি আপলোড হচ্ছে...');
+    const uploadToastId = toast.loading("কভার ছবি আপলোড হচ্ছে...");
     try {
       const formData = new FormData();
-      formData.append('file', file);
-      const res = await fetch('/api/upload', {
-        method: 'POST',
+      formData.append("file", file);
+      const res = await fetch("/api/upload", {
+        method: "POST",
         body: formData,
       });
       const data = await res.json();
@@ -305,21 +382,26 @@ export default function AdminQuizManager() {
             [key]: data.url,
           },
         }));
-        toast.success('ছবি আপলোড সফল হয়েছে! সংরক্ষণ করতে "কভার ইমেজ সংরক্ষণ করুন" চাপুন।', {
-          id: uploadToastId,
-          duration: 4000,
-        });
+        toast.success(
+          'ছবি আপলোড সফল হয়েছে! সংরক্ষণ করতে "কভার ইমেজ সংরক্ষণ করুন" চাপুন।',
+          {
+            id: uploadToastId,
+            duration: 4000,
+          },
+        );
       } else {
-        toast.error(data.error || 'ছবি আপলোড ব্যর্থ হয়েছে।', { id: uploadToastId });
+        toast.error(data.error || "ছবি আপলোড ব্যর্থ হয়েছে।", {
+          id: uploadToastId,
+        });
       }
     } catch (err: any) {
-      toast.error(err.message || 'আপলোডে সমস্যা হয়েছে।', { id: uploadToastId });
+      toast.error(err.message || "আপলোডে সমস্যা হয়েছে।", { id: uploadToastId });
     } finally {
       setUploadingTarget(null);
     }
   };
 
-  const handleRemoveCover = (key: string, type: 'classes' | 'subjects') => {
+  const handleRemoveCover = (key: string, type: "classes" | "subjects") => {
     setCovers((prev) => {
       const nextType = { ...prev[type] };
       delete nextType[key];
@@ -328,31 +410,40 @@ export default function AdminQuizManager() {
         [type]: nextType,
       };
     });
-    toast.success('কভার ইমেজ সরানো হয়েছে। স্থায়ী করতে "কভার ইমেজ সংরক্ষণ করুন" বাটনে ক্লিক করুন।');
+    toast.success(
+      'কভার ইমেজ সরানো হয়েছে। স্থায়ী করতে "কভার ইমেজ সংরক্ষণ করুন" বাটনে ক্লিক করুন।',
+    );
   };
 
   const handleSaveCovers = async () => {
     setIsSavingCovers(true);
-    const saveToastId = toast.loading('কভার ইমেজ সংরক্ষণ ও আপডেট করা হচ্ছে...');
+    const saveToastId = toast.loading("কভার ইমেজ সংরক্ষণ ও আপডেট করা হচ্ছে...");
     try {
-      const res = await fetch('/api/quiz/covers', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/quiz/covers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ covers }),
       });
       const data = await res.json();
       if (res.ok) {
         saveStoredQuizCovers(covers);
-        toast.success(data.message || 'সকল কভার ইমেজ সফলভাবে সংরক্ষিত হয়েছে!', {
+        toast.success(data.message || "সকল কভার ইমেজ সফলভাবে সংরক্ষিত হয়েছে!", {
           id: saveToastId,
           duration: 4000,
         });
-        setMsg({ text: 'কুইজ কার্ডের কভার ইমেজ সফলভাবে সংরক্ষণ ও আপডেট করা হয়েছে!', type: 'success' });
+        setMsg({
+          text: "কুইজ কার্ডের কভার ইমেজ সফলভাবে সংরক্ষণ ও আপডেট করা হয়েছে!",
+          type: "success",
+        });
       } else {
-        toast.error(data.error || 'কভার ইমেজ সংরক্ষণ ব্যর্থ হয়েছে।', { id: saveToastId });
+        toast.error(data.error || "কভার ইমেজ সংরক্ষণ ব্যর্থ হয়েছে।", {
+          id: saveToastId,
+        });
       }
     } catch (err: any) {
-      toast.error(err.message || 'নেটওয়ার্কে সমস্যা হয়েছে।', { id: saveToastId });
+      toast.error(err.message || "নেটওয়ার্কে সমস্যা হয়েছে।", {
+        id: saveToastId,
+      });
     } finally {
       setIsSavingCovers(false);
     }
@@ -366,9 +457,9 @@ export default function AdminQuizManager() {
   }, [category, selectedClass, selectedSubject]);
 
   const loadCurrentQuestions = () => {
-    if (category === 'free') {
+    if (category === "free") {
       setQuestions(getStoredFreeQuestions(selectedClass));
-    } else if (category === 'paid') {
+    } else if (category === "paid") {
       setQuestions(getStoredPaidQuestions(selectedClass));
     } else {
       setQuestions(getStoredSubjectQuestions(selectedClass, selectedSubject));
@@ -377,9 +468,9 @@ export default function AdminQuizManager() {
 
   const persistQuestions = (updated: RawQuestion[]) => {
     setQuestions(updated);
-    if (category === 'free') {
+    if (category === "free") {
       saveStoredFreeQuestions(selectedClass, updated);
-    } else if (category === 'paid') {
+    } else if (category === "paid") {
       saveStoredPaidQuestions(selectedClass, updated);
     } else {
       saveStoredSubjectQuestions(selectedClass, selectedSubject, updated);
@@ -387,22 +478,31 @@ export default function AdminQuizManager() {
   };
 
   const resetForm = () => {
-    setFormQ('');
-    setFormA('');
-    setFormB('');
-    setFormC('');
-    setFormD('');
+    setFormQ("");
+    setFormA("");
+    setFormB("");
+    setFormC("");
+    setFormD("");
     setFormAns(0);
-    setFormExplanation('');
+    setFormExplanation("");
     setEditingIndex(null);
   };
 
   // Add / Update Question
   const handleSaveQuestion = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formQ.trim() || !formA.trim() || !formB.trim() || !formC.trim() || !formD.trim()) {
-      toast.error('অনুগ্রহ করে প্রশ্ন এবং ৪টি অপশন অবশ্যই পূরণ করুন।');
-      setMsg({ text: 'অনুগ্রহ করে প্রশ্ন এবং ৪টি অপশন অবশ্যই পূরণ করুন।', type: 'error' });
+    if (
+      !formQ.trim() ||
+      !formA.trim() ||
+      !formB.trim() ||
+      !formC.trim() ||
+      !formD.trim()
+    ) {
+      toast.error("অনুগ্রহ করে প্রশ্ন এবং ৪টি অপশন অবশ্যই পূরণ করুন।");
+      setMsg({
+        text: "অনুগ্রহ করে প্রশ্ন এবং ৪টি অপশন অবশ্যই পূরণ করুন।",
+        type: "error",
+      });
       return;
     }
 
@@ -411,23 +511,27 @@ export default function AdminQuizManager() {
       options: [formA.trim(), formB.trim(), formC.trim(), formD.trim()],
       ans: formAns,
       explanation: formExplanation.trim() || undefined,
-      isPremium: category === 'paid',
+      isPremium: category === "paid",
     };
 
     let updatedList = [...questions];
-    if (editingIndex !== null && editingIndex >= 0 && editingIndex < updatedList.length) {
+    if (
+      editingIndex !== null &&
+      editingIndex >= 0 &&
+      editingIndex < updatedList.length
+    ) {
       updatedList[editingIndex] = newQuestion;
-      toast.success('প্রশ্ন সফলভাবে আপডেট করা হয়েছে!');
-      setMsg({ text: 'প্রশ্ন সফলভাবে আপডেট করা হয়েছে!', type: 'success' });
+      toast.success("প্রশ্ন সফলভাবে আপডেট করা হয়েছে!");
+      setMsg({ text: "প্রশ্ন সফলভাবে আপডেট করা হয়েছে!", type: "success" });
     } else {
       updatedList.push(newQuestion);
-      toast.success('নতুন প্রশ্ন সফলভাবে যুক্ত করা হয়েছে!');
-      setMsg({ text: 'নতুন প্রশ্ন সফলভাবে যুক্ত করা হয়েছে!', type: 'success' });
+      toast.success("নতুন প্রশ্ন সফলভাবে যুক্ত করা হয়েছে!");
+      setMsg({ text: "নতুন প্রশ্ন সফলভাবে যুক্ত করা হয়েছে!", type: "success" });
     }
 
     persistQuestions(updatedList);
     resetForm();
-    setActiveTab('list');
+    setActiveTab("list");
   };
 
   // Start Edit
@@ -436,14 +540,14 @@ export default function AdminQuizManager() {
     if (!target) return;
     setEditingIndex(index);
     setFormQ(target.q);
-    setFormA(target.options[0] || '');
-    setFormB(target.options[1] || '');
-    setFormC(target.options[2] || '');
-    setFormD(target.options[3] || '');
+    setFormA(target.options[0] || "");
+    setFormB(target.options[1] || "");
+    setFormC(target.options[2] || "");
+    setFormD(target.options[3] || "");
     setFormAns(target.ans);
-    setFormExplanation(target.explanation || '');
-    setActiveTab('add');
-    window.scrollTo({ top: 300, behavior: 'smooth' });
+    setFormExplanation(target.explanation || "");
+    setActiveTab("add");
+    window.scrollTo({ top: 300, behavior: "smooth" });
   };
 
   // Delete Question
@@ -451,38 +555,47 @@ export default function AdminQuizManager() {
     if (!confirm(`আপনি কি ${index + 1} নম্বর প্রশ্নটি মুছে ফেলতে চান?`)) return;
     const updated = questions.filter((_, i) => i !== index);
     persistQuestions(updated);
-    toast.success('প্রশ্ন মুছে ফেলা হয়েছে।');
-    setMsg({ text: '🗑️ প্রশ্ন মুছে ফেলা হয়েছে।', type: 'success' });
+    toast.success("প্রশ্ন মুছে ফেলা হয়েছে।");
+    setMsg({ text: "🗑️ প্রশ্ন মুছে ফেলা হয়েছে।", type: "success" });
   };
 
   // Reset to Factory Defaults
   const handleResetToDefault = () => {
     const confirmed = confirm(
-      'সতর্কতা: এটি বর্তমান শ্রেণি ও ক্যাটাগরির সকল কাস্টম পরিবর্তন মুছে দিয়ে মূল ডিফল্ট প্রশ্নগুলো ফিরিয়ে আনবে। আপনি কি নিশ্চিত?'
+      "সতর্কতা: এটি বর্তমান শ্রেণি ও ক্যাটাগরির সকল কাস্টম পরিবর্তন মুছে দিয়ে মূল ডিফল্ট প্রশ্নগুলো ফিরিয়ে আনবে। আপনি কি নিশ্চিত?",
     );
     if (!confirmed) return;
 
     let defaults: RawQuestion[] = [];
-    if (category === 'free') {
+    if (category === "free") {
       defaults = FREE_CLASS_QUESTIONS[selectedClass] || [];
-    } else if (category === 'paid') {
+    } else if (category === "paid") {
       defaults = PAID_CLASS_QUESTIONS[selectedClass] || [];
     } else {
       defaults = SUBJECT_QUESTIONS[selectedSubject] || [];
     }
 
     persistQuestions(defaults);
-    toast.success('ডিফল্ট প্রশ্ন সফলভাবে রিস্টোর হয়েছে।');
-    setMsg({ text: '🔄 ডিফল্ট প্রশ্ন সফলভাবে রিস্টোর হয়েছে।', type: 'success' });
+    toast.success("ডিফল্ট প্রশ্ন সফলভাবে রিস্টোর হয়েছে।");
+    setMsg({
+      text: "🔄 ডিফল্ট প্রশ্ন সফলভাবে রিস্টোর হয়েছে।",
+      type: "success",
+    });
   };
 
   // Bulk Import
   const handleBulkImport = (e: React.FormEvent) => {
     e.preventDefault();
-    const lines = bulkText.split('\n').map((l) => l.trim()).filter(Boolean);
+    const lines = bulkText
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
     if (lines.length === 0) {
-      toast.error('কোনো প্রশ্ন পাওয়া যায়নি। সঠিক ফরম্যাটে লিখুন।');
-      setMsg({ text: 'কোনো প্রশ্ন পাওয়া যায়নি। অনুগ্রহ করে সঠিক ফরম্যাটে লিখুন।', type: 'error' });
+      toast.error("কোনো প্রশ্ন পাওয়া যায়নি। সঠিক ফরম্যাটে লিখুন।");
+      setMsg({
+        text: "কোনো প্রশ্ন পাওয়া যায়নি। অনুগ্রহ করে সঠিক ফরম্যাটে লিখুন।",
+        type: "error",
+      });
       return;
     }
 
@@ -491,12 +604,26 @@ export default function AdminQuizManager() {
     const newItems: RawQuestion[] = [];
 
     lines.forEach((line) => {
-      const parts = line.split('|').map((p) => p.trim());
+      const parts = line.split("|").map((p) => p.trim());
       if (parts.length >= 6) {
         const qText = parts[0];
-        const ops: [string, string, string, string] = [parts[1], parts[2], parts[3], parts[4]];
+        const ops: [string, string, string, string] = [
+          parts[1],
+          parts[2],
+          parts[3],
+          parts[4],
+        ];
         const ansChar = parts[5].toUpperCase();
-        const ansIdx = ansChar === 'A' ? 0 : ansChar === 'B' ? 1 : ansChar === 'C' ? 2 : ansChar === 'D' ? 3 : 0;
+        const ansIdx =
+          ansChar === "A"
+            ? 0
+            : ansChar === "B"
+              ? 1
+              : ansChar === "C"
+                ? 2
+                : ansChar === "D"
+                  ? 3
+                  : 0;
         const exp = parts[6] ? parts[6] : undefined;
 
         newItems.push({
@@ -504,7 +631,7 @@ export default function AdminQuizManager() {
           options: ops,
           ans: ansIdx,
           explanation: exp,
-          isPremium: category === 'paid',
+          isPremium: category === "paid",
         });
         addedCount++;
       } else {
@@ -514,13 +641,13 @@ export default function AdminQuizManager() {
 
     const updated = [...questions, ...newItems];
     persistQuestions(updated);
-    setBulkText('');
+    setBulkText("");
     toast.success(`${addedCount}টি প্রশ্ন সফলভাবে যোগ হয়েছে!`);
     setMsg({
-      text: `${addedCount}টি প্রশ্ন সফলভাবে যোগ হয়েছে! ${skippedCount > 0 ? `(${skippedCount}টি লাইন সঠিক ছিল না)` : ''}`,
-      type: 'success',
+      text: `${addedCount}টি প্রশ্ন সফলভাবে যোগ হয়েছে! ${skippedCount > 0 ? `(${skippedCount}টি লাইন সঠিক ছিল না)` : ""}`,
+      type: "success",
     });
-    setActiveTab('list');
+    setActiveTab("list");
   };
 
   return (
@@ -537,8 +664,8 @@ export default function AdminQuizManager() {
             অনলাইন কুইজ ও MCQ ম্যানেজমেন্ট
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
-            শুধুমাত্র অ্যাডমিন প্যানেল থেকেই সকল শ্রেণির ফ্রি, পেইড এবং বিষয়ভিত্তিক মডেল টেস্টের MCQ প্রশ্ন যোগ, এডিট ও
-            নিয়ন্ত্রণ করা যাবে।
+            শুধুমাত্র অ্যাডমিন প্যানেল থেকেই সকল শ্রেণির ফ্রি, পেইড এবং
+            বিষয়ভিত্তিক মডেল টেস্টের MCQ প্রশ্ন যোগ, এডিট ও নিয়ন্ত্রণ করা যাবে।
           </p>
         </div>
 
@@ -577,11 +704,11 @@ export default function AdminQuizManager() {
             <div className="grid grid-cols-3 gap-1.5 bg-slate-100 p-1.5 rounded-2xl">
               <button
                 type="button"
-                onClick={() => setCategory('free')}
+                onClick={() => setCategory("free")}
                 className={`py-2 px-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${
-                  category === 'free'
-                    ? 'bg-emerald-600 text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                  category === "free"
+                    ? "bg-emerald-600 text-white shadow-xs"
+                    : "text-slate-600 hover:text-slate-900"
                 }`}
               >
                 <FaGift className="w-3 h-3" />
@@ -590,11 +717,11 @@ export default function AdminQuizManager() {
 
               <button
                 type="button"
-                onClick={() => setCategory('paid')}
+                onClick={() => setCategory("paid")}
                 className={`py-2 px-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${
-                  category === 'paid'
-                    ? 'bg-[#C8102E] text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                  category === "paid"
+                    ? "bg-[#C8102E] text-white shadow-xs"
+                    : "text-slate-600 hover:text-slate-900"
                 }`}
               >
                 <FaGem className="w-3 h-3" />
@@ -603,11 +730,11 @@ export default function AdminQuizManager() {
 
               <button
                 type="button"
-                onClick={() => setCategory('subject')}
+                onClick={() => setCategory("subject")}
                 className={`py-2 px-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${
-                  category === 'subject'
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                  category === "subject"
+                    ? "bg-blue-600 text-white shadow-xs"
+                    : "text-slate-600 hover:text-slate-900"
                 }`}
               >
                 <FaBookOpen className="w-3 h-3" />
@@ -618,7 +745,9 @@ export default function AdminQuizManager() {
 
           {/* Class Selector */}
           <div>
-            <label className="text-xs font-bold text-slate-700 block mb-1.5">শ্রেণি নির্বাচন</label>
+            <label className="text-xs font-bold text-slate-700 block mb-1.5">
+              শ্রেণি নির্বাচন
+            </label>
             <div className="grid grid-cols-6 gap-1 bg-slate-100 p-1.5 rounded-2xl">
               {[5, 6, 7, 8, 9, 10].map((c) => (
                 <button
@@ -627,8 +756,8 @@ export default function AdminQuizManager() {
                   onClick={() => setSelectedClass(c)}
                   className={`py-2 rounded-xl text-xs font-black transition ${
                     selectedClass === c
-                      ? 'bg-gradient-to-tr from-[#9B0D23] via-[#C8102E] to-[#E5254A] text-white shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
+                      ? "bg-gradient-to-tr from-[#9B0D23] via-[#C8102E] to-[#E5254A] text-white shadow-xs"
+                      : "text-slate-600 hover:text-slate-900"
                   }`}
                 >
                   {toBengaliClass(c)}
@@ -640,9 +769,11 @@ export default function AdminQuizManager() {
           {/* Subject Selector (If Subject category is selected) */}
           <div>
             <label className="text-xs font-bold text-slate-700 block mb-1.5">
-              {category === 'subject' ? 'বিষয় নির্বাচন করুন' : 'নির্বাচিত স্ট্যাটাস'}
+              {category === "subject"
+                ? "বিষয় নির্বাচন করুন"
+                : "নির্বাচিত স্ট্যাটাস"}
             </label>
-            {category === 'subject' ? (
+            {category === "subject" ? (
               <select
                 value={selectedSubject}
                 onChange={(e) => setSelectedSubject(e.target.value)}
@@ -665,75 +796,79 @@ export default function AdminQuizManager() {
           </div>
 
           {/* Academic Group Selector for Class 9-10 (Science / Humanities / Commerce / Compulsory) */}
-          {category === 'subject' && (selectedClass === 9 || selectedClass === 10) && (
-            <div className="col-span-1 md:col-span-3 pt-3 border-t border-slate-200/80">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-2">
-                <span className="text-xs font-black text-slate-800 flex items-center gap-1.5">
-                  <span>🎓 {toBengaliClass(selectedClass)} শ্রেণির বিভাগ নির্বাচন:</span>
-                  <span className="text-[10px] bg-red-50 text-[#C8102E] font-bold px-2 py-0.5 rounded-full border border-red-200">
-                    বিভাগভিত্তিক MCQ ম্যানেজমেন্ট
+          {category === "subject" &&
+            (selectedClass === 9 || selectedClass === 10) && (
+              <div className="col-span-1 md:col-span-3 pt-3 border-t border-slate-200/80">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-2">
+                  <span className="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                    <span>
+                      🎓 {toBengaliClass(selectedClass)} শ্রেণির বিভাগ নির্বাচন:
+                    </span>
+                    <span className="text-[10px] bg-red-50 text-[#C8102E] font-bold px-2 py-0.5 rounded-full border border-red-200">
+                      বিভাগভিত্তিক MCQ ম্যানেজমেন্ট
+                    </span>
                   </span>
-                </span>
-                <span className="text-[10px] text-slate-500 font-semibold">
-                  নির্বাচিত বিভাগের বিষয়গুলো পাশের ড্রপডাউনে স্বয়ংক্রিয়ভাবে লোড হবে
-                </span>
+                  <span className="text-[10px] text-slate-500 font-semibold">
+                    নির্বাচিত বিভাগের বিষয়গুলো পাশের ড্রপডাউনে স্বয়ংক্রিয়ভাবে
+                    লোড হবে
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedGroup("science")}
+                    className={`p-2.5 rounded-xl text-xs font-black transition border flex items-center justify-center gap-2 ${
+                      selectedGroup === "science"
+                        ? "bg-blue-600 text-white border-blue-600 shadow-sm"
+                        : "bg-white text-slate-700 hover:bg-blue-50 hover:border-blue-200 border-slate-200"
+                    }`}
+                  >
+                    <span className="text-base">⚛️</span>
+                    <span>বিজ্ঞান বিভাগ</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedGroup("humanities")}
+                    className={`p-2.5 rounded-xl text-xs font-black transition border flex items-center justify-center gap-2 ${
+                      selectedGroup === "humanities"
+                        ? "bg-amber-600 text-white border-amber-600 shadow-sm"
+                        : "bg-white text-slate-700 hover:bg-amber-50 hover:border-amber-200 border-slate-200"
+                    }`}
+                  >
+                    <span className="text-base">📜</span>
+                    <span>মানবিক বিভাগ</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedGroup("commerce")}
+                    className={`p-2.5 rounded-xl text-xs font-black transition border flex items-center justify-center gap-2 ${
+                      selectedGroup === "commerce"
+                        ? "bg-emerald-600 text-white border-emerald-600 shadow-sm"
+                        : "bg-white text-slate-700 hover:bg-emerald-50 hover:border-emerald-200 border-slate-200"
+                    }`}
+                  >
+                    <span className="text-base">💼</span>
+                    <span>ব্যবসায় শিক্ষা</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedGroup("compulsory")}
+                    className={`p-2.5 rounded-xl text-xs font-black transition border flex items-center justify-center gap-2 ${
+                      selectedGroup === "compulsory"
+                        ? "bg-[#0A1E3C] text-white border-[#0A1E3C] shadow-sm"
+                        : "bg-white text-slate-700 hover:bg-slate-100 hover:border-slate-300 border-slate-200"
+                    }`}
+                  >
+                    <span className="text-base">🌐</span>
+                    <span>আবশ্যিক বিষয়</span>
+                  </button>
+                </div>
               </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setSelectedGroup('science')}
-                  className={`p-2.5 rounded-xl text-xs font-black transition border flex items-center justify-center gap-2 ${
-                    selectedGroup === 'science'
-                      ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
-                      : 'bg-white text-slate-700 hover:bg-blue-50 hover:border-blue-200 border-slate-200'
-                  }`}
-                >
-                  <span className="text-base">⚛️</span>
-                  <span>বিজ্ঞান বিভাগ</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setSelectedGroup('humanities')}
-                  className={`p-2.5 rounded-xl text-xs font-black transition border flex items-center justify-center gap-2 ${
-                    selectedGroup === 'humanities'
-                      ? 'bg-amber-600 text-white border-amber-600 shadow-sm'
-                      : 'bg-white text-slate-700 hover:bg-amber-50 hover:border-amber-200 border-slate-200'
-                  }`}
-                >
-                  <span className="text-base">📜</span>
-                  <span>মানবিক বিভাগ</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setSelectedGroup('commerce')}
-                  className={`p-2.5 rounded-xl text-xs font-black transition border flex items-center justify-center gap-2 ${
-                    selectedGroup === 'commerce'
-                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
-                      : 'bg-white text-slate-700 hover:bg-emerald-50 hover:border-emerald-200 border-slate-200'
-                  }`}
-                >
-                  <span className="text-base">💼</span>
-                  <span>ব্যবসায় শিক্ষা</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setSelectedGroup('compulsory')}
-                  className={`p-2.5 rounded-xl text-xs font-black transition border flex items-center justify-center gap-2 ${
-                    selectedGroup === 'compulsory'
-                      ? 'bg-[#0A1E3C] text-white border-[#0A1E3C] shadow-sm'
-                      : 'bg-white text-slate-700 hover:bg-slate-100 hover:border-slate-300 border-slate-200'
-                  }`}
-                >
-                  <span className="text-base">🌐</span>
-                  <span>আবশ্যিক বিষয়</span>
-                </button>
-              </div>
-            </div>
-          )}
+            )}
         </div>
       </div>
 
@@ -743,11 +878,11 @@ export default function AdminQuizManager() {
       <div className="flex items-center gap-2 border-b border-slate-200 pb-3">
         <button
           type="button"
-          onClick={() => setActiveTab('list')}
+          onClick={() => setActiveTab("list")}
           className={`px-4 py-2 rounded-2xl text-xs font-bold transition flex items-center gap-2 ${
-            activeTab === 'list'
-              ? 'bg-[#0A1E3C] text-white shadow-sm'
-              : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'
+            activeTab === "list"
+              ? "bg-[#0A1E3C] text-white shadow-sm"
+              : "bg-white hover:bg-slate-100 text-slate-700 border border-slate-200"
           }`}
         >
           <FaFileLines className="w-3.5 h-3.5" />
@@ -758,25 +893,27 @@ export default function AdminQuizManager() {
           type="button"
           onClick={() => {
             resetForm();
-            setActiveTab('add');
+            setActiveTab("add");
           }}
           className={`px-4 py-2 rounded-2xl text-xs font-bold transition flex items-center gap-2 ${
-            activeTab === 'add'
-              ? 'bg-[#C8102E] text-white shadow-sm'
-              : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'
+            activeTab === "add"
+              ? "bg-[#C8102E] text-white shadow-sm"
+              : "bg-white hover:bg-slate-100 text-slate-700 border border-slate-200"
           }`}
         >
           <FaPlus className="w-3.5 h-3.5" />
-          <span>{editingIndex !== null ? 'প্রশ্ন এডিট করুন' : 'একক MCQ যোগ'}</span>
+          <span>
+            {editingIndex !== null ? "প্রশ্ন এডিট করুন" : "একক MCQ যোগ"}
+          </span>
         </button>
 
         <button
           type="button"
-          onClick={() => setActiveTab('bulk')}
+          onClick={() => setActiveTab("bulk")}
           className={`px-4 py-2 rounded-2xl text-xs font-bold transition flex items-center gap-2 ${
-            activeTab === 'bulk'
-              ? 'bg-emerald-700 text-white shadow-sm'
-              : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'
+            activeTab === "bulk"
+              ? "bg-emerald-700 text-white shadow-sm"
+              : "bg-white hover:bg-slate-100 text-slate-700 border border-slate-200"
           }`}
         >
           <FaBookOpen className="w-3.5 h-3.5" />
@@ -785,11 +922,11 @@ export default function AdminQuizManager() {
 
         <button
           type="button"
-          onClick={() => setActiveTab('prices')}
+          onClick={() => setActiveTab("prices")}
           className={`px-4 py-2 rounded-2xl text-xs font-bold transition flex items-center gap-2 ${
-            activeTab === 'prices'
-              ? 'bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-sm'
-              : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'
+            activeTab === "prices"
+              ? "bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-sm"
+              : "bg-white hover:bg-slate-100 text-slate-700 border border-slate-200"
           }`}
         >
           <FaCoins className="w-3.5 h-3.5 text-amber-400" />
@@ -798,11 +935,11 @@ export default function AdminQuizManager() {
 
         <button
           type="button"
-          onClick={() => setActiveTab('covers')}
+          onClick={() => setActiveTab("covers")}
           className={`px-4 py-2 rounded-2xl text-xs font-bold transition flex items-center gap-2 ${
-            activeTab === 'covers'
-              ? 'bg-gradient-to-r from-purple-700 to-indigo-800 text-white shadow-sm'
-              : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'
+            activeTab === "covers"
+              ? "bg-gradient-to-r from-purple-700 to-indigo-800 text-white shadow-sm"
+              : "bg-white hover:bg-slate-100 text-slate-700 border border-slate-200"
           }`}
         >
           <FaImage className="w-3.5 h-3.5 text-purple-300" />
@@ -814,13 +951,17 @@ export default function AdminQuizManager() {
       {msg && (
         <div
           className={`p-3.5 rounded-2xl text-xs font-bold flex items-center justify-between shadow-xs ${
-            msg.type === 'success'
-              ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-              : 'bg-rose-50 text-rose-800 border border-rose-200'
+            msg.type === "success"
+              ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+              : "bg-rose-50 text-rose-800 border border-rose-200"
           }`}
         >
           <span>{msg.text}</span>
-          <button type="button" onClick={() => setMsg(null)} className="text-xs font-black">
+          <button
+            type="button"
+            onClick={() => setMsg(null)}
+            className="text-xs font-black"
+          >
             ✕
           </button>
         </div>
@@ -829,36 +970,38 @@ export default function AdminQuizManager() {
       {/* ─────────────────────────────────────────────────────────────
           TAB 1: LIVE QUESTION LIST
       ───────────────────────────────────────────────────────────── */}
-      {activeTab === 'list' && (
+      {activeTab === "list" && (
         <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div>
               <h3 className="text-base font-black text-slate-800">
-                {toBengaliClass(selectedClass)} শ্রেণি —{' '}
-                {category === 'free'
-                  ? 'ফ্রি মডেল টেস্ট প্রশ্নমালা'
-                  : category === 'paid'
-                  ? 'প্রিমিয়াম মডেল টেস্ট প্রশ্নমালা'
-                  : `${selectedSubject} বিষয়ের প্রশ্নমালা ${
-                      selectedClass >= 9
-                        ? selectedGroup === 'science'
-                          ? '(বিজ্ঞান বিভাগ)'
-                          : selectedGroup === 'humanities'
-                          ? '(মানবিক বিভাগ)'
-                          : selectedGroup === 'commerce'
-                          ? '(ব্যবসায় শিক্ষা)'
-                          : '(আবশ্যিক বিষয়)'
-                        : ''
-                    }`}
+                {toBengaliClass(selectedClass)} শ্রেণি —{" "}
+                {category === "free"
+                  ? "ফ্রি মডেল টেস্ট প্রশ্নমালা"
+                  : category === "paid"
+                    ? "প্রিমিয়াম মডেল টেস্ট প্রশ্নমালা"
+                    : `${selectedSubject} বিষয়ের প্রশ্নমালা ${
+                        selectedClass >= 9
+                          ? selectedGroup === "science"
+                            ? "(বিজ্ঞান বিভাগ)"
+                            : selectedGroup === "humanities"
+                              ? "(মানবিক বিভাগ)"
+                              : selectedGroup === "commerce"
+                                ? "(ব্যবসায় শিক্ষা)"
+                                : "(আবশ্যিক বিষয়)"
+                          : ""
+                      }`}
               </h3>
-              <p className="text-xs text-slate-500 font-medium">মোট প্রশ্ন সংখ্যা: {questions.length}টি</p>
+              <p className="text-xs text-slate-500 font-medium">
+                মোট প্রশ্ন সংখ্যা: {questions.length}টি
+              </p>
             </div>
 
             <button
               type="button"
               onClick={() => {
                 resetForm();
-                setActiveTab('add');
+                setActiveTab("add");
               }}
               className="px-3.5 py-1.5 rounded-xl bg-[#C8102E] hover:bg-[#A50D26] text-white font-bold text-xs shadow-xs transition flex items-center gap-1.5"
             >
@@ -872,7 +1015,7 @@ export default function AdminQuizManager() {
               <p>এই শ্রেণি ও ক্যাটাগরিতে বর্তমানে কোনো প্রশ্ন নেই।</p>
               <button
                 type="button"
-                onClick={() => setActiveTab('add')}
+                onClick={() => setActiveTab("add")}
                 className="text-[#C8102E] font-bold hover:underline"
               >
                 + এখনই প্রশ্ন যোগ করুন
@@ -890,7 +1033,9 @@ export default function AdminQuizManager() {
                       <span className="w-6 h-6 rounded-lg bg-[#0A1E3C] text-white flex items-center justify-center text-xs font-black shrink-0 mt-0.5">
                         {idx + 1}
                       </span>
-                      <p className="text-sm font-bold text-slate-900 leading-snug">{q.q}</p>
+                      <p className="text-sm font-bold text-slate-900 leading-snug">
+                        {q.q}
+                      </p>
                     </div>
 
                     <div className="flex items-center gap-1.5 shrink-0">
@@ -922,8 +1067,8 @@ export default function AdminQuizManager() {
                           key={opIdx}
                           className={`p-2.5 rounded-xl text-xs flex items-center justify-between border ${
                             isCorrect
-                              ? 'bg-emerald-50 border-emerald-300 text-emerald-900 font-bold'
-                              : 'bg-white border-slate-200 text-slate-700'
+                              ? "bg-emerald-50 border-emerald-300 text-emerald-900 font-bold"
+                              : "bg-white border-slate-200 text-slate-700"
                           }`}
                         >
                           <div className="flex items-center gap-2 truncate">
@@ -959,7 +1104,7 @@ export default function AdminQuizManager() {
       {/* ─────────────────────────────────────────────────────────────
           TAB 2: ADD / EDIT SINGLE MCQ FORM
       ───────────────────────────────────────────────────────────── */}
-      {activeTab === 'add' && (
+      {activeTab === "add" && (
         <form
           onSubmit={handleSaveQuestion}
           className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5"
@@ -967,12 +1112,20 @@ export default function AdminQuizManager() {
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div>
               <h3 className="text-base font-black text-slate-800">
-                {editingIndex !== null ? 'প্রশ্ন এডিট করুন' : 'নতুন MCQ প্রশ্ন যোগ করুন'}
+                {editingIndex !== null
+                  ? "প্রশ্ন এডিট করুন"
+                  : "নতুন MCQ প্রশ্ন যোগ করুন"}
               </h3>
               <p className="text-xs text-slate-500 font-medium">
-                নির্বাচিত শ্রেণি: <strong>{toBengaliClass(selectedClass)} শ্রেণি</strong> • ক্যাটাগরি:{' '}
+                নির্বাচিত শ্রেণি:{" "}
+                <strong>{toBengaliClass(selectedClass)} শ্রেণি</strong> •
+                ক্যাটাগরি:{" "}
                 <strong>
-                  {category === 'free' ? 'ফ্রি' : category === 'paid' ? 'পেইড' : selectedSubject}
+                  {category === "free"
+                    ? "ফ্রি"
+                    : category === "paid"
+                      ? "পেইড"
+                      : selectedSubject}
                 </strong>
               </p>
             </div>
@@ -1005,7 +1158,9 @@ export default function AdminQuizManager() {
           {/* 4 Options */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">অপশন A *</label>
+              <label className="text-xs font-bold text-slate-700 block mb-1">
+                অপশন A *
+              </label>
               <input
                 type="text"
                 required
@@ -1017,7 +1172,9 @@ export default function AdminQuizManager() {
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">অপশন B *</label>
+              <label className="text-xs font-bold text-slate-700 block mb-1">
+                অপশন B *
+              </label>
               <input
                 type="text"
                 required
@@ -1029,7 +1186,9 @@ export default function AdminQuizManager() {
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">অপশন C *</label>
+              <label className="text-xs font-bold text-slate-700 block mb-1">
+                অপশন C *
+              </label>
               <input
                 type="text"
                 required
@@ -1041,7 +1200,9 @@ export default function AdminQuizManager() {
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">অপশন D *</label>
+              <label className="text-xs font-bold text-slate-700 block mb-1">
+                অপশন D *
+              </label>
               <input
                 type="text"
                 required
@@ -1055,7 +1216,9 @@ export default function AdminQuizManager() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">সঠিক উত্তর নির্বাচন করুন *</label>
+              <label className="text-xs font-bold text-slate-700 block mb-1">
+                সঠিক উত্তর নির্বাচন করুন *
+              </label>
               <select
                 value={formAns}
                 onChange={(e) => setFormAns(Number(e.target.value))}
@@ -1087,12 +1250,14 @@ export default function AdminQuizManager() {
               type="submit"
               className="px-6 py-3 rounded-2xl bg-[#C8102E] hover:bg-[#A50D26] text-white font-black text-xs sm:text-sm shadow-md transition active:scale-98"
             >
-              {editingIndex !== null ? '💾 পরিবর্তন সংরক্ষণ করুন' : '➕ প্রশ্ন যুক্ত করুন'}
+              {editingIndex !== null
+                ? "💾 পরিবর্তন সংরক্ষণ করুন"
+                : "➕ প্রশ্ন যুক্ত করুন"}
             </button>
 
             <button
               type="button"
-              onClick={() => setActiveTab('list')}
+              onClick={() => setActiveTab("list")}
               className="px-5 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition"
             >
               তালিকায় ফিরে যান
@@ -1104,16 +1269,19 @@ export default function AdminQuizManager() {
       {/* ─────────────────────────────────────────────────────────────
           TAB 3: BULK MCQ IMPORT FORM
       ───────────────────────────────────────────────────────────── */}
-      {activeTab === 'bulk' && (
+      {activeTab === "bulk" && (
         <form
           onSubmit={handleBulkImport}
           className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5"
         >
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div>
-              <h3 className="text-base font-black text-slate-800">📋 একসাথে অনেকগুলো MCQ আপলোড (Bulk Import)</h3>
+              <h3 className="text-base font-black text-slate-800">
+                📋 একসাথে অনেকগুলো MCQ আপলোড (Bulk Import)
+              </h3>
               <p className="text-xs text-slate-500 font-medium">
-                নোটপ্যাড বা ওয়ার্ড থেকে কপি করে এক ক্লিকে ডজনখানেক প্রশ্ন যুক্ত করুন।
+                নোটপ্যাড বা ওয়ার্ড থেকে কপি করে এক ক্লিকে ডজনখানেক প্রশ্ন যুক্ত
+                করুন।
               </p>
             </div>
           </div>
@@ -1124,13 +1292,22 @@ export default function AdminQuizManager() {
               <span>ফরম্যাট লেখার নিয়মাবলী:</span>
             </div>
             <p>
-              প্রতি লাইনে একটি করে প্রশ্ন পাইপ (<code className="bg-white px-1.5 py-0.5 rounded border border-slate-300 font-bold text-[#C8102E]">|</code>) চিহ্ন দিয়ে আলাদা করে লিখুন:
+              প্রতি লাইনে একটি করে প্রশ্ন পাইপ (
+              <code className="bg-white px-1.5 py-0.5 rounded border border-slate-300 font-bold text-[#C8102E]">
+                |
+              </code>
+              ) চিহ্ন দিয়ে আলাদা করে লিখুন:
             </p>
             <p className="font-mono bg-white p-2.5 rounded-xl border border-slate-200 text-[11px] text-slate-700">
-              প্রশ্ন | অপশন A | অপশন B | অপশন C | অপশন D | সঠিক উত্তর (A/B/C/D) | ব্যাখ্যা (ঐচ্ছিক)
+              প্রশ্ন | অপশন A | অপশন B | অপশন C | অপশন D | সঠিক উত্তর (A/B/C/D)
+              | ব্যাখ্যা (ঐচ্ছিক)
             </p>
             <p className="text-[11px] text-slate-400">
-              উদাহরণ: <span className="font-mono">বাংলাদেশের জাতীয় ফল কোনটি? | আম | কাঁঠাল | লিচু | পেয়ারা | B | কাঁঠাল বাংলাদেশের জাতীয় ফল।</span>
+              উদাহরণ:{" "}
+              <span className="font-mono">
+                বাংলাদেশের জাতীয় ফল কোনটি? | আম | কাঁঠাল | লিচু | পেয়ারা | B |
+                কাঁঠাল বাংলাদেশের জাতীয় ফল।
+              </span>
             </p>
           </div>
 
@@ -1158,7 +1335,7 @@ export default function AdminQuizManager() {
 
             <button
               type="button"
-              onClick={() => setActiveTab('list')}
+              onClick={() => setActiveTab("list")}
               className="px-5 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition"
             >
               বাতিল
@@ -1170,7 +1347,7 @@ export default function AdminQuizManager() {
       {/* ─────────────────────────────────────────────────────────────
           TAB 4: 💰 QUIZ & PACKAGE PRICING MANAGEMENT
       ───────────────────────────────────────────────────────────── */}
-      {activeTab === 'prices' && (
+      {activeTab === "prices" && (
         <form onSubmit={handleSavePrices} className="space-y-6">
           {/* Header Card */}
           <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -1182,7 +1359,9 @@ export default function AdminQuizManager() {
                 পেইড কুইজ, টেস্ট ও প্যাকেজের মূল্য নির্ধারণ
               </h3>
               <p className="text-xs text-slate-500 font-medium">
-                অ্যাডমিন এখান থেকে যেকোনো সময় পরীক্ষার ফি বা প্যাকেজের মূল্য পরিবর্তন করতে পারবেন। পরিবর্তনটি সাথে সাথে কুইজ পেজে কার্যকর হবে।
+                অ্যাডমিন এখান থেকে যেকোনো সময় পরীক্ষার ফি বা প্যাকেজের মূল্য
+                পরিবর্তন করতে পারবেন। পরিবর্তনটি সাথে সাথে কুইজ পেজে কার্যকর
+                হবে।
               </p>
             </div>
 
@@ -1202,7 +1381,9 @@ export default function AdminQuizManager() {
                 className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#9B0D23] via-[#C8102E] to-[#E5254A] hover:opacity-95 text-white font-black text-xs shadow-md transition flex items-center gap-1.5 disabled:opacity-50"
               >
                 <FaFloppyDisk className="w-3.5 h-3.5" />
-                <span>{isSavingPrices ? 'সংরক্ষণ হচ্ছে...' : 'মূল্য সংরক্ষণ করুন'}</span>
+                <span>
+                  {isSavingPrices ? "সংরক্ষণ হচ্ছে..." : "মূল্য সংরক্ষণ করুন"}
+                </span>
               </button>
             </div>
           </div>
@@ -1215,7 +1396,8 @@ export default function AdminQuizManager() {
                 শ্রেণিভিত্তিক পেইড মডেল টেস্টের ফি (Class-wise Paid Tests)
               </h4>
               <p className="text-xs text-slate-500 font-medium mt-0.5">
-                শিক্ষার্থীরা নির্দিষ্ট ক্লাসের মডেল টেস্ট আনলক করতে এই পরিমাণ টাকা প্রদান করবে।
+                শিক্ষার্থীরা নির্দিষ্ট ক্লাসের মডেল টেস্ট আনলক করতে এই পরিমাণ
+                টাকা প্রদান করবে।
               </p>
             </div>
 
@@ -1226,13 +1408,17 @@ export default function AdminQuizManager() {
                   className="bg-slate-50/80 border border-slate-200 hover:border-[#C8102E]/40 p-3.5 rounded-2xl space-y-2 transition"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-black text-slate-800">{toBengaliClass(cls)} শ্রেণি</span>
+                    <span className="text-xs font-black text-slate-800">
+                      {toBengaliClass(cls)} শ্রেণি
+                    </span>
                     <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-50 text-[#C8102E]">
                       পেইড
                     </span>
                   </div>
                   <div className="relative">
-                    <span className="absolute left-3 top-2 text-xs font-black text-slate-400">৳</span>
+                    <span className="absolute left-3 top-2 text-xs font-black text-slate-400">
+                      ৳
+                    </span>
                     <input
                       type="number"
                       min="0"
@@ -1265,7 +1451,8 @@ export default function AdminQuizManager() {
                 বিষয়ভিত্তিক টেস্টের একক ফি (Subject-wise Test Fee)
               </h4>
               <p className="text-xs text-slate-500 font-medium mt-0.5">
-                বাংলা, ইংরেজি, গণিত ইত্যাদি যেকোনো একটি নির্দিষ্ট বিষয়ের টেস্টের সাধারণ ফি।
+                বাংলা, ইংরেজি, গণিত ইত্যাদি যেকোনো একটি নির্দিষ্ট বিষয়ের টেস্টের
+                সাধারণ ফি।
               </p>
             </div>
 
@@ -1274,7 +1461,9 @@ export default function AdminQuizManager() {
                 একক বিষয়ের টেস্ট ফি (Single Subject Test)
               </label>
               <div className="relative">
-                <span className="absolute left-3.5 top-2.5 text-sm font-black text-slate-400">৳</span>
+                <span className="absolute left-3.5 top-2.5 text-sm font-black text-slate-400">
+                  ৳
+                </span>
                 <input
                   type="number"
                   min="0"
@@ -1300,10 +1489,13 @@ export default function AdminQuizManager() {
               <div>
                 <h4 className="text-sm sm:text-base font-black text-slate-800 flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse" />
-                  <span>স্পেশাল মডেল টেস্ট প্যাকেজসমূহ (Dynamic Package Manager)</span>
+                  <span>
+                    স্পেশাল মডেল টেস্ট প্যাকেজসমূহ (Dynamic Package Manager)
+                  </span>
                 </h4>
                 <p className="text-xs text-slate-500 font-medium mt-0.5">
-                  কুইজ পেজের ৩টি বা ততোধিক স্পেশাল অফার প্যাকেজের নাম, মূল্য, ফিচার ও সক্রিয় অবস্থা ডাইনামিকভাবে ম্যানেজ করুন।
+                  কুইজ পেজের ৩টি বা ততোধিক স্পেশাল অফার প্যাকেজের নাম, মূল্য,
+                  ফিচার ও সক্রিয় অবস্থা ডাইনামিকভাবে ম্যানেজ করুন।
                 </p>
               </div>
 
@@ -1334,9 +1526,9 @@ export default function AdminQuizManager() {
                   className={`rounded-2xl border-2 p-4 sm:p-5 space-y-3.5 transition-all relative ${
                     pkg.isActive
                       ? pkg.isPopular
-                        ? 'bg-red-50/40 border-[#C8102E] shadow-sm'
-                        : 'bg-white border-slate-200 shadow-xs'
-                      : 'bg-slate-50/70 border-dashed border-slate-300 opacity-70'
+                        ? "bg-red-50/40 border-[#C8102E] shadow-sm"
+                        : "bg-white border-slate-200 shadow-xs"
+                      : "bg-slate-50/70 border-dashed border-slate-300 opacity-70"
                   }`}
                 >
                   {/* Card Header: Active Toggle & Delete */}
@@ -1349,11 +1541,19 @@ export default function AdminQuizManager() {
                         <input
                           type="checkbox"
                           checked={pkg.isActive}
-                          onChange={(e) => handleUpdatePackage(pkg.id, { isActive: e.target.checked })}
+                          onChange={(e) =>
+                            handleUpdatePackage(pkg.id, {
+                              isActive: e.target.checked,
+                            })
+                          }
                           className="rounded text-emerald-600 focus:ring-emerald-500 w-3.5 h-3.5"
                         />
-                        <span className={pkg.isActive ? 'text-emerald-700' : 'text-slate-400'}>
-                          {pkg.isActive ? 'সক্রিয় (Active)' : 'বন্ধ (Hidden)'}
+                        <span
+                          className={
+                            pkg.isActive ? "text-emerald-700" : "text-slate-400"
+                          }
+                        >
+                          {pkg.isActive ? "সক্রিয় (Active)" : "বন্ধ (Hidden)"}
                         </span>
                       </label>
                     </div>
@@ -1378,7 +1578,9 @@ export default function AdminQuizManager() {
                         type="text"
                         required
                         value={pkg.title}
-                        onChange={(e) => handleUpdatePackage(pkg.id, { title: e.target.value })}
+                        onChange={(e) =>
+                          handleUpdatePackage(pkg.id, { title: e.target.value })
+                        }
                         placeholder="যেমন: Full Class Package"
                         className="w-full bg-slate-50 border border-slate-300 focus:border-[#C8102E] rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 outline-none"
                       />
@@ -1389,8 +1591,10 @@ export default function AdminQuizManager() {
                       </label>
                       <input
                         type="text"
-                        value={pkg.badge || ''}
-                        onChange={(e) => handleUpdatePackage(pkg.id, { badge: e.target.value })}
+                        value={pkg.badge || ""}
+                        onChange={(e) =>
+                          handleUpdatePackage(pkg.id, { badge: e.target.value })
+                        }
                         placeholder="যেমন: জনপ্রিয় অফার"
                         className="w-full bg-slate-50 border border-slate-300 focus:border-[#C8102E] rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 outline-none"
                       />
@@ -1404,7 +1608,9 @@ export default function AdminQuizManager() {
                         বর্তমান মূল্য (৳)
                       </label>
                       <div className="relative">
-                        <span className="absolute left-2.5 top-1.5 text-xs font-black text-slate-400">৳</span>
+                        <span className="absolute left-2.5 top-1.5 text-xs font-black text-slate-400">
+                          ৳
+                        </span>
                         <input
                           type="number"
                           min="0"
@@ -1412,7 +1618,10 @@ export default function AdminQuizManager() {
                           required
                           value={pkg.price}
                           onChange={(e) => {
-                            const val = Math.max(0, Number(e.target.value) || 0);
+                            const val = Math.max(
+                              0,
+                              Number(e.target.value) || 0,
+                            );
                             handleUpdatePackage(pkg.id, { price: val });
                           }}
                           className="w-full bg-slate-50 border border-slate-300 focus:border-[#C8102E] rounded-xl pl-6 pr-2 py-1.5 text-xs font-black text-[#C8102E] outline-none"
@@ -1424,14 +1633,18 @@ export default function AdminQuizManager() {
                         আসল মূল্য (ছাড়ের জন্য)
                       </label>
                       <div className="relative">
-                        <span className="absolute left-2.5 top-1.5 text-xs font-black text-slate-400">৳</span>
+                        <span className="absolute left-2.5 top-1.5 text-xs font-black text-slate-400">
+                          ৳
+                        </span>
                         <input
                           type="number"
                           min="0"
                           step="5"
-                          value={pkg.originalPrice ?? ''}
+                          value={pkg.originalPrice ?? ""}
                           onChange={(e) => {
-                            const val = e.target.value ? Math.max(0, Number(e.target.value)) : undefined;
+                            const val = e.target.value
+                              ? Math.max(0, Number(e.target.value))
+                              : undefined;
                             handleUpdatePackage(pkg.id, { originalPrice: val });
                           }}
                           placeholder="ঐচ্ছিক"
@@ -1449,7 +1662,9 @@ export default function AdminQuizManager() {
                     <input
                       type="text"
                       value={pkg.tagline}
-                      onChange={(e) => handleUpdatePackage(pkg.id, { tagline: e.target.value })}
+                      onChange={(e) =>
+                        handleUpdatePackage(pkg.id, { tagline: e.target.value })
+                      }
                       placeholder="প্যাকেজের সারসংক্ষেপ..."
                       className="w-full bg-slate-50 border border-slate-300 focus:border-[#C8102E] rounded-xl px-2.5 py-1.5 text-xs text-slate-700 outline-none"
                     />
@@ -1463,11 +1678,17 @@ export default function AdminQuizManager() {
                       </label>
                       <select
                         value={pkg.unlockScope}
-                        onChange={(e) => handleUpdatePackage(pkg.id, { unlockScope: e.target.value as any })}
+                        onChange={(e) =>
+                          handleUpdatePackage(pkg.id, {
+                            unlockScope: e.target.value as any,
+                          })
+                        }
                         className="w-full bg-slate-50 border border-slate-300 focus:border-[#C8102E] rounded-xl px-2 py-1.5 text-xs font-bold text-slate-800 outline-none"
                       >
                         <option value="single_class">এক ক্লাসের সব বিষয়</option>
-                        <option value="all_classes">৫ম-১০ম সকল ক্লাস (VIP)</option>
+                        <option value="all_classes">
+                          ৫ম-১০ম সকল ক্লাস (VIP)
+                        </option>
                         <option value="single_subject">একক বিষয়</option>
                       </select>
                     </div>
@@ -1477,7 +1698,11 @@ export default function AdminQuizManager() {
                         <input
                           type="checkbox"
                           checked={pkg.isPopular}
-                          onChange={(e) => handleUpdatePackage(pkg.id, { isPopular: e.target.checked })}
+                          onChange={(e) =>
+                            handleUpdatePackage(pkg.id, {
+                              isPopular: e.target.checked,
+                            })
+                          }
                           className="rounded text-[#C8102E] focus:ring-[#C8102E] w-4 h-4"
                         />
                         <span>জনপ্রিয় ব্যাজ দেখাবে</span>
@@ -1497,9 +1722,11 @@ export default function AdminQuizManager() {
                     </div>
                     <textarea
                       rows={3}
-                      value={pkg.features.join('\n')}
+                      value={pkg.features.join("\n")}
                       onChange={(e) => {
-                        const feats = e.target.value.split('\n').filter((l) => l.trim().length > 0);
+                        const feats = e.target.value
+                          .split("\n")
+                          .filter((l) => l.trim().length > 0);
                         handleUpdatePackage(pkg.id, { features: feats });
                       }}
                       placeholder="১টি বিষয়ের সকল প্রশ্ন&#10;ইনস্ট্যান্ট ফলাফল ও গ্রেড&#10;ব্যাখ্যাসহ সমাধান"
@@ -1527,7 +1754,11 @@ export default function AdminQuizManager() {
               className="px-8 py-3 rounded-2xl bg-gradient-to-r from-[#9B0D23] via-[#C8102E] to-[#E5254A] hover:opacity-95 text-white font-black text-sm shadow-lg transition active:scale-98 disabled:opacity-50 flex items-center gap-2"
             >
               <FaFloppyDisk className="w-4 h-4" />
-              <span>{isSavingPrices ? 'সংরক্ষণ হচ্ছে...' : 'সব মূল্য ও প্যাকেজ সংরক্ষণ করুন'}</span>
+              <span>
+                {isSavingPrices
+                  ? "সংরক্ষণ হচ্ছে..."
+                  : "সব মূল্য ও প্যাকেজ সংরক্ষণ করুন"}
+              </span>
             </button>
           </div>
         </form>
@@ -1536,7 +1767,7 @@ export default function AdminQuizManager() {
       {/* ─────────────────────────────────────────────────────────────
           TAB 5: CARD OPTIONAL COVER IMAGES MANAGER
       ───────────────────────────────────────────────────────────── */}
-      {activeTab === 'covers' && (
+      {activeTab === "covers" && (
         <div className="space-y-6 animate-in fade-in duration-200">
           {/* Header */}
           <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -1548,7 +1779,8 @@ export default function AdminQuizManager() {
                 মডেল টেস্ট কার্ডের কভার ইমেজ ম্যানেজমেন্ট
               </h3>
               <p className="text-xs text-slate-500 font-medium mt-0.5">
-                ছবি আপলোড করলে কার্ডের শীর্ষে থাম্বনেইল দেখাবে। ছবি না দিলে স্বয়ংক্রিয়ভাবে ডিফল্ট আইকন থাকবে।
+                ছবি আপলোড করলে কার্ডের শীর্ষে থাম্বনেইল দেখাবে। ছবি না দিলে
+                স্বয়ংক্রিয়ভাবে ডিফল্ট আইকন থাকবে।
               </p>
             </div>
 
@@ -1559,7 +1791,9 @@ export default function AdminQuizManager() {
               className="px-6 py-2.5 rounded-2xl bg-gradient-to-r from-purple-700 to-indigo-800 hover:opacity-95 text-white font-black text-xs shadow-md transition flex items-center gap-2 disabled:opacity-50 shrink-0 self-start sm:self-auto cursor-pointer"
             >
               <FaFloppyDisk className="w-3.5 h-3.5" />
-              <span>{isSavingCovers ? 'সংরক্ষণ হচ্ছে...' : 'কভার ইমেজ সংরক্ষণ করুন'}</span>
+              <span>
+                {isSavingCovers ? "সংরক্ষণ হচ্ছে..." : "কভার ইমেজ সংরক্ষণ করুন"}
+              </span>
             </button>
           </div>
 
@@ -1592,7 +1826,9 @@ export default function AdminQuizManager() {
                       {coverUrl && (
                         <button
                           type="button"
-                          onClick={() => handleRemoveCover(String(cls), 'classes')}
+                          onClick={() =>
+                            handleRemoveCover(String(cls), "classes")
+                          }
                           className="text-[10px] font-bold text-rose-600 hover:underline flex items-center gap-1"
                         >
                           <FaTrash className="w-2.5 h-2.5" />
@@ -1612,7 +1848,9 @@ export default function AdminQuizManager() {
                       ) : (
                         <div className="text-center p-3 text-slate-400 space-y-1">
                           <FaImage className="w-6 h-6 mx-auto text-slate-300" />
-                          <span className="text-[11px] block font-medium">কভার ছবি নেই (ডিফল্ট আইকন শো করবে)</span>
+                          <span className="text-[11px] block font-medium">
+                            কভার ছবি নেই (ডিফল্ট আইকন শো করবে)
+                          </span>
                         </div>
                       )}
                     </div>
@@ -1626,20 +1864,26 @@ export default function AdminQuizManager() {
                           className="hidden"
                           onChange={(e) => {
                             if (e.target.files?.[0]) {
-                              handleCoverUpload(String(cls), e.target.files[0], 'classes');
+                              handleCoverUpload(
+                                String(cls),
+                                e.target.files[0],
+                                "classes",
+                              );
                             }
                           }}
                         />
                         <span className="flex items-center justify-center gap-1.5">
                           <FaCloudArrowUp className="w-3.5 h-3.5 text-purple-600" />
-                          <span>{isUploading ? 'আপলোড হচ্ছে...' : '📷 ছবি আপলোড করুন'}</span>
+                          <span>
+                            {isUploading ? "আপলোড হচ্ছে..." : "ছবি আপলোড করুন"}
+                          </span>
                         </span>
                       </label>
 
                       <input
                         type="url"
                         placeholder="অথবা ইমেজ লিংক পেস্ট করুন..."
-                        value={coverUrl || ''}
+                        value={coverUrl || ""}
                         onChange={(e) => {
                           setCovers((prev) => ({
                             ...prev,
@@ -1664,10 +1908,12 @@ export default function AdminQuizManager() {
               <div>
                 <h4 className="text-sm font-black text-slate-800 flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
-                  বিষয়ভিত্তিক টেস্ট কার্ডের কভার ছবি ({toBengaliClass(selectedClass)} শ্রেণির বিষয়সমূহ)
+                  বিষয়ভিত্তিক টেস্ট কার্ডের কভার ছবি (
+                  {toBengaliClass(selectedClass)} শ্রেণির বিষয়সমূহ)
                 </h4>
                 <p className="text-xs text-slate-500 font-medium mt-0.5">
-                  নিচের বিষয়গুলোর কার্ডে কভার ছবি যুক্ত করুন। ছবি না থাকলে ডিফল্ট বিষয় আইকন দেখাবে।
+                  নিচের বিষয়গুলোর কার্ডে কভার ছবি যুক্ত করুন। ছবি না থাকলে
+                  ডিফল্ট বিষয় আইকন দেখাবে।
                 </p>
               </div>
 
@@ -1680,8 +1926,8 @@ export default function AdminQuizManager() {
                     onClick={() => setSelectedClass(c)}
                     className={`px-2.5 py-1 rounded-lg text-xs font-black transition ${
                       selectedClass === c
-                        ? 'bg-purple-700 text-white shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900'
+                        ? "bg-purple-700 text-white shadow-xs"
+                        : "text-slate-600 hover:text-slate-900"
                     }`}
                   >
                     {toBengaliClass(c)}
@@ -1693,18 +1939,31 @@ export default function AdminQuizManager() {
             {/* Academic Group switcher for 9-10 */}
             {(selectedClass === 9 || selectedClass === 10) && (
               <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                {(['science', 'humanities', 'commerce', 'compulsory'] as AcademicGroup[]).map((g) => (
+                {(
+                  [
+                    "science",
+                    "humanities",
+                    "commerce",
+                    "compulsory",
+                  ] as AcademicGroup[]
+                ).map((g) => (
                   <button
                     key={g}
                     type="button"
                     onClick={() => setSelectedGroup(g)}
                     className={`px-3 py-1.5 rounded-xl text-xs font-black transition border ${
                       selectedGroup === g
-                        ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
-                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                        ? "bg-blue-600 text-white border-blue-600 shadow-xs"
+                        : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
                     }`}
                   >
-                    {g === 'science' ? '⚛️ বিজ্ঞান' : g === 'humanities' ? '📜 মানবিক' : g === 'commerce' ? '💼 ব্যবসায়' : '🌐 আবশ্যিক'}
+                    {g === "science"
+                      ? "⚛️ বিজ্ঞান"
+                      : g === "humanities"
+                        ? "📜 মানবিক"
+                        : g === "commerce"
+                          ? "💼 ব্যবসায়"
+                          : "🌐 আবশ্যিক"}
                   </button>
                 ))}
               </div>
@@ -1724,12 +1983,16 @@ export default function AdminQuizManager() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span className="text-xl">{sub.icon}</span>
-                        <span className="text-xs font-black text-slate-800 line-clamp-1">{sub.name}</span>
+                        <span className="text-xs font-black text-slate-800 line-clamp-1">
+                          {sub.name}
+                        </span>
                       </div>
                       {coverUrl && (
                         <button
                           type="button"
-                          onClick={() => handleRemoveCover(sub.name, 'subjects')}
+                          onClick={() =>
+                            handleRemoveCover(sub.name, "subjects")
+                          }
                           className="text-[10px] font-bold text-rose-600 hover:underline flex items-center gap-1"
                         >
                           <FaTrash className="w-2.5 h-2.5" />
@@ -1749,7 +2012,9 @@ export default function AdminQuizManager() {
                       ) : (
                         <div className="text-center p-3 text-slate-400 space-y-1">
                           <span className="text-2xl block">{sub.icon}</span>
-                          <span className="text-[11px] block font-medium">কভার ছবি নেই (আইকন মোড সক্রিয়)</span>
+                          <span className="text-[11px] block font-medium">
+                            কভার ছবি নেই (আইকন মোড সক্রিয়)
+                          </span>
                         </div>
                       )}
                     </div>
@@ -1763,20 +2028,26 @@ export default function AdminQuizManager() {
                           className="hidden"
                           onChange={(e) => {
                             if (e.target.files?.[0]) {
-                              handleCoverUpload(sub.name, e.target.files[0], 'subjects');
+                              handleCoverUpload(
+                                sub.name,
+                                e.target.files[0],
+                                "subjects",
+                              );
                             }
                           }}
                         />
                         <span className="flex items-center justify-center gap-1.5">
                           <FaCloudArrowUp className="w-3.5 h-3.5 text-blue-600" />
-                          <span>{isUploading ? 'আপলোড হচ্ছে...' : '📷 ছবি আপলোড করুন'}</span>
+                          <span>
+                            {isUploading ? "আপলোড হচ্ছে..." : "ছবি আপলোড করুন"}
+                          </span>
                         </span>
                       </label>
 
                       <input
                         type="url"
                         placeholder="অথবা ইমেজ লিংক পেস্ট করুন..."
-                        value={coverUrl || ''}
+                        value={coverUrl || ""}
                         onChange={(e) => {
                           setCovers((prev) => ({
                             ...prev,
@@ -1804,7 +2075,11 @@ export default function AdminQuizManager() {
               className="px-8 py-3 rounded-2xl bg-gradient-to-r from-purple-700 to-indigo-800 hover:opacity-95 text-white font-black text-sm shadow-lg transition active:scale-98 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
             >
               <FaFloppyDisk className="w-4 h-4" />
-              <span>{isSavingCovers ? 'সংরক্ষণ হচ্ছে...' : 'সব কভার ইমেজ সংরক্ষণ করুন'}</span>
+              <span>
+                {isSavingCovers
+                  ? "সংরক্ষণ হচ্ছে..."
+                  : "সব কভার ইমেজ সংরক্ষণ করুন"}
+              </span>
             </button>
           </div>
         </div>
@@ -1812,4 +2087,3 @@ export default function AdminQuizManager() {
     </div>
   );
 }
-
