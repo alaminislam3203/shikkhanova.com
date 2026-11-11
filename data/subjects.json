@@ -2,8 +2,8 @@
   {
     "id": "nctb-c5-1",
     "classGrade": 5,
-    "subjectName": "বাংলা (Bangla)",
-    "bookTitle": "আমার বাংলা বই (৫ম শ্রেণি - NCTB)",
+    "subjectName": "বাংলা ১ম পত্র",
+    "bookTitle": "আমার বাংলা বই (১ম পত্র - ৫ম শ্রেণি)",
     "subjectCode": "১০১",
     "group": "সকল বিভাগ",
     "fullMarks": 100,
@@ -14,14 +14,38 @@
   {
     "id": "nctb-c5-2",
     "classGrade": 5,
-    "subjectName": "ইংরেজি (English)",
-    "bookTitle": "English for Today (Class 5 - NCTB)",
+    "subjectName": "বাংলা ২য় পত্র",
+    "bookTitle": "বাংলা ব্যাকরণ ও নির্মিতি (২য় পত্র - ৫ম শ্রেণি)",
     "subjectCode": "১০২",
+    "group": "সকল বিভাগ",
+    "fullMarks": 50,
+    "isCompulsory": true,
+    "nctbBookUrl": "https://nctb.gov.bd",
+    "createdAt": "2026-11-09T10:56:33.999Z"
+  },
+  {
+    "id": "nctb-c5-3",
+    "classGrade": 5,
+    "subjectName": "ইংরেজি ১ম পত্র",
+    "bookTitle": "English for Today (Class 5 - NCTB)",
+    "subjectCode": "১০৭",
     "group": "সকল বিভাগ",
     "fullMarks": 100,
     "isCompulsory": true,
     "nctbBookUrl": "https://nctb.gov.bd",
     "createdAt": "2026-11-09T10:56:34.196Z"
+  },
+  {
+    "id": "nctb-c5-4",
+    "classGrade": 5,
+    "subjectName": "ইংরেজি ২য় পত্র",
+    "bookTitle": "English Grammar and Composition (Class 5)",
+    "subjectCode": "১০৮",
+    "group": "সকল বিভাগ",
+    "fullMarks": 50,
+    "isCompulsory": true,
+    "nctbBookUrl": "https://nctb.gov.bd",
+    "createdAt": "2026-11-09T10:56:34.333Z"
   },
   {
     "id": "nctb-c5-3",
@@ -74,7 +98,7 @@
   {
     "id": "nctb-c6-1",
     "classGrade": 6,
-    "subjectName": "বাংলা ১ম পত্র (চারুপাঠ)",
+    "subjectName": "বাংলা ১ম পত্র",
     "bookTitle": "চারুপাঠ ও আনন্দপাঠ (৬ষ্ঠ শ্রেণি - NCTB)",
     "subjectCode": "১০১",
     "group": "সকল বিভাগ",

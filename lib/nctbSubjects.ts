@@ -105,7 +105,7 @@ export const DEFAULT_NCTB_SUBJECTS: NctbSubjectItem[] = [
   {
     id: 'nctb-c6-1',
     classGrade: 6,
-    subjectName: 'বাংলা ১ম পত্র (চারুপাঠ)',
+    subjectName: 'বাংলা ১ম পত্র',
     bookTitle: 'চারুপাঠ ও আনন্দপাঠ (৬ষ্ঠ শ্রেণি - NCTB)',
     subjectCode: '১০১',
     group: 'সকল বিভাগ',
@@ -116,7 +116,7 @@ export const DEFAULT_NCTB_SUBJECTS: NctbSubjectItem[] = [
   {
     id: 'nctb-c6-2',
     classGrade: 6,
-    subjectName: 'বাংলা ব্যাকরণ ও নির্মিতি (২য় পত্র)',
+    subjectName: 'বাংলা ২য় পত্র',
     bookTitle: 'বাংলা ব্যাকরণ ও নির্মিতি (৬ষ্ঠ শ্রেণি - NCTB)',
     subjectCode: '১০২',
     group: 'সকল বিভাগ',
@@ -127,7 +127,7 @@ export const DEFAULT_NCTB_SUBJECTS: NctbSubjectItem[] = [
   {
     id: 'nctb-c6-3',
     classGrade: 6,
-    subjectName: 'ইংরেজি ১ম পত্র (English for Today)',
+    subjectName: 'ইংরেজি ১ম পত্র',
     bookTitle: 'English for Today (Class 6 - NCTB)',
     subjectCode: '১০৭',
     group: 'সকল বিভাগ',
@@ -138,7 +138,7 @@ export const DEFAULT_NCTB_SUBJECTS: NctbSubjectItem[] = [
   {
     id: 'nctb-c6-4',
     classGrade: 6,
-    subjectName: 'ইংরেজি ২য় পত্র (English Grammar)',
+    subjectName: 'ইংরেজি ২য় পত্র',
     bookTitle: 'English Grammar and Composition (Class 6 - NCTB)',
     subjectCode: '১০৮',
     group: 'সকল বিভাগ',
@@ -217,7 +217,7 @@ export const DEFAULT_NCTB_SUBJECTS: NctbSubjectItem[] = [
   {
     id: 'nctb-c7-1',
     classGrade: 7,
-    subjectName: 'বাংলা ১ম পত্র (সপ্তবর্ণা)',
+    subjectName: 'বাংলা ১ম পত্র',
     bookTitle: 'সপ্তবর্ণা ও আনন্দপাঠ (৭ম শ্রেণি - NCTB)',
     subjectCode: '১০১',
     group: 'সকল বিভাগ',
@@ -228,7 +228,7 @@ export const DEFAULT_NCTB_SUBJECTS: NctbSubjectItem[] = [
   {
     id: 'nctb-c7-2',
     classGrade: 7,
-    subjectName: 'বাংলা ব্যাকরণ ও নির্মিতি (২য় পত্র)',
+    subjectName: 'বাংলা ২য় পত্র',
     bookTitle: 'বাংলা ব্যাকরণ ও নির্মিতি (৭ম শ্রেণি - NCTB)',
     subjectCode: '১০২',
     group: 'সকল বিভাগ',
@@ -239,7 +239,7 @@ export const DEFAULT_NCTB_SUBJECTS: NctbSubjectItem[] = [
   {
     id: 'nctb-c7-3',
     classGrade: 7,
-    subjectName: 'ইংরেজি ১ম পত্র (English for Today)',
+    subjectName: 'ইংরেজি ১ম পত্র',
     bookTitle: 'English for Today (Class 7 - NCTB)',
     subjectCode: '১০৭',
     group: 'সকল বিভাগ',
@@ -250,7 +250,7 @@ export const DEFAULT_NCTB_SUBJECTS: NctbSubjectItem[] = [
   {
     id: 'nctb-c7-4',
     classGrade: 7,
-    subjectName: 'ইংরেজি ২য় পত্র (English Grammar)',
+    subjectName: 'ইংরেজি ২য় পত্র',
     bookTitle: 'English Grammar and Composition (Class 7 - NCTB)',
     subjectCode: '১০৮',
     group: 'সকল বিভাগ',
@@ -329,7 +329,7 @@ export const DEFAULT_NCTB_SUBJECTS: NctbSubjectItem[] = [
   {
     id: 'nctb-c8-1',
     classGrade: 8,
-    subjectName: 'বাংলা ১ম পত্র (সাহিত্য কণিকা)',
+    subjectName: 'বাংলা ১ম পত্র',
     bookTitle: 'সাহিত্য কণিকা ও আনন্দপাঠ (৮ম শ্রেণি - NCTB)',
     subjectCode: '১০১',
     group: 'সকল বিভাগ',
@@ -340,7 +340,7 @@ export const DEFAULT_NCTB_SUBJECTS: NctbSubjectItem[] = [
   {
     id: 'nctb-c8-2',
     classGrade: 8,
-    subjectName: 'বাংলা ব্যাকরণ ও নির্মিতি (২য় পত্র)',
+    subjectName: 'বাংলা ২য় পত্র',
     bookTitle: 'বাংলা ব্যাকরণ ও নির্মিতি (৮ম শ্রেণি - NCTB)',
     subjectCode: '১০২',
     group: 'সকল বিভাগ',
@@ -351,7 +351,7 @@ export const DEFAULT_NCTB_SUBJECTS: NctbSubjectItem[] = [
   {
     id: 'nctb-c8-3',
     classGrade: 8,
-    subjectName: 'ইংরেজি ১ম পত্র (English for Today)',
+    subjectName: 'ইংরেজি ১ম পত্র',
     bookTitle: 'English for Today (Class 8 - NCTB)',
     subjectCode: '১০৭',
     group: 'সকল বিভাগ',
@@ -362,7 +362,7 @@ export const DEFAULT_NCTB_SUBJECTS: NctbSubjectItem[] = [
   {
     id: 'nctb-c8-4',
     classGrade: 8,
-    subjectName: 'ইংরেজি ২য় পত্র (English Grammar)',
+    subjectName: 'ইংরেজি ২য় পত্র',
     bookTitle: 'English Grammar and Composition (Class 8 - NCTB)',
     subjectCode: '১০৮',
     group: 'সকল বিভাগ',
@@ -441,7 +441,7 @@ export const DEFAULT_NCTB_SUBJECTS: NctbSubjectItem[] = [
   {
     id: 'nctb-c9-1',
     classGrade: 9,
-    subjectName: 'বাংলা ১ম পত্র (সাহিত্য ও সহপাঠ)',
+    subjectName: 'বাংলা ১ম পত্র',
     bookTitle: 'মাধ্যমিক বাংলা সাহিত্য ও সহপাঠ (৯ম-১০ম শ্রেণি - NCTB)',
     subjectCode: '১০১',
     group: 'সকল বিভাগ',
@@ -452,7 +452,7 @@ export const DEFAULT_NCTB_SUBJECTS: NctbSubjectItem[] = [
   {
     id: 'nctb-c9-2',
     classGrade: 9,
-    subjectName: 'বাংলা ২য় পত্র (ব্যাকরণ ও নির্মিতি)',
+    subjectName: 'বাংলা ২য় পত্র',
     bookTitle: 'বাংলা ভাষার ব্যাকরণ ও নির্মিতি (৯ম-১০ম শ্রেণি - NCTB)',
     subjectCode: '১০২',
     group: 'সকল বিভাগ',
@@ -463,7 +463,7 @@ export const DEFAULT_NCTB_SUBJECTS: NctbSubjectItem[] = [
   {
     id: 'nctb-c9-3',
     classGrade: 9,
-    subjectName: 'ইংরেজি ১ম পত্র (English for Today)',
+    subjectName: 'ইংরেজি ১ম পত্র',
     bookTitle: 'English for Today (Classes 9-10 - NCTB)',
     subjectCode: '১০৭',
     group: 'সকল বিভাগ',
@@ -474,7 +474,7 @@ export const DEFAULT_NCTB_SUBJECTS: NctbSubjectItem[] = [
   {
     id: 'nctb-c9-4',
     classGrade: 9,
-    subjectName: 'ইংরেজি ২য় পত্র (English Grammar)',
+    subjectName: 'ইংরেজি ২য় পত্র',
     bookTitle: 'English Grammar and Composition (Classes 9-10 - NCTB)',
     subjectCode: '১০৮',
     group: 'সকল বিভাগ',
@@ -652,7 +652,7 @@ export const DEFAULT_NCTB_SUBJECTS: NctbSubjectItem[] = [
   {
     id: 'nctb-c10-1',
     classGrade: 10,
-    subjectName: 'বাংলা ১ম পত্র (সাহিত্য ও সহপাঠ)',
+    subjectName: 'বাংলা ১ম পত্র',
     bookTitle: 'মাধ্যমিক বাংলা সাহিত্য ও সহপাঠ (১০ম শ্রেণি / SSC - NCTB)',
     subjectCode: '১০১',
     group: 'সকল বিভাগ',
@@ -663,7 +663,7 @@ export const DEFAULT_NCTB_SUBJECTS: NctbSubjectItem[] = [
   {
     id: 'nctb-c10-2',
     classGrade: 10,
-    subjectName: 'বাংলা ২য় পত্র (ব্যাকরণ ও নির্মিতি)',
+    subjectName: 'বাংলা ২য় পত্র',
     bookTitle: 'বাংলা ভাষার ব্যাকরণ ও নির্মিতি (১০ম শ্রেণি / SSC - NCTB)',
     subjectCode: '১০২',
     group: 'সকল বিভাগ',
@@ -674,7 +674,7 @@ export const DEFAULT_NCTB_SUBJECTS: NctbSubjectItem[] = [
   {
     id: 'nctb-c10-3',
     classGrade: 10,
-    subjectName: 'ইংরেজি ১ম পত্র (English for Today)',
+    subjectName: 'ইংরেজি ১ম পত্র',
     bookTitle: 'English for Today (Class 10 / SSC - NCTB)',
     subjectCode: '১০৭',
     group: 'সকল বিভাগ',
@@ -685,7 +685,7 @@ export const DEFAULT_NCTB_SUBJECTS: NctbSubjectItem[] = [
   {
     id: 'nctb-c10-4',
     classGrade: 10,
-    subjectName: 'ইংরেজি ২য় পত্র (English Grammar)',
+    subjectName: 'ইংরেজি ২য় পত্র',
     bookTitle: 'English Grammar and Composition (Class 10 / SSC - NCTB)',
     subjectCode: '১০৮',
     group: 'সকল বিভাগ',
