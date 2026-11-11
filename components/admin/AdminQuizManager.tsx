@@ -179,6 +179,7 @@ export default function AdminQuizManager() {
   const handleSaveQuestion = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formQ.trim() || !formA.trim() || !formB.trim() || !formC.trim() || !formD.trim()) {
+      toast.error('অনুগ্রহ করে প্রশ্ন এবং ৪টি অপশন অবশ্যই পূরণ করুন।');
       setMsg({ text: 'অনুগ্রহ করে প্রশ্ন এবং ৪টি অপশন অবশ্যই পূরণ করুন।', type: 'error' });
       return;
     }
@@ -194,9 +195,11 @@ export default function AdminQuizManager() {
     let updatedList = [...questions];
     if (editingIndex !== null && editingIndex >= 0 && editingIndex < updatedList.length) {
       updatedList[editingIndex] = newQuestion;
+      toast.success('প্রশ্ন সফলভাবে আপডেট করা হয়েছে!');
       setMsg({ text: 'প্রশ্ন সফলভাবে আপডেট করা হয়েছে!', type: 'success' });
     } else {
       updatedList.push(newQuestion);
+      toast.success('নতুন প্রশ্ন সফলভাবে যুক্ত করা হয়েছে!');
       setMsg({ text: 'নতুন প্রশ্ন সফলভাবে যুক্ত করা হয়েছে!', type: 'success' });
     }
 
@@ -226,6 +229,7 @@ export default function AdminQuizManager() {
     if (!confirm(`আপনি কি ${index + 1} নম্বর প্রশ্নটি মুছে ফেলতে চান?`)) return;
     const updated = questions.filter((_, i) => i !== index);
     persistQuestions(updated);
+    toast.success('প্রশ্ন মুছে ফেলা হয়েছে।');
     setMsg({ text: '🗑️ প্রশ্ন মুছে ফেলা হয়েছে।', type: 'success' });
   };
 
@@ -246,6 +250,7 @@ export default function AdminQuizManager() {
     }
 
     persistQuestions(defaults);
+    toast.success('ডিফল্ট প্রশ্ন সফলভাবে রিস্টোর হয়েছে।');
     setMsg({ text: '🔄 ডিফল্ট প্রশ্ন সফলভাবে রিস্টোর হয়েছে।', type: 'success' });
   };
 
@@ -254,6 +259,7 @@ export default function AdminQuizManager() {
     e.preventDefault();
     const lines = bulkText.split('\n').map((l) => l.trim()).filter(Boolean);
     if (lines.length === 0) {
+      toast.error('কোনো প্রশ্ন পাওয়া যায়নি। সঠিক ফরম্যাটে লিখুন।');
       setMsg({ text: 'কোনো প্রশ্ন পাওয়া যায়নি। অনুগ্রহ করে সঠিক ফরম্যাটে লিখুন।', type: 'error' });
       return;
     }
@@ -287,6 +293,7 @@ export default function AdminQuizManager() {
     const updated = [...questions, ...newItems];
     persistQuestions(updated);
     setBulkText('');
+    toast.success(`${addedCount}টি প্রশ্ন সফলভাবে যোগ হয়েছে!`);
     setMsg({
       text: `${addedCount}টি প্রশ্ন সফলভাবে যোগ হয়েছে! ${skippedCount > 0 ? `(${skippedCount}টি লাইন সঠিক ছিল না)` : ''}`,
       type: 'success',
