@@ -267,40 +267,51 @@ export default function MobileBottomNav() {
       </nav>
 
       {/* ─────────────────────────────────────────────────────────────
-          FULL-HEIGHT USER ACCOUNT MENU DRAWER (Mobile Only)
+          SIDE DRAWER USER ACCOUNT MENU (Mobile Only)
       ───────────────────────────────────────────────────────────── */}
-      {isMenuOpen && session?.user && (
-        <div className="fixed inset-0 z-50 lg:hidden flex flex-col justify-end">
-          {/* Backdrop Overlay */}
-          <div
-            onClick={() => setIsMenuOpen(false)}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity animate-in fade-in duration-200"
-          />
+      <div
+        className={`fixed inset-0 z-50 lg:hidden transition-visibility duration-300 ${
+          isMenuOpen && session?.user ? 'visible' : 'invisible pointer-events-none delay-300'
+        }`}
+        aria-hidden={!isMenuOpen}
+      >
+        {/* Backdrop Overlay with blur */}
+        <div
+          onClick={() => setIsMenuOpen(false)}
+          className={`fixed inset-0 bg-slate-950/50 backdrop-blur-xs transition-opacity duration-300 ease-out ${
+            isMenuOpen && session?.user ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          }`}
+        />
 
-          {/* Full-Height Sheet */}
-          <div className="relative z-10 w-full h-[95vh] max-h-[100dvh] bg-slate-100 rounded-t-[32px] shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom duration-300 border-t-2 border-[#C8102E]/60">
-            
-            {/* 1. Header Bar with Title & Close Button */}
-            <div className="bg-white px-5 py-3 border-b border-slate-200 flex items-center justify-between shrink-0 shadow-xs">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#0A1E3C] to-[#C8102E] text-white flex items-center justify-center shadow-xs">
-                  <FaBars className="w-3.5 h-3.5" />
-                </div>
-                <div>
-                  <h2 className="text-base font-black text-[#0A1E3C] leading-tight">অ্যাকাউন্ট মেনু</h2>
-                  <p className="text-[10px] text-slate-500 font-medium">শিক্ষানোভা একাডেমি পোর্টাল</p>
-                </div>
+        {/* Side Menu Drawer (Smooth Slide-In From Right) */}
+        <aside
+          className={`fixed top-0 right-0 bottom-0 w-full max-w-[320px] sm:max-w-[360px] bg-slate-100 shadow-2xl flex flex-col z-[51] transition-transform duration-300 ease-out transform border-l border-slate-200/90 ${
+            isMenuOpen && session?.user ? 'translate-x-0' : 'translate-x-full'
+          }`}
+          role="dialog"
+          aria-label="অ্যাকাউন্ট মেনু"
+        >
+          {/* 1. Header Bar with Title & Close Button */}
+          <div className="bg-white px-5 py-3.5 border-b border-slate-200 flex items-center justify-between shrink-0 shadow-xs">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#0A1E3C] to-[#C8102E] text-white flex items-center justify-center shadow-xs">
+                <FaBars className="w-3.5 h-3.5" />
               </div>
-
-              <button
-                type="button"
-                onClick={() => setIsMenuOpen(false)}
-                aria-label="মেনু বন্ধ করুন"
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 active:scale-90 text-slate-700 flex items-center justify-center transition"
-              >
-                <FaXmark className="w-4 h-4" />
-              </button>
+              <div>
+                <h2 className="text-base font-black text-[#0A1E3C] leading-tight">অ্যাকাউন্ট মেনু</h2>
+                <p className="text-[10px] text-slate-500 font-medium">শিক্ষানোভা একাডেমি পোর্টাল</p>
+              </div>
             </div>
+
+            <button
+              type="button"
+              onClick={() => setIsMenuOpen(false)}
+              aria-label="মেনু বন্ধ করুন"
+              className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 active:scale-90 text-slate-700 flex items-center justify-center transition"
+            >
+              <FaXmark className="w-4 h-4" />
+            </button>
+          </div>
 
             {/* 2. Scrollable Body Content */}
             <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-4 pb-12">
@@ -647,9 +658,9 @@ export default function MobileBottomNav() {
                 type="button"
                 onClick={() => {
                   setIsMenuOpen(false);
-                  signOut({ callbackUrl: '/' });
+                  confirmSignOut();
                 }}
-                className="w-full p-3.5 rounded-2xl text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 active:scale-98 border border-rose-200 transition flex items-center justify-center gap-2"
+                className="w-full p-3.5 rounded-2xl text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 active:scale-98 border border-rose-200 transition flex items-center justify-center gap-2 cursor-pointer"
               >
                 <FaArrowRightFromBracket className="w-4 h-4" />
                 <span>লগআউট করুন</span>
@@ -658,8 +669,8 @@ export default function MobileBottomNav() {
             </div>
 
           </div>
-        </div>
-      )}
+        </aside>
+      </div>
     </>
   );
 }
