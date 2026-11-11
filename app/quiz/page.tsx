@@ -74,6 +74,9 @@ export default function QuizPage() {
   // Unlocked Paid Tests (persisted in localStorage)
   const [unlockedClasses, setUnlockedClasses] = useState<number[]>([]);
 
+  // Dynamic Quiz Pricing State (configured from Admin Panel)
+  const [quizPrices, setQuizPrices] = useState<QuizPrices>(getStoredQuizPrices);
+
   // Payment / Unlock Modal
   const [paymentModalOpen, setPaymentModalOpen] = useState<boolean>(false);
   const [paymentTargetClass, setPaymentTargetClass] = useState<number>(6);
@@ -85,6 +88,19 @@ export default function QuizPage() {
   // Refs for scrolling
   const testAreaRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
+
+  // Fetch latest prices from server
+  useEffect(() => {
+    fetch('/api/quiz/prices')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.prices) {
+          setQuizPrices(data.prices);
+          saveStoredQuizPrices(data.prices);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Load persisted results and user-specific unlocked classes on mount
   useEffect(() => {
@@ -165,7 +181,7 @@ export default function QuizPage() {
       // Open Payment & Access Code Modal
       setPaymentTargetClass(classGrade);
       setPaymentPackageName(`${toBengaliClass(classGrade)} শ্রেণির প্রিমিয়াম মডেল টেস্ট`);
-      setPaymentAmount(50);
+      setPaymentAmount(quizPrices.classPrices[classGrade] || 50);
       setUnlockSuccessMsg('');
       setPaymentModalOpen(true);
     }
@@ -689,7 +705,9 @@ export default function QuizPage() {
               ৫ম থেকে ১০ম শ্রেণির পূর্ণাঙ্গ মডেল টেস্ট। প্রতিটি ক্লাসের টেস্ট আলাদাভাবে কিনতে পারবেন।
             </p>
           </div>
-          <span className="text-xs font-bold text-[#C8102E]">৳৫০ • পূর্ণাঙ্গ মডেল টেস্ট</span>
+          <span className="text-xs font-bold text-[#C8102E]">
+            ৳{quizPrices.classPrices[selectedClass] || 50} • পূর্ণাঙ্গ মডেল টেস্ট
+          </span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4">
@@ -718,7 +736,9 @@ export default function QuizPage() {
                       </h3>
                     </div>
                     <div className="text-right shrink-0">
-                      <div className="text-sm sm:text-xl font-black text-[#C8102E]">৳৫০</div>
+                      <div className="text-sm sm:text-xl font-black text-[#C8102E]">
+                        ৳{quizPrices.classPrices[cls] || 50}
+                      </div>
                       <div className="hidden sm:block text-[10px] text-slate-400 font-semibold">এককালীন ফি</div>
                     </div>
                   </div>
@@ -778,7 +798,7 @@ export default function QuizPage() {
               <div className="text-3xl transition-transform group-hover:scale-110">{sub.icon}</div>
               <div>
                 <h4 className="text-xs sm:text-sm font-black text-slate-800 truncate">{sub.name}</h4>
-                <p className="text-[11px] font-black text-[#C8102E] mt-0.5">৳৫০</p>
+                <p className="text-[11px] font-black text-[#C8102E] mt-0.5">৳{quizPrices.subjectPrice || 50}</p>
               </div>
               <button
                 type="button"
