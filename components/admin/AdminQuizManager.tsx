@@ -108,7 +108,7 @@ export default function AdminQuizManager() {
           id: saveToastId,
           duration: 4000,
         });
-        setMsg({ text: '✅ কুইজ ও প্যাকেজের মূল্য সফলভাবে সংরক্ষণ ও আপডেট করা হয়েছে!', type: 'success' });
+        setMsg({ text: 'কুইজ ও প্যাকেজের মূল্য সফলভাবে সংরক্ষণ ও আপডেট করা হয়েছে!', type: 'success' });
       } else {
         toast.error(data.error || 'মূল্য সংরক্ষণ ব্যর্থ হয়েছে। আবার চেষ্টা করুন।', {
           id: saveToastId,
