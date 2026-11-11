@@ -45,7 +45,7 @@ export const confirmSignOut = () => {
               toast.dismiss(t.id);
               signOut({ callbackUrl: "/" });
             }}
-            className="px-4 py-2 text-xs sm:text-sm font-bold text-red-500 bg-[#E53E3E] hover:bg-[#C53030] rounded-xl transition-all shadow-sm cursor-pointer active:scale-95"
+            className="px-4 py-2 text-xs sm:text-sm font-medium text-red-500 bg-[#E53E3E] hover:bg-[#C53030] border border-red-400 rounded-xl transition-all shadow-sm cursor-pointer active:scale-95"
           >
             হ্যাঁ, লগ আউট করুন
           </button>
