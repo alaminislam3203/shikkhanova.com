@@ -14,6 +14,7 @@ import {
   toBengaliClass,
   toBengaliNumber,
   QuizPrices,
+  DEFAULT_QUIZ_PRICES,
   getStoredQuizPrices,
   saveStoredQuizPrices,
 } from '@/lib/defaultQuizData';
@@ -74,8 +75,8 @@ export default function QuizPage() {
   // Unlocked Paid Tests (persisted in localStorage)
   const [unlockedClasses, setUnlockedClasses] = useState<number[]>([]);
 
-  // Dynamic Quiz Pricing State (configured from Admin Panel)
-  const [quizPrices, setQuizPrices] = useState<QuizPrices>(getStoredQuizPrices);
+  // Dynamic Quiz Pricing State (SSR safe: defaults match between server and client initially)
+  const [quizPrices, setQuizPrices] = useState<QuizPrices>(DEFAULT_QUIZ_PRICES);
 
   // Payment / Unlock Modal
   const [paymentModalOpen, setPaymentModalOpen] = useState<boolean>(false);
@@ -89,8 +90,15 @@ export default function QuizPage() {
   const testAreaRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  // Fetch latest prices from server
+  // Hydrate and fetch latest prices safely after mount
   useEffect(() => {
+    try {
+      const stored = getStoredQuizPrices();
+      if (stored) {
+        setQuizPrices(stored);
+      }
+    } catch {}
+
     fetch('/api/quiz/prices')
       .then((res) => res.json())
       .then((data) => {

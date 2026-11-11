@@ -49,8 +49,8 @@ export default function AdminQuizManager() {
   const [activeTab, setActiveTab] = useState<'list' | 'add' | 'bulk' | 'prices'>('list');
   const [questions, setQuestions] = useState<RawQuestion[]>([]);
 
-  // Quiz Pricing Management State
-  const [prices, setPrices] = useState<QuizPrices>(getStoredQuizPrices);
+  // Quiz Pricing Management State (SSR safe)
+  const [prices, setPrices] = useState<QuizPrices>(DEFAULT_QUIZ_PRICES);
   const [isSavingPrices, setIsSavingPrices] = useState<boolean>(false);
 
   // Add / Edit Form State
@@ -69,8 +69,15 @@ export default function AdminQuizManager() {
   // Notification message
   const [msg, setMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
-  // Load quiz prices from server on initial mount
+  // Load quiz prices safely after mount
   useEffect(() => {
+    try {
+      const stored = getStoredQuizPrices();
+      if (stored) {
+        setPrices(stored);
+      }
+    } catch {}
+
     fetch('/api/quiz/prices')
       .then((res) => res.json())
       .then((data) => {
