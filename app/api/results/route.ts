@@ -52,41 +52,44 @@ function writeLocalResults(results: any[]) {
   }
 }
 
-// Auto-seed results into PostgreSQL if DB table is empty or has fewer than seed records
+// Auto-seed results into PostgreSQL if DB table is empty or has fewer than seed records or needs update
 async function ensureSeedResults() {
   try {
-    const count = await prisma.examResult.count();
     const local = readLocalResults();
-    if (count < local.length && local.length > 0) {
-      for (const r of local) {
-        try {
-          await prisma.examResult.upsert({
-            where: { id: r.id },
-            update: {
-              examTitle: r.examTitle,
-              classGrade: r.classGrade,
-              rollNumber: r.rollNumber,
-              studentName: r.studentName,
-              totalMarks: r.totalMarks,
-              obtainedMarks: r.obtainedMarks,
-              grade: r.grade,
-              gpa: r.gpa,
-              subjectMarks: typeof r.subjectMarks === 'object' ? JSON.stringify(r.subjectMarks) : r.subjectMarks,
-            },
-            create: {
-              id: r.id,
-              examTitle: r.examTitle,
-              classGrade: r.classGrade,
-              rollNumber: r.rollNumber,
-              studentName: r.studentName,
-              totalMarks: r.totalMarks,
-              obtainedMarks: r.obtainedMarks,
-              grade: r.grade,
-              gpa: r.gpa,
-              subjectMarks: typeof r.subjectMarks === 'object' ? JSON.stringify(r.subjectMarks) : r.subjectMarks,
-            },
-          });
-        } catch {}
+    if (local.length > 0) {
+      const sample = await prisma.examResult.findFirst();
+      const needsSync = !sample || !sample.subjectMarks?.includes('বাংলা ২য় পত্র');
+      if (needsSync) {
+        for (const r of local) {
+          try {
+            await prisma.examResult.upsert({
+              where: { id: r.id },
+              update: {
+                examTitle: r.examTitle,
+                classGrade: r.classGrade,
+                rollNumber: r.rollNumber,
+                studentName: r.studentName,
+                totalMarks: r.totalMarks,
+                obtainedMarks: r.obtainedMarks,
+                grade: r.grade,
+                gpa: r.gpa,
+                subjectMarks: typeof r.subjectMarks === 'object' ? JSON.stringify(r.subjectMarks) : r.subjectMarks,
+              },
+              create: {
+                id: r.id,
+                examTitle: r.examTitle,
+                classGrade: r.classGrade,
+                rollNumber: r.rollNumber,
+                studentName: r.studentName,
+                totalMarks: r.totalMarks,
+                obtainedMarks: r.obtainedMarks,
+                grade: r.grade,
+                gpa: r.gpa,
+                subjectMarks: typeof r.subjectMarks === 'object' ? JSON.stringify(r.subjectMarks) : r.subjectMarks,
+              },
+            });
+          } catch {}
+        }
       }
     }
   } catch (err) {
