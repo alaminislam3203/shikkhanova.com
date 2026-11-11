@@ -607,23 +607,22 @@ export default function Navbar() {
               </Link>
 
               {session?.user ? (
-                <div className="hidden lg:block relative" ref={dropdownRef}>
-                  
+                <div className="relative">
                   {/* Profile Trigger Button - Avatar Only */}
                   <button
                     type="button"
-                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    onClick={() => setDrawerOpen(true)}
                     className={`rounded-full p-0.5 transition-all focus:outline-none ${
-                      dropdownOpen
+                      drawerOpen
                         ? 'ring-2 ring-brand-600 ring-offset-2 ring-offset-white'
                         : 'hover:ring-2 hover:ring-brand-500/50 hover:ring-offset-1'
                     }`}
-                    aria-expanded={dropdownOpen}
-                    aria-label="ইউজার মেনু"
-                    title={session.user.name || 'প্রোফাইল মেনু'}
+                    aria-expanded={drawerOpen}
+                    aria-label="আমার অ্যাকাউন্ট"
+                    title={session.user.name || 'আমার অ্যাকাউন্ট'}
                   >
-                    {/* User Avatar Only */}
-                    <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-brand-600 bg-brand-50 flex items-center justify-center shrink-0 shadow-sm transition-transform hover:scale-105 active:scale-95">
+                    {/* User Avatar */}
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-brand-600 bg-brand-50 flex items-center justify-center shrink-0 shadow-sm transition-transform hover:scale-105 active:scale-95">
                       {session.user.image ? (
                         <img
                           src={session.user.image}
@@ -631,163 +630,29 @@ export default function Navbar() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <span className="text-sm font-black text-brand-700">
+                        <span className="text-xs sm:text-sm font-black text-brand-700">
                           {session.user.name?.charAt(0) || 'U'}
                         </span>
                       )}
                     </div>
                   </button>
-
-                  {/* Profile Dropdown Popup Menu */}
-                  {dropdownOpen && (
-                    <div className="absolute right-0 mt-2.5 w-64 sm:w-72 bg-white rounded-3xl shadow-2xl border border-slate-100 py-3 z-50 animate-in fade-in zoom-in-95 duration-150">
-                      
-                      {/* User Header */}
-                      <div className="px-4 py-3 border-b border-slate-100 flex items-center gap-3">
-                        <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-brand-600 bg-brand-50 flex items-center justify-center shrink-0 shadow-sm">
-                          {session.user.image ? (
-                            <img
-                              src={session.user.image}
-                              alt={session.user.name || 'User'}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <span className="text-sm font-black text-brand-700">
-                              {session.user.name?.charAt(0) || 'U'}
-                            </span>
-                          )}
-                        </div>
-                        <div className="overflow-hidden min-w-0">
-                          <p className="text-xs sm:text-sm font-black text-slate-900 truncate">
-                            {session.user.name}
-                          </p>
-                          <p className="text-[11px] text-slate-500 font-mono truncate">
-                            {session.user.email}
-                          </p>
-                          <div className="mt-1">
-                            <span
-                              className={`inline-block text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider ${
-                                session.user.role === 'ADMIN'
-                                  ? 'bg-rose-50 text-rose-700 border border-rose-200'
-                                  : session.user.role === 'TEACHER'
-                                  ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                                  : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                              }`}
-                            >
-                              {session.user.role === 'ADMIN'
-                                ? '👑 অ্যাডমিন (Admin)'
-                                : session.user.role === 'TEACHER'
-                                ? '👨‍🏫 শিক্ষক (Teacher)'
-                                : '🎓 শিক্ষার্থী (Student)'}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Menu Links */}
-                      <div className="px-2 py-2 space-y-1">
-                        
-                        {/* Admin Panel Link (Only if ADMIN) */}
-                        {session.user.role === 'ADMIN' && (
-                          <Link
-                            href="/admin"
-                            onClick={() => setDropdownOpen(false)}
-                            className="block px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-brand-700 to-brand-800 hover:from-brand-800 hover:to-brand-900 shadow-md transition"
-                          >
-                            <p className="leading-tight">অ্যাডমিন প্যানেল</p>
-                            <p className="text-[10px] text-blue-200 font-normal mt-0.5">ম্যানেজমেন্ট ড্যাশবোর্ড</p>
-                          </Link>
-                        )}
-
-                        {/* Profile Link */}
-                        <Link
-                          href="/profile"
-                          onClick={() => setDropdownOpen(false)}
-                          className="block px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold text-slate-700 hover:text-brand-700 hover:bg-brand-50/70 transition"
-                        >
-                          <p className="leading-tight">আমার প্রোফাইল</p>
-                          <p className="text-[10px] text-slate-400 font-normal mt-0.5">শিক্ষার্থীর পরিচিতি ও বিবরণ</p>
-                        </Link>
-
-                        {/* My Purchased Notes */}
-                        <Link
-                          href="/my-notes"
-                          onClick={() => setDropdownOpen(false)}
-                          className="block px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold text-slate-700 hover:text-[#C8102E] hover:bg-red-50/70 transition"
-                        >
-                          <p className="leading-tight">সংগৃহীত শিট ও হ্যান্ডনোট</p>
-                          <p className="text-[10px] text-slate-400 font-normal mt-0.5">অনুমোদিত পিডিএফ ডাউনলোড</p>
-                        </Link>
-
-                        {/* Profile Settings & Photo Upload */}
-                        <Link
-                          href="/account"
-                          onClick={() => setDropdownOpen(false)}
-                          className="block px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold text-slate-700 hover:text-brand-700 hover:bg-brand-50/70 transition"
-                        >
-                          <p className="leading-tight">একাউন্ট সেটিংস</p>
-                          <p className="text-[10px] text-slate-400 font-normal mt-0.5">ছবি ও তথ্য পরিবর্তন</p>
-                        </Link>
-
-                        {/* Leaderboard Link */}
-                        <Link
-                          href="/leaderboard"
-                          onClick={() => setDropdownOpen(false)}
-                          className="block px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold text-slate-700 hover:text-amber-600 hover:bg-amber-50/70 transition"
-                        >
-                          <div className="flex items-center justify-between">
-                            <p className="leading-tight flex items-center gap-1.5 text-slate-800">
-                              <FaTrophy className="text-amber-500 w-3.5 h-3.5 shrink-0" />
-                              <span>লিডারবোর্ড</span>
-                            </p>
-                            <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
-                              মেধাতালিকা
-                            </span>
-                          </div>
-                          <p className="text-[10px] text-slate-400 font-normal mt-0.5">মডেল টেস্ট র‍্যাঙ্কিং ও ফলাফল</p>
-                        </Link>
-
-                        {/* Password Change */}
-                        <Link
-                          href="/password"
-                          onClick={() => setDropdownOpen(false)}
-                          className="block px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-100/70 transition"
-                        >
-                          <p className="leading-tight">পাসওয়ার্ড পরিবর্তন</p>
-                          <p className="text-[10px] text-slate-400 font-normal mt-0.5">নিরাপত্তা ও পাসওয়ার্ড আপডেট</p>
-                        </Link>
-
-                      </div>
-
-                      {/* Logout Action (Keeping Logout Icon) */}
-                      <div className="px-2 pt-2 border-t border-slate-100">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setDropdownOpen(false);
-                            signOut({ callbackUrl: '/' });
-                          }}
-                          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold text-rose-600 hover:bg-rose-50 transition text-left"
-                        >
-                          <div className="w-7 h-7 rounded-xl bg-rose-100/80 text-rose-600 flex items-center justify-center shrink-0">
-                            <FaArrowRightFromBracket className="w-3.5 h-3.5" />
-                          </div>
-                          <div>
-                            <p className="leading-tight">লগআউট</p>
-                            <p className="text-[10px] text-rose-400 font-normal">অ্যাকাউন্ট থেকে প্রস্থান করুন</p>
-                          </div>
-                        </button>
-                      </div>
-
-                    </div>
-                  )}
                 </div>
               ) : (
-                <div className="hidden lg:flex items-center gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2">
                   <Link
                     href="/login"
-                    className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-700 hover:text-brand-800 bg-brand-50 hover:bg-brand-100 px-3.5 py-2 rounded-xl border border-brand-200 transition"
+                    className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-700 hover:text-brand-800 bg-brand-50 hover:bg-brand-100 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl border border-brand-200 transition"
                   >
+                    <FaRightToBracket /> লগইন
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="hidden sm:inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-nova-500 to-nova-600 hover:from-nova-600 hover:to-nova-700 px-3.5 py-2 rounded-xl shadow-md shadow-nova-500/20 transition"
+                  >
+                    রেজিস্ট্রেশন
+                  </Link>
+                </div>
+              )}
                     <FaRightToBracket /> লগইন
                   </Link>
                   <Link
@@ -890,7 +755,14 @@ export default function Navbar() {
 
               {session?.user && (
                 <div className="pt-3 mt-2 border-t border-slate-200 space-y-1.5">
-                  <div className="px-4 py-2.5 bg-slate-50 rounded-2xl flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileOpen(false);
+                      setDrawerOpen(true);
+                    }}
+                    className="w-full text-left px-4 py-2.5 bg-slate-50 hover:bg-slate-100 rounded-2xl flex items-center gap-3 transition"
+                  >
                     <div className="w-9 h-9 rounded-full overflow-hidden border border-brand-500 bg-brand-50 flex items-center justify-center shrink-0">
                       {session.user.image ? (
                         <img src={session.user.image} alt="Avatar" className="w-full h-full object-cover" />
@@ -900,11 +772,12 @@ export default function Navbar() {
                         </span>
                       )}
                     </div>
-                    <div className="overflow-hidden min-w-0">
-                      <p className="text-xs font-bold text-slate-800 truncate">{session.user.name}</p>
+                    <div className="overflow-hidden min-w-0 flex-1">
+                      <p className="text-xs font-bold text-slate-800 truncate uppercase">{session.user.name}</p>
                       <p className="text-[10px] text-slate-500 font-mono truncate">{session.user.email}</p>
                     </div>
-                  </div>
+                    <span className="text-xs text-brand-600 font-bold shrink-0">আমার অ্যাকাউন্ট →</span>
+                  </button>
 
                   {session.user.role === 'ADMIN' && (
                     <Link
@@ -1047,6 +920,209 @@ export default function Navbar() {
 
         </div>
       </header>
+
+      {/* Right Side Slide-over Drawer for User Account (Matching Design) */}
+      <div
+        className={`fixed inset-0 z-[100] transition-visibility duration-300 ${
+          drawerOpen ? 'visible' : 'invisible pointer-events-none delay-300'
+        }`}
+        aria-hidden={!drawerOpen}
+      >
+        {/* Backdrop Overlay with blur */}
+        <div
+          onClick={() => setDrawerOpen(false)}
+          className={`fixed inset-0 bg-slate-950/40 backdrop-blur-xs transition-opacity duration-300 ease-out ${
+            drawerOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          }`}
+        />
+
+        {/* Slide-in Sidebar Panel */}
+        <aside
+          className={`fixed top-0 right-0 bottom-0 w-full max-w-[320px] sm:max-w-[360px] bg-white shadow-2xl flex flex-col z-[101] transition-transform duration-300 ease-out transform ${
+            drawerOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
+          role="dialog"
+          aria-label="আমার অ্যাকাউন্ট মেনু"
+        >
+          {/* 1. Header: Close + Title */}
+          <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-100">
+            <button
+              type="button"
+              onClick={() => setDrawerOpen(false)}
+              className="p-1 -ml-1 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition"
+              aria-label="মেনু বন্ধ করুন"
+            >
+              <FaXmark className="w-5 h-5" />
+            </button>
+            <h2 className="text-base sm:text-lg font-bold text-slate-800 tracking-tight">
+              আমার অ্যাকাউন্ট
+            </h2>
+          </div>
+
+          {/* 2. Scrollable Body Content */}
+          <div className="flex-1 overflow-y-auto px-5 py-5 space-y-5">
+            {/* User Profile Section */}
+            {session?.user && (
+              <div className="flex items-center gap-3.5 pb-5 border-b border-slate-100">
+                <div className="w-14 h-14 rounded-full overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center shrink-0 shadow-xs">
+                  {session.user.image ? (
+                    <img
+                      src={session.user.image}
+                      alt={session.user.name || 'User'}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-xl font-bold text-slate-700">
+                      {session.user.name?.charAt(0) || 'U'}
+                    </span>
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-sm sm:text-base font-bold text-slate-900 truncate uppercase tracking-tight">
+                    {session.user.name}
+                  </h3>
+                  <p className="text-xs text-slate-500 truncate mt-0.5 font-normal">
+                    {session.user.email}
+                  </p>
+                  {session.user.role && (
+                    <span
+                      className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full mt-1.5 ${
+                        session.user.role === 'ADMIN'
+                          ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                          : session.user.role === 'TEACHER'
+                          ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                          : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                      }`}
+                    >
+                      {session.user.role === 'ADMIN'
+                        ? '👑 অ্যাডমিন'
+                        : session.user.role === 'TEACHER'
+                        ? '👨‍🏫 শিক্ষক'
+                        : '🎓 শিক্ষার্থী'}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Navigation Menu List */}
+            <nav className="space-y-1.5">
+              {/* Admin Panel (if admin) */}
+              {session?.user?.role === 'ADMIN' && (
+                <Link
+                  href="/admin"
+                  onClick={() => setDrawerOpen(false)}
+                  className="group flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-sm font-semibold text-brand-700 bg-brand-50/70 hover:bg-brand-100/70 transition"
+                >
+                  <FaShieldHalved className="w-5 h-5 text-brand-700 shrink-0" />
+                  <span>অ্যাডমিন প্যানেল</span>
+                </Link>
+              )}
+
+              {/* Dashboard */}
+              <Link
+                href="/account"
+                onClick={() => setDrawerOpen(false)}
+                className="group flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:text-slate-950 hover:bg-slate-50 transition"
+              >
+                <FaUser className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors shrink-0" />
+                <span>ড্যাশবোর্ড</span>
+              </Link>
+
+              {/* Account Settings */}
+              <Link
+                href="/account"
+                onClick={() => setDrawerOpen(false)}
+                className="group flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:text-slate-950 hover:bg-slate-50 transition"
+              >
+                <FaGear className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors shrink-0" />
+                <span>অ্যাকাউন্ট সেটিংস</span>
+              </Link>
+
+              {/* My Orders / Notes */}
+              <Link
+                href="/my-notes"
+                onClick={() => setDrawerOpen(false)}
+                className="group flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:text-slate-950 hover:bg-slate-50 transition"
+              >
+                <FaCartShopping className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors shrink-0" />
+                <span>আমার অর্ডার</span>
+              </Link>
+
+              {/* Saved Address / Profile */}
+              <Link
+                href="/profile"
+                onClick={() => setDrawerOpen(false)}
+                className="group flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:text-slate-950 hover:bg-slate-50 transition"
+              >
+                <FaLocationDot className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors shrink-0" />
+                <span>সংরক্ষিত ঠিকানা</span>
+              </Link>
+
+              {/* Leaderboard */}
+              <Link
+                href="/leaderboard"
+                onClick={() => setDrawerOpen(false)}
+                className="group flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:text-slate-950 hover:bg-slate-50 transition"
+              >
+                <div className="flex items-center gap-3.5">
+                  <FaTrophy className="w-4 h-4 text-amber-500 shrink-0" />
+                  <span>কুইজ লিডারবোর্ড</span>
+                </div>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                  Top
+                </span>
+              </Link>
+
+              {/* Review */}
+              <Link
+                href="/about"
+                onClick={() => setDrawerOpen(false)}
+                className="group flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:text-slate-950 hover:bg-slate-50 transition"
+              >
+                <FaRegCommentDots className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors shrink-0" />
+                <span>রিভিউ</span>
+              </Link>
+
+              {/* Wishlist (with Soon badge) */}
+              <div className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 cursor-not-allowed select-none">
+                <div className="flex items-center gap-3.5">
+                  <FaRegHeart className="w-4 h-4 text-slate-400 shrink-0" />
+                  <span>উইশলিস্ট</span>
+                </div>
+                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-700">
+                  Soon
+                </span>
+              </div>
+            </nav>
+
+            {/* 3. Logout Action (in Red) */}
+            <div className="pt-3 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => {
+                  setDrawerOpen(false);
+                  signOut({ callbackUrl: '/' });
+                }}
+                className="w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-sm font-bold text-red-500 hover:bg-red-50 transition text-left"
+              >
+                <FaArrowRightFromBracket className="w-4 h-4 text-red-500 shrink-0" />
+                <span>লগ আউট</span>
+              </button>
+            </div>
+          </div>
+
+          {/* 4. Footer: Language */}
+          <div className="border-t border-slate-100 px-5 py-4 flex items-center justify-between text-sm font-medium text-slate-700 bg-slate-50/50 mt-auto">
+            <span>Language</span>
+            <div className="flex items-center gap-1.5 font-semibold text-slate-800">
+              <FaGlobe className="w-4 h-4 text-slate-600" />
+              <span>বাংলা</span>
+              <FaChevronDown className="w-2.5 h-2.5 text-slate-400" />
+            </div>
+          </div>
+        </aside>
+      </div>
     </>
   );
 }
