@@ -832,7 +832,9 @@ export default function QuizPage() {
               </span>
               <h3 className="text-lg font-black text-slate-800">Single Subject</h3>
             </div>
-            <div className="text-3xl font-black text-[#C8102E]">৳৫০</div>
+            <div className="text-3xl font-black text-[#C8102E]">
+              ৳{quizPrices.packages.singleSubject || 50}
+            </div>
             <p className="text-xs text-slate-500">যেকোনো ১টি বিষয়ের পূর্ণাঙ্গ মডেল টেস্ট ও সমাধান।</p>
             <ul className="text-xs text-slate-600 space-y-1.5 pt-2 border-t border-slate-100">
               <li className="flex items-center gap-1.5">✓ ১টি বিষয়ের সকল প্রশ্ন</li>
@@ -843,13 +845,13 @@ export default function QuizPage() {
               type="button"
               onClick={() => {
                 setPaymentPackageName('Single Subject Package');
-                setPaymentAmount(50);
+                setPaymentAmount(quizPrices.packages.singleSubject || 50);
                 setUnlockSuccessMsg('');
                 setPaymentModalOpen(true);
               }}
               className="w-full py-3 rounded-2xl bg-slate-900 hover:bg-black text-white font-black text-xs transition active:scale-98"
             >
-              প্যাকেজ কিনুন (৳৫০)
+              প্যাকেজ কিনুন (৳{quizPrices.packages.singleSubject || 50})
             </button>
           </div>
 
@@ -864,7 +866,9 @@ export default function QuizPage() {
               </span>
               <h3 className="text-lg font-black text-slate-800">Full Class Package</h3>
             </div>
-            <div className="text-3xl font-black text-[#C8102E]">৳১৫০</div>
+            <div className="text-3xl font-black text-[#C8102E]">
+              ৳{quizPrices.packages.fullClass || 150}
+            </div>
             <p className="text-xs text-slate-500">এক ক্লাসের সকল ৬টি বিষয়ের কমপ্লিট মডেল টেস্ট।</p>
             <ul className="text-xs text-slate-600 space-y-1.5 pt-2 border-t border-slate-100">
               <li className="flex items-center gap-1.5">✓ সকল বিষয়ের পূর্ণাঙ্গ পরীক্ষা</li>
@@ -876,13 +880,13 @@ export default function QuizPage() {
               type="button"
               onClick={() => {
                 setPaymentPackageName('Full Class Package');
-                setPaymentAmount(150);
+                setPaymentAmount(quizPrices.packages.fullClass || 150);
                 setUnlockSuccessMsg('');
                 setPaymentModalOpen(true);
               }}
               className="w-full py-3 rounded-2xl bg-gradient-to-r from-[#9B0D23] via-[#C8102E] to-[#E5254A] text-white font-black text-xs shadow-lg shadow-red-600/30 transition active:scale-98"
             >
-              প্যাকেজ কিনুন (৳১৫০)
+              প্যাকেজ কিনুন (৳{quizPrices.packages.fullClass || 150})
             </button>
           </div>
 
@@ -894,7 +898,9 @@ export default function QuizPage() {
               </span>
               <h3 className="text-lg font-black text-slate-800">Full VIP Package</h3>
             </div>
-            <div className="text-3xl font-black text-[#C8102E]">৳২০০</div>
+            <div className="text-3xl font-black text-[#C8102E]">
+              ৳{quizPrices.packages.vipAll || 200}
+            </div>
             <p className="text-xs text-slate-500">বিশেষ ছাড়সহ সকল ক্লাসের সকল টেস্ট ও স্পেশাল শিট।</p>
             <ul className="text-xs text-slate-600 space-y-1.5 pt-2 border-t border-slate-100">
               <li className="flex items-center gap-1.5">✓ সকল ক্লাস ও বিষয়ের অ্যাক্সেস</li>
@@ -905,13 +911,13 @@ export default function QuizPage() {
               type="button"
               onClick={() => {
                 setPaymentPackageName('Full VIP Package');
-                setPaymentAmount(200);
+                setPaymentAmount(quizPrices.packages.vipAll || 200);
                 setUnlockSuccessMsg('');
                 setPaymentModalOpen(true);
               }}
               className="w-full py-3 rounded-2xl bg-slate-900 hover:bg-black text-white font-black text-xs transition active:scale-98"
             >
-              প্যাকেজ কিনুন (৳২০০)
+              প্যাকেজ কিনুন (৳{quizPrices.packages.vipAll || 200})
             </button>
           </div>
         </div>
