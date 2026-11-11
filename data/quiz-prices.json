@@ -1,0 +1,16 @@
+{
+  "classPrices": {
+    "5": 50,
+    "6": 50,
+    "7": 50,
+    "8": 50,
+    "9": 50,
+    "10": 50
+  },
+  "subjectPrice": 50,
+  "packages": {
+    "singleSubject": 50,
+    "fullClass": 150,
+    "vipAll": 250
+  }
+}
