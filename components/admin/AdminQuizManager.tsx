@@ -795,6 +795,19 @@ export default function AdminQuizManager() {
           <FaCoins className="w-3.5 h-3.5 text-amber-400" />
           <span>কুইজ ফি ও মূল্য নিয়ন্ত্রণ (Pricing)</span>
         </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('covers')}
+          className={`px-4 py-2 rounded-2xl text-xs font-bold transition flex items-center gap-2 ${
+            activeTab === 'covers'
+              ? 'bg-gradient-to-r from-purple-700 to-indigo-800 text-white shadow-sm'
+              : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'
+          }`}
+        >
+          <FaImage className="w-3.5 h-3.5 text-purple-300" />
+          <span>কার্ডের কভার ইমেজ (Cover Images)</span>
+        </button>
       </div>
 
       {/* Alert Message */}
