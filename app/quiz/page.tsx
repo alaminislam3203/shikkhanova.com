@@ -766,25 +766,118 @@ export default function QuizPage() {
           6. SUBJECT-WISE MODEL TESTS
       ───────────────────────────────────────────────────────────── */}
       <section className="space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-200 pb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-3">
           <div>
             <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">
               {toBengaliClass(selectedClass)} শ্রেণির বিষয় নির্বাচন করুন
             </h2>
-            <p className="text-xs text-slate-500 font-medium">যেকোনো বিষয়ের ওপর মডেল টেস্ট অনুশীলন করুন</p>
+            <p className="text-xs text-slate-500 font-medium">
+              {selectedClass >= 9
+                ? 'বিজ্ঞান, মানবিক, ব্যবসায় শিক্ষা ও আবশ্যিক বিষয়ের ওপর মডেল টেস্ট'
+                : 'যেকোনো বিষয়ের ওপর মডেল টেস্ট অনুশীলন করুন'}
+            </p>
           </div>
-          <span className="text-xs font-bold text-slate-500">নির্বাচিত: {toBengaliClass(selectedClass)} শ্রেণি</span>
+
+          {/* Quick Class Switcher */}
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl self-start sm:self-auto">
+            {[5, 6, 7, 8, 9, 10].map((cls) => (
+              <button
+                key={cls}
+                type="button"
+                onClick={() => setSelectedClass(cls)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-black transition ${
+                  selectedClass === cls
+                    ? 'bg-[#C8102E] text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                {toBengaliClass(cls)}
+              </button>
+            ))}
+          </div>
         </div>
 
+        {/* Academic Group Selector for Class 9-10 */}
+        {(selectedClass === 9 || selectedClass === 10) && (
+          <div className="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs space-y-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs">
+              <span className="font-black text-slate-800 flex items-center gap-1.5">
+                <span>বিভাগ নির্বাচন করুন:</span>
+                <span className="text-[10px] bg-red-50 text-[#C8102E] font-bold px-2 py-0.5 rounded-full border border-red-200">
+                  {toBengaliClass(selectedClass)} শ্রেণি
+                </span>
+              </span>
+              <span className="text-[11px] text-slate-500 font-medium">
+                আপনার বিভাগের বিষয়গুলোতে ক্লিক করে স্পেশাল মডেল টেস্ট দিন
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setSelectedGroup('science')}
+                className={`py-2 px-3 rounded-xl text-xs font-black transition border flex items-center justify-center gap-2 ${
+                  selectedGroup === 'science'
+                    ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                    : 'bg-slate-50 text-slate-700 hover:bg-blue-50 hover:border-blue-200 border-slate-200'
+                }`}
+              >
+                <span>⚛️</span>
+                <span>বিজ্ঞান বিভাগ</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSelectedGroup('humanities')}
+                className={`py-2 px-3 rounded-xl text-xs font-black transition border flex items-center justify-center gap-2 ${
+                  selectedGroup === 'humanities'
+                    ? 'bg-amber-600 text-white border-amber-600 shadow-sm'
+                    : 'bg-slate-50 text-slate-700 hover:bg-amber-50 hover:border-amber-200 border-slate-200'
+                }`}
+              >
+                <span>📜</span>
+                <span>মানবিক বিভাগ</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSelectedGroup('commerce')}
+                className={`py-2 px-3 rounded-xl text-xs font-black transition border flex items-center justify-center gap-2 ${
+                  selectedGroup === 'commerce'
+                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                    : 'bg-slate-50 text-slate-700 hover:bg-emerald-50 hover:border-emerald-200 border-slate-200'
+                }`}
+              >
+                <span>💼</span>
+                <span>ব্যবসায় শিক্ষা</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSelectedGroup('compulsory')}
+                className={`py-2 px-3 rounded-xl text-xs font-black transition border flex items-center justify-center gap-2 ${
+                  selectedGroup === 'compulsory'
+                    ? 'bg-[#0A1E3C] text-white border-[#0A1E3C] shadow-sm'
+                    : 'bg-slate-50 text-slate-700 hover:bg-slate-100 hover:border-slate-300 border-slate-200'
+                }`}
+              >
+                <span>🌐</span>
+                <span>আবশ্যিক বিষয়</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Subjects Cards Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5">
-          {SUBJECT_LIST.map((sub) => (
+          {getSubjectsForClassAndGroup(selectedClass, selectedGroup).map((sub) => (
             <div
               key={sub.name}
-              className="bg-white rounded-2xl p-4 border border-slate-200/90 hover:border-[#C8102E]/40 shadow-xs hover:shadow-md transition text-center space-y-2.5 group"
+              className="bg-white rounded-2xl p-4 border border-slate-200/90 hover:border-[#C8102E]/40 shadow-xs hover:shadow-md transition text-center space-y-2.5 group flex flex-col justify-between"
             >
               <div className="text-3xl transition-transform group-hover:scale-110">{sub.icon}</div>
               <div>
-                <h4 className="text-xs sm:text-sm font-black text-slate-800 truncate">{sub.name}</h4>
+                <h4 className="text-xs sm:text-sm font-black text-slate-800 line-clamp-1">{sub.name}</h4>
                 <p className="text-[11px] font-black text-[#C8102E] mt-0.5">৳{quizPrices.subjectPrice || 50}</p>
               </div>
               <button
