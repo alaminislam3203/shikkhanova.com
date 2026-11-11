@@ -15,6 +15,10 @@ import {
   FREE_CLASS_QUESTIONS,
   PAID_CLASS_QUESTIONS,
   SUBJECT_QUESTIONS,
+  QuizPrices,
+  DEFAULT_QUIZ_PRICES,
+  getStoredQuizPrices,
+  saveStoredQuizPrices,
 } from '@/lib/defaultQuizData';
 import {
   FaPlus,
@@ -30,6 +34,9 @@ import {
   FaCheck,
   FaXmark,
   FaCircleInfo,
+  FaCoins,
+  FaFloppyDisk,
+  FaTag,
 } from 'react-icons/fa6';
 
 type QuizCategory = 'free' | 'paid' | 'subject';
@@ -39,8 +46,12 @@ export default function AdminQuizManager() {
   const [selectedClass, setSelectedClass] = useState<number>(6);
   const [selectedSubject, setSelectedSubject] = useState<string>('বাংলা');
 
-  const [activeTab, setActiveTab] = useState<'list' | 'add' | 'bulk'>('list');
+  const [activeTab, setActiveTab] = useState<'list' | 'add' | 'bulk' | 'prices'>('list');
   const [questions, setQuestions] = useState<RawQuestion[]>([]);
+
+  // Quiz Pricing Management State
+  const [prices, setPrices] = useState<QuizPrices>(getStoredQuizPrices);
+  const [isSavingPrices, setIsSavingPrices] = useState<boolean>(false);
 
   // Add / Edit Form State
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -57,6 +68,51 @@ export default function AdminQuizManager() {
 
   // Notification message
   const [msg, setMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+
+  // Load quiz prices from server on initial mount
+  useEffect(() => {
+    fetch('/api/quiz/prices')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.prices) {
+          setPrices(data.prices);
+          saveStoredQuizPrices(data.prices);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Save Quiz Prices Handler
+  const handleSavePrices = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSavingPrices(true);
+    try {
+      const res = await fetch('/api/quiz/prices', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(prices),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        saveStoredQuizPrices(prices);
+        setMsg({ text: '✅ কুইজ ও প্যাকেজের মূল্য সফলভাবে সংরক্ষণ ও আপডেট করা হয়েছে!', type: 'success' });
+      } else {
+        setMsg({ text: data.error || 'মূল্য সংরক্ষণ ব্যর্থ হয়েছে।', type: 'error' });
+      }
+    } catch (err: any) {
+      setMsg({ text: err.message || 'নেটওয়ার্ক সংযোগে সমস্যা হয়েছে।', type: 'error' });
+    } finally {
+      setIsSavingPrices(false);
+    }
+  };
+
+  // Reset Prices to Defaults
+  const handleResetPricesToDefault = () => {
+    if (!confirm('আপনি কি সকল কুইজ ও প্যাকেজের মূল্য মূল ডিফল্ট ফি-তে ফিরিয়ে নিতে চান?')) return;
+    setPrices(DEFAULT_QUIZ_PRICES);
+    saveStoredQuizPrices(DEFAULT_QUIZ_PRICES);
+    setMsg({ text: '🔄 কুইজের মূল্য ডিফল্ট অবস্থায় ফিরিয়ে আনা হয়েছে। সংরক্ষণ করতে "মূল্য সংরক্ষণ করুন" বাটনে ক্লিক করুন।', type: 'success' });
+  };
 
   // Load questions whenever category, class, or subject changes
   useEffect(() => {
@@ -404,6 +460,19 @@ export default function AdminQuizManager() {
           <FaBookOpen className="w-3.5 h-3.5" />
           <span>বাল্ক আপলোড (Bulk Import)</span>
         </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('prices')}
+          className={`px-4 py-2 rounded-2xl text-xs font-bold transition flex items-center gap-2 ${
+            activeTab === 'prices'
+              ? 'bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-sm'
+              : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'
+          }`}
+        >
+          <FaCoins className="w-3.5 h-3.5 text-amber-400" />
+          <span>কুইজ ফি ও মূল্য নিয়ন্ত্রণ (Pricing)</span>
+        </button>
       </div>
 
       {/* Alert Message */}
@@ -748,6 +817,257 @@ export default function AdminQuizManager() {
               className="px-5 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition"
             >
               বাতিল
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────
+          TAB 4: 💰 QUIZ & PACKAGE PRICING MANAGEMENT
+      ───────────────────────────────────────────────────────────── */}
+      {activeTab === 'prices' && (
+        <form onSubmit={handleSavePrices} className="space-y-6">
+          {/* Header Card */}
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
+                <FaCoins /> ফি কনফিগারেশন
+              </div>
+              <h3 className="text-base sm:text-lg font-black text-slate-800">
+                পেইড কুইজ, টেস্ট ও প্যাকেজের মূল্য নির্ধারণ
+              </h3>
+              <p className="text-xs text-slate-500 font-medium">
+                অ্যাডমিন এখান থেকে যেকোনো সময় পরীক্ষার ফি বা প্যাকেজের মূল্য পরিবর্তন করতে পারবেন। পরিবর্তনটি সাথে সাথে কুইজ পেজে কার্যকর হবে।
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={handleResetPricesToDefault}
+                className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition flex items-center gap-1.5"
+              >
+                <FaRotateLeft className="w-3 h-3" />
+                <span>ডিফল্ট মূল্য</span>
+              </button>
+
+              <button
+                type="submit"
+                disabled={isSavingPrices}
+                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#9B0D23] via-[#C8102E] to-[#E5254A] hover:opacity-95 text-white font-black text-xs shadow-md transition flex items-center gap-1.5 disabled:opacity-50"
+              >
+                <FaFloppyDisk className="w-3.5 h-3.5" />
+                <span>{isSavingPrices ? 'সংরক্ষণ হচ্ছে...' : 'মূল্য সংরক্ষণ করুন'}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Section 1: Class-wise Model Test Prices (Class 5 to 10) */}
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <div>
+              <h4 className="text-sm font-black text-slate-800 flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#C8102E]" />
+                শ্রেণিভিত্তিক পেইড মডেল টেস্টের ফি (Class-wise Paid Tests)
+              </h4>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                শিক্ষার্থীরা নির্দিষ্ট ক্লাসের মডেল টেস্ট আনলক করতে এই পরিমাণ টাকা প্রদান করবে।
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+              {[5, 6, 7, 8, 9, 10].map((cls) => (
+                <div
+                  key={cls}
+                  className="bg-slate-50/80 border border-slate-200 hover:border-[#C8102E]/40 p-3.5 rounded-2xl space-y-2 transition"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-slate-800">{toBengaliClass(cls)} শ্রেণি</span>
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-50 text-[#C8102E]">
+                      পেইড
+                    </span>
+                  </div>
+                  <div className="relative">
+                    <span className="absolute left-3 top-2 text-xs font-black text-slate-400">৳</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="5"
+                      required
+                      value={prices.classPrices[cls] ?? 50}
+                      onChange={(e) => {
+                        const val = Math.max(0, Number(e.target.value) || 0);
+                        setPrices((prev) => ({
+                          ...prev,
+                          classPrices: {
+                            ...prev.classPrices,
+                            [cls]: val,
+                          },
+                        }));
+                      }}
+                      className="w-full bg-white border border-slate-300 focus:border-[#C8102E] rounded-xl pl-7 pr-3 py-1.5 text-xs font-black text-slate-900 outline-none"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Section 2: Subject-wise Test Price */}
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <div>
+              <h4 className="text-sm font-black text-slate-800 flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+                বিষয়ভিত্তিক টেস্টের একক ফি (Subject-wise Test Fee)
+              </h4>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                বাংলা, ইংরেজি, গণিত ইত্যাদি যেকোনো একটি নির্দিষ্ট বিষয়ের টেস্টের সাধারণ ফি।
+              </p>
+            </div>
+
+            <div className="max-w-xs bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-2">
+              <label className="text-xs font-bold text-slate-700 block">
+                একক বিষয়ের টেস্ট ফি (Single Subject Test)
+              </label>
+              <div className="relative">
+                <span className="absolute left-3.5 top-2.5 text-sm font-black text-slate-400">৳</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="5"
+                  required
+                  value={prices.subjectPrice ?? 50}
+                  onChange={(e) => {
+                    const val = Math.max(0, Number(e.target.value) || 0);
+                    setPrices((prev) => ({
+                      ...prev,
+                      subjectPrice: val,
+                    }));
+                  }}
+                  className="w-full bg-white border border-slate-300 focus:border-blue-600 rounded-xl pl-8 pr-3 py-2 text-sm font-black text-slate-900 outline-none"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 3: Special Packages Pricing */}
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <div>
+              <h4 className="text-sm font-black text-slate-800 flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
+                স্পেশাল মডেল টেস্ট প্যাকেজসমূহ (Special Bundles)
+              </h4>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                কুইজ পেজের নিচের ৩টি স্পেশাল প্যাকেজ কার্ডের মূল্য এখান থেকে কাস্টমাইজ করুন।
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Package 1 */}
+              <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                    প্যাকেজ ১
+                  </span>
+                  <span className="text-xs font-black text-slate-700">Single Subject</span>
+                </div>
+                <p className="text-[11px] text-slate-500">যেকোনো ১টি বিষয়ের টেস্ট ও সমাধান।</p>
+                <div className="relative pt-1">
+                  <span className="absolute left-3.5 top-3.5 text-sm font-black text-slate-400">৳</span>
+                  <input
+                    type="number"
+                    min="0"
+                    step="5"
+                    required
+                    value={prices.packages.singleSubject ?? 50}
+                    onChange={(e) => {
+                      const val = Math.max(0, Number(e.target.value) || 0);
+                      setPrices((prev) => ({
+                        ...prev,
+                        packages: { ...prev.packages, singleSubject: val },
+                      }));
+                    }}
+                    className="w-full bg-white border border-slate-300 focus:border-[#C8102E] rounded-xl pl-8 pr-3 py-2 text-sm font-black text-slate-900 outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Package 2 */}
+              <div className="bg-red-50/50 border-2 border-[#C8102E]/40 p-4 rounded-2xl space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-red-100 text-[#C8102E] font-black">
+                    জনপ্রিয় প্যাকেজ
+                  </span>
+                  <span className="text-xs font-black text-slate-800">Full Class Package</span>
+                </div>
+                <p className="text-[11px] text-slate-500">এক ক্লাসের সকল বিষয়ের কমপ্লিট টেস্ট।</p>
+                <div className="relative pt-1">
+                  <span className="absolute left-3.5 top-3.5 text-sm font-black text-slate-400">৳</span>
+                  <input
+                    type="number"
+                    min="0"
+                    step="5"
+                    required
+                    value={prices.packages.fullClass ?? 150}
+                    onChange={(e) => {
+                      const val = Math.max(0, Number(e.target.value) || 0);
+                      setPrices((prev) => ({
+                        ...prev,
+                        packages: { ...prev.packages, fullClass: val },
+                      }));
+                    }}
+                    className="w-full bg-white border border-red-300 focus:border-[#C8102E] rounded-xl pl-8 pr-3 py-2 text-sm font-black text-[#C8102E] outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Package 3 */}
+              <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200">
+                    অল-ইন-ওয়ান
+                  </span>
+                  <span className="text-xs font-black text-slate-700">Full VIP Package</span>
+                </div>
+                <p className="text-[11px] text-slate-500">সকল ক্লাসের টেস্ট ও স্পেশাল সাজেশন।</p>
+                <div className="relative pt-1">
+                  <span className="absolute left-3.5 top-3.5 text-sm font-black text-slate-400">৳</span>
+                  <input
+                    type="number"
+                    min="0"
+                    step="5"
+                    required
+                    value={prices.packages.vipAll ?? 200}
+                    onChange={(e) => {
+                      const val = Math.max(0, Number(e.target.value) || 0);
+                      setPrices((prev) => ({
+                        ...prev,
+                        packages: { ...prev.packages, vipAll: val },
+                      }));
+                    }}
+                    className="w-full bg-white border border-slate-300 focus:border-[#C8102E] rounded-xl pl-8 pr-3 py-2 text-sm font-black text-slate-900 outline-none"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Save Bar */}
+          <div className="flex items-center justify-end gap-3 pt-2">
+            <button
+              type="button"
+              onClick={handleResetPricesToDefault}
+              className="px-5 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition"
+            >
+              ডিফল্ট রিসেট
+            </button>
+
+            <button
+              type="submit"
+              disabled={isSavingPrices}
+              className="px-8 py-3 rounded-2xl bg-gradient-to-r from-[#9B0D23] via-[#C8102E] to-[#E5254A] hover:opacity-95 text-white font-black text-sm shadow-lg transition active:scale-98 disabled:opacity-50 flex items-center gap-2"
+            >
+              <FaFloppyDisk className="w-4 h-4" />
+              <span>{isSavingPrices ? 'সংরক্ষণ হচ্ছে...' : 'সব মূল্য সংরক্ষণ করুন'}</span>
             </button>
           </div>
         </form>

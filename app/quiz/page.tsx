@@ -13,6 +13,9 @@ import {
   getStoredSubjectQuestions,
   toBengaliClass,
   toBengaliNumber,
+  QuizPrices,
+  getStoredQuizPrices,
+  saveStoredQuizPrices,
 } from '@/lib/defaultQuizData';
 import {
   FaAward,
