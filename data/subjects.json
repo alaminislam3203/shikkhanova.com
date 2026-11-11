@@ -2,8 +2,8 @@
   {
     "id": "nctb-c5-1",
     "classGrade": 5,
-    "subjectName": "বাংলা ১ম পত্র",
-    "bookTitle": "আমার বাংলা বই (১ম পত্র - ৫ম শ্রেণি)",
+    "subjectName": "বাংলা",
+    "bookTitle": "আমার বাংলা বই (৫ম শ্রেণি - NCTB)",
     "subjectCode": "১০১",
     "group": "সকল বিভাগ",
     "fullMarks": 100,
@@ -14,21 +14,9 @@
   {
     "id": "nctb-c5-2",
     "classGrade": 5,
-    "subjectName": "বাংলা ২য় পত্র",
-    "bookTitle": "বাংলা ব্যাকরণ ও নির্মিতি (২য় পত্র - ৫ম শ্রেণি)",
-    "subjectCode": "১০২",
-    "group": "সকল বিভাগ",
-    "fullMarks": 50,
-    "isCompulsory": true,
-    "nctbBookUrl": "https://nctb.gov.bd",
-    "createdAt": "2026-11-09T10:56:33.999Z"
-  },
-  {
-    "id": "nctb-c5-3",
-    "classGrade": 5,
-    "subjectName": "ইংরেজি ১ম পত্র",
+    "subjectName": "ইংরেজি",
     "bookTitle": "English for Today (Class 5 - NCTB)",
-    "subjectCode": "১০৭",
+    "subjectCode": "১০২",
     "group": "সকল বিভাগ",
     "fullMarks": 100,
     "isCompulsory": true,
@@ -36,21 +24,9 @@
     "createdAt": "2026-11-09T10:56:34.196Z"
   },
   {
-    "id": "nctb-c5-4",
-    "classGrade": 5,
-    "subjectName": "ইংরেজি ২য় পত্র",
-    "bookTitle": "English Grammar and Composition (Class 5)",
-    "subjectCode": "১০৮",
-    "group": "সকল বিভাগ",
-    "fullMarks": 50,
-    "isCompulsory": true,
-    "nctbBookUrl": "https://nctb.gov.bd",
-    "createdAt": "2026-11-09T10:56:34.333Z"
-  },
-  {
     "id": "nctb-c5-3",
     "classGrade": 5,
-    "subjectName": "প্রাথমিক গণিত (Mathematics)",
+    "subjectName": "প্রাথমিক গণিত",
     "bookTitle": "প্রাথমিক গণিত (৫ম শ্রেণি - NCTB)",
     "subjectCode": "১০৩",
     "group": "সকল বিভাগ",
@@ -62,7 +38,7 @@
   {
     "id": "nctb-c5-4",
     "classGrade": 5,
-    "subjectName": "প্রাথমিক বিজ্ঞান (Elementary Science)",
+    "subjectName": "প্রাথমিক বিজ্ঞান",
     "bookTitle": "প্রাথমিক বিজ্ঞান (৫ম শ্রেণি - NCTB)",
     "subjectCode": "১০৪",
     "group": "সকল বিভাগ",
@@ -74,7 +50,7 @@
   {
     "id": "nctb-c5-5",
     "classGrade": 5,
-    "subjectName": "বাংলাদেশ ও বিশ্বপরিচয় (BGS)",
+    "subjectName": "বাংলাদেশ ও বিশ্বপরিচয়",
     "bookTitle": "বাংলাদেশ ও বিশ্বপরিচয় (৫ম শ্রেণি - NCTB)",
     "subjectCode": "১০৫",
     "group": "সকল বিভাগ",
@@ -86,14 +62,28 @@
   {
     "id": "nctb-c5-6",
     "classGrade": 5,
-    "subjectName": "ইসলাম ও নৈতিক শিক্ষা (Islamic Studies)",
+    "subjectName": "ইসলাম ও নৈতিক শিক্ষা",
     "bookTitle": "ইসলাম ও নৈতিক শিক্ষা (৫ম শ্রেণি - NCTB)",
     "subjectCode": "১০৬",
     "group": "সকল বিভাগ",
     "fullMarks": 100,
     "isCompulsory": true,
+    "religion": "ইসলাম",
     "nctbBookUrl": "https://nctb.gov.bd",
     "createdAt": "2026-11-09T10:56:35.606Z"
+  },
+  {
+    "id": "nctb-c5-7",
+    "classGrade": 5,
+    "subjectName": "হিন্দুধর্ম ও নৈতিক শিক্ষা",
+    "bookTitle": "হিন্দুধর্ম ও নৈতিক শিক্ষা (৫ম শ্রেণি - NCTB)",
+    "subjectCode": "১০৭",
+    "group": "সকল বিভাগ",
+    "fullMarks": 100,
+    "isCompulsory": true,
+    "religion": "হিন্দু",
+    "nctbBookUrl": "https://nctb.gov.bd",
+    "createdAt": "2026-11-09T10:56:35.700Z"
   },
   {
     "id": "nctb-c6-1",
@@ -166,6 +156,19 @@
     "isCompulsory": true,
     "nctbBookUrl": "https://nctb.gov.bd",
     "createdAt": "2026-11-09T10:56:38.821Z"
+  },
+  {
+    "id": "nctb-c6-9h",
+    "classGrade": 6,
+    "subjectName": "হিন্দুধর্ম ও নৈতিক শিক্ষা",
+    "bookTitle": "হিন্দুধর্ম ও নৈতিক শিক্ষা (৬ষ্ঠ শ্রেণি - NCTB)",
+    "subjectCode": "১১২",
+    "group": "সকল বিভাগ",
+    "fullMarks": 100,
+    "isCompulsory": true,
+    "religion": "হিন্দু",
+    "nctbBookUrl": "https://nctb.gov.bd",
+    "createdAt": "2026-11-09T10:56:38.900Z"
   },
   {
     "id": "nctb-c6-6",
@@ -288,6 +291,19 @@
     "createdAt": "2026-11-09T10:56:42.216Z"
   },
   {
+    "id": "nctb-c7-9h",
+    "classGrade": 7,
+    "subjectName": "হিন্দুধর্ম ও নৈতিক শিক্ষা",
+    "bookTitle": "হিন্দুধর্ম ও নৈতিক শিক্ষা (৭ম শ্রেণি - NCTB)",
+    "subjectCode": "১১২",
+    "group": "সকল বিভাগ",
+    "fullMarks": 100,
+    "isCompulsory": true,
+    "religion": "হিন্দু",
+    "nctbBookUrl": "https://nctb.gov.bd",
+    "createdAt": "2026-11-09T10:56:42.300Z"
+  },
+  {
     "id": "nctb-c7-6",
     "classGrade": 7,
     "subjectName": "বিজ্ঞান (Science)",
@@ -406,6 +422,19 @@
     "isCompulsory": true,
     "nctbBookUrl": "https://nctb.gov.bd",
     "createdAt": "2026-11-09T10:56:45.573Z"
+  },
+  {
+    "id": "nctb-c8-9h",
+    "classGrade": 8,
+    "subjectName": "হিন্দুধর্ম ও নৈতিক শিক্ষা",
+    "bookTitle": "হিন্দুধর্ম ও নৈতিক শিক্ষা (৮ম শ্রেণি - NCTB)",
+    "subjectCode": "১১২",
+    "group": "সকল বিভাগ",
+    "fullMarks": 100,
+    "isCompulsory": true,
+    "religion": "হিন্দু",
+    "nctbBookUrl": "https://nctb.gov.bd",
+    "createdAt": "2026-11-09T10:56:45.650Z"
   },
   {
     "id": "nctb-c8-6",

@@ -702,7 +702,9 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
             <tbody className="divide-y divide-slate-100">
               {subjectRows.map((row, idx) => {
                 const isFailed = row.obtained > 0 && row.grade === 'F';
+                const isClass5 = classGrade === 5;
                 const isEnglish = row.subject.toLowerCase().includes('english') || row.subject.toLowerCase().includes('ইংরেজি');
+                const noCqMcq = isClass5 || isEnglish;
                 const isBangla2nd50 = row.subject.includes('বাংলা') && row.fullMarks === 50;
                 const maxCq = row.fullMarks === 100 ? 70 : isBangla2nd50 ? 30 : row.fullMarks === 50 ? 25 : row.fullMarks;
                 const maxMcq = row.fullMarks === 100 ? 30 : isBangla2nd50 ? 20 : row.fullMarks === 50 ? 25 : Math.round(row.fullMarks * 0.3);
@@ -736,8 +738,8 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
 
                     {/* CQ Input */}
                     <td className="py-2 px-2 text-center">
-                      {isEnglish ? (
-                        <span className="text-slate-400 font-bold text-xs" title="ইংরেজি বিষয়ের ক্ষেত্রে পৃথক CQ/MCQ প্রযোজ্য নয়">—</span>
+                      {noCqMcq ? (
+                        <span className="text-slate-400 font-bold text-xs" title={isClass5 ? '৫ম শ্রেণির ক্ষেত্রে পৃথক CQ/MCQ প্রযোজ্য নয়' : 'ইংরেজি বিষয়ের ক্ষেত্রে পৃথক CQ/MCQ প্রযোজ্য নয়'}>—</span>
                       ) : (
                         <div className="relative inline-block w-20">
                           <input
@@ -755,8 +757,8 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
 
                     {/* MCQ Input */}
                     <td className="py-2 px-2 text-center">
-                      {isEnglish ? (
-                        <span className="text-slate-400 font-bold text-xs" title="ইংরেজি বিষয়ের ক্ষেত্রে পৃথক CQ/MCQ প্রযোজ্য নয়">—</span>
+                      {noCqMcq ? (
+                        <span className="text-slate-400 font-bold text-xs" title={isClass5 ? '৫ম শ্রেণির ক্ষেত্রে পৃথক CQ/MCQ প্রযোজ্য নয়' : 'ইংরেজি বিষয়ের ক্ষেত্রে পৃথক CQ/MCQ প্রযোজ্য নয়'}>—</span>
                       ) : (
                         <div className="relative inline-block w-20">
                           <input
