@@ -667,7 +667,7 @@ export default function Navbar() {
               ) : (
                 <Link
                   href="/login"
-                  className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-400 px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold text-slate-800 hover:text-[#C8102E] shadow-2xs hover:shadow-xs transition-all duration-200 active:scale-95 group"
+                  className="hidden lg:inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-400 px-4 py-2 text-xs sm:text-sm font-bold text-slate-800 hover:text-[#C8102E] shadow-2xs hover:shadow-xs transition-all duration-200 active:scale-95 group"
                 >
                   <IoLogInOutline className="w-4 h-4 sm:w-5 sm:h-5 text-slate-600 group-hover:text-[#C8102E] transition-colors" />
                   <span>লগইন</span>
@@ -838,6 +838,19 @@ export default function Navbar() {
                   >
                     <FaArrowRightFromBracket /> লগআউট করুন
                   </button>
+                </div>
+              )}
+
+              {!session?.user && (
+                <div className="pt-3 mt-2 border-t border-slate-200">
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileOpen(false)}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-[#0F2C59] hover:bg-[#C8102E] transition-colors shadow-sm"
+                  >
+                    <IoLogInOutline className="w-5 h-5" />
+                    <span>লগইন করুন</span>
+                  </Link>
                 </div>
               )}
             </div>
