@@ -1168,6 +1168,283 @@ export default function AdminQuizManager() {
       )}
 
       {/* ─────────────────────────────────────────────────────────────
+          TAB 5: CARD OPTIONAL COVER IMAGES MANAGER
+      ───────────────────────────────────────────────────────────── */}
+      {activeTab === 'covers' && (
+        <div className="space-y-6 animate-in fade-in duration-200">
+          {/* Header */}
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full mb-1">
+                <FaImage /> ঐচ্ছিক কভার ইমেজ (Optional Cover Photo)
+              </div>
+              <h3 className="text-base sm:text-lg font-black text-slate-800">
+                মডেল টেস্ট কার্ডের কভার ইমেজ ম্যানেজমেন্ট
+              </h3>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                ছবি আপলোড করলে কার্ডের শীর্ষে থাম্বনেইল দেখাবে। ছবি না দিলে স্বয়ংক্রিয়ভাবে ডিফল্ট আইকন থাকবে।
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleSaveCovers}
+              disabled={isSavingCovers}
+              className="px-6 py-2.5 rounded-2xl bg-gradient-to-r from-purple-700 to-indigo-800 hover:opacity-95 text-white font-black text-xs shadow-md transition flex items-center gap-2 disabled:opacity-50 shrink-0 self-start sm:self-auto cursor-pointer"
+            >
+              <FaFloppyDisk className="w-3.5 h-3.5" />
+              <span>{isSavingCovers ? 'সংরক্ষণ হচ্ছে...' : 'কভার ইমেজ সংরক্ষণ করুন'}</span>
+            </button>
+          </div>
+
+          {/* Section 1: Class-wise Model Test Covers (Classes 5 to 10) */}
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <div>
+              <h4 className="text-sm font-black text-slate-800 flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
+                শ্রেণিভিত্তিক টেস্ট কার্ডের কভার ছবি (Classes 5-10)
+              </h4>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                ফ্রি ও পেইড উভয় শ্রেণিভিত্তিক কার্ডে এই কভার ইমেজ প্রদর্শিত হবে।
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[5, 6, 7, 8, 9, 10].map((cls) => {
+                const coverUrl = covers.classes[cls];
+                const isUploading = uploadingTarget === `classes_${cls}`;
+
+                return (
+                  <div
+                    key={cls}
+                    className="bg-slate-50 border border-slate-200 hover:border-purple-300 rounded-2xl p-4 space-y-3 transition"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-black text-slate-800">
+                        🎓 {toBengaliClass(cls)} শ্রেণি
+                      </span>
+                      {coverUrl && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveCover(String(cls), 'classes')}
+                          className="text-[10px] font-bold text-rose-600 hover:underline flex items-center gap-1"
+                        >
+                          <FaTrash className="w-2.5 h-2.5" />
+                          <span>রিমুভ</span>
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Thumbnail Preview or Placeholder */}
+                    <div className="w-full aspect-video rounded-xl bg-white border border-dashed border-slate-300 overflow-hidden flex items-center justify-center relative group">
+                      {coverUrl ? (
+                        <img
+                          src={coverUrl}
+                          alt={`${cls} cover`}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                      ) : (
+                        <div className="text-center p-3 text-slate-400 space-y-1">
+                          <FaImage className="w-6 h-6 mx-auto text-slate-300" />
+                          <span className="text-[11px] block font-medium">কভার ছবি নেই (ডিফল্ট আইকন শো করবে)</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Upload Controls */}
+                    <div className="space-y-1.5">
+                      <label className="block w-full py-2 px-3 bg-white border border-slate-300 hover:border-purple-500 rounded-xl text-center text-xs font-bold text-slate-700 cursor-pointer transition shadow-2xs hover:bg-purple-50/40">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              handleCoverUpload(String(cls), e.target.files[0], 'classes');
+                            }
+                          }}
+                        />
+                        <span className="flex items-center justify-center gap-1.5">
+                          <FaCloudArrowUp className="w-3.5 h-3.5 text-purple-600" />
+                          <span>{isUploading ? 'আপলোড হচ্ছে...' : '📷 ছবি আপলোড করুন'}</span>
+                        </span>
+                      </label>
+
+                      <input
+                        type="url"
+                        placeholder="অথবা ইমেজ লিংক পেস্ট করুন..."
+                        value={coverUrl || ''}
+                        onChange={(e) => {
+                          setCovers((prev) => ({
+                            ...prev,
+                            classes: {
+                              ...prev.classes,
+                              [cls]: e.target.value,
+                            },
+                          }));
+                        }}
+                        className="w-full bg-white border border-slate-200 focus:border-purple-600 rounded-xl px-2.5 py-1 text-[11px] text-slate-700 outline-none"
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Section 2: Subject-wise Test Covers */}
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+              <div>
+                <h4 className="text-sm font-black text-slate-800 flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+                  বিষয়ভিত্তিক টেস্ট কার্ডের কভার ছবি ({toBengaliClass(selectedClass)} শ্রেণির বিষয়সমূহ)
+                </h4>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">
+                  নিচের বিষয়গুলোর কার্ডে কভার ছবি যুক্ত করুন। ছবি না থাকলে ডিফল্ট বিষয় আইকন দেখাবে।
+                </p>
+              </div>
+
+              {/* Class & Group quick switcher for covers */}
+              <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+                {[5, 6, 7, 8, 9, 10].map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setSelectedClass(c)}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-black transition ${
+                      selectedClass === c
+                        ? 'bg-purple-700 text-white shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    {toBengaliClass(c)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Academic Group switcher for 9-10 */}
+            {(selectedClass === 9 || selectedClass === 10) && (
+              <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                {(['science', 'humanities', 'commerce', 'compulsory'] as AcademicGroup[]).map((g) => (
+                  <button
+                    key={g}
+                    type="button"
+                    onClick={() => setSelectedGroup(g)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition border ${
+                      selectedGroup === g
+                        ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                    }`}
+                  >
+                    {g === 'science' ? '⚛️ বিজ্ঞান' : g === 'humanities' ? '📜 মানবিক' : g === 'commerce' ? '💼 ব্যবসায়' : '🌐 আবশ্যিক'}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Subjects Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {availableSubjects.map((sub) => {
+                const coverUrl = covers.subjects[sub.name];
+                const isUploading = uploadingTarget === `subjects_${sub.name}`;
+
+                return (
+                  <div
+                    key={sub.name}
+                    className="bg-slate-50 border border-slate-200 hover:border-blue-300 rounded-2xl p-4 space-y-3 transition"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">{sub.icon}</span>
+                        <span className="text-xs font-black text-slate-800 line-clamp-1">{sub.name}</span>
+                      </div>
+                      {coverUrl && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveCover(sub.name, 'subjects')}
+                          className="text-[10px] font-bold text-rose-600 hover:underline flex items-center gap-1"
+                        >
+                          <FaTrash className="w-2.5 h-2.5" />
+                          <span>রিমুভ</span>
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Thumbnail Preview */}
+                    <div className="w-full aspect-video rounded-xl bg-white border border-dashed border-slate-300 overflow-hidden flex items-center justify-center relative group">
+                      {coverUrl ? (
+                        <img
+                          src={coverUrl}
+                          alt={sub.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                      ) : (
+                        <div className="text-center p-3 text-slate-400 space-y-1">
+                          <span className="text-2xl block">{sub.icon}</span>
+                          <span className="text-[11px] block font-medium">কভার ছবি নেই (আইকন মোড সক্রিয়)</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Upload Controls */}
+                    <div className="space-y-1.5">
+                      <label className="block w-full py-2 px-3 bg-white border border-slate-300 hover:border-blue-500 rounded-xl text-center text-xs font-bold text-slate-700 cursor-pointer transition shadow-2xs hover:bg-blue-50/40">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              handleCoverUpload(sub.name, e.target.files[0], 'subjects');
+                            }
+                          }}
+                        />
+                        <span className="flex items-center justify-center gap-1.5">
+                          <FaCloudArrowUp className="w-3.5 h-3.5 text-blue-600" />
+                          <span>{isUploading ? 'আপলোড হচ্ছে...' : '📷 ছবি আপলোড করুন'}</span>
+                        </span>
+                      </label>
+
+                      <input
+                        type="url"
+                        placeholder="অথবা ইমেজ লিংক পেস্ট করুন..."
+                        value={coverUrl || ''}
+                        onChange={(e) => {
+                          setCovers((prev) => ({
+                            ...prev,
+                            subjects: {
+                              ...prev.subjects,
+                              [sub.name]: e.target.value,
+                            },
+                          }));
+                        }}
+                        className="w-full bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-2.5 py-1 text-[11px] text-slate-700 outline-none"
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Bottom Save Bar */}
+          <div className="flex items-center justify-end gap-3 pt-2">
+            <button
+              type="button"
+              onClick={handleSaveCovers}
+              disabled={isSavingCovers}
+              className="px-8 py-3 rounded-2xl bg-gradient-to-r from-purple-700 to-indigo-800 hover:opacity-95 text-white font-black text-sm shadow-lg transition active:scale-98 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+            >
+              <FaFloppyDisk className="w-4 h-4" />
+              <span>{isSavingCovers ? 'সংরক্ষণ হচ্ছে...' : 'সব কভার ইমেজ সংরক্ষণ করুন'}</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────
           TAB 4: 💰 QUIZ & PACKAGE PRICING MANAGEMENT
       ───────────────────────────────────────────────────────────── */}
       {activeTab === 'prices' && (
@@ -1531,6 +1808,283 @@ export default function AdminQuizManager() {
             </button>
           </div>
         </form>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────
+          TAB 5: CARD OPTIONAL COVER IMAGES MANAGER
+      ───────────────────────────────────────────────────────────── */}
+      {activeTab === 'covers' && (
+        <div className="space-y-6 animate-in fade-in duration-200">
+          {/* Header */}
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full mb-1">
+                <FaImage /> ঐচ্ছিক কভার ইমেজ (Optional Cover Photo)
+              </div>
+              <h3 className="text-base sm:text-lg font-black text-slate-800">
+                মডেল টেস্ট কার্ডের কভার ইমেজ ম্যানেজমেন্ট
+              </h3>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                ছবি আপলোড করলে কার্ডের শীর্ষে থাম্বনেইল দেখাবে। ছবি না দিলে স্বয়ংক্রিয়ভাবে ডিফল্ট আইকন থাকবে।
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleSaveCovers}
+              disabled={isSavingCovers}
+              className="px-6 py-2.5 rounded-2xl bg-gradient-to-r from-purple-700 to-indigo-800 hover:opacity-95 text-white font-black text-xs shadow-md transition flex items-center gap-2 disabled:opacity-50 shrink-0 self-start sm:self-auto cursor-pointer"
+            >
+              <FaFloppyDisk className="w-3.5 h-3.5" />
+              <span>{isSavingCovers ? 'সংরক্ষণ হচ্ছে...' : 'কভার ইমেজ সংরক্ষণ করুন'}</span>
+            </button>
+          </div>
+
+          {/* Section 1: Class-wise Model Test Covers (Classes 5 to 10) */}
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <div>
+              <h4 className="text-sm font-black text-slate-800 flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
+                শ্রেণিভিত্তিক টেস্ট কার্ডের কভার ছবি (Classes 5-10)
+              </h4>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                ফ্রি ও পেইড উভয় শ্রেণিভিত্তিক কার্ডে এই কভার ইমেজ প্রদর্শিত হবে।
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[5, 6, 7, 8, 9, 10].map((cls) => {
+                const coverUrl = covers.classes[cls];
+                const isUploading = uploadingTarget === `classes_${cls}`;
+
+                return (
+                  <div
+                    key={cls}
+                    className="bg-slate-50 border border-slate-200 hover:border-purple-300 rounded-2xl p-4 space-y-3 transition"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-black text-slate-800">
+                        🎓 {toBengaliClass(cls)} শ্রেণি
+                      </span>
+                      {coverUrl && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveCover(String(cls), 'classes')}
+                          className="text-[10px] font-bold text-rose-600 hover:underline flex items-center gap-1"
+                        >
+                          <FaTrash className="w-2.5 h-2.5" />
+                          <span>রিমুভ</span>
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Thumbnail Preview or Placeholder */}
+                    <div className="w-full aspect-video rounded-xl bg-white border border-dashed border-slate-300 overflow-hidden flex items-center justify-center relative group">
+                      {coverUrl ? (
+                        <img
+                          src={coverUrl}
+                          alt={`${cls} cover`}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                      ) : (
+                        <div className="text-center p-3 text-slate-400 space-y-1">
+                          <FaImage className="w-6 h-6 mx-auto text-slate-300" />
+                          <span className="text-[11px] block font-medium">কভার ছবি নেই (ডিফল্ট আইকন শো করবে)</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Upload Controls */}
+                    <div className="space-y-1.5">
+                      <label className="block w-full py-2 px-3 bg-white border border-slate-300 hover:border-purple-500 rounded-xl text-center text-xs font-bold text-slate-700 cursor-pointer transition shadow-2xs hover:bg-purple-50/40">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              handleCoverUpload(String(cls), e.target.files[0], 'classes');
+                            }
+                          }}
+                        />
+                        <span className="flex items-center justify-center gap-1.5">
+                          <FaCloudArrowUp className="w-3.5 h-3.5 text-purple-600" />
+                          <span>{isUploading ? 'আপলোড হচ্ছে...' : '📷 ছবি আপলোড করুন'}</span>
+                        </span>
+                      </label>
+
+                      <input
+                        type="url"
+                        placeholder="অথবা ইমেজ লিংক পেস্ট করুন..."
+                        value={coverUrl || ''}
+                        onChange={(e) => {
+                          setCovers((prev) => ({
+                            ...prev,
+                            classes: {
+                              ...prev.classes,
+                              [cls]: e.target.value,
+                            },
+                          }));
+                        }}
+                        className="w-full bg-white border border-slate-200 focus:border-purple-600 rounded-xl px-2.5 py-1 text-[11px] text-slate-700 outline-none"
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Section 2: Subject-wise Test Covers */}
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+              <div>
+                <h4 className="text-sm font-black text-slate-800 flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+                  বিষয়ভিত্তিক টেস্ট কার্ডের কভার ছবি ({toBengaliClass(selectedClass)} শ্রেণির বিষয়সমূহ)
+                </h4>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">
+                  নিচের বিষয়গুলোর কার্ডে কভার ছবি যুক্ত করুন। ছবি না থাকলে ডিফল্ট বিষয় আইকন দেখাবে।
+                </p>
+              </div>
+
+              {/* Class & Group quick switcher for covers */}
+              <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+                {[5, 6, 7, 8, 9, 10].map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setSelectedClass(c)}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-black transition ${
+                      selectedClass === c
+                        ? 'bg-purple-700 text-white shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    {toBengaliClass(c)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Academic Group switcher for 9-10 */}
+            {(selectedClass === 9 || selectedClass === 10) && (
+              <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                {(['science', 'humanities', 'commerce', 'compulsory'] as AcademicGroup[]).map((g) => (
+                  <button
+                    key={g}
+                    type="button"
+                    onClick={() => setSelectedGroup(g)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition border ${
+                      selectedGroup === g
+                        ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                    }`}
+                  >
+                    {g === 'science' ? '⚛️ বিজ্ঞান' : g === 'humanities' ? '📜 মানবিক' : g === 'commerce' ? '💼 ব্যবসায়' : '🌐 আবশ্যিক'}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Subjects Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {availableSubjects.map((sub) => {
+                const coverUrl = covers.subjects[sub.name];
+                const isUploading = uploadingTarget === `subjects_${sub.name}`;
+
+                return (
+                  <div
+                    key={sub.name}
+                    className="bg-slate-50 border border-slate-200 hover:border-blue-300 rounded-2xl p-4 space-y-3 transition"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">{sub.icon}</span>
+                        <span className="text-xs font-black text-slate-800 line-clamp-1">{sub.name}</span>
+                      </div>
+                      {coverUrl && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveCover(sub.name, 'subjects')}
+                          className="text-[10px] font-bold text-rose-600 hover:underline flex items-center gap-1"
+                        >
+                          <FaTrash className="w-2.5 h-2.5" />
+                          <span>রিমুভ</span>
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Thumbnail Preview */}
+                    <div className="w-full aspect-video rounded-xl bg-white border border-dashed border-slate-300 overflow-hidden flex items-center justify-center relative group">
+                      {coverUrl ? (
+                        <img
+                          src={coverUrl}
+                          alt={sub.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                      ) : (
+                        <div className="text-center p-3 text-slate-400 space-y-1">
+                          <span className="text-2xl block">{sub.icon}</span>
+                          <span className="text-[11px] block font-medium">কভার ছবি নেই (আইকন মোড সক্রিয়)</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Upload Controls */}
+                    <div className="space-y-1.5">
+                      <label className="block w-full py-2 px-3 bg-white border border-slate-300 hover:border-blue-500 rounded-xl text-center text-xs font-bold text-slate-700 cursor-pointer transition shadow-2xs hover:bg-blue-50/40">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              handleCoverUpload(sub.name, e.target.files[0], 'subjects');
+                            }
+                          }}
+                        />
+                        <span className="flex items-center justify-center gap-1.5">
+                          <FaCloudArrowUp className="w-3.5 h-3.5 text-blue-600" />
+                          <span>{isUploading ? 'আপলোড হচ্ছে...' : '📷 ছবি আপলোড করুন'}</span>
+                        </span>
+                      </label>
+
+                      <input
+                        type="url"
+                        placeholder="অথবা ইমেজ লিংক পেস্ট করুন..."
+                        value={coverUrl || ''}
+                        onChange={(e) => {
+                          setCovers((prev) => ({
+                            ...prev,
+                            subjects: {
+                              ...prev.subjects,
+                              [sub.name]: e.target.value,
+                            },
+                          }));
+                        }}
+                        className="w-full bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-2.5 py-1 text-[11px] text-slate-700 outline-none"
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Bottom Save Bar */}
+          <div className="flex items-center justify-end gap-3 pt-2">
+            <button
+              type="button"
+              onClick={handleSaveCovers}
+              disabled={isSavingCovers}
+              className="px-8 py-3 rounded-2xl bg-gradient-to-r from-purple-700 to-indigo-800 hover:opacity-95 text-white font-black text-sm shadow-lg transition active:scale-98 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+            >
+              <FaFloppyDisk className="w-4 h-4" />
+              <span>{isSavingCovers ? 'সংরক্ষণ হচ্ছে...' : 'সব কভার ইমেজ সংরক্ষণ করুন'}</span>
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
