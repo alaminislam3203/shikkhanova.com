@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import toast from 'react-hot-toast';
+import React, { useState } from "react";
+import Link from "next/link";
+import toast from "react-hot-toast";
 import {
   FiMail,
   FiPhone,
@@ -14,8 +14,8 @@ import {
   FiCheckCircle,
   FiHelpCircle,
   FiUser,
-} from 'react-icons/fi';
-import { FaWhatsapp, FaFacebook, FaYoutube } from 'react-icons/fa6';
+} from "react-icons/fi";
+import { FaWhatsapp, FaFacebook, FaYoutube } from "react-icons/fa6";
 
 interface ContactReason {
   id: string;
@@ -26,11 +26,11 @@ interface ContactReason {
 
 export default function ContactUsPage() {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    reason: 'admission',
-    message: '',
+    name: "",
+    email: "",
+    subject: "",
+    reason: "admission",
+    message: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -38,70 +38,70 @@ export default function ContactUsPage() {
 
   const contactReasons: ContactReason[] = [
     {
-      id: 'admission',
-      label: 'ভর্তি ও পাঠদান',
+      id: "admission",
+      label: "ভর্তি ও পাঠদান",
       icon: FiBook,
-      description: '৫ম-১০ম শ্রেণি ভর্তি ও ব্যাচ',
+      description: "৫ম-১০ম শ্রেণি ভর্তি ও ব্যাচ",
     },
     {
-      id: 'notes',
-      label: 'শিট ও হ্যান্ডনোট',
+      id: "notes",
+      label: "শিট ও হ্যান্ডনোট",
       icon: FiFileText,
-      description: 'রঙিন শিট ও পিডিএফ সংগ্রহ',
+      description: "রঙিন শিট ও পিডিএফ সংগ্রহ",
     },
     {
-      id: 'results',
-      label: 'রেজাল্ট ও মার্কশিট',
+      id: "results",
+      label: "রেজাল্ট ও মার্কশিট",
       icon: FiAward,
-      description: 'পরীক্ষার নম্বর ও গ্রেডশিট',
+      description: "পরীক্ষার নম্বর ও গ্রেডশিট",
     },
     {
-      id: 'modeltest',
-      label: 'মডেল টেস্ট ও কুইজ',
+      id: "modeltest",
+      label: "মডেল টেস্ট ও কুইজ",
       icon: FiCheckCircle,
-      description: 'অনলাইন পরীক্ষা ও লিডারবোর্ড',
+      description: "অনলাইন পরীক্ষা ও লিডারবোর্ড",
     },
     {
-      id: 'other',
-      label: 'অন্যান্য জিজ্ঞাসা',
+      id: "other",
+      label: "অন্যান্য জিজ্ঞাসা",
       icon: FiHelpCircle,
-      description: 'যেকোনো সাধারণ তথ্য',
+      description: "যেকোনো সাধারণ তথ্য",
     },
   ];
 
   const contactCards = [
     {
       icon: FiMail,
-      title: 'ইমেইল',
-      content: 'sikkhanova@gmail.com',
-      description: 'সাধারণত ২৪ ঘণ্টার মধ্যে উত্তর দেওয়া হয়',
-      href: 'mailto:sikkhanova@gmail.com',
+      title: "ইমেইল",
+      content: "shikkhanova@gmail.com",
+      description: "সাধারণত ২৪ ঘণ্টার মধ্যে উত্তর দেওয়া হয়",
+      href: "mailto:shikkhanova@gmail.com",
     },
     {
       icon: FiPhone,
-      title: 'হেল্পলাইন ফোন',
-      content: '০১৭১২৫৯২৫১৯',
-      description: 'প্রতিদিন সকাল ৮টা – রাত ৯টা',
-      href: 'tel:01712592519',
+      title: "হেল্পলাইন ফোন",
+      content: "০১৭১২৫৯২৫১৯",
+      description: "প্রতিদিন সকাল ৮টা – রাত ৯টা",
+      href: "tel:01712592519",
     },
     {
       icon: FiMapPin,
-      title: 'ক্যাম্পাস ও ঠিকানা',
-      content: 'জুম্মাপাড়া, নীলফামারী সদর',
-      description: 'শিক্ষা নোভা একাডেমি',
-      href: 'https://maps.google.com?q=Jummapara,Nilphamari',
+      title: "ক্যাম্পাস ও ঠিকানা",
+      content: "জুম্মাপাড়া, নীলফামারী সদর",
+      description: "শিক্ষা নোভা একাডেমি",
+      href: "https://maps.google.com?q=Jummapara,Nilphamari",
     },
     {
       icon: FaWhatsapp,
-      title: 'সরাসরি হোয়াটসঅ্যাপ',
-      content: 'চ্যাট করুন',
-      description: 'তাৎক্ষণিক তথ্য ও সহায়তা',
-      href: 'https://wa.me/8801712592519',
+      title: "সরাসরি হোয়াটসঅ্যাপ",
+      content: "চ্যাট করুন",
+      description: "তাৎক্ষণিক তথ্য ও সহায়তা",
+      href: "https://wa.me/8801712592519",
     },
   ];
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -111,8 +111,12 @@ export default function ContactUsPage() {
     e.preventDefault();
     setLoading(true);
 
-    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
-      toast.error('অনুগ্রহ করে নাম, ইমেইল এবং বার্তা পূরণ করুন');
+    if (
+      !formData.name.trim() ||
+      !formData.email.trim() ||
+      !formData.message.trim()
+    ) {
+      toast.error("অনুগ্রহ করে নাম, ইমেইল এবং বার্তা পূরণ করুন");
       setLoading(false);
       return;
     }
@@ -121,17 +125,19 @@ export default function ContactUsPage() {
       // Simulate form submission
       await new Promise((resolve) => setTimeout(resolve, 1000));
       setSuccess(true);
-      toast.success('আপনার বার্তা সফলভাবে পাঠানো হয়েছে! দ্রুত উত্তর দেওয়া হবে।');
+      toast.success(
+        "আপনার বার্তা সফলভাবে পাঠানো হয়েছে! দ্রুত উত্তর দেওয়া হবে।",
+      );
       setFormData({
-        name: '',
-        email: '',
-        subject: '',
-        reason: 'admission',
-        message: '',
+        name: "",
+        email: "",
+        subject: "",
+        reason: "admission",
+        message: "",
       });
       setTimeout(() => setSuccess(false), 5000);
     } catch {
-      toast.error('বার্তা পাঠাতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।');
+      toast.error("বার্তা পাঠাতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।");
     } finally {
       setLoading(false);
     }
@@ -140,7 +146,6 @@ export default function ContactUsPage() {
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
-        
         {/* 1. Header Section matching Merxo Hub */}
         <div className="text-center mb-12 sm:mb-16">
           <div className="inline-block mb-3">
@@ -152,7 +157,9 @@ export default function ContactUsPage() {
             চলুন কথা বলি
           </h1>
           <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            শিক্ষানোভা একাডেমি, ৫ম-১০ম শ্রেণি ভর্তি, অধ্যায়ভিত্তিক রঙিন শিট কিংবা পরীক্ষার রেজাল্ট নিয়ে যেকোনো প্রশ্ন থাকলে নির্দ্বিধায় বার্তা দিন।
+            শিক্ষানোভা একাডেমি, ৫ম-১০ম শ্রেণি ভর্তি, অধ্যায়ভিত্তিক রঙিন শিট
+            কিংবা পরীক্ষার রেজাল্ট নিয়ে যেকোনো প্রশ্ন থাকলে নির্দ্বিধায় বার্তা
+            দিন।
           </p>
         </div>
 
@@ -164,7 +171,7 @@ export default function ContactUsPage() {
               <a
                 key={index}
                 href={item.href}
-                target={item.href.startsWith('http') ? '_blank' : undefined}
+                target={item.href.startsWith("http") ? "_blank" : undefined}
                 rel="noopener noreferrer"
                 className="group relative bg-white rounded-2xl p-6 sm:p-7 border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
               >
@@ -189,7 +196,6 @@ export default function ContactUsPage() {
 
         {/* 3. Form & Info Section (2 Columns) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-start">
-          
           {/* Left Column: Contact Form (7 cols) */}
           <div className="lg:col-span-7">
             <div className="bg-white rounded-2xl border border-slate-200/80 p-6 sm:p-8 shadow-sm">
@@ -197,14 +203,17 @@ export default function ContactUsPage() {
                 বার্তা পাঠান
               </h2>
               <p className="text-xs sm:text-sm text-slate-500 mb-6">
-                নিচের ফর্মটি পূরণ করে সাবমিট করুন, আমরা দ্রুত আপনার সাথে যোগাযোগ করব।
+                নিচের ফর্মটি পূরণ করে সাবমিট করুন, আমরা দ্রুত আপনার সাথে যোগাযোগ
+                করব।
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-5">
-                
                 {/* Name Field */}
                 <div>
-                  <label htmlFor="name" className="block text-xs font-bold text-slate-700 mb-1.5">
+                  <label
+                    htmlFor="name"
+                    className="block text-xs font-bold text-slate-700 mb-1.5"
+                  >
                     পূর্ণ নাম *
                   </label>
                   <div className="relative">
@@ -226,7 +235,10 @@ export default function ContactUsPage() {
 
                 {/* Email Field */}
                 <div>
-                  <label htmlFor="email" className="block text-xs font-bold text-slate-700 mb-1.5">
+                  <label
+                    htmlFor="email"
+                    className="block text-xs font-bold text-slate-700 mb-1.5"
+                  >
                     ইমেইল ঠিকানা *
                   </label>
                   <div className="relative">
@@ -248,7 +260,10 @@ export default function ContactUsPage() {
 
                 {/* Subject Field */}
                 <div>
-                  <label htmlFor="subject" className="block text-xs font-bold text-slate-700 mb-1.5">
+                  <label
+                    htmlFor="subject"
+                    className="block text-xs font-bold text-slate-700 mb-1.5"
+                  >
                     বিষয়
                   </label>
                   <input
@@ -275,24 +290,33 @@ export default function ContactUsPage() {
                         <button
                           key={reason.id}
                           type="button"
-                          onClick={() => setFormData((prev) => ({ ...prev, reason: reason.id }))}
+                          onClick={() =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              reason: reason.id,
+                            }))
+                          }
                           className={`text-left p-3 rounded-xl border transition-all duration-200 cursor-pointer ${
                             isSelected
-                              ? 'border-[#0F2C59] bg-[#0F2C59] text-white shadow-md'
-                              : 'border-slate-200 bg-white hover:border-slate-300 text-slate-700 hover:bg-slate-50'
+                              ? "border-[#0F2C59] bg-[#0F2C59] text-white shadow-md"
+                              : "border-slate-200 bg-white hover:border-slate-300 text-slate-700 hover:bg-slate-50"
                           }`}
                         >
                           <div
                             className={`w-7 h-7 rounded-lg flex items-center justify-center mb-1.5 ${
-                              isSelected ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
+                              isSelected
+                                ? "bg-white/20 text-white"
+                                : "bg-slate-100 text-slate-600"
                             }`}
                           >
                             <ReasonIcon size={14} />
                           </div>
-                          <p className="text-xs font-bold leading-tight">{reason.label}</p>
+                          <p className="text-xs font-bold leading-tight">
+                            {reason.label}
+                          </p>
                           <p
                             className={`text-[10px] mt-0.5 leading-snug line-clamp-1 ${
-                              isSelected ? 'text-blue-100' : 'text-slate-400'
+                              isSelected ? "text-blue-100" : "text-slate-400"
                             }`}
                           >
                             {reason.description}
@@ -305,7 +329,10 @@ export default function ContactUsPage() {
 
                 {/* Message Field */}
                 <div>
-                  <label htmlFor="message" className="block text-xs font-bold text-slate-700 mb-1.5">
+                  <label
+                    htmlFor="message"
+                    className="block text-xs font-bold text-slate-700 mb-1.5"
+                  >
                     বার্তা *
                   </label>
                   <textarea
@@ -342,7 +369,10 @@ export default function ContactUsPage() {
                 {/* Success Alert */}
                 {success && (
                   <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-lg flex items-center gap-2.5 text-xs text-emerald-800 font-semibold animate-in fade-in">
-                    <FiCheckCircle size={18} className="text-emerald-600 shrink-0" />
+                    <FiCheckCircle
+                      size={18}
+                      className="text-emerald-600 shrink-0"
+                    />
                     <span>আপনার বার্তা সফলভাবে পৌঁছেছে! ধন্যবাদ।</span>
                   </div>
                 )}
@@ -353,7 +383,6 @@ export default function ContactUsPage() {
           {/* Right Column: "Always Here" Info Box (5 cols) */}
           <div className="lg:col-span-5 h-full">
             <div className="relative rounded-2xl p-7 sm:p-9 text-white shadow-xl overflow-hidden bg-gradient-to-br from-[#0A1E3C] via-[#0F2C59] to-[#0A1E3C] border border-[#0F2C59]">
-              
               {/* Decorative Glows matching Merxo Hub */}
               <div className="absolute top-0 right-0 -mr-16 -mt-16 w-56 h-56 rounded-full bg-blue-500/10 blur-2xl pointer-events-none" />
               <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-56 h-56 rounded-full bg-red-500/10 blur-2xl pointer-events-none" />
@@ -367,7 +396,8 @@ export default function ContactUsPage() {
                     আমরা সবসময় পাশে
                   </h2>
                   <p className="text-xs text-slate-300 mt-2">
-                    শিক্ষার্থীদের সার্বিক উন্নতি ও সঠিক দিকনির্দেশনাই আমাদের মূল ব্রত।
+                    শিক্ষার্থীদের সার্বিক উন্নতি ও সঠিক দিকনির্দেশনাই আমাদের মূল
+                    ব্রত।
                   </p>
                 </div>
 
@@ -382,7 +412,8 @@ export default function ContactUsPage() {
                         দ্রুত উত্তর
                       </h3>
                       <p className="text-xs text-slate-300 leading-relaxed">
-                        ভর্তি, পরীক্ষা বা শিট সংক্রান্ত যেকোনো প্রশ্নের উত্তর যথাসম্ভব দ্রুত দেওয়া হয়।
+                        ভর্তি, পরীক্ষা বা শিট সংক্রান্ত যেকোনো প্রশ্নের উত্তর
+                        যথাসম্ভব দ্রুত দেওয়া হয়।
                       </p>
                     </div>
                   </div>
@@ -397,7 +428,8 @@ export default function ContactUsPage() {
                         অভিজ্ঞ শিক্ষক প্যানেল
                       </h3>
                       <p className="text-xs text-slate-300 leading-relaxed">
-                        গণিত, বিজ্ঞান ও ইংরেজির দক্ষ শিক্ষকগণ প্রতিটি প্রশ্নের সমাধান দিতে প্রস্তুত।
+                        গণিত, বিজ্ঞান ও ইংরেজির দক্ষ শিক্ষকগণ প্রতিটি প্রশ্নের
+                        সমাধান দিতে প্রস্তুত।
                       </p>
                     </div>
                   </div>
@@ -412,7 +444,8 @@ export default function ContactUsPage() {
                         সরাসরি যোগাযোগ
                       </h3>
                       <p className="text-xs text-slate-300 leading-relaxed">
-                        ফোন, হোয়াটসঅ্যাপ ও সরাসরি ক্যাম্পাসে এসে যোগাযোগ করার সুব্যবস্থা।
+                        ফোন, হোয়াটসঅ্যাপ ও সরাসরি ক্যাম্পাসে এসে যোগাযোগ করার
+                        সুব্যবস্থা।
                       </p>
                     </div>
                   </div>
@@ -421,7 +454,8 @@ export default function ContactUsPage() {
                 {/* Hotline & Social Section */}
                 <div className="pt-6 border-t border-white/15 space-y-4">
                   <p className="text-xs text-slate-300">
-                    জরুরি প্রয়োজনে সকাল ৮টা থেকে রাত ৯টার মধ্যে সরাসরি হেল্পলাইনে ফোন করুন।
+                    জরুরি প্রয়োজনে সকাল ৮টা থেকে রাত ৯টার মধ্যে সরাসরি
+                    হেল্পলাইনে ফোন করুন।
                   </p>
 
                   <div className="flex flex-wrap items-center gap-3">
@@ -444,11 +478,9 @@ export default function ContactUsPage() {
                     </a>
                   </div>
                 </div>
-
               </div>
             </div>
           </div>
-
         </div>
 
         {/* 4. Google Maps Embed Section matching Merxo Hub */}
@@ -483,9 +515,7 @@ export default function ContactUsPage() {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );
 }
-

@@ -66,7 +66,7 @@ export async function GET(req: Request) {
     }
 
     const fileUrl = pdf.fileUrl.trim();
-    const safeFileName = `SikkhaNova-Class-${pdf.classGrade}-${pdf.id.slice(-6)}.pdf`;
+    const safeFileName = `shikkhanova-Class-${pdf.classGrade}-${pdf.id.slice(-6)}.pdf`;
     const encodedUtf8Name = encodeURIComponent(`${pdf.title}.pdf`);
 
     // 1. If the PDF is hosted on Google Drive, redirect to Google Drive direct download URL

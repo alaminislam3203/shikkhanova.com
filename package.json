@@ -2,7 +2,7 @@
   "name": "shikkha-nova",
   "version": "1.0.0",
   "private": true,
-  "description": "শিক্ষানোভা (SikkhaNova) - Premium Next.js Educational Platform (Classes 5-10)",
+  "description": "শিক্ষানোভা (shikkhanova) - Premium Next.js Educational Platform (Classes 5-10)",
   "scripts": {
     "dev": "next dev",
     "postinstall": "prisma generate",

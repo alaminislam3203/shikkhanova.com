@@ -39,7 +39,7 @@ export const authOptions: NextAuthOptions = {
 
           return {
             id: 'admin-master-id',
-            name: 'শিক্ষানোভা অ্যাডমিন (SikkhaNova Admin)',
+            name: 'শিক্ষানোভা অ্যাডমিন (shikkhanova Admin)',
             email: adminEmail,
             role: 'ADMIN' as Role,
             classGrade: null,

@@ -1,4 +1,4 @@
-# 🎓 শিক্ষানোভা (SikkhaNova) - "শিখবো, জিতবো"
+# 🎓 শিক্ষানোভা (shikkhanova) - "শিখবো, জিতবো"
 
 > **৫ম থেকে ১০ম শ্রেণির আধুনিক শিক্ষা ব্যবস্থাপনা, রোল ভিত্তিক হাজিরা, কোচিং ফলাফল, প্রিমিয়াম পিডিএফ শিট ও ইউটিউব ভিডিও প্ল্যাটফর্ম।**
 
@@ -6,17 +6,17 @@
 
 ## 📌 ১. প্রাতিষ্ঠানিক পরিচিতি ও যোগাযোগ
 
-| ক্ষেত্র | তথ্য |
-| :--- | :--- |
-| **প্ল্যাটফর্ম নাম** | **শিক্ষানোভা (SikkhaNova)** |
-| **স্লোগান** | **"শিখবো, জিতবো"** |
-| **ডোমেইন** | [`sikkhanova.com`](https://sikkhanova.com) |
-| **সেন্টার লোকেশন** | **জুম্মাপাড়া, নীলফামারী সদর, নীলফামারী** |
-| **মোবাইল / হেল্পলাইন** | **`01712592519`** (কল ও হোয়াটসঅ্যাপ) |
-| **অফিশিয়াল ইমেইল** | `robiulnil101@gmail.com` |
-| **ইউটিউব চ্যানেল** | [https://youtube.com/@ShikkhaNova](https://youtube.com/@ShikkhaNova) |
-| **ফেসবুক পেজ** | [https://facebook.com/ShikkhaNova](https://facebook.com/ShikkhaNova) |
-| **মাস্টার অ্যাডমিন লগইন** | ইমেইল: `robiulnil101@gmail.com` \| পাসওয়ার্ড: `RABIUL@20` |
+| ক্ষেত্র                   | তথ্য                                                                 |
+| :------------------------ | :------------------------------------------------------------------- |
+| **প্ল্যাটফর্ম নাম**       | **শিক্ষানোভা (shikkhanova)**                                         |
+| **স্লোগান**               | **"শিখবো, জিতবো"**                                                   |
+| **ডোমেইন**                | [`shikkhanova.com`](https://shikkhanova.com)                         |
+| **সেন্টার লোকেশন**        | **জুম্মাপাড়া, নীলফামারী সদর, নীলফামারী**                            |
+| **মোবাইল / হেল্পলাইন**    | **`01712592519`** (কল ও হোয়াটসঅ্যাপ)                                 |
+| **অফিশিয়াল ইমেইল**        | `robiulnil101@gmail.com`                                             |
+| **ইউটিউব চ্যানেল**        | [https://youtube.com/@ShikkhaNova](https://youtube.com/@ShikkhaNova) |
+| **ফেসবুক পেজ**            | [https://facebook.com/ShikkhaNova](https://facebook.com/ShikkhaNova) |
+| **মাস্টার অ্যাডমিন লগইন** | ইমেইল: `robiulnil101@gmail.com` \| পাসওয়ার্ড: `RABIUL@20`            |
 
 ---
 
@@ -109,13 +109,17 @@ d:\MY-PROJECT\Shikkha Nova\
 ## 🚀 ৫. যেভাবে প্রজেক্ট চালু করবেন (Installation & Setup)
 
 ### ধাপ ১: ডিপেন্ডেন্সি ইনস্টল করুন
+
 আপনার টার্মিনালে নিচের কমান্ডটি চালান:
+
 ```bash
 npm install
 ```
 
 ### ধাপ ২: এনভায়রনমেন্ট ভেরিয়েবল সেটআপ করুন
+
 `.env.example` ফাইলটি কপি করে `.env` নামে সেভ করুন এবং আপনার PostgreSQL ডেটাবেজ লিংক দিন:
+
 ```env
 DATABASE_URL="postgresql://postgres:[PASSWORD]@[HOST]:5432/[DB_NAME]?schema=public"
 NEXTAUTH_URL="http://localhost:3000"
@@ -125,15 +129,18 @@ ADMIN_PASSWORD="RABIUL@20"
 ```
 
 ### ধাপ ৩: ডেটাবেজ মাইগ্রেশন ও সিডিং চালান
+
 ```bash
 npx prisma db push
 npm run prisma:seed
 ```
 
 ### ধাপ ৪: ডেভেলপমেন্ট সার্ভার চালু করুন
+
 ```bash
 npm run dev
 ```
+
 ব্রাউজারে ওপেন করুন: [http://localhost:3000](http://localhost:3000)
 
 ---

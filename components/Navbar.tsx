@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import React, { useState, useRef, useEffect, useMemo } from 'react';
-import Link from 'next/link';
-import Logo from '@/components/common/Logo';
-import { usePathname, useRouter } from 'next/navigation';
-import { useSession, signOut } from 'next-auth/react';
-import { confirmSignOut } from '@/lib/logout';
-import { IoLogInOutline } from 'react-icons/io5';
-import { CiSearch } from 'react-icons/ci';
+import React, { useState, useRef, useEffect, useMemo } from "react";
+import Link from "next/link";
+import Logo from "@/components/common/Logo";
+import { usePathname, useRouter } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
+import { confirmSignOut } from "@/lib/logout";
+import { IoLogInOutline } from "react-icons/io5";
+import { CiSearch } from "react-icons/ci";
 import {
   FaYoutube,
   FaFacebook,
@@ -30,165 +30,174 @@ import {
   FaUser,
   FaGlobe,
   FaShieldHalved,
-} from 'react-icons/fa6';
-import { HiSparkles } from 'react-icons/hi2';
+} from "react-icons/fa6";
+import { HiSparkles } from "react-icons/hi2";
 
 const INSTANT_SITE_INDEX = [
   {
-    id: 'page-home',
-    title: 'হোম পেইজ (শিক্ষানোভা একাডেমি)',
-    subtitle: '৫ম থেকে ১০ম শ্রেণির ডিজিটাল শিক্ষা ব্যবস্থাপনা • নীলফামারী সদর',
-    categoryLabel: 'পেইজ',
-    href: '/',
-    keywords: 'home হোম শিক্ষানোভা একাডেমি স্লোগান শিখবো জিতবো',
+    id: "page-home",
+    title: "হোম পেইজ (শিক্ষানোভা একাডেমি)",
+    subtitle: "৫ম থেকে ১০ম শ্রেণির ডিজিটাল শিক্ষা ব্যবস্থাপনা • নীলফামারী সদর",
+    categoryLabel: "পেইজ",
+    href: "/",
+    keywords: "home হোম শিক্ষানোভা একাডেমি স্লোগান শিখবো জিতবো",
   },
   {
-    id: 'page-about',
-    title: 'শিক্ষা নোভা সম্পর্কে (আমাদের সম্পর্কে)',
-    subtitle: 'লক্ষ্য, রূপকল্প ও একাডেমিক বৈশিষ্ট্যসমূহ • জুম্মাপাড়া, নীলফামারী সদর',
-    categoryLabel: 'আমাদের সম্পর্কে',
-    href: '/about',
-    keywords: 'about আমাদের সম্পর্কে শিক্ষা নোভা সম্পর্কে লক্ষ্য উদ্দেশ্য',
+    id: "page-about",
+    title: "শিক্ষা নোভা সম্পর্কে (আমাদের সম্পর্কে)",
+    subtitle:
+      "লক্ষ্য, রূপকল্প ও একাডেমিক বৈশিষ্ট্যসমূহ • জুম্মাপাড়া, নীলফামারী সদর",
+    categoryLabel: "আমাদের সম্পর্কে",
+    href: "/about",
+    keywords: "about আমাদের সম্পর্কে শিক্ষা নোভা সম্পর্কে লক্ষ্য উদ্দেশ্য",
   },
   {
-    id: 'page-chairman',
-    title: 'চেয়ারম্যানের বার্তা (রবিউল ইসলাম)',
-    subtitle: 'শিক্ষা নোভা একাডেমির চেয়ারম্যান ও পরিচালকের শুভেচ্ছা বার্তা',
-    categoryLabel: 'আমাদের সম্পর্কে',
-    href: '/chairman-message',
-    keywords: 'chairman director message চেয়ারম্যানের বার্তা পরিচালকের বার্তা রবিউল ইসলাম',
+    id: "page-chairman",
+    title: "চেয়ারম্যানের বার্তা (রবিউল ইসলাম)",
+    subtitle: "শিক্ষা নোভা একাডেমির চেয়ারম্যান ও পরিচালকের শুভেচ্ছা বার্তা",
+    categoryLabel: "আমাদের সম্পর্কে",
+    href: "/chairman-message",
+    keywords:
+      "chairman director message চেয়ারম্যানের বার্তা পরিচালকের বার্তা রবিউল ইসলাম",
   },
   {
-    id: 'page-notices',
-    title: 'অফিশিয়াল নোটিশ বোর্ড',
-    subtitle: 'পরীক্ষার রুটিন, ভর্তি বিজ্ঞপ্তি ও একাডেমিক নোটিশসমূহ',
-    categoryLabel: 'নোটিশ',
-    href: '/notices',
-    keywords: 'notice নোটিশ বিজ্ঞপ্তি রুটিন পরীক্ষা ভর্তি',
+    id: "page-notices",
+    title: "অফিশিয়াল নোটিশ বোর্ড",
+    subtitle: "পরীক্ষার রুটিন, ভর্তি বিজ্ঞপ্তি ও একাডেমিক নোটিশসমূহ",
+    categoryLabel: "নোটিশ",
+    href: "/notices",
+    keywords: "notice নোটিশ বিজ্ঞপ্তি রুটিন পরীক্ষা ভর্তি",
   },
   {
-    id: 'page-gallery',
-    title: 'ফটো গ্যালারি (শিক্ষা নোভা একাডেমি)',
-    subtitle: 'ক্লাসরুম পাঠদান, পরীক্ষা ও পুরস্কার বিতরণী অনুষ্ঠানের ছবিসমূহ',
-    categoryLabel: 'গ্যালারি',
-    href: '/gallery',
-    keywords: 'photo gallery ফটো গ্যালারি ছবি ক্লাসরুম পুরস্কার',
+    id: "page-gallery",
+    title: "ফটো গ্যালারি (শিক্ষা নোভা একাডেমি)",
+    subtitle: "ক্লাসরুম পাঠদান, পরীক্ষা ও পুরস্কার বিতরণী অনুষ্ঠানের ছবিসমূহ",
+    categoryLabel: "গ্যালারি",
+    href: "/gallery",
+    keywords: "photo gallery ফটো গ্যালারি ছবি ক্লাসরুম পুরস্কার",
   },
   {
-    id: 'page-pdfs',
-    title: 'প্রিমিয়াম পিডিএফ শিট ও হ্যান্ডনোট শপ',
-    subtitle: 'অধ্যায়ভিত্তিক রঙিন হ্যান্ডনোট, সাজেশন ও ফ্রি শিট ডাউনলোড',
-    categoryLabel: 'হ্যান্ডনোট',
-    href: '/pdfs',
-    badge: 'PDF Shop',
-    keywords: 'pdf note sheet হ্যান্ডনোট শিট সাজেশন গণিত বিজ্ঞান ইংরেজি পদার্থ রসায়ন জীববিজ্ঞান আইসিটি',
+    id: "page-pdfs",
+    title: "প্রিমিয়াম পিডিএফ শিট ও হ্যান্ডনোট শপ",
+    subtitle: "অধ্যায়ভিত্তিক রঙিন হ্যান্ডনোট, সাজেশন ও ফ্রি শিট ডাউনলোড",
+    categoryLabel: "হ্যান্ডনোট",
+    href: "/pdfs",
+    badge: "PDF Shop",
+    keywords:
+      "pdf note sheet হ্যান্ডনোট শিট সাজেশন গণিত বিজ্ঞান ইংরেজি পদার্থ রসায়ন জীববিজ্ঞান আইসিটি",
   },
   {
-    id: 'page-quiz',
-    title: 'অনলাইন কুইজ ও মডেল টেস্ট (MCQ Model Test)',
-    subtitle: '৫ম-১০ম শ্রেণির ফ্রি ও প্রিমিয়াম মডেল টেস্ট, ইনস্ট্যান্ট রেজাল্ট ও লিডারবোর্ড',
-    categoryLabel: 'মডেল টেস্ট',
-    href: '/quiz',
-    badge: 'MCQ Test',
-    keywords: 'quiz mcq model test কুইজ মডেল টেস্ট পরীক্ষা mcq প্রশ্ন উত্তর ফ্রি প্রিমিয়াম',
+    id: "page-quiz",
+    title: "অনলাইন কুইজ ও মডেল টেস্ট (MCQ Model Test)",
+    subtitle:
+      "৫ম-১০ম শ্রেণির ফ্রি ও প্রিমিয়াম মডেল টেস্ট, ইনস্ট্যান্ট রেজাল্ট ও লিডারবোর্ড",
+    categoryLabel: "মডেল টেস্ট",
+    href: "/quiz",
+    badge: "MCQ Test",
+    keywords:
+      "quiz mcq model test কুইজ মডেল টেস্ট পরীক্ষা mcq প্রশ্ন উত্তর ফ্রি প্রিমিয়াম",
   },
   {
-    id: 'page-leaderboard',
-    title: '🏆 মেধা তালিকা ও লিডারবোর্ড (Quiz Leaderboard)',
-    subtitle: 'সেরা শিক্ষার্থীদের র‍্যাঙ্কিং, গোল্ড/সিলভার মেডেল ও প্রাপ্ত স্কোর',
-    categoryLabel: 'লিডারবোর্ড',
-    href: '/leaderboard',
-    badge: 'Top Rank',
-    keywords: 'leaderboard লিডারবোর্ড মেধা তালিকা র‍্যাঙ্কিং মেডেল রেজাল্ট বোর্ড কুইজ সেরা',
+    id: "page-leaderboard",
+    title: "🏆 মেধা তালিকা ও লিডারবোর্ড (Quiz Leaderboard)",
+    subtitle:
+      "সেরা শিক্ষার্থীদের র‍্যাঙ্কিং, গোল্ড/সিলভার মেডেল ও প্রাপ্ত স্কোর",
+    categoryLabel: "লিডারবোর্ড",
+    href: "/leaderboard",
+    badge: "Top Rank",
+    keywords:
+      "leaderboard লিডারবোর্ড মেধা তালিকা র‍্যাঙ্কিং মেডেল রেজাল্ট বোর্ড কুইজ সেরা",
   },
   {
-    id: 'page-results',
-    title: 'কোচিং পরীক্ষার রেজাল্ট ও মার্কশিট',
-    subtitle: 'শ্রেণি ও রোল নম্বর দিয়ে অফিশিয়াল গ্রেডশিট ও জিপিএ অনুসন্ধান',
-    categoryLabel: 'রেজাল্ট',
-    href: '/results',
-    badge: 'GPA 5.00',
-    keywords: 'result marksheet gpa ফলাফল রেজাল্ট মার্কশিট গ্রেডশিট পরীক্ষা রোল',
+    id: "page-results",
+    title: "কোচিং পরীক্ষার রেজাল্ট ও মার্কশিট",
+    subtitle: "শ্রেণি ও রোল নম্বর দিয়ে অফিশিয়াল গ্রেডশিট ও জিপিএ অনুসন্ধান",
+    categoryLabel: "রেজাল্ট",
+    href: "/results",
+    badge: "GPA 5.00",
+    keywords:
+      "result marksheet gpa ফলাফল রেজাল্ট মার্কশিট গ্রেডশিট পরীক্ষা রোল",
   },
   {
-    id: 'page-videos',
-    title: 'ইউটিউব ভিডিও ক্লাস (@ShikkhaNova)',
-    subtitle: 'গণিত, বিজ্ঞান, ইংরেজি ও আইসিটি বিষয়ের অধ্যায়ভিত্তিক ভিডিও লেকচার',
-    categoryLabel: 'ভিডিও ক্লাস',
-    href: '/videos',
-    keywords: 'video youtube class ভিডিও ক্লাস লেকচার ইউটিউব সমাধান',
+    id: "page-videos",
+    title: "ইউটিউব ভিডিও ক্লাস (@ShikkhaNova)",
+    subtitle:
+      "গণিত, বিজ্ঞান, ইংরেজি ও আইসিটি বিষয়ের অধ্যায়ভিত্তিক ভিডিও লেকচার",
+    categoryLabel: "ভিডিও ক্লাস",
+    href: "/videos",
+    keywords: "video youtube class ভিডিও ক্লাস লেকচার ইউটিউব সমাধান",
   },
   {
-    id: 'cls-5',
-    title: '৫ম শ্রেণি — হাজিরা, শিট ও রেজাল্ট',
-    subtitle: '৫ম শ্রেণির সকল হ্যান্ডনোট, উপস্থিতি ও ফলাফল',
-    categoryLabel: '৫ম শ্রেণি',
-    href: '/pdfs',
-    keywords: '5 class 5 ৫ ৫ম শ্রেণি প্রাথমিক গণিত বিজ্ঞান',
+    id: "cls-5",
+    title: "৫ম শ্রেণি — হাজিরা, শিট ও রেজাল্ট",
+    subtitle: "৫ম শ্রেণির সকল হ্যান্ডনোট, উপস্থিতি ও ফলাফল",
+    categoryLabel: "৫ম শ্রেণি",
+    href: "/pdfs",
+    keywords: "5 class 5 ৫ ৫ম শ্রেণি প্রাথমিক গণিত বিজ্ঞান",
   },
   {
-    id: 'cls-6',
-    title: '৬ষ্ঠ শ্রেণি — হাজিরা, শিট ও রেজাল্ট',
-    subtitle: '৬ষ্ঠ শ্রেণির সকল হ্যান্ডনোট, উপস্থিতি ও ফলাফল',
-    categoryLabel: '৬ষ্ঠ শ্রেণি',
-    href: '/pdfs',
-    keywords: '6 class 6 ৬ ৬ষ্ঠ শ্রেণি গণিত বিজ্ঞান ইংরেজি আইসিটি',
+    id: "cls-6",
+    title: "৬ষ্ঠ শ্রেণি — হাজিরা, শিট ও রেজাল্ট",
+    subtitle: "৬ষ্ঠ শ্রেণির সকল হ্যান্ডনোট, উপস্থিতি ও ফলাফল",
+    categoryLabel: "৬ষ্ঠ শ্রেণি",
+    href: "/pdfs",
+    keywords: "6 class 6 ৬ ৬ষ্ঠ শ্রেণি গণিত বিজ্ঞান ইংরেজি আইসিটি",
   },
   {
-    id: 'cls-7',
-    title: '৭ম শ্রেণি (Class 7) — হাজিরা, শিট ও রেজাল্ট',
-    subtitle: '৭ম শ্রেণির সকল হ্যান্ডনোট, উপস্থিতি ও ফলাফল',
-    categoryLabel: '৭ম শ্রেণি',
-    href: '/pdfs',
-    keywords: '7 class 7 ৭ ৭ম শ্রেণি গণিত বিজ্ঞান ইংরেজি',
+    id: "cls-7",
+    title: "৭ম শ্রেণি (Class 7) — হাজিরা, শিট ও রেজাল্ট",
+    subtitle: "৭ম শ্রেণির সকল হ্যান্ডনোট, উপস্থিতি ও ফলাফল",
+    categoryLabel: "৭ম শ্রেণি",
+    href: "/pdfs",
+    keywords: "7 class 7 ৭ ৭ম শ্রেণি গণিত বিজ্ঞান ইংরেজি",
   },
   {
-    id: 'cls-8',
-    title: '৮ম শ্রেণি (Class 8) — হাজিরা, শিট ও রেজাল্ট',
-    subtitle: '৮ম শ্রেণির সকল হ্যান্ডনোট, উপস্থিতি ও ফলাফল',
-    categoryLabel: '৮ম শ্রেণি',
-    href: '/pdfs',
-    keywords: '8 class 8 ৮ ৮ম শ্রেণি গণিত বিজ্ঞান ইংরেজি জ্যামিতি',
+    id: "cls-8",
+    title: "৮ম শ্রেণি (Class 8) — হাজিরা, শিট ও রেজাল্ট",
+    subtitle: "৮ম শ্রেণির সকল হ্যান্ডনোট, উপস্থিতি ও ফলাফল",
+    categoryLabel: "৮ম শ্রেণি",
+    href: "/pdfs",
+    keywords: "8 class 8 ৮ ৮ম শ্রেণি গণিত বিজ্ঞান ইংরেজি জ্যামিতি",
   },
   {
-    id: 'cls-9',
-    title: '৯ম শ্রেণি (Class 9) — হাজিরা, শিট ও রেজাল্ট',
-    subtitle: '৯ম শ্রেণির পদার্থ, রসায়ন, গণিত ও জীববিজ্ঞান হ্যান্ডনোট',
-    categoryLabel: '৯ম শ্রেণি',
-    href: '/pdfs',
-    keywords: '9 class 9 ৯ ৯ম শ্রেণি পদার্থ রসায়ন জীববিজ্ঞান উচ্চতর গণিত',
+    id: "cls-9",
+    title: "৯ম শ্রেণি (Class 9) — হাজিরা, শিট ও রেজাল্ট",
+    subtitle: "৯ম শ্রেণির পদার্থ, রসায়ন, গণিত ও জীববিজ্ঞান হ্যান্ডনোট",
+    categoryLabel: "৯ম শ্রেণি",
+    href: "/pdfs",
+    keywords: "9 class 9 ৯ ৯ম শ্রেণি পদার্থ রসায়ন জীববিজ্ঞান উচ্চতর গণিত",
   },
   {
-    id: 'cls-10',
-    title: '১০ম শ্রেণি (Class 10 / SSC) — ফাইনাল সাজেশন ও শিট',
-    subtitle: 'এসএসসি ও ১০ম শ্রেণির সকল বিষয়ের স্পেশাল সাজেশন ও মডেল টেস্ট',
-    categoryLabel: '১০ম শ্রেণি',
-    href: '/pdfs',
-    keywords: '10 class 10 ssc ১০ ১০ম শ্রেণি এসএসসি সাজেশন মডেল টেস্ট',
+    id: "cls-10",
+    title: "১০ম শ্রেণি (Class 10 / SSC) — ফাইনাল সাজেশন ও শিট",
+    subtitle: "এসএসসি ও ১০ম শ্রেণির সকল বিষয়ের স্পেশাল সাজেশন ও মডেল টেস্ট",
+    categoryLabel: "১০ম শ্রেণি",
+    href: "/pdfs",
+    keywords: "10 class 10 ssc ১০ ১০ম শ্রেণি এসএসসি সাজেশন মডেল টেস্ট",
   },
   {
-    id: 'page-account',
-    title: 'আমার একাউন্ট ও প্রোফাইল তথ্য',
-    subtitle: 'প্রোফাইল ছবি, নাম, মোবাইল নম্বর ও শ্রেণি-রোল আপডেট',
-    categoryLabel: 'একাউন্ট',
-    href: '/account',
-    keywords: 'account profile settings photo একাউন্ট প্রোফাইল ছবি তথ্য',
+    id: "page-account",
+    title: "আমার একাউন্ট ও প্রোফাইল তথ্য",
+    subtitle: "প্রোফাইল ছবি, নাম, মোবাইল নম্বর ও শ্রেণি-রোল আপডেট",
+    categoryLabel: "একাউন্ট",
+    href: "/account",
+    keywords: "account profile settings photo একাউন্ট প্রোফাইল ছবি তথ্য",
   },
   {
-    id: 'page-password',
-    title: 'পাসওয়ার্ড পরিবর্তন ও নিরাপত্তা',
-    subtitle: 'নিরাপত্তা নিশ্চিতকরণ ও নতুন পাসওয়ার্ড আপডেট',
-    categoryLabel: 'পাসওয়ার্ড',
-    href: '/password',
-    keywords: 'password security পাসওয়ার্ড সিকিউরিটি নিরাপত্তা পরিবর্তন',
+    id: "page-password",
+    title: "পাসওয়ার্ড পরিবর্তন ও নিরাপত্তা",
+    subtitle: "নিরাপত্তা নিশ্চিতকরণ ও নতুন পাসওয়ার্ড আপডেট",
+    categoryLabel: "পাসওয়ার্ড",
+    href: "/password",
+    keywords: "password security পাসওয়ার্ড সিকিউরিটি নিরাপত্তা পরিবর্তন",
   },
   {
-    id: 'page-my-notes',
-    title: 'আমার সংগৃহীত পিডিএফ হ্যান্ডনোট',
-    subtitle: 'ক্রয়কৃত শিট ডাউনলোড ও হিস্ট্রি',
-    categoryLabel: 'হ্যান্ডনোট',
-    href: '/my-notes',
-    keywords: 'my notes pdf download সংগৃহীত শিট হ্যান্ডনোট ডাউনলোড',
+    id: "page-my-notes",
+    title: "আমার সংগৃহীত পিডিএফ হ্যান্ডনোট",
+    subtitle: "ক্রয়কৃত শিট ডাউনলোড ও হিস্ট্রি",
+    categoryLabel: "হ্যান্ডনোট",
+    href: "/my-notes",
+    keywords: "my notes pdf download সংগৃহীত শিট হ্যান্ডনোট ডাউনলোড",
   },
 ];
 
@@ -203,19 +212,24 @@ interface NavLinkItem {
 
 const navLinks: NavLinkItem[] = [
   {
-    href: '/about',
-    label: 'আমাদের সম্পর্কে',
+    href: "/about",
+    label: "আমাদের সম্পর্কে",
     children: [
-      { href: '/about', label: 'শিক্ষা নোভা সম্পর্কে' },
-      { href: '/chairman-message', label: 'চেয়ারম্যানের বার্তা' },
+      { href: "/about", label: "শিক্ষা নোভা সম্পর্কে" },
+      { href: "/chairman-message", label: "চেয়ারম্যানের বার্তা" },
     ],
   },
-  { href: '/quiz', label: 'মডেল টেস্ট', badge: 'MCQ' },
-  { href: '/notices', label: 'নোটিশ' },
-  { href: '/results', label: 'রেজাল্ট' },
-  { href: '/pdfs', label: 'শিট ও নোট' },
-  { href: '/gallery', label: 'ফটো গ্যালারি' },
-  { href: '/videos', label: 'ভিডিও ক্লাস', icon: FaYoutube, color: 'text-red-500' },
+  { href: "/quiz", label: "মডেল টেস্ট", badge: "MCQ" },
+  { href: "/notices", label: "নোটিশ" },
+  { href: "/results", label: "রেজাল্ট" },
+  { href: "/pdfs", label: "শিট ও নোট" },
+  { href: "/gallery", label: "ফটো গ্যালারি" },
+  {
+    href: "/videos",
+    label: "ভিডিও ক্লাস",
+    icon: FaYoutube,
+    color: "text-red-500",
+  },
 ];
 
 export default function Navbar() {
@@ -229,7 +243,7 @@ export default function Navbar() {
   const aboutDropdownRef = useRef<HTMLDivElement>(null);
 
   // Instant 0ms Global Website Search State
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [dbSearchItems, setDbSearchItems] = useState<any[]>([]);
@@ -241,19 +255,19 @@ export default function Navbar() {
   // Lock scroll & handle ESC key for the right slide-over drawer
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         setDrawerOpen(false);
       }
     };
     if (drawerOpen) {
-      document.body.style.overflow = 'hidden';
-      window.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = "hidden";
+      window.addEventListener("keydown", handleKeyDown);
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     }
     return () => {
-      document.body.style.overflow = '';
-      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [drawerOpen]);
 
@@ -273,19 +287,25 @@ export default function Navbar() {
       });
     };
 
-    window.addEventListener('open-mobile-search', handleOpenSearch);
+    window.addEventListener("open-mobile-search", handleOpenSearch);
     return () => {
-      window.removeEventListener('open-mobile-search', handleOpenSearch);
+      window.removeEventListener("open-mobile-search", handleOpenSearch);
     };
   }, []);
 
   // Close dropdown & search on click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (aboutDropdownRef.current && !aboutDropdownRef.current.contains(event.target as Node)) {
+      if (
+        aboutDropdownRef.current &&
+        !aboutDropdownRef.current.contains(event.target as Node)
+      ) {
         setAboutMenuOpen(false);
       }
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
         setSearchOpen(false);
       }
       if (
@@ -298,9 +318,9 @@ export default function Navbar() {
         }
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -319,19 +339,22 @@ export default function Navbar() {
     dbFetchedRef.current = true;
 
     try {
-      const cached = sessionStorage.getItem('sn_search_db_cache');
+      const cached = sessionStorage.getItem("sn_search_db_cache");
       if (cached) {
         setDbSearchItems(JSON.parse(cached));
       }
     } catch {}
 
-    fetch('/api/search')
+    fetch("/api/search")
       .then((r) => r.json())
       .then((data) => {
         if (data.results && Array.isArray(data.results)) {
           setDbSearchItems(data.results);
           try {
-            sessionStorage.setItem('sn_search_db_cache', JSON.stringify(data.results));
+            sessionStorage.setItem(
+              "sn_search_db_cache",
+              JSON.stringify(data.results),
+            );
           } catch {}
         }
       })
@@ -353,7 +376,7 @@ export default function Navbar() {
           item.title?.toLowerCase().includes(q) ||
           item.subtitle?.toLowerCase().includes(q) ||
           item.categoryLabel?.toLowerCase().includes(q) ||
-          item.keywords?.toLowerCase().includes(q)
+          item.keywords?.toLowerCase().includes(q),
       )
       .slice(0, 8);
   }, [searchQuery, dbSearchItems]);
@@ -379,18 +402,19 @@ export default function Navbar() {
       {/* Top Header Bar - Style Deep Academic Navy & Crimson Red Accent (Hidden on Mobile) */}
       <div className="hidden sm:block bg-[#0A1E3C] text-white text-xs py-2 px-4 shadow-sm border-b-2 border-[#C8102E]">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
-          
           <div className="flex items-center gap-4 flex-wrap justify-center sm:justify-start">
             <span className="inline-flex items-center gap-1.5 font-medium text-slate-100">
               <FaLocationDot className="text-[#EF5350]" />
               জুম্মাপাড়া, নীলফামারী সদর
             </span>
             <span className="hidden md:inline text-slate-500">|</span>
-            <a href="tel:01712592519" className="inline-flex items-center gap-1.5 text-white hover:text-red-300 transition font-bn-normal font-bold">
+            <a
+              href="tel:01712592519"
+              className="inline-flex items-center gap-1.5 text-white hover:text-red-300 transition font-bn-normal font-bold"
+            >
               <FaPhone className="text-emerald-400" />
               <span>হেল্পলাইন: ০১৭১২৫৯২৫১৯</span>
             </a>
-          
           </div>
 
           <div className="flex items-center gap-3">
@@ -410,9 +434,10 @@ export default function Navbar() {
             >
               <FaYoutube /> @ShikkhaNova
             </a>
-            <span className="text-[11px] text-brand-200 font-mono">sikkhanova.com</span>
+            <span className="text-[11px] text-brand-200 font-mono">
+              shikkhanova.com
+            </span>
           </div>
-
         </div>
       </div>
 
@@ -420,7 +445,6 @@ export default function Navbar() {
       <header className="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
-            
             {/* Brand Logo Component */}
             <Logo size="md" />
 
@@ -428,7 +452,9 @@ export default function Navbar() {
             <nav className="hidden lg:flex items-center gap-1">
               {navLinks.map((link) => {
                 const Icon = link.icon;
-                const isChildActive = link.children?.some((c) => pathname === c.href);
+                const isChildActive = link.children?.some(
+                  (c) => pathname === c.href,
+                );
                 const active = pathname === link.href || Boolean(isChildActive);
 
                 if (link.children) {
@@ -445,14 +471,14 @@ export default function Navbar() {
                         onClick={() => setAboutMenuOpen((prev) => !prev)}
                         className={`px-3 py-2 rounded-sm text-sm font-semibold transition-all flex items-center gap-1.5 relative whitespace-nowrap ${
                           active
-                            ? 'bg-[#C8102E] text-white shadow-sm font-bold'
-                            : 'text-[#0A1E3C] hover:text-[#C8102E] hover:bg-red-50/50'
+                            ? "bg-[#C8102E] text-white shadow-sm font-bold"
+                            : "text-[#0A1E3C] hover:text-[#C8102E] hover:bg-red-50/50"
                         }`}
                       >
                         <span>{link.label}</span>
                         <FaChevronDown
                           className={`w-3 h-3 transition-transform duration-200 ${
-                            aboutMenuOpen ? 'rotate-180' : ''
+                            aboutMenuOpen ? "rotate-180" : ""
                           }`}
                         />
                       </button>
@@ -469,8 +495,8 @@ export default function Navbar() {
                                   onClick={() => setAboutMenuOpen(false)}
                                   className={`block px-4 py-2.5 text-sm font-semibold transition ${
                                     subActive
-                                      ? 'bg-[#C8102E] text-white font-bold'
-                                      : 'text-slate-700 hover:text-[#C8102E] hover:bg-red-50/60'
+                                      ? "bg-[#C8102E] text-white font-bold"
+                                      : "text-slate-700 hover:text-[#C8102E] hover:bg-red-50/60"
                                   }`}
                                 >
                                   {sub.label}
@@ -490,12 +516,14 @@ export default function Navbar() {
                     href={link.href}
                     className={`px-3 py-2 rounded-sm text-sm font-semibold transition-all flex items-center gap-1.5 relative whitespace-nowrap ${
                       active
-                        ? 'bg-[#C8102E] text-white shadow-sm font-bold'
-                        : 'text-[#0A1E3C] hover:text-[#C8102E] hover:bg-red-50/50'
+                        ? "bg-[#C8102E] text-white shadow-sm font-bold"
+                        : "text-[#0A1E3C] hover:text-[#C8102E] hover:bg-red-50/50"
                     }`}
                   >
                     {Icon && (
-                      <Icon className={`w-4 h-4 ${active ? 'text-white' : (link.color || 'text-slate-500')}`} />
+                      <Icon
+                        className={`w-4 h-4 ${active ? "text-white" : link.color || "text-slate-500"}`}
+                      />
                     )}
                     <span>{link.label}</span>
                     {link.badge && (
@@ -534,7 +562,7 @@ export default function Navbar() {
                       <button
                         type="button"
                         onClick={() => {
-                          setSearchQuery('');
+                          setSearchQuery("");
                           setSearchOpen(false);
                         }}
                         className="text-slate-400 hover:text-slate-600 p-0.5 rounded-full transition-colors shrink-0"
@@ -564,7 +592,7 @@ export default function Navbar() {
                         <HiSparkles className="text-[#C8102E] text-sm" />
                         {searchQuery.trim()
                           ? `"${searchQuery}" এর ফলাফল`
-                          : 'দ্রুত এক্সপ্লোর করুন'}
+                          : "দ্রুত এক্সপ্লোর করুন"}
                       </span>
                       <span className="text-[10px] font-medium text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
                         {searchResults.length} টি রেজাল্ট
@@ -576,8 +604,12 @@ export default function Navbar() {
                         <div className="w-10 h-10 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-2">
                           <CiSearch className="text-xl" />
                         </div>
-                        <p className="text-xs font-bold text-slate-700">কোনো ফলাফল পাওয়া যায়নি</p>
-                        <p className="text-[11px] text-slate-400 mt-1">অন্য কি-ওয়ার্ড বা বিষয়ের নাম দিয়ে চেষ্টা করুন</p>
+                        <p className="text-xs font-bold text-slate-700">
+                          কোনো ফলাফল পাওয়া যায়নি
+                        </p>
+                        <p className="text-[11px] text-slate-400 mt-1">
+                          অন্য কি-ওয়ার্ড বা বিষয়ের নাম দিয়ে চেষ্টা করুন
+                        </p>
                       </div>
                     ) : (
                       <div className="p-1.5 space-y-1">
@@ -618,7 +650,6 @@ export default function Navbar() {
 
             {/* Right Side: Auth / Profile Dropdown & Mobile Icons */}
             <div className="flex items-center gap-1.5 sm:gap-3">
-              
               {/* Mobile Notice Bell Icon (Notice replaces user profile on mobile per design) */}
               <Link
                 href="/notices"
@@ -641,24 +672,24 @@ export default function Navbar() {
                     onClick={() => setDrawerOpen(true)}
                     className={`rounded-full p-0.5 transition-all focus:outline-none ${
                       drawerOpen
-                        ? 'ring-2 ring-brand-600 ring-offset-2 ring-offset-white'
-                        : 'hover:ring-2 hover:ring-brand-500/50 hover:ring-offset-1'
+                        ? "ring-2 ring-brand-600 ring-offset-2 ring-offset-white"
+                        : "hover:ring-2 hover:ring-brand-500/50 hover:ring-offset-1"
                     }`}
                     aria-expanded={drawerOpen}
                     aria-label="আমার অ্যাকাউন্ট"
-                    title={session.user.name || 'আমার অ্যাকাউন্ট'}
+                    title={session.user.name || "আমার অ্যাকাউন্ট"}
                   >
                     {/* User Avatar */}
                     <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-brand-600 bg-brand-50 flex items-center justify-center shrink-0 shadow-sm transition-transform hover:scale-105 active:scale-95">
                       {session.user.image ? (
                         <img
                           src={session.user.image}
-                          alt={session.user.name || 'User'}
+                          alt={session.user.name || "User"}
                           className="w-full h-full object-cover"
                         />
                       ) : (
                         <span className="text-xs sm:text-sm font-black text-brand-700">
-                          {session.user.name?.charAt(0) || 'U'}
+                          {session.user.name?.charAt(0) || "U"}
                         </span>
                       )}
                     </div>
@@ -679,27 +710,32 @@ export default function Navbar() {
                 onClick={() => setMobileOpen(!mobileOpen)}
                 className="lg:hidden p-2 text-slate-700 hover:bg-slate-100 rounded-xl transition"
               >
-                {mobileOpen ? <FaXmark className="w-6 h-6" /> : <FaBars className="w-6 h-6" />}
+                {mobileOpen ? (
+                  <FaXmark className="w-6 h-6" />
+                ) : (
+                  <FaBars className="w-6 h-6" />
+                )}
               </button>
-
             </div>
-
           </div>
 
           {/* Mobile Navigation Dropdown (Smooth Top-to-Bottom Slide Animation) */}
           <div
             className={`lg:hidden grid transition-all duration-300 ease-in-out ${
               mobileOpen
-                ? 'grid-rows-[1fr] opacity-100 border-t border-slate-200 shadow-xl'
-                : 'grid-rows-[0fr] opacity-0 border-t-0 pointer-events-none'
+                ? "grid-rows-[1fr] opacity-100 border-t border-slate-200 shadow-xl"
+                : "grid-rows-[0fr] opacity-0 border-t-0 pointer-events-none"
             }`}
           >
             <div className="overflow-hidden">
               <div className="py-4 space-y-1.5 px-0.5">
                 {navLinks.map((link) => {
                   const Icon = link.icon;
-                  const isChildActive = link.children?.some((c) => pathname === c.href);
-                  const active = pathname === link.href || Boolean(isChildActive);
+                  const isChildActive = link.children?.some(
+                    (c) => pathname === c.href,
+                  );
+                  const active =
+                    pathname === link.href || Boolean(isChildActive);
 
                   if (link.children) {
                     return (
@@ -709,14 +745,14 @@ export default function Navbar() {
                           onClick={() => setMobileAboutOpen((prev) => !prev)}
                           className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                             active
-                              ? 'bg-[#C8102E] text-white font-bold shadow-xs'
-                              : 'text-slate-700 hover:bg-slate-100'
+                              ? "bg-[#C8102E] text-white font-bold shadow-xs"
+                              : "text-slate-700 hover:bg-slate-100"
                           }`}
                         >
                           <span>{link.label}</span>
                           <FaChevronDown
                             className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                              mobileAboutOpen ? 'rotate-180' : ''
+                              mobileAboutOpen ? "rotate-180" : ""
                             }`}
                           />
                         </button>
@@ -724,7 +760,9 @@ export default function Navbar() {
                         {/* Smooth accordion dropdown for sub-items */}
                         <div
                           className={`grid transition-all duration-200 ease-in-out ${
-                            mobileAboutOpen ? 'grid-rows-[1fr] opacity-100 mt-1' : 'grid-rows-[0fr] opacity-0'
+                            mobileAboutOpen
+                              ? "grid-rows-[1fr] opacity-100 mt-1"
+                              : "grid-rows-[0fr] opacity-0"
                           }`}
                         >
                           <div className="overflow-hidden pl-4 space-y-1 border-l-2 border-red-200 ml-4">
@@ -737,8 +775,8 @@ export default function Navbar() {
                                   onClick={() => setMobileOpen(false)}
                                   className={`block px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
                                     subActive
-                                      ? 'bg-[#C8102E] text-white font-bold'
-                                      : 'text-slate-600 hover:bg-red-50 hover:text-[#C8102E]'
+                                      ? "bg-[#C8102E] text-white font-bold"
+                                      : "text-slate-600 hover:bg-red-50 hover:text-[#C8102E]"
                                   }`}
                                 >
                                   {sub.label}
@@ -758,12 +796,16 @@ export default function Navbar() {
                       onClick={() => setMobileOpen(false)}
                       className={`flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                         active
-                          ? 'bg-[#C8102E] text-white font-bold shadow-xs'
-                          : 'text-slate-700 hover:bg-slate-100'
+                          ? "bg-[#C8102E] text-white font-bold shadow-xs"
+                          : "text-slate-700 hover:bg-slate-100"
                       }`}
                     >
                       <div className="flex items-center gap-2.5">
-                        {Icon && <Icon className={`w-4 h-4 ${active ? 'text-white' : (link.color || 'text-slate-500')}`} />}
+                        {Icon && (
+                          <Icon
+                            className={`w-4 h-4 ${active ? "text-white" : link.color || "text-slate-500"}`}
+                          />
+                        )}
                         <span>{link.label}</span>
                       </div>
                       {link.badge && (
@@ -787,21 +829,31 @@ export default function Navbar() {
                     >
                       <div className="w-9 h-9 rounded-full overflow-hidden border border-brand-500 bg-brand-50 flex items-center justify-center shrink-0">
                         {session.user.image ? (
-                          <img src={session.user.image} alt="Avatar" className="w-full h-full object-cover" />
+                          <img
+                            src={session.user.image}
+                            alt="Avatar"
+                            className="w-full h-full object-cover"
+                          />
                         ) : (
                           <span className="text-xs font-black text-brand-700">
-                            {session.user.name?.charAt(0) || 'U'}
+                            {session.user.name?.charAt(0) || "U"}
                           </span>
                         )}
                       </div>
                       <div className="overflow-hidden min-w-0 flex-1">
-                        <p className="text-xs font-bold text-slate-800 truncate uppercase">{session.user.name}</p>
-                        <p className="text-[10px] text-slate-500 font-mono truncate">{session.user.email}</p>
+                        <p className="text-xs font-bold text-slate-800 truncate uppercase">
+                          {session.user.name}
+                        </p>
+                        <p className="text-[10px] text-slate-500 font-mono truncate">
+                          {session.user.email}
+                        </p>
                       </div>
-                      <span className="text-xs text-brand-600 font-bold shrink-0">আমার অ্যাকাউন্ট →</span>
+                      <span className="text-xs text-brand-600 font-bold shrink-0">
+                        আমার অ্যাকাউন্ট →
+                      </span>
                     </button>
 
-                    {session.user.role === 'ADMIN' && (
+                    {session.user.role === "ADMIN" && (
                       <Link
                         href="/admin"
                         onClick={() => setMobileOpen(false)}
@@ -830,7 +882,7 @@ export default function Navbar() {
                       </span>
                     </Link>
 
-                    {session.user.role === 'STUDENT' && (
+                    {session.user.role === "STUDENT" && (
                       <Link
                         href="/profile"
                         onClick={() => setMobileOpen(false)}
@@ -890,7 +942,7 @@ export default function Navbar() {
                     {searchQuery ? (
                       <button
                         type="button"
-                        onClick={() => setSearchQuery('')}
+                        onClick={() => setSearchQuery("")}
                         className="p-1 text-slate-400 hover:text-slate-600 rounded-full transition-colors"
                         aria-label="ক্লিয়ার করুন"
                       >
@@ -920,8 +972,12 @@ export default function Navbar() {
               {/* Instant Search Results Dropdown */}
               <div className="mt-2.5 max-h-72 overflow-y-auto divide-y divide-slate-100 rounded-2xl bg-white border border-slate-200/90 shadow-md">
                 <div className="px-3.5 py-2 bg-slate-50 text-[10px] font-bold text-slate-500 uppercase tracking-wider flex justify-between items-center rounded-t-2xl">
-                  <span>{searchQuery ? 'অনুসন্ধানের ফলাফল' : 'জনপ্রিয় অনুসন্ধান'}</span>
-                  <span className="text-[10px] text-slate-400 font-normal">ট্যাপ করে প্রবেশ করুন</span>
+                  <span>
+                    {searchQuery ? "অনুসন্ধানের ফলাফল" : "জনপ্রিয় অনুসন্ধান"}
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-normal">
+                    ট্যাপ করে প্রবেশ করুন
+                  </span>
                 </div>
                 {searchResults.length === 0 ? (
                   <div className="p-4 text-center text-xs text-slate-500">
@@ -934,7 +990,7 @@ export default function Navbar() {
                       href={item.href}
                       onClick={() => {
                         setMobileSearchOpen(false);
-                        setSearchQuery('');
+                        setSearchQuery("");
                       }}
                       className="px-3.5 py-2.5 hover:bg-slate-50 active:bg-slate-100 flex items-start justify-between gap-2.5 transition"
                     >
@@ -962,14 +1018,13 @@ export default function Navbar() {
               </div>
             </div>
           )}
-
         </div>
       </header>
 
       {/* Right Side Slide-over Drawer for User Account (Matching Design) */}
       <div
         className={`fixed inset-0 z-[100] transition-visibility duration-300 ${
-          drawerOpen ? 'visible' : 'invisible pointer-events-none delay-300'
+          drawerOpen ? "visible" : "invisible pointer-events-none delay-300"
         }`}
         aria-hidden={!drawerOpen}
       >
@@ -977,14 +1032,16 @@ export default function Navbar() {
         <div
           onClick={() => setDrawerOpen(false)}
           className={`fixed inset-0 bg-slate-950/40 backdrop-blur-xs transition-opacity duration-300 ease-out ${
-            drawerOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+            drawerOpen
+              ? "opacity-100 pointer-events-auto"
+              : "opacity-0 pointer-events-none"
           }`}
         />
 
         {/* Slide-in Sidebar Panel */}
         <aside
           className={`fixed top-0 right-0 bottom-0 w-full max-w-[320px] sm:max-w-[360px] bg-white shadow-2xl flex flex-col z-[101] transition-transform duration-300 ease-out transform ${
-            drawerOpen ? 'translate-x-0' : 'translate-x-full'
+            drawerOpen ? "translate-x-0" : "translate-x-full"
           }`}
           role="dialog"
           aria-label="আমার অ্যাকাউন্ট মেনু"
@@ -1013,12 +1070,12 @@ export default function Navbar() {
                   {session.user.image ? (
                     <img
                       src={session.user.image}
-                      alt={session.user.name || 'User'}
+                      alt={session.user.name || "User"}
                       className="w-full h-full object-cover"
                     />
                   ) : (
                     <span className="text-xl font-bold text-slate-700">
-                      {session.user.name?.charAt(0) || 'U'}
+                      {session.user.name?.charAt(0) || "U"}
                     </span>
                   )}
                 </div>
@@ -1032,18 +1089,18 @@ export default function Navbar() {
                   {session.user.role && (
                     <span
                       className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full mt-1.5 ${
-                        session.user.role === 'ADMIN'
-                          ? 'bg-rose-50 text-rose-700 border border-rose-200'
-                          : session.user.role === 'TEACHER'
-                          ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                          : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                        session.user.role === "ADMIN"
+                          ? "bg-rose-50 text-rose-700 border border-rose-200"
+                          : session.user.role === "TEACHER"
+                            ? "bg-blue-50 text-blue-700 border border-blue-200"
+                            : "bg-emerald-50 text-emerald-700 border border-emerald-200"
                       }`}
                     >
-                      {session.user.role === 'ADMIN'
-                        ? '👑 অ্যাডমিন'
-                        : session.user.role === 'TEACHER'
-                        ? '👨‍🏫 শিক্ষক'
-                        : '🎓 শিক্ষার্থী'}
+                      {session.user.role === "ADMIN"
+                        ? "👑 অ্যাডমিন"
+                        : session.user.role === "TEACHER"
+                          ? "👨‍🏫 শিক্ষক"
+                          : "🎓 শিক্ষার্থী"}
                     </span>
                   )}
                 </div>
@@ -1053,7 +1110,7 @@ export default function Navbar() {
             {/* Navigation Menu List (Shikkha Nova Educational Features Only) */}
             <nav className="space-y-1.5">
               {/* Admin Panel (if admin) */}
-              {session?.user?.role === 'ADMIN' && (
+              {session?.user?.role === "ADMIN" && (
                 <Link
                   href="/admin"
                   onClick={() => setDrawerOpen(false)}
@@ -1065,7 +1122,7 @@ export default function Navbar() {
               )}
 
               {/* Student Dashboard & Sheets */}
-              {session?.user?.role === 'STUDENT' && (
+              {session?.user?.role === "STUDENT" && (
                 <Link
                   href="/profile"
                   onClick={() => setDrawerOpen(false)}
@@ -1142,4 +1199,3 @@ export default function Navbar() {
     </>
   );
 }
-
