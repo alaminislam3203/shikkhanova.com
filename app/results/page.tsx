@@ -105,6 +105,7 @@ export default function ResultsPage() {
           motherName: item.motherName,
           schoolName: item.schoolName,
           dateOfBirth: item.dateOfBirth,
+          religion: item.religion,
           classGrade: item.classGrade,
           rollNumber: item.rollNumber,
           examTitle: item.examTitle || examTitle,

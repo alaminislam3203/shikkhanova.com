@@ -27,15 +27,16 @@
   },
   {
     "id": "std-c5-r3",
-    "name": "তানভীর আহমেদ",
+    "name": "অর্পণ রায়",
     "email": "c5.roll3@shikkhanova.com",
     "phone": "01711000503",
     "classGrade": 5,
     "rollNumber": 3,
-    "fatherName": "মো: আব্দুল মালেক",
-    "motherName": "মোসা: পারভীন আক্তার",
+    "fatherName": "অনিল চন্দ্র রায়",
+    "motherName": "গীতা রানী রায়",
     "schoolName": "কালেক্টরেট পাবলিক স্কুল",
     "dateOfBirth": "18/09/2015",
+    "religion": "হিন্দু",
     "createdAt": "2026-01-10T10:10:00.000Z"
   },
   {
@@ -92,15 +93,16 @@
   },
   {
     "id": "std-c6-r3",
-    "name": "নাজমুল হুদা",
+    "name": "প্রিয়াঙ্কা চক্রবর্তী",
     "email": "c6.roll3@shikkhanova.com",
     "phone": "01711000603",
     "classGrade": 6,
     "rollNumber": 3,
-    "fatherName": "মো: আবুল কাশেম",
-    "motherName": "মোসা: সালমা আক্তার",
-    "schoolName": "নীলফামারী মডেল হাই স্কুল",
+    "fatherName": "বিপ্লব চক্রবর্তী",
+    "motherName": "রীতা চক্রবর্তী",
+    "schoolName": "নীলফামারী সরকারি বালিকা উচ্চ বিদ্যালয়",
     "dateOfBirth": "09/08/2014",
+    "religion": "হিন্দু",
     "createdAt": "2026-01-11T10:10:00.000Z"
   },
   {
@@ -157,15 +159,16 @@
   },
   {
     "id": "std-c7-r3",
-    "name": "ইমরান হোসেন",
+    "name": "জয়ন্ত কুমার রায়",
     "email": "c7.roll3@shikkhanova.com",
     "phone": "01711000703",
     "classGrade": 7,
     "rollNumber": 3,
-    "fatherName": "মো: জালাল উদ্দিন",
-    "motherName": "মোসা: ফাতেমা খাতুন",
+    "fatherName": "সুভাষ চন্দ্র রায়",
+    "motherName": "প্রতিমা রানী রায়",
     "schoolName": "নীলফামারী মডেল হাই স্কুল",
     "dateOfBirth": "19/06/2013",
+    "religion": "হিন্দু",
     "createdAt": "2026-01-12T10:10:00.000Z"
   },
   {
@@ -222,15 +225,16 @@
   },
   {
     "id": "std-c8-r3",
-    "name": "রায়হান কবীর",
+    "name": "পূজা রানী",
     "email": "c8.roll3@shikkhanova.com",
     "phone": "01711000803",
     "classGrade": 8,
     "rollNumber": 3,
-    "fatherName": "মো: সোলায়মান হক",
-    "motherName": "মোসা: মনোয়ারা বেগম",
-    "schoolName": "নীলফামারী মডেল হাই স্কুল",
+    "fatherName": "রমেশ চন্দ্র রায়",
+    "motherName": "মায়া রানী রায়",
+    "schoolName": "নীলফামারী সরকারি বালিকা উচ্চ বিদ্যালয়",
     "dateOfBirth": "29/07/2012",
+    "religion": "হিন্দু",
     "createdAt": "2026-01-13T10:10:00.000Z"
   },
   {

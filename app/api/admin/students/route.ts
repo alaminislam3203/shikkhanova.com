@@ -16,6 +16,7 @@ export interface StudentRecord {
   motherName?: string;
   schoolName?: string;
   dateOfBirth?: string;
+  religion?: string;
   image?: string | null;
   createdAt?: string;
 }
@@ -29,37 +30,37 @@ const DEFAULT_STUDENTS_SEED: Array<{
   // Class 5
   { classGrade: 5, rollNumber: 1, name: 'আরিফুল ইসলাম', phone: '01711000501' },
   { classGrade: 5, rollNumber: 2, name: 'সাদিয়া সুলতানা', phone: '01711000502' },
-  { classGrade: 5, rollNumber: 3, name: 'তানভীর আহমেদ', phone: '01711000503' },
+  { classGrade: 5, rollNumber: 3, name: 'অর্পণ রায়', phone: '01711000503' },
   { classGrade: 5, rollNumber: 4, name: 'নুসরাত জাহান', phone: '01711000504' },
   { classGrade: 5, rollNumber: 5, name: 'মাহমুদুল হাসান', phone: '01711000505' },
   // Class 6
   { classGrade: 6, rollNumber: 1, name: 'রাকিবুল হাসান', phone: '01711000601' },
   { classGrade: 6, rollNumber: 2, name: 'তানজিলা আক্তার', phone: '01711000602' },
-  { classGrade: 6, rollNumber: 3, name: 'নাজমুল হুদা', phone: '01711000603' },
+  { classGrade: 6, rollNumber: 3, name: 'প্রিয়াঙ্কা চক্রবর্তী', phone: '01711000603' },
   { classGrade: 6, rollNumber: 4, name: 'সুমাইয়া জাহান', phone: '01711000604' },
   { classGrade: 6, rollNumber: 5, name: 'জাহিদ হাসান', phone: '01711000605' },
   // Class 7
   { classGrade: 7, rollNumber: 1, name: 'হাসিবুর রহমান', phone: '01711000701' },
   { classGrade: 7, rollNumber: 2, name: 'ফাতেমা তুজ জোহরা', phone: '01711000702' },
-  { classGrade: 7, rollNumber: 3, name: 'ইমরান হোসেন', phone: '01711000703' },
+  { classGrade: 7, rollNumber: 3, name: 'জয়ন্ত কুমার রায়', phone: '01711000703' },
   { classGrade: 7, rollNumber: 4, name: 'জান্নাতুল ফেরদৌস', phone: '01711000704' },
   { classGrade: 7, rollNumber: 5, name: 'মেহেদী হাসান', phone: '01711000705' },
   // Class 8
   { classGrade: 8, rollNumber: 1, name: 'শাকিল আহমেদ', phone: '01711000801' },
   { classGrade: 8, rollNumber: 2, name: 'তাসনিম আক্তার', phone: '01711000802' },
-  { classGrade: 8, rollNumber: 3, name: 'রায়হান কবীর', phone: '01711000803' },
+  { classGrade: 8, rollNumber: 3, name: 'পূজা রানী', phone: '01711000803' },
   { classGrade: 8, rollNumber: 4, name: 'আয়েশা সিদ্দিকা', phone: '01711000804' },
   { classGrade: 8, rollNumber: 5, name: 'সোহানুর রহমান', phone: '01711000805' },
   // Class 9
   { classGrade: 9, rollNumber: 1, name: 'আব্দুল্লাহ আল মামুন', phone: '01711000901' },
   { classGrade: 9, rollNumber: 2, name: 'মালিহা তাবাসসুম', phone: '01711000902' },
-  { classGrade: 9, rollNumber: 3, name: 'সাব্বির হোসেন', phone: '01711000903' },
+  { classGrade: 9, rollNumber: 3, name: 'সৌরভ দাস', phone: '01711000903' },
   { classGrade: 9, rollNumber: 4, name: 'হুমায়রা আনজুম', phone: '01711000904' },
   { classGrade: 9, rollNumber: 5, name: 'নাফিস ইকবাল', phone: '01711000905' },
   // Class 10
   { classGrade: 10, rollNumber: 1, name: 'তাওহীদুল ইসলাম', phone: '01711001001' },
   { classGrade: 10, rollNumber: 2, name: 'সামিয়া রহমান', phone: '01711001002' },
-  { classGrade: 10, rollNumber: 3, name: 'আশরাফুল আলম', phone: '01711001003' },
+  { classGrade: 10, rollNumber: 3, name: 'অপু চক্রবর্তী', phone: '01711001003' },
   { classGrade: 10, rollNumber: 4, name: 'নাদিয়া সুলতানা', phone: '01711001004' },
   { classGrade: 10, rollNumber: 5, name: 'রেদওয়ান আহমেদ', phone: '01711001005' },
 ];
@@ -176,6 +177,7 @@ export async function GET(req: Request) {
           motherName: prof.motherName,
           schoolName: prof.schoolName,
           dateOfBirth: prof.dateOfBirth,
+          religion: prof.religion || 'ইসলাম',
           image: u.image,
           createdAt: u.createdAt.toISOString(),
         };
@@ -199,6 +201,7 @@ export async function GET(req: Request) {
       motherName: s.motherName || prof.motherName,
       schoolName: s.schoolName || prof.schoolName,
       dateOfBirth: s.dateOfBirth || prof.dateOfBirth,
+      religion: s.religion || prof.religion || 'ইসলাম',
     };
   });
   local.sort((a, b) => a.classGrade - b.classGrade || a.rollNumber - b.rollNumber);

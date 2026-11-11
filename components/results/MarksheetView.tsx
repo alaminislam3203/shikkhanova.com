@@ -370,6 +370,17 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
                   {result.schoolName || '—'}
                 </span>
               </div>
+
+              {result.religion && (
+                <div className="flex items-start">
+                  <span className="w-32 shrink-0 text-slate-600 font-bold text-xs">
+                    ধর্ম (Religion):
+                  </span>
+                  <span className="text-slate-800 text-xs font-bold">
+                    {result.religion}
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Bottom Section: বিদ্যালয়ের নামের নিচে ৪টি কলামে (শ্রেণি, রোল নম্বর, জন্ম তারিখ, ফলাফল স্ট্যাটাস) */}

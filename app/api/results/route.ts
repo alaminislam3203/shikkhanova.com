@@ -28,6 +28,7 @@ function enrichResultWithProfile(res: any) {
     motherName: res.motherName || prof.motherName,
     schoolName: res.schoolName || prof.schoolName,
     dateOfBirth: res.dateOfBirth || prof.dateOfBirth,
+    religion: res.religion || prof.religion || 'ইসলাম',
   };
 }
 
@@ -58,7 +59,7 @@ async function ensureSeedResults() {
     const local = readLocalResults();
     if (local.length > 0) {
       const sample = await prisma.examResult.findFirst();
-      const needsSync = !sample || !sample.subjectMarks?.includes('বাংলা ২য় পত্র');
+      const needsSync = !sample || !sample.subjectMarks?.includes('হিন্দুধর্ম ও নৈতিক শিক্ষা');
       if (needsSync) {
         for (const r of local) {
           try {
