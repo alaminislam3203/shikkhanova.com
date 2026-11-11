@@ -18,6 +18,7 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
   const sheetRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState<number>(1);
   const [scaledHeight, setScaledHeight] = useState<number | undefined>(undefined);
+  const [isPrinting, setIsPrinting] = useState<boolean>(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -45,8 +46,15 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
       observer.observe(wrapperRef.current);
     }
 
+    const onBefore = () => setIsPrinting(true);
+    const onAfter = () => setIsPrinting(false);
+    window.addEventListener('beforeprint', onBefore);
+    window.addEventListener('afterprint', onAfter);
+
     return () => {
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('beforeprint', onBefore);
+      window.removeEventListener('afterprint', onAfter);
       if (observer) observer.disconnect();
     };
   }, [result]);
@@ -55,23 +63,33 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
     if (typeof document !== 'undefined') {
       document.body.click();
     }
+    setIsPrinting(true);
     setTimeout(() => {
       window.print();
-    }, 100);
+      setTimeout(() => {
+        setIsPrinting(false);
+      }, 500);
+    }, 150);
   };
 
   return (
     <div className="space-y-4">
-      {/* Print Specific CSS to guarantee 1-page A4 print output without breaks */}
+      {/* Print Specific CSS: Ensures perfect full A4 single-page print on both desktop and mobile browsers */}
       <style jsx global>{`
         @media print {
           @page {
             size: A4 portrait;
             margin: 8mm 10mm;
           }
+          html,
           body {
+            width: 100% !important;
+            height: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
             background: white !important;
-            color: black !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
           header,
           nav,
@@ -94,9 +112,9 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
         }
       `}</style>
 
-      {/* Top Action Toolbar */}
-      <div className="no-print flex items-center justify-between gap-3 max-w-[794px] mx-auto px-1">
-        <div className="flex items-center gap-2 text-xs font-bold text-slate-600">
+      {/* Top Action Toolbar (Hidden during print) */}
+      <div className="no-print flex items-center justify-end sm:justify-between gap-3 max-w-[794px] mx-auto px-1">
+        <div className="hidden sm:flex items-center gap-2 text-xs font-bold text-slate-600">
           <FaFileLines className="w-4 h-4 text-brand-700" />
           <span>অফিশিয়াল A4 পেজ মার্কশিট (Portrait Format)</span>
         </div>
@@ -107,7 +125,7 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
           className="px-5 py-2.5 bg-gradient-to-r from-[#0A1E3C] to-[#C8102E] hover:from-[#050E1D] hover:to-[#A50D26] text-white font-bold text-xs sm:text-sm rounded-xl shadow-brand hover:shadow-xl transition flex items-center gap-2 transform active:scale-95 cursor-pointer"
         >
           <FaPrint className="w-3.5 h-3.5 text-amber-300" />
-          <span>অফিশিয়াল মার্কশিট প্রিন্ট / PDF সংরক্ষণ করুন</span>
+          <span>Print Korun</span>
         </button>
       </div>
 
@@ -116,7 +134,7 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
         ref={wrapperRef}
         className="w-full overflow-hidden flex justify-center items-start"
         style={{
-          height: scaledHeight ? `${scaledHeight}px` : 'auto',
+          height: isPrinting ? 'auto' : scaledHeight ? `${scaledHeight}px` : 'auto',
         }}
       >
         {/* ============================================================== */}
@@ -125,13 +143,22 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
         <div
           id="printableArea"
           ref={sheetRef}
-          style={{
-            width: '794px',
-            minWidth: '794px',
-            maxWidth: '794px',
-            transform: scale !== 1 ? `scale(${scale})` : undefined,
-            transformOrigin: 'top center',
-          }}
+          style={
+            isPrinting
+              ? {
+                  width: '100%',
+                  maxWidth: '100%',
+                  minWidth: '0',
+                  transform: 'none',
+                }
+              : {
+                  width: '794px',
+                  minWidth: '794px',
+                  maxWidth: '794px',
+                  transform: scale !== 1 ? `scale(${scale})` : undefined,
+                  transformOrigin: 'top center',
+                }
+          }
           className="bg-white p-8 border border-slate-300 shadow-2xl rounded-2xl relative overflow-hidden space-y-4 select-none print:w-full print:min-w-0 print:p-0 print:border-none print:shadow-none print:rounded-none"
         >
           {/* Subtle Institute Watermark */}
@@ -141,88 +168,96 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
             </span>
           </div>
 
-          {/* Top-Right Corner: Bangladesh Education Board Grading System Table Box */}
-          <div className="absolute top-8 right-8 z-20 print:top-6 print:right-6">
-            <div className="w-[164px] bg-white border border-slate-300 rounded-lg overflow-hidden shadow-xs text-[9px]">
-              <table className="w-full border-collapse text-center">
-                <thead>
-                  <tr className="bg-[#0A1E3C] text-white font-bold border-b border-slate-300">
-                    <th className="py-1 px-1 border-r border-slate-400/30 text-[8.5px] leading-tight">
-                      Letter<br />Grade
-                    </th>
-                    <th className="py-1 px-1 border-r border-slate-400/30 text-[8.5px] leading-tight">
-                      Class<br />Interval (%)
-                    </th>
-                    <th className="py-1 px-1 text-[8.5px] leading-tight">
-                      Grade<br />Point
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200 text-slate-800 font-semibold">
-                  <tr className="hover:bg-slate-50">
-                    <td className="py-0.5 px-1 border-r border-slate-200 font-black text-emerald-700">A+</td>
-                    <td className="py-0.5 px-1 border-r border-slate-200">80-100</td>
-                    <td className="py-0.5 px-1 font-bold">5</td>
-                  </tr>
-                  <tr className="hover:bg-slate-50">
-                    <td className="py-0.5 px-1 border-r border-slate-200 font-black text-emerald-600">A</td>
-                    <td className="py-0.5 px-1 border-r border-slate-200">70-79</td>
-                    <td className="py-0.5 px-1 font-bold">4</td>
-                  </tr>
-                  <tr className="hover:bg-slate-50">
-                    <td className="py-0.5 px-1 border-r border-slate-200 font-black text-blue-600">A-</td>
-                    <td className="py-0.5 px-1 border-r border-slate-200">60-69</td>
-                    <td className="py-0.5 px-1 font-bold">3.5</td>
-                  </tr>
-                  <tr className="hover:bg-slate-50">
-                    <td className="py-0.5 px-1 border-r border-slate-200 font-black text-amber-600">B</td>
-                    <td className="py-0.5 px-1 border-r border-slate-200">50-59</td>
-                    <td className="py-0.5 px-1 font-bold">3</td>
-                  </tr>
-                  <tr className="hover:bg-slate-50">
-                    <td className="py-0.5 px-1 border-r border-slate-200 font-black text-orange-600">C</td>
-                    <td className="py-0.5 px-1 border-r border-slate-200">40-49</td>
-                    <td className="py-0.5 px-1 font-bold">2</td>
-                  </tr>
-                  <tr className="hover:bg-slate-50">
-                    <td className="py-0.5 px-1 border-r border-slate-200 font-black text-amber-800">D</td>
-                    <td className="py-0.5 px-1 border-r border-slate-200">33-39</td>
-                    <td className="py-0.5 px-1 font-bold">1</td>
-                  </tr>
-                  <tr className="hover:bg-rose-50/50 bg-rose-50/30">
-                    <td className="py-0.5 px-1 border-r border-slate-200 font-black text-rose-600">F</td>
-                    <td className="py-0.5 px-1 border-r border-slate-200">00-32</td>
-                    <td className="py-0.5 px-1 font-bold text-rose-600">0</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+          {/* ============================================================ */}
+          {/* INSTITUTE HEADER & GRADING SYSTEM (Unified Flex Row)         */}
+          {/* Prevents any overlap on student details and avoids clipping   */}
+          {/* ============================================================ */}
+          <div className="flex items-start justify-between gap-4 border-b-2 border-[#C8102E] pb-3.5 relative z-10">
+            {/* Center Area: Logo, Address, Helpline, Exam Title */}
+            <div className="flex-1 text-center space-y-2 pt-0.5">
+              <div className="flex items-center justify-center mb-1">
+                <div className="bg-white px-3 py-1.5 rounded-2xl shadow-xs border border-slate-100">
+                  <Logo size="md" clickable={false} />
+                </div>
+              </div>
 
-          {/* Institute Header (pr-44 reserves space for top-right grading table) */}
-          <div className="text-center border-b-2 border-[#C8102E] pb-3.5 space-y-2 relative z-10 pr-44">
-            <div className="flex items-center justify-center mb-1">
-              <div className="bg-white px-3 py-1.5 rounded-2xl shadow-xs border border-slate-100">
-                <Logo size="md" clickable={false} />
+              <p className="text-xs text-slate-600 font-semibold">
+                জুম্মাপাড়া, নীলফামারী সদর, নীলফামারী | হেল্পলাইন:{' '}
+                <span className="font-bn-normal font-bold text-[#0A1E3C]">০১৭১২৫৯২৫১৯</span>
+              </p>
+
+              {/* Exam Title Pill */}
+              <div className="pt-0.5">
+                <div className="inline-flex items-center justify-center gap-2 bg-[#0A1E3C] border-b-2 border-[#C8102E] text-white text-[11px] font-bold px-4 py-1 rounded-full uppercase shadow-sm">
+                  <span className="text-amber-300 font-black">{result.examTitle}</span>
+                  <span className="text-slate-400">|</span>
+                  <span>একাডেমিক ফলাফল ও অফিশিয়াল মার্কশিট</span>
+                </div>
               </div>
             </div>
 
-            <p className="text-xs text-slate-600 font-semibold">
-              জুম্মাপাড়া, নীলফামারী সদর, নীলফামারী | হেল্পলাইন:{' '}
-              <span className="font-bn-normal font-bold text-[#0A1E3C]">০১৭১২৫৯২৫১৯</span>
-            </p>
-
-            {/* Exam Title Set Prominently in Header */}
-            <div className="pt-0.5">
-              <div className="inline-flex items-center justify-center gap-2 bg-[#0A1E3C] border-b-2 border-[#C8102E] text-white text-[11px] font-bold px-4 py-1 rounded-full uppercase shadow-sm">
-                <span className="text-amber-300 font-black">{result.examTitle}</span>
-                <span className="text-slate-400">|</span>
-                <span>একাডেমিক ফলাফল ও অফিশিয়াল মার্কশিট</span>
+            {/* Right: Bangladesh Education Board Grading System Table Box */}
+            <div className="w-[172px] shrink-0 pt-0.5">
+              <div className="bg-white border border-slate-300 rounded-lg overflow-hidden shadow-xs text-[9px]">
+                <table className="w-full border-collapse text-center">
+                  <thead>
+                    <tr className="bg-[#0A1E3C] text-white font-bold border-b border-slate-300">
+                      <th className="py-1 px-1 border-r border-slate-400/30 text-[8.5px] leading-tight">
+                        Letter<br />Grade
+                      </th>
+                      <th className="py-1 px-1 border-r border-slate-400/30 text-[8.5px] leading-tight">
+                        Class<br />Interval (%)
+                      </th>
+                      <th className="py-1 px-1 text-[8.5px] leading-tight">
+                        Grade<br />Point
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 text-slate-800 font-semibold">
+                    <tr className="hover:bg-slate-50">
+                      <td className="py-0.5 px-1 border-r border-slate-200 font-black text-emerald-700">A+</td>
+                      <td className="py-0.5 px-1 border-r border-slate-200">80-100</td>
+                      <td className="py-0.5 px-1 font-bold">5</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50">
+                      <td className="py-0.5 px-1 border-r border-slate-200 font-black text-emerald-600">A</td>
+                      <td className="py-0.5 px-1 border-r border-slate-200">70-79</td>
+                      <td className="py-0.5 px-1 font-bold">4</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50">
+                      <td className="py-0.5 px-1 border-r border-slate-200 font-black text-blue-600">A-</td>
+                      <td className="py-0.5 px-1 border-r border-slate-200">60-69</td>
+                      <td className="py-0.5 px-1 font-bold">3.5</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50">
+                      <td className="py-0.5 px-1 border-r border-slate-200 font-black text-amber-600">B</td>
+                      <td className="py-0.5 px-1 border-r border-slate-200">50-59</td>
+                      <td className="py-0.5 px-1 font-bold">3</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50">
+                      <td className="py-0.5 px-1 border-r border-slate-200 font-black text-orange-600">C</td>
+                      <td className="py-0.5 px-1 border-r border-slate-200">40-49</td>
+                      <td className="py-0.5 px-1 font-bold">2</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50">
+                      <td className="py-0.5 px-1 border-r border-slate-200 font-black text-amber-800">D</td>
+                      <td className="py-0.5 px-1 border-r border-slate-200">33-39</td>
+                      <td className="py-0.5 px-1 font-bold">1</td>
+                    </tr>
+                    <tr className="hover:bg-rose-50/50 bg-rose-50/30">
+                      <td className="py-0.5 px-1 border-r border-slate-200 font-black text-rose-600">F</td>
+                      <td className="py-0.5 px-1 border-r border-slate-200">00-32</td>
+                      <td className="py-0.5 px-1 font-bold text-rose-600">0</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
 
-          {/* Student Profile Info & Status (Static 100% Fixed Layout) */}
+          {/* ============================================================ */}
+          {/* STUDENT PROFILE INFO & STATUS (Unobstructed & Clean)          */}
+          {/* ============================================================ */}
           <div className="p-4 rounded-xl border text-xs relative z-10 bg-slate-50 border-slate-200 space-y-3">
             {/* Top Section: ১টি কলামে উপর-নিচ (শিক্ষার্থীর নাম, পিতার নাম, মাতার নাম, বিদ্যালয়ের নাম) */}
             <div className="space-y-1.5 border-b border-slate-200/80 pb-2.5">
@@ -306,7 +341,9 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
             </div>
           </div>
 
-          {/* Subject-by-Subject Marks Table (Static 100% Fixed Table) */}
+          {/* ============================================================ */}
+          {/* SUBJECT MARKS TABLE (Static 100% Fixed Table)                 */}
+          {/* ============================================================ */}
           <div className="relative z-10">
             <table className="w-full text-left border-collapse border border-slate-300">
               <thead>
@@ -392,7 +429,9 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
             </table>
           </div>
 
-          {/* Official Signatures with signature.png (Static 3-Column Parallel Placement) */}
+          {/* ============================================================ */}
+          {/* OFFICIAL SIGNATURES (Static 3-Column Parallel Placement)      */}
+          {/* ============================================================ */}
           <div className="pt-6 flex justify-between items-end text-center text-xs font-bold text-slate-700 relative z-10">
             {/* 1. শ্রেণি শিক্ষকের স্বাক্ষর */}
             <div className="space-y-1 w-40">
