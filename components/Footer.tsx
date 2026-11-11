@@ -290,13 +290,16 @@ export default function Footer() {
             © {new Date().getFullYear()} <strong className="text-[#0A1E3C] font-bold">শিক্ষানোভা (SikkhaNova)</strong> একাডেমি — সর্বস্বত্ব সংরক্ষিত।
           </div>
 
-          <div className="flex items-center gap-2.5">
-            <span className="text-slate-500 font-medium">অফিসিয়াল স্লোগান:</span>
-            <span className="text-[#C8102E] font-black bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200">
-              "শিখবো, জিতবো"
-            </span>
-            <span className="hidden sm:inline text-slate-300">•</span>
-            <span className="hidden sm:inline text-slate-500">জুম্মাপাড়া, নীলফামারী সদর</span>
+          <div className="flex items-center gap-1.5 text-xs text-slate-500">
+            <span>Develop By</span>
+            <a
+              href="https://merxodevsolutions.pro.bd/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold text-[#0F2C59] hover:text-[#C8102E] transition-colors underline decoration-slate-300 hover:decoration-[#C8102E]"
+            >
+              Merxo Dev Solutions
+            </a>
           </div>
         </div>
 
