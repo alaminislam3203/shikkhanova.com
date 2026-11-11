@@ -2,7 +2,7 @@
   {
     "id": "nctb-c5-1",
     "classGrade": 5,
-    "subjectName": "বাংলা",
+    "subjectName": "বাংলা (Bangla)",
     "bookTitle": "আমার বাংলা বই (৫ম শ্রেণি - NCTB)",
     "subjectCode": "১০১",
     "group": "সকল বিভাগ",
@@ -14,7 +14,7 @@
   {
     "id": "nctb-c5-2",
     "classGrade": 5,
-    "subjectName": "ইংরেজি",
+    "subjectName": "ইংরেজি (English)",
     "bookTitle": "English for Today (Class 5 - NCTB)",
     "subjectCode": "১০২",
     "group": "সকল বিভাগ",
@@ -26,7 +26,7 @@
   {
     "id": "nctb-c5-3",
     "classGrade": 5,
-    "subjectName": "প্রাথমিক গণিত",
+    "subjectName": "প্রাথমিক গণিত (Mathematics)",
     "bookTitle": "প্রাথমিক গণিত (৫ম শ্রেণি - NCTB)",
     "subjectCode": "১০৩",
     "group": "সকল বিভাগ",
@@ -38,7 +38,7 @@
   {
     "id": "nctb-c5-4",
     "classGrade": 5,
-    "subjectName": "প্রাথমিক বিজ্ঞান",
+    "subjectName": "প্রাথমিক বিজ্ঞান (Elementary Science)",
     "bookTitle": "প্রাথমিক বিজ্ঞান (৫ম শ্রেণি - NCTB)",
     "subjectCode": "১০৪",
     "group": "সকল বিভাগ",
@@ -50,7 +50,7 @@
   {
     "id": "nctb-c5-5",
     "classGrade": 5,
-    "subjectName": "বাংলাদেশ ও বিশ্বপরিচয়",
+    "subjectName": "বাংলাদেশ ও বিশ্বপরিচয় (BGS)",
     "bookTitle": "বাংলাদেশ ও বিশ্বপরিচয় (৫ম শ্রেণি - NCTB)",
     "subjectCode": "১০৫",
     "group": "সকল বিভাগ",
@@ -62,33 +62,19 @@
   {
     "id": "nctb-c5-6",
     "classGrade": 5,
-    "subjectName": "ইসলাম ও নৈতিক শিক্ষা",
+    "subjectName": "ইসলাম ও নৈতিক শিক্ষা (Islamic Studies)",
     "bookTitle": "ইসলাম ও নৈতিক শিক্ষা (৫ম শ্রেণি - NCTB)",
     "subjectCode": "১০৬",
     "group": "সকল বিভাগ",
     "fullMarks": 100,
     "isCompulsory": true,
-    "religion": "ইসলাম",
     "nctbBookUrl": "https://nctb.gov.bd",
     "createdAt": "2026-11-09T10:56:35.606Z"
   },
   {
-    "id": "nctb-c5-7",
-    "classGrade": 5,
-    "subjectName": "হিন্দুধর্ম ও নৈতিক শিক্ষা",
-    "bookTitle": "হিন্দুধর্ম ও নৈতিক শিক্ষা (৫ম শ্রেণি - NCTB)",
-    "subjectCode": "১০৭",
-    "group": "সকল বিভাগ",
-    "fullMarks": 100,
-    "isCompulsory": true,
-    "religion": "হিন্দু",
-    "nctbBookUrl": "https://nctb.gov.bd",
-    "createdAt": "2026-11-09T10:56:35.700Z"
-  },
-  {
     "id": "nctb-c6-1",
     "classGrade": 6,
-    "subjectName": "বাংলা ১ম পত্র",
+    "subjectName": "বাংলা ১ম পত্র (চারুপাঠ)",
     "bookTitle": "চারুপাঠ ও আনন্দপাঠ (৬ষ্ঠ শ্রেণি - NCTB)",
     "subjectCode": "১০১",
     "group": "সকল বিভাগ",
@@ -100,7 +86,7 @@
   {
     "id": "nctb-c6-2",
     "classGrade": 6,
-    "subjectName": "বাংলা ২য় পত্র",
+    "subjectName": "বাংলা ব্যাকরণ ও নির্মিতি (২য় পত্র)",
     "bookTitle": "বাংলা ব্যাকরণ ও নির্মিতি (৬ষ্ঠ শ্রেণি - NCTB)",
     "subjectCode": "১০২",
     "group": "সকল বিভাগ",
@@ -112,7 +98,7 @@
   {
     "id": "nctb-c6-3",
     "classGrade": 6,
-    "subjectName": "ইংরেজি ১ম পত্র",
+    "subjectName": "ইংরেজি ১ম পত্র (English for Today)",
     "bookTitle": "English for Today (Class 6 - NCTB)",
     "subjectCode": "১০৭",
     "group": "সকল বিভাগ",
@@ -124,7 +110,7 @@
   {
     "id": "nctb-c6-4",
     "classGrade": 6,
-    "subjectName": "ইংরেজি ২য় পত্র",
+    "subjectName": "ইংরেজি ২য় পত্র (English Grammar)",
     "bookTitle": "English Grammar and Composition (Class 6 - NCTB)",
     "subjectCode": "১০৮",
     "group": "সকল বিভাগ",
@@ -156,19 +142,6 @@
     "isCompulsory": true,
     "nctbBookUrl": "https://nctb.gov.bd",
     "createdAt": "2026-11-09T10:56:38.821Z"
-  },
-  {
-    "id": "nctb-c6-9h",
-    "classGrade": 6,
-    "subjectName": "হিন্দুধর্ম ও নৈতিক শিক্ষা",
-    "bookTitle": "হিন্দুধর্ম ও নৈতিক শিক্ষা (৬ষ্ঠ শ্রেণি - NCTB)",
-    "subjectCode": "১১২",
-    "group": "সকল বিভাগ",
-    "fullMarks": 100,
-    "isCompulsory": true,
-    "religion": "হিন্দু",
-    "nctbBookUrl": "https://nctb.gov.bd",
-    "createdAt": "2026-11-09T10:56:38.900Z"
   },
   {
     "id": "nctb-c6-6",
@@ -221,7 +194,7 @@
   {
     "id": "nctb-c7-1",
     "classGrade": 7,
-    "subjectName": "বাংলা ১ম পত্র",
+    "subjectName": "বাংলা ১ম পত্র (সপ্তবর্ণা)",
     "bookTitle": "সপ্তবর্ণা ও আনন্দপাঠ (৭ম শ্রেণি - NCTB)",
     "subjectCode": "১০১",
     "group": "সকল বিভাগ",
@@ -233,7 +206,7 @@
   {
     "id": "nctb-c7-2",
     "classGrade": 7,
-    "subjectName": "বাংলা ২য় পত্র",
+    "subjectName": "বাংলা ব্যাকরণ ও নির্মিতি (২য় পত্র)",
     "bookTitle": "বাংলা ব্যাকরণ ও নির্মিতি (৭ম শ্রেণি - NCTB)",
     "subjectCode": "১০২",
     "group": "সকল বিভাগ",
@@ -245,7 +218,7 @@
   {
     "id": "nctb-c7-3",
     "classGrade": 7,
-    "subjectName": "ইংরেজি ১ম পত্র",
+    "subjectName": "ইংরেজি ১ম পত্র (English for Today)",
     "bookTitle": "English for Today (Class 7 - NCTB)",
     "subjectCode": "১০৭",
     "group": "সকল বিভাগ",
@@ -257,7 +230,7 @@
   {
     "id": "nctb-c7-4",
     "classGrade": 7,
-    "subjectName": "ইংরেজি ২য় পত্র",
+    "subjectName": "ইংরেজি ২য় পত্র (English Grammar)",
     "bookTitle": "English Grammar and Composition (Class 7 - NCTB)",
     "subjectCode": "১০৮",
     "group": "সকল বিভাগ",
@@ -289,19 +262,6 @@
     "isCompulsory": true,
     "nctbBookUrl": "https://nctb.gov.bd",
     "createdAt": "2026-11-09T10:56:42.216Z"
-  },
-  {
-    "id": "nctb-c7-9h",
-    "classGrade": 7,
-    "subjectName": "হিন্দুধর্ম ও নৈতিক শিক্ষা",
-    "bookTitle": "হিন্দুধর্ম ও নৈতিক শিক্ষা (৭ম শ্রেণি - NCTB)",
-    "subjectCode": "১১২",
-    "group": "সকল বিভাগ",
-    "fullMarks": 100,
-    "isCompulsory": true,
-    "religion": "হিন্দু",
-    "nctbBookUrl": "https://nctb.gov.bd",
-    "createdAt": "2026-11-09T10:56:42.300Z"
   },
   {
     "id": "nctb-c7-6",
@@ -354,7 +314,7 @@
   {
     "id": "nctb-c8-1",
     "classGrade": 8,
-    "subjectName": "বাংলা ১ম পত্র",
+    "subjectName": "বাংলা ১ম পত্র (সাহিত্য কণিকা)",
     "bookTitle": "সাহিত্য কণিকা ও আনন্দপাঠ (৮ম শ্রেণি - NCTB)",
     "subjectCode": "১০১",
     "group": "সকল বিভাগ",
@@ -366,7 +326,7 @@
   {
     "id": "nctb-c8-2",
     "classGrade": 8,
-    "subjectName": "বাংলা ২য় পত্র",
+    "subjectName": "বাংলা ব্যাকরণ ও নির্মিতি (২য় পত্র)",
     "bookTitle": "বাংলা ব্যাকরণ ও নির্মিতি (৮ম শ্রেণি - NCTB)",
     "subjectCode": "১০২",
     "group": "সকল বিভাগ",
@@ -378,7 +338,7 @@
   {
     "id": "nctb-c8-3",
     "classGrade": 8,
-    "subjectName": "ইংরেজি ১ম পত্র",
+    "subjectName": "ইংরেজি ১ম পত্র (English for Today)",
     "bookTitle": "English for Today (Class 8 - NCTB)",
     "subjectCode": "১০৭",
     "group": "সকল বিভাগ",
@@ -390,7 +350,7 @@
   {
     "id": "nctb-c8-4",
     "classGrade": 8,
-    "subjectName": "ইংরেজি ২য় পত্র",
+    "subjectName": "ইংরেজি ২য় পত্র (English Grammar)",
     "bookTitle": "English Grammar and Composition (Class 8 - NCTB)",
     "subjectCode": "১০৮",
     "group": "সকল বিভাগ",
@@ -422,19 +382,6 @@
     "isCompulsory": true,
     "nctbBookUrl": "https://nctb.gov.bd",
     "createdAt": "2026-11-09T10:56:45.573Z"
-  },
-  {
-    "id": "nctb-c8-9h",
-    "classGrade": 8,
-    "subjectName": "হিন্দুধর্ম ও নৈতিক শিক্ষা",
-    "bookTitle": "হিন্দুধর্ম ও নৈতিক শিক্ষা (৮ম শ্রেণি - NCTB)",
-    "subjectCode": "১১২",
-    "group": "সকল বিভাগ",
-    "fullMarks": 100,
-    "isCompulsory": true,
-    "religion": "হিন্দু",
-    "nctbBookUrl": "https://nctb.gov.bd",
-    "createdAt": "2026-11-09T10:56:45.650Z"
   },
   {
     "id": "nctb-c8-6",
@@ -487,7 +434,7 @@
   {
     "id": "nctb-c9-1",
     "classGrade": 9,
-    "subjectName": "বাংলা ১ম পত্র",
+    "subjectName": "বাংলা ১ম পত্র (সাহিত্য ও সহপাঠ)",
     "bookTitle": "মাধ্যমিক বাংলা সাহিত্য ও সহপাঠ (৯ম-১০ম শ্রেণি - NCTB)",
     "subjectCode": "১০১",
     "group": "সকল বিভাগ",
@@ -499,7 +446,7 @@
   {
     "id": "nctb-c9-2",
     "classGrade": 9,
-    "subjectName": "বাংলা ২য় পত্র",
+    "subjectName": "বাংলা ২য় পত্র (ব্যাকরণ ও নির্মিতি)",
     "bookTitle": "বাংলা ভাষার ব্যাকরণ ও নির্মিতি (৯ম-১০ম শ্রেণি - NCTB)",
     "subjectCode": "১০২",
     "group": "সকল বিভাগ",
@@ -511,7 +458,7 @@
   {
     "id": "nctb-c9-3",
     "classGrade": 9,
-    "subjectName": "ইংরেজি ১ম পত্র",
+    "subjectName": "ইংরেজি ১ম পত্র (English for Today)",
     "bookTitle": "English for Today (Classes 9-10 - NCTB)",
     "subjectCode": "১০৭",
     "group": "সকল বিভাগ",
@@ -523,7 +470,7 @@
   {
     "id": "nctb-c9-4",
     "classGrade": 9,
-    "subjectName": "ইংরেজি ২য় পত্র",
+    "subjectName": "ইংরেজি ২য় পত্র (English Grammar)",
     "bookTitle": "English Grammar and Composition (Classes 9-10 - NCTB)",
     "subjectCode": "১০৮",
     "group": "সকল বিভাগ",
@@ -715,7 +662,7 @@
   {
     "id": "nctb-c10-1",
     "classGrade": 10,
-    "subjectName": "বাংলা ১ম পত্র",
+    "subjectName": "বাংলা ১ম পত্র (সাহিত্য ও সহপাঠ)",
     "bookTitle": "মাধ্যমিক বাংলা সাহিত্য ও সহপাঠ (১০ম শ্রেণি / SSC - NCTB)",
     "subjectCode": "১০১",
     "group": "সকল বিভাগ",
@@ -727,7 +674,7 @@
   {
     "id": "nctb-c10-2",
     "classGrade": 10,
-    "subjectName": "বাংলা ২য় পত্র",
+    "subjectName": "বাংলা ২য় পত্র (ব্যাকরণ ও নির্মিতি)",
     "bookTitle": "বাংলা ভাষার ব্যাকরণ ও নির্মিতি (১০ম শ্রেণি / SSC - NCTB)",
     "subjectCode": "১০২",
     "group": "সকল বিভাগ",
@@ -739,7 +686,7 @@
   {
     "id": "nctb-c10-3",
     "classGrade": 10,
-    "subjectName": "ইংরেজি ১ম পত্র",
+    "subjectName": "ইংরেজি ১ম পত্র (English for Today)",
     "bookTitle": "English for Today (Class 10 / SSC - NCTB)",
     "subjectCode": "১০৭",
     "group": "সকল বিভাগ",
@@ -751,7 +698,7 @@
   {
     "id": "nctb-c10-4",
     "classGrade": 10,
-    "subjectName": "ইংরেজি ২য় পত্র",
+    "subjectName": "ইংরেজি ২য় পত্র (English Grammar)",
     "bookTitle": "English Grammar and Composition (Class 10 / SSC - NCTB)",
     "subjectCode": "১০৮",
     "group": "সকল বিভাগ",
