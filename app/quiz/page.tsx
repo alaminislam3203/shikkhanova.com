@@ -17,6 +17,9 @@ import {
   DEFAULT_QUIZ_PRICES,
   getStoredQuizPrices,
   saveStoredQuizPrices,
+  AcademicGroup,
+  QuizSubjectItem,
+  getSubjectsForClassAndGroup,
 } from '@/lib/defaultQuizData';
 import {
   FaAward,
@@ -55,6 +58,7 @@ export default function QuizPage() {
 
   // Navigation / Filter States
   const [selectedClass, setSelectedClass] = useState<number>(6);
+  const [selectedGroup, setSelectedGroup] = useState<AcademicGroup>('science');
   const [selectedSubject, setSelectedSubject] = useState<string>('বাংলা ১ম পত্র');
 
   // Active Quiz State

@@ -619,7 +619,17 @@ export default function AdminQuizManager() {
                   ? 'ফ্রি মডেল টেস্ট প্রশ্নমালা'
                   : category === 'paid'
                   ? 'প্রিমিয়াম মডেল টেস্ট প্রশ্নমালা'
-                  : `${selectedSubject} বিষয়ের প্রশ্নমালা`}
+                  : `${selectedSubject} বিষয়ের প্রশ্নমালা ${
+                      selectedClass >= 9
+                        ? selectedGroup === 'science'
+                          ? '(বিজ্ঞান বিভাগ)'
+                          : selectedGroup === 'humanities'
+                          ? '(মানবিক বিভাগ)'
+                          : selectedGroup === 'commerce'
+                          ? '(ব্যবসায় শিক্ষা)'
+                          : '(আবশ্যিক বিষয়)'
+                        : ''
+                    }`}
               </h3>
               <p className="text-xs text-slate-500 font-medium">মোট প্রশ্ন সংখ্যা: {questions.length}টি</p>
             </div>
