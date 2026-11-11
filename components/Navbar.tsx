@@ -884,7 +884,7 @@ export default function Navbar() {
 
                     {session.user.role === "STUDENT" && (
                       <Link
-                        href="/profile"
+                        href="/account"
                         onClick={() => setMobileOpen(false)}
                         className="block px-4 py-2.5 rounded-xl text-sm font-bold text-nova-600 hover:bg-nova-50"
                       >
@@ -1124,7 +1124,7 @@ export default function Navbar() {
               {/* Student Dashboard & Sheets */}
               {session?.user?.role === "STUDENT" && (
                 <Link
-                  href="/profile"
+                  href="/account"
                   onClick={() => setDrawerOpen(false)}
                   className="group flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:text-slate-950 hover:bg-slate-50 transition"
                 >
