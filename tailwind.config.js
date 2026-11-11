@@ -50,16 +50,19 @@ module.exports = {
       },
       fontFamily: {
         sans: [
+          'BanglaNumberFix',
           'var(--font-hind-siliguri)',
           'var(--font-exo2)',
           'system-ui',
           'sans-serif',
         ],
         hindSiliguri: [
+          'BanglaNumberFix',
           'var(--font-hind-siliguri)',
           'sans-serif',
         ],
         bn: [
+          'BanglaNumberFix',
           'var(--font-hind-siliguri)',
           'sans-serif',
         ],

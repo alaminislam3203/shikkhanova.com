@@ -290,66 +290,6 @@ export default function ResultsPage() {
               উদাহরণ: "১ম সাময়িক মূল্যায়ন পরীক্ষা ২০২৬", শ্রেণি ৭, রোল ১ এবং গণিত ক্যাপচা সমাধান করে বাটনে চাপুন।
             </p>
           </div>
-
-          {/* Quick Demo Test Pills */}
-          <div className="pt-2 flex flex-wrap items-center justify-center gap-2">
-            <span className="text-[11px] font-bold text-slate-400">দ্রুত টেস্ট করুন:</span>
-            <button
-              type="button"
-              onClick={() => {
-                setClassGrade(7);
-                setRollNumber('1');
-                setExamTitle('১ম সাময়িক মূল্যায়ন পরীক্ষা ২০২৬');
-              }}
-              className="text-[11px] bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300 px-3 py-1 rounded-lg border font-bold text-slate-700 transition"
-            >
-              Class 7, রোল ১ (Golden A+)
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setClassGrade(7);
-                setRollNumber('2');
-                setExamTitle('১ম সাময়িক মূল্যায়ন পরীক্ষা ২০২৬');
-              }}
-              className="text-[11px] bg-slate-100 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 px-3 py-1 rounded-lg border font-bold text-slate-700 transition"
-            >
-              Class 7, রোল ২ (A গ্রেড)
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setClassGrade(7);
-                setRollNumber('5');
-                setExamTitle('১ম সাময়িক মূল্যায়ন পরীক্ষা ২০২৬');
-              }}
-              className="text-[11px] bg-slate-100 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-300 px-3 py-1 rounded-lg border font-bold text-slate-700 transition"
-            >
-              Class 7, রোল ৫ (F ফেল / অনুত্তীর্ণ)
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setClassGrade(10);
-                setRollNumber('1');
-                setExamTitle('১ম সাময়িক মূল্যায়ন পরীক্ষা ২০২৬');
-              }}
-              className="text-[11px] bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300 px-3 py-1 rounded-lg border font-bold text-slate-700 transition"
-            >
-              Class 10, রোল ১ (Golden A+)
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setClassGrade(10);
-                setRollNumber('5');
-                setExamTitle('১ম সাময়িক মূল্যায়ন পরীক্ষা ২০২৬');
-              }}
-              className="text-[11px] bg-slate-100 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-300 px-3 py-1 rounded-lg border font-bold text-slate-700 transition"
-            >
-              Class 10, রোল ৫ (F ফেল / অনুত্তীর্ণ)
-            </button>
-          </div>
         </div>
       )}
     </div>
