@@ -50,8 +50,13 @@ export function getSubjectCqMcq(sub: {
     return { cq, mcq };
   }
 
-  // 50 mark subjects (NCTB: CQ/Practical 25, MCQ 25)
+  // 50 mark subjects (NCTB: বাংলা ২য় পত্র: CQ 30, MCQ 20; ICT: Practical/CQ 25, MCQ 25)
   if (sub.fullMarks === 50) {
+    if (name.includes('বাংলা')) {
+      const mcq = Math.min(20, Math.max(0, Math.round(obtained * 0.4)));
+      const cq = Math.min(30, Math.max(0, obtained - mcq));
+      return { cq, mcq };
+    }
     const mcq = Math.min(25, Math.max(0, Math.round(obtained * 0.5)));
     const cq = Math.min(25, Math.max(0, obtained - mcq));
     return { cq, mcq };

@@ -458,7 +458,7 @@
   {
     "id": "nctb-c9-1",
     "classGrade": 9,
-    "subjectName": "বাংলা ১ম পত্র (সাহিত্য ও সহপাঠ)",
+    "subjectName": "বাংলা ১ম পত্র",
     "bookTitle": "মাধ্যমিক বাংলা সাহিত্য ও সহপাঠ (৯ম-১০ম শ্রেণি - NCTB)",
     "subjectCode": "১০১",
     "group": "সকল বিভাগ",
@@ -470,7 +470,7 @@
   {
     "id": "nctb-c9-2",
     "classGrade": 9,
-    "subjectName": "বাংলা ২য় পত্র (ব্যাকরণ ও নির্মিতি)",
+    "subjectName": "বাংলা ২য় পত্র",
     "bookTitle": "বাংলা ভাষার ব্যাকরণ ও নির্মিতি (৯ম-১০ম শ্রেণি - NCTB)",
     "subjectCode": "১০২",
     "group": "সকল বিভাগ",
@@ -686,7 +686,7 @@
   {
     "id": "nctb-c10-1",
     "classGrade": 10,
-    "subjectName": "বাংলা ১ম পত্র (সাহিত্য ও সহপাঠ)",
+    "subjectName": "বাংলা ১ম পত্র",
     "bookTitle": "মাধ্যমিক বাংলা সাহিত্য ও সহপাঠ (১০ম শ্রেণি / SSC - NCTB)",
     "subjectCode": "১০১",
     "group": "সকল বিভাগ",
@@ -698,7 +698,7 @@
   {
     "id": "nctb-c10-2",
     "classGrade": 10,
-    "subjectName": "বাংলা ২য় পত্র (ব্যাকরণ ও নির্মিতি)",
+    "subjectName": "বাংলা ২য় পত্র",
     "bookTitle": "বাংলা ভাষার ব্যাকরণ ও নির্মিতি (১০ম শ্রেণি / SSC - NCTB)",
     "subjectCode": "১০২",
     "group": "সকল বিভাগ",
