@@ -67,7 +67,7 @@ export default function MobileBottomNav() {
 
   const isHomeActive = pathname === '/';
   const isResultActive = pathname.startsWith('/results');
-  const isNotesActive = pathname.startsWith('/pdfs');
+  const isQuizActive = pathname.startsWith('/quiz');
   const isProfileActive =
     pathname === '/account' ||
     pathname === '/login' ||
@@ -160,21 +160,21 @@ export default function MobileBottomNav() {
                 </span>
               </Link>
 
-              {/* 4. নোটস (Notes / PDFs) Slot */}
+              {/* 4. মডেল টেস্ট (Model Test / Quiz) Slot */}
               <Link
-                href="/pdfs"
+                href="/quiz"
                 className={`flex flex-col items-center justify-center py-1 group transition-all duration-150 ${
-                  isNotesActive ? 'text-[#C8102E]' : 'text-slate-500 hover:text-slate-800'
+                  isQuizActive ? 'text-[#C8102E]' : 'text-slate-500 hover:text-slate-800'
                 }`}
               >
                 <div
                   className={`w-9 h-7 flex items-center justify-center transition-transform ${
-                    isNotesActive ? 'scale-110' : 'group-hover:scale-105'
+                    isQuizActive ? 'scale-110' : 'group-hover:scale-105'
                   }`}
                 >
-                  <FaFilePdf
+                  <FaBookOpen
                     className={`w-5 h-5 ${
-                      isNotesActive
+                      isQuizActive
                         ? 'text-[#C8102E]'
                         : 'text-slate-500 group-hover:text-[#C8102E]'
                     }`}
@@ -182,10 +182,10 @@ export default function MobileBottomNav() {
                 </div>
                 <span
                   className={`text-[11px] tracking-tight mt-0.5 leading-tight ${
-                    isNotesActive ? 'font-black text-[#C8102E]' : 'font-medium text-slate-500'
+                    isQuizActive ? 'font-black text-[#C8102E]' : 'font-medium text-slate-500'
                   }`}
                 >
-                  নোটস
+                  মডেল টেস্ট
                 </span>
               </Link>
 
@@ -379,11 +379,6 @@ export default function MobileBottomNav() {
 
                   {session?.user?.role === 'ADMIN' && (
                     <Link
-                      href="/admin"
-                      onClick={() => setIsMenuOpen(false)}
-                      className="py-2 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-xs font-bold text-white shadow-xs flex items-center gap-1.5 transition active:scale-98"
-                    >
-                      <FaUserShield className="w-3.5 h-3.5" />
                       href="/admin"
                       onClick={() => setIsMenuOpen(false)}
                       className="py-2 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-xs font-bold text-white shadow-xs flex items-center gap-1.5 transition active:scale-98"
