@@ -23,41 +23,30 @@ export async function GET(req: Request) {
     }
 
     const session = await getServerSession(authOptions);
-    const isFree = Boolean(pdf.isFree) || Number(pdf.price) <= 0;
-    const isAdmin = session?.user?.role === 'ADMIN';
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: 'পিডিএফ ডাউনলোড করতে অনুগ্রহ করে প্রথমে আপনার অ্যাকাউন্টে লগইন করুন।' },
+        { status: 401 }
+      );
+    }
 
+    const isFree = Boolean(pdf.isFree) || Number(pdf.price) <= 0;
+    const isAdmin = session.user.role === 'ADMIN';
+
+    // For paid PDFs, strictly verify that THIS logged-in user actually purchased and was APPROVED
     if (!isFree && !isAdmin) {
       const orConditions: any[] = [];
 
-      if (session?.user?.id && session.user.id !== 'admin-master-id') {
+      if (session.user.id && session.user.id !== 'admin-master-id') {
         orConditions.push({ studentId: session.user.id });
       }
 
-      if (session?.user?.email) {
+      if (session.user.email) {
         orConditions.push({
           student: {
             email: session.user.email.toLowerCase(),
           },
         });
-      }
-
-      if (trxIdsParam) {
-        const trxList = trxIdsParam
-          .split(',')
-          .map((t) => t.trim().toUpperCase())
-          .filter(Boolean);
-        if (trxList.length > 0) {
-          orConditions.push({
-            trxId: { in: trxList },
-          });
-        }
-      }
-
-      if (orConditions.length === 0) {
-        return NextResponse.json(
-          { error: 'পিডিএফটি ডাউনলোড করতে লগইন করুন অথবা অনুমোদিত TrxID প্রদান করুন' },
-          { status: 403 }
-        );
       }
 
       const approvedPurchase = await prisma.pdfPurchase.findFirst({
@@ -70,7 +59,7 @@ export async function GET(req: Request) {
 
       if (!approvedPurchase) {
         return NextResponse.json(
-          { error: 'আপনার পেমেন্ট এখনো অনুমোদিত হয়নি। অনুমোদনের পর ডাউনলোড সক্রিয় হবে।' },
+          { error: 'এই পিডিএফ শিটটি আপনার অ্যাকাউন্ট থেকে ক্রয় করা হয়নি অথবা পেমেন্ট এখনো অনুমোদিত হয়নি।' },
           { status: 403 }
         );
       }

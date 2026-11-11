@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { FaXmark } from 'react-icons/fa6';
 import { PdfItem } from '@/types';
 import toast from 'react-hot-toast';
@@ -25,11 +26,12 @@ export default function PdfPurchaseModal({
   userName = '',
   userEmail = '',
 }: PdfPurchaseModalProps) {
+  const { data: session } = useSession();
   const [paymentMethod, setPaymentMethod] = useState<'BKASH' | 'NAGAD'>('BKASH');
-  const [senderPhone, setSenderPhone] = useState<string>(userPhone);
+  const [senderPhone, setSenderPhone] = useState<string>(userPhone || session?.user?.phone || '');
   const [trxId, setTrxId] = useState<string>('');
-  const [name, setName] = useState<string>(userName);
-  const [email, setEmail] = useState<string>(userEmail);
+  const [name, setName] = useState<string>(userName || session?.user?.name || '');
+  const [email, setEmail] = useState<string>(userEmail || session?.user?.email || '');
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string>('');
   const [successMsg, setSuccessMsg] = useState<string>('');
@@ -38,6 +40,11 @@ export default function PdfPurchaseModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!session?.user) {
+      toast.error('পিডিএফ ক্রয় করতে অনুগ্রহ করে আগে লগইন করুন');
+      onClose();
+      return;
+    }
     setSubmitting(true);
     setErrorMsg('');
     setSuccessMsg('');
@@ -52,9 +59,6 @@ export default function PdfPurchaseModal({
           senderPhone,
           trxId,
           amount: pdf.price,
-          guestName: name,
-          guestEmail: email,
-          guestClass: pdf.classGrade,
         }),
       });
 
@@ -199,32 +203,12 @@ export default function PdfPurchaseModal({
             />
           </div>
 
-          {!userEmail && (
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">আপনার নাম</label>
-                <input
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="নাম"
-                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">ইমেইল ঠিকানা</label>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="email@example.com"
-                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs"
-                />
-              </div>
-            </div>
-          )}
+          <div className="bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2 text-xs flex items-center justify-between text-slate-700">
+            <span className="text-slate-500 font-medium">শিক্ষার্থী অ্যাকাউন্ট:</span>
+            <span className="font-bold text-slate-900 truncate max-w-[220px]">
+              {session?.user?.name || session?.user?.email}
+            </span>
+          </div>
 
           <button
             type="submit"

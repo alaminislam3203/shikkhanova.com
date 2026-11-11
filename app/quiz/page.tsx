@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import toast from 'react-hot-toast';
 import {
   RawQuestion,
   SUBJECT_LIST,
@@ -40,6 +42,12 @@ interface QuizResultItem {
 
 export default function QuizPage() {
   const { data: session } = useSession();
+  const router = useRouter();
+
+  const requireLoginForQuiz = () => {
+    toast.error('কুইজ টেস্ট দিতে অনুগ্রহ করে আগে লগইন করুন (ফ্রি ও পেইড উভয় টেস্টের জন্যই লগইন আবশ্যক)');
+    router.push('/login?callbackUrl=/quiz');
+  };
 
   // Navigation / Filter States
   const [selectedClass, setSelectedClass] = useState<number>(6);
@@ -75,7 +83,7 @@ export default function QuizPage() {
   const testAreaRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  // Load persisted results and unlocked classes on mount
+  // Load persisted results and user-specific unlocked classes on mount
   useEffect(() => {
     try {
       const storedResults = localStorage.getItem('sn_quiz_results');
@@ -83,16 +91,20 @@ export default function QuizPage() {
         setResultsList(JSON.parse(storedResults));
       }
 
-      const storedUnlocked = localStorage.getItem('sn_unlocked_classes');
-      if (storedUnlocked) {
-        setUnlockedClasses(JSON.parse(storedUnlocked));
+      if (session?.user?.id) {
+        const userUnlockedKey = `sn_unlocked_classes_${session.user.id}`;
+        const storedUnlocked = localStorage.getItem(userUnlockedKey);
+        if (storedUnlocked) {
+          setUnlockedClasses(JSON.parse(storedUnlocked));
+        } else {
+          setUnlockedClasses([]);
+        }
+      } else {
+        setUnlockedClasses([]);
       }
 
       if (session?.user?.name) {
         setStudentNameInput(session.user.name);
-      } else {
-        const savedName = localStorage.getItem('sn_student_quiz_name');
-        if (savedName) setStudentNameInput(savedName);
       }
 
       // Check if URL has #leaderboard and scroll smoothly
@@ -102,7 +114,7 @@ export default function QuizPage() {
         }, 300);
       }
     } catch {}
-  }, [session]);
+  }, [session?.user?.id, session?.user?.name]);
 
   const scrollTo = (ref: React.RefObject<HTMLDivElement>) => {
     setTimeout(() => {
@@ -110,8 +122,12 @@ export default function QuizPage() {
     }, 100);
   };
 
-  // Start Free Test for a specific class (5-10) — Loads from Admin Storage
+  // Start Free Test for a specific class (5-10) — Strictly Requires Login
   const handleStartFreeClassTest = (classGrade: number) => {
+    if (!session?.user) {
+      requireLoginForQuiz();
+      return;
+    }
     setSelectedClass(classGrade);
     const questions = getStoredFreeQuestions(classGrade);
     setActiveQuestions(questions);
@@ -123,13 +139,17 @@ export default function QuizPage() {
     scrollTo(testAreaRef);
   };
 
-  // Start or open Paid Test — Loads from Admin Storage
+  // Start or open Paid Test — Strictly Requires Login & Purchase Verification
   const handleOpenPaidClassTest = (classGrade: number) => {
+    if (!session?.user) {
+      requireLoginForQuiz();
+      return;
+    }
     setSelectedClass(classGrade);
     const isUnlocked = unlockedClasses.includes(classGrade) || session?.user?.role === 'ADMIN';
 
     if (isUnlocked) {
-      // Already unlocked, start the test directly!
+      // Already unlocked by this user, start the test directly!
       const questions = getStoredPaidQuestions(classGrade);
       setActiveQuestions(questions);
       setSelectedAnswers({});
@@ -148,8 +168,12 @@ export default function QuizPage() {
     }
   };
 
-  // Start Subject Test — Loads from Admin Storage
+  // Start Subject Test — Strictly Requires Login
   const handleStartSubjectTest = (subjectName: string) => {
+    if (!session?.user) {
+      requireLoginForQuiz();
+      return;
+    }
     setSelectedSubject(subjectName);
     const questions = getStoredSubjectQuestions(selectedClass, subjectName);
 
@@ -158,6 +182,9 @@ export default function QuizPage() {
     setIsSubmitted(false);
     setIsTestActive(true);
     setActiveTestTitle(`${toBengaliClass(selectedClass)} শ্রেণি — ${subjectName} বিষয়ভিত্তিক টেস্ট`);
+    setActiveTestBadge(`📖 ${subjectName}`);
+    scrollTo(testAreaRef);
+  };
     setActiveTestBadge(`📖 ${subjectName}`);
     scrollTo(testAreaRef);
   };
@@ -212,9 +239,14 @@ export default function QuizPage() {
     scrollTo(testAreaRef);
   };
 
-  // Unlock paid test with access code or TrxID
+  // Unlock paid test with access code or TrxID (scoped strictly to this logged-in user)
   const handleVerifyUnlock = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!session?.user) {
+      requireLoginForQuiz();
+      return;
+    }
+
     const code = accessCodeInput.trim().toUpperCase();
 
     // Universal promo access codes or valid TrxID (>= 6 chars)
@@ -226,7 +258,9 @@ export default function QuizPage() {
       const updated = Array.from(new Set([...unlockedClasses, paymentTargetClass]));
       setUnlockedClasses(updated);
       try {
-        localStorage.setItem('sn_unlocked_classes', JSON.stringify(updated));
+        if (session?.user?.id) {
+          localStorage.setItem(`sn_unlocked_classes_${session.user.id}`, JSON.stringify(updated));
+        }
       } catch {}
 
       setUnlockSuccessMsg(`🎉 অভিনন্দন! ${toBengaliClass(paymentTargetClass)} শ্রেণির প্রিমিয়াম মডেল টেস্ট সফলভাবে আনলক হয়েছে!`);
@@ -235,7 +269,7 @@ export default function QuizPage() {
         handleStartPaidAfterUnlock(paymentTargetClass);
       }, 1400);
     } else {
-      alert('অনুগ্রহ করে সঠিক অ্যাক্সেস কোড অথবা বিকাশ/নগদ TrxID প্রদান করুন।');
+      toast.error('অনুগ্রহ করে সঠিক অ্যাক্সেস কোড অথবা বিকাশ/নগদ TrxID প্রদান করুন।');
     }
   };
 
@@ -262,6 +296,31 @@ export default function QuizPage() {
 
   return (
     <div className="space-y-8 sm:space-y-12 pb-16">
+      {/* Login Required Notice Banner */}
+      {!session?.user && (
+        <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl sm:rounded-3xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm animate-in fade-in">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+              <FaLock className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-sm font-black text-amber-950">
+                কুইজ ও মডেল টেস্টে অংশগ্রহণ করতে লগইন আবশ্যক
+              </h4>
+              <p className="text-xs text-amber-800 font-medium">
+                ফ্রি অথবা প্রিমিয়াম যেকোনো মডেল টেস্ট দিতে শিক্ষার্থী হিসেবে লগইন থাকতে হবে।
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/login?callbackUrl=/quiz"
+            className="w-full sm:w-auto px-5 py-2.5 bg-[#0F2C59] hover:bg-[#0A1E3C] text-white text-xs font-black rounded-xl shadow-md transition transform active:scale-95 text-center shrink-0"
+          >
+            লগইন করুন
+          </Link>
+        </div>
+      )}
+
       {/* ─────────────────────────────────────────────────────────────
           1. HERO HEADER SECTION (Compact Banner on Mobile)
       ───────────────────────────────────────────────────────────── */}

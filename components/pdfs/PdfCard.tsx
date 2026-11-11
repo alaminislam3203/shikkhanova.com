@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import {
   FaFilePdf,
   FaDownload,
@@ -21,21 +23,23 @@ interface PdfCardProps {
 }
 
 export default function PdfCard({ pdf, onBuyClick, onRefreshStatus }: PdfCardProps) {
+  const { data: session } = useSession();
+  const router = useRouter();
   const [downloading, setDownloading] = useState(false);
 
-  const handleDynamicDownload = async () => {
-    setDownloading(true);
-    let savedTrx = '';
-    try {
-      const list = JSON.parse(localStorage.getItem('sn_my_trx_ids') || '[]');
-      if (Array.isArray(list)) {
-        savedTrx = list.join(',');
-      }
-    } catch {}
+  const requireLogin = () => {
+    toast.error('পিডিএফ শিট পেতে অনুগ্রহ করে আগে লগইন করুন');
+    router.push('/login?callbackUrl=/pdfs');
+  };
 
-    const downloadUrl = `/api/pdfs/download?pdfId=${encodeURIComponent(pdf.id)}${
-      savedTrx ? `&trxIds=${encodeURIComponent(savedTrx)}` : ''
-    }`;
+  const handleDynamicDownload = async () => {
+    if (!session?.user) {
+      requireLogin();
+      return;
+    }
+
+    setDownloading(true);
+    const downloadUrl = `/api/pdfs/download?pdfId=${encodeURIComponent(pdf.id)}`;
 
     try {
       toast.success(`"${pdf.title}" ডাউনলোড শুরু হচ্ছে...`);
@@ -50,6 +54,22 @@ export default function PdfCard({ pdf, onBuyClick, onRefreshStatus }: PdfCardPro
     } finally {
       setTimeout(() => setDownloading(false), 1200);
     }
+  };
+
+  const handleViewOnline = () => {
+    if (!session?.user) {
+      requireLogin();
+      return;
+    }
+    window.open(pdf.fileUrl, '_blank', 'noopener,noreferrer');
+  };
+
+  const handlePurchaseClick = () => {
+    if (!session?.user) {
+      requireLogin();
+      return;
+    }
+    onBuyClick(pdf);
   };
   // Theme colors depending on subject
   const getSubjectTheme = (subj: string) => {
@@ -205,15 +225,14 @@ export default function PdfCard({ pdf, onBuyClick, onRefreshStatus }: PdfCardPro
               <FaDownload className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${downloading ? 'animate-bounce' : ''}`} />
               <span>{downloading ? '...' : 'ফ্রি ডাউনলোড'}</span>
             </button>
-            <a
-              href={pdf.fileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
+              onClick={handleViewOnline}
               title="ব্রাউজারে পিডিএফ পড়ুন"
-              className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition shrink-0"
+              className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition shrink-0 cursor-pointer"
             >
               <FaArrowUpRightFromSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            </a>
+            </button>
           </div>
         ) : pdf.purchaseStatus === 'APPROVED' ? (
           <div className="space-y-1.5 sm:space-y-2">
@@ -229,15 +248,14 @@ export default function PdfCard({ pdf, onBuyClick, onRefreshStatus }: PdfCardPro
                   {downloading ? '...' : 'ডাউনলোড'}
                 </span>
               </button>
-              <a
-                href={pdf.fileUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
+                onClick={handleViewOnline}
                 title="ব্রাউজারে পিডিএফ ওপেন করুন"
-                className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition shrink-0"
+                className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition shrink-0 cursor-pointer"
               >
                 <FaArrowUpRightFromSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              </a>
+              </button>
             </div>
           </div>
         ) : pdf.purchaseStatus === 'PENDING' ? (
@@ -259,8 +277,8 @@ export default function PdfCard({ pdf, onBuyClick, onRefreshStatus }: PdfCardPro
         ) : (
           <button
             type="button"
-            onClick={() => onBuyClick(pdf)}
-            className="w-full inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-gradient-to-r from-brand-700 via-brand-800 to-indigo-900 hover:from-brand-800 hover:to-indigo-950 text-white font-bold py-2 sm:py-3 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm shadow-brand hover:shadow-xl transition-all duration-300 transform active:scale-95 group-hover:from-nova-600 group-hover:to-brand-800"
+            onClick={handlePurchaseClick}
+            className="w-full inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-gradient-to-r from-brand-700 via-brand-800 to-indigo-900 hover:from-brand-800 hover:to-indigo-950 text-white font-bold py-2 sm:py-3 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm shadow-brand hover:shadow-xl transition-all duration-300 transform active:scale-95 group-hover:from-nova-600 group-hover:to-brand-800 cursor-pointer"
           >
             <FaFilePdf className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-nova-300" />
             <span>সংগ্রহ করুন (৳{pdf.price})</span>

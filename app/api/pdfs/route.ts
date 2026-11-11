@@ -15,7 +15,7 @@ export async function GET(req: Request) {
       where.classGrade = parseInt(classGrade);
     }
 
-    // Build dynamic purchase filter so logged-in students, email-matched students, and TrxID-matched students all get their live status
+    // Build purchase filter strictly for this authenticated user
     const orConditions: any[] = [];
 
     if (session?.user?.id && session.user.id !== 'admin-master-id') {
@@ -28,18 +28,6 @@ export async function GET(req: Request) {
           email: session.user.email.toLowerCase(),
         },
       });
-    }
-
-    if (trxIdsParam) {
-      const trxList = trxIdsParam
-        .split(',')
-        .map((t) => t.trim().toUpperCase())
-        .filter(Boolean);
-      if (trxList.length > 0) {
-        orConditions.push({
-          trxId: { in: trxList },
-        });
-      }
     }
 
     const pdfs = await prisma.pdfMaterial.findMany({

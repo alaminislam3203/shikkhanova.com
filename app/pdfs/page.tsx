@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import PdfCard from '@/components/pdfs/PdfCard';
 import PdfPurchaseModal from '@/components/pdfs/PdfPurchaseModal';
@@ -18,6 +19,7 @@ import {
 
 export default function PdfsPage() {
   const { data: session } = useSession();
+  const router = useRouter();
   const [selectedClass, setSelectedClass] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [pdfs, setPdfs] = useState<PdfItem[]>([]);
@@ -124,9 +126,14 @@ export default function PdfsPage() {
     }
   };
 
-  // Allow any student to enter their TrxID to check status & dynamically unlock download
+  // Allow logged-in student to enter their TrxID to check status
   const handleQuickTrxVerify = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!session?.user) {
+      toast.error('TrxID যাচাই করতে অনুগ্রহ করে আগে লগইন করুন');
+      router.push('/login?callbackUrl=/pdfs');
+      return;
+    }
     const clean = quickTrxInput.trim().toUpperCase();
     if (!clean) return;
 
@@ -141,14 +148,6 @@ export default function PdfsPage() {
         toast.error(data.error || 'এই TrxID দিয়ে কোনো পেমেন্ট পাওয়া যায়নি');
         return;
       }
-
-      // Save TrxID in localStorage so card stays unlocked dynamically
-      try {
-        const prev = JSON.parse(localStorage.getItem('sn_my_trx_ids') || '[]');
-        if (Array.isArray(prev) && !prev.includes(clean)) {
-          localStorage.setItem('sn_my_trx_ids', JSON.stringify([...prev, clean]));
-        }
-      } catch {}
 
       await fetchPdfs();
 
@@ -170,6 +169,11 @@ export default function PdfsPage() {
   };
 
   const openPurchaseModal = (pdf: PdfItem) => {
+    if (!session?.user) {
+      toast.error('পিডিএফ শিট সংগ্রহ করতে অনুগ্রহ করে আগে লগইন করুন');
+      router.push('/login?callbackUrl=/pdfs');
+      return;
+    }
     setActivePdf(pdf);
     setModalOpen(true);
   };
@@ -194,7 +198,31 @@ export default function PdfsPage() {
 
   return (
     <div className="space-y-5 sm:space-y-8">
-      
+      {/* Login Required Notice Banner */}
+      {!session?.user && (
+        <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl sm:rounded-3xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm animate-in fade-in">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-[#0F2C59] text-white flex items-center justify-center shrink-0 shadow-xs">
+              <FaFilePdf className="w-5 h-5 text-amber-300" />
+            </div>
+            <div>
+              <h4 className="text-sm font-black text-slate-900">
+                পিডিএফ হ্যান্ডনোট ডাউনলোড বা সংগ্রহ করতে লগইন আবশ্যক
+              </h4>
+              <p className="text-xs text-slate-600 font-medium">
+                ফ্রি ও পেইড সকল পিডিএফ শিট পেতে অনুগ্রহ করে আপনার অ্যাকাউন্টে লগইন করুন।
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/login?callbackUrl=/pdfs"
+            className="w-full sm:w-auto px-5 py-2.5 bg-[#C8102E] hover:bg-[#A50D26] text-white text-xs font-black rounded-xl shadow-md transition transform active:scale-95 text-center shrink-0"
+          >
+            লগইন করুন
+          </Link>
+        </div>
+      )}
+
       {/* Top Banner: pdf-page-banner.png */}
       <div className="space-y-3">
         {session?.user?.role === 'ADMIN' && (

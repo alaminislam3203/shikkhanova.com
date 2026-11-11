@@ -13,9 +13,23 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'TrxID প্রদান করুন' }, { status: 400 });
     }
 
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: 'পেমেন্ট স্ট্যাটাস দেখতে অনুগ্রহ করে প্রথমে লগইন করুন' },
+        { status: 401 }
+      );
+    }
+
     const purchase = await prisma.pdfPurchase.findUnique({
       where: { trxId },
       include: {
+        student: {
+          select: {
+            id: true,
+            email: true,
+          },
+        },
         pdf: {
           select: {
             id: true,
@@ -36,6 +50,18 @@ export async function GET(req: Request) {
       );
     }
 
+    // Only the purchaser or Admin can view their purchase
+    if (
+      session.user.role !== 'ADMIN' &&
+      purchase.studentId !== session.user.id &&
+      purchase.student?.email?.toLowerCase() !== session.user.email?.toLowerCase()
+    ) {
+      return NextResponse.json(
+        { error: 'এই ট্রানজ্যাকশনটি আপনার অ্যাকাউন্টের সাথে যুক্ত নয়।' },
+        { status: 403 }
+      );
+    }
+
     return NextResponse.json({
       purchase: {
         id: purchase.id,
@@ -53,8 +79,15 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'পিডিএফ সংগ্রহ করতে অবশ্যই লগইন থাকতে হবে। অনুগ্রহ করে লগইন করুন।' },
+        { status: 401 }
+      );
+    }
+
     const body = await req.json();
-    const { pdfId, paymentMethod, senderPhone, trxId, amount, guestEmail, guestName, guestClass, guestRoll } = body;
+    const { pdfId, paymentMethod, senderPhone, trxId, amount } = body;
 
     if (!pdfId || !paymentMethod || !senderPhone || !trxId) {
       return NextResponse.json(
@@ -77,16 +110,16 @@ export async function POST(req: Request) {
       );
     }
 
-    let studentId = session?.user?.id;
+    let studentId = session.user.id;
 
     // If Master Admin is testing purchase, resolve or create DB record by email
     if (studentId === 'admin-master-id') {
-      const adminEmail = (session?.user?.email || 'robiulnil101@gmail.com').toLowerCase();
+      const adminEmail = (session.user.email || 'robiulnil101@gmail.com').toLowerCase();
       const adminUser = await prisma.user.upsert({
         where: { email: adminEmail },
         update: {},
         create: {
-          name: session?.user?.name || 'শিক্ষানোভা অ্যাডমিন',
+          name: session.user.name || 'শিক্ষানোভা অ্যাডমিন',
           email: adminEmail,
           password: 'master_admin_placeholder',
           role: 'ADMIN',
@@ -94,30 +127,6 @@ export async function POST(req: Request) {
         },
       });
       studentId = adminUser.id;
-    }
-
-    // If user is not logged in, find or create temporary student profile
-    if (!studentId) {
-      if (!guestEmail) {
-        return NextResponse.json(
-          { error: 'দয়া করে লগইন করুন অথবা আপনার ইমেইল প্রদান করুন' },
-          { status: 400 }
-        );
-      }
-      let student = await prisma.user.findUnique({ where: { email: guestEmail.toLowerCase() } });
-      if (!student) {
-        student = await prisma.user.create({
-          data: {
-            name: guestName || 'শিক্ষার্থী',
-            email: guestEmail.toLowerCase(),
-            password: 'guest-temp-password',
-            phone: senderPhone,
-            classGrade: guestClass ? parseInt(guestClass) : 7,
-            rollNumber: guestRoll ? parseInt(guestRoll) : 1,
-          },
-        });
-      }
-      studentId = student.id;
     }
 
     const purchase = await prisma.pdfPurchase.create({
