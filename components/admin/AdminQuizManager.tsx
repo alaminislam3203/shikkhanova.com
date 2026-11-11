@@ -166,6 +166,23 @@ export default function AdminQuizManager() {
         }
       })
       .catch(() => {});
+
+    try {
+      const storedCovers = getStoredQuizCovers();
+      if (storedCovers) {
+        setCovers(storedCovers);
+      }
+    } catch {}
+
+    fetch('/api/quiz/covers')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.covers && typeof data.covers === 'object') {
+          setCovers(data.covers);
+          saveStoredQuizCovers(data.covers);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   // Save Quiz Prices & Special Packages Handler with Instant Toast Feedback
