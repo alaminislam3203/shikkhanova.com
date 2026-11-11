@@ -23,11 +23,20 @@ import {
   AcademicGroup,
   QuizSubjectItem,
   getSubjectsForClassAndGroup,
+  JUNIOR_SUBJECTS_5_8,
+  SCIENCE_SUBJECTS_9_10,
+  HUMANITIES_SUBJECTS_9_10,
+  COMMERCE_SUBJECTS_9_10,
+  COMPULSORY_SUBJECTS_9_10,
   QuizPackageItem,
   DEFAULT_QUIZ_PACKAGES,
   getStoredQuizPackages,
   saveStoredQuizPackages,
   PackageUnlockScope,
+  QuizCovers,
+  DEFAULT_QUIZ_COVERS,
+  getStoredQuizCovers,
+  saveStoredQuizCovers,
 } from '@/lib/defaultQuizData';
 import {
   FaPlus,
@@ -46,6 +55,8 @@ import {
   FaCoins,
   FaFloppyDisk,
   FaTag,
+  FaImage,
+  FaCloudArrowUp,
 } from 'react-icons/fa6';
 
 type QuizCategory = 'free' | 'paid' | 'subject';
@@ -57,7 +68,33 @@ export default function AdminQuizManager() {
   const [selectedSubject, setSelectedSubject] = useState<string>('বাংলা ১ম পত্র');
 
   const availableSubjects = useMemo(() => {
-    return getSubjectsForClassAndGroup(selectedClass, selectedGroup);
+    try {
+      if (typeof getSubjectsForClassAndGroup === 'function') {
+        const list = getSubjectsForClassAndGroup(selectedClass, selectedGroup);
+        if (Array.isArray(list) && list.length > 0) return list;
+      }
+    } catch {}
+
+    // Safe inline resolver fallback
+    if (selectedClass <= 8) {
+      if (selectedClass === 5) {
+        return [
+          { name: 'বাংলা', icon: '📖', color: 'from-rose-500 to-red-600' },
+          { name: 'ইংরেজি', icon: '🔤', color: 'from-blue-500 to-indigo-600' },
+          { name: 'প্রাথমিক গণিত', icon: '➗', color: 'from-emerald-500 to-teal-600' },
+          { name: 'প্রাথমিক বিজ্ঞান', icon: '🔬', color: 'from-purple-500 to-violet-600' },
+          { name: 'বাংলাদেশ ও বিশ্বপরিচয়', icon: '🌍', color: 'from-amber-500 to-orange-600' },
+          { name: 'ইসলাম ও নৈতিক শিক্ষা', icon: '🕌', color: 'from-emerald-600 to-green-700' },
+          { name: 'হিন্দুধর্ম ও নৈতিক শিক্ষা', icon: '🛕', color: 'from-amber-600 to-orange-700' },
+        ];
+      }
+      return JUNIOR_SUBJECTS_5_8 || [];
+    }
+
+    if (selectedGroup === 'science') return SCIENCE_SUBJECTS_9_10 || [];
+    if (selectedGroup === 'humanities') return HUMANITIES_SUBJECTS_9_10 || [];
+    if (selectedGroup === 'commerce') return COMMERCE_SUBJECTS_9_10 || [];
+    return COMPULSORY_SUBJECTS_9_10 || [];
   }, [selectedClass, selectedGroup]);
 
   // Keep selectedSubject in sync with available subjects
@@ -67,13 +104,16 @@ export default function AdminQuizManager() {
     }
   }, [availableSubjects, selectedSubject]);
 
-  const [activeTab, setActiveTab] = useState<'list' | 'add' | 'bulk' | 'prices'>('list');
+  const [activeTab, setActiveTab] = useState<'list' | 'add' | 'bulk' | 'prices' | 'covers'>('list');
   const [questions, setQuestions] = useState<RawQuestion[]>([]);
 
   // Quiz Pricing & Special Packages Management State (SSR safe)
   const [prices, setPrices] = useState<QuizPrices>(DEFAULT_QUIZ_PRICES);
   const [packages, setPackages] = useState<QuizPackageItem[]>(DEFAULT_QUIZ_PACKAGES);
+  const [covers, setCovers] = useState<QuizCovers>(DEFAULT_QUIZ_COVERS);
   const [isSavingPrices, setIsSavingPrices] = useState<boolean>(false);
+  const [isSavingCovers, setIsSavingCovers] = useState<boolean>(false);
+  const [uploadingTarget, setUploadingTarget] = useState<string | null>(null);
 
   // Add / Edit Form State
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
