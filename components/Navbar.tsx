@@ -20,6 +20,13 @@ import {
   FaBell,
   FaTrophy,
   FaAward,
+  FaGear,
+  FaCartShopping,
+  FaRegHeart,
+  FaRegCommentDots,
+  FaUser,
+  FaGlobe,
+  FaShieldHalved,
 } from 'react-icons/fa6';
 import { HiSparkles } from 'react-icons/hi2';
 
@@ -187,10 +194,9 @@ export default function Navbar() {
   const router = useRouter();
   const { data: session } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [aboutMenuOpen, setAboutMenuOpen] = useState(false);
   const [mobileAboutOpen, setMobileAboutOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const aboutDropdownRef = useRef<HTMLDivElement>(null);
 
   // Instant 0ms Global Website Search State
@@ -202,6 +208,25 @@ export default function Navbar() {
   const searchRef = useRef<HTMLDivElement>(null);
   const mobileSearchInputRef = useRef<HTMLInputElement>(null);
   const mobileSearchContainerRef = useRef<HTMLDivElement>(null);
+
+  // Lock scroll & handle ESC key for the right slide-over drawer
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setDrawerOpen(false);
+      }
+    };
+    if (drawerOpen) {
+      document.body.style.overflow = 'hidden';
+      window.addEventListener('keydown', handleKeyDown);
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [drawerOpen]);
 
   // Listen for mobile bottom nav search trigger event
   useEffect(() => {
@@ -255,7 +280,7 @@ export default function Navbar() {
 
   // Close menus on route navigation
   useEffect(() => {
-    setDropdownOpen(false);
+    setDrawerOpen(false);
     setAboutMenuOpen(false);
     setMobileOpen(false);
     setSearchOpen(false);
