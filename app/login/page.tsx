@@ -75,7 +75,7 @@ function LoginFormInner() {
   return (
     <div className="w-full">
       <div className="max-w-7xl mx-auto px-5 py-10">
-        <div className="max-w-[500px] mx-auto rounded-2xl bg-white shadow-xl border border-gray-100 overflow-hidden">
+        <div className="max-w-[500px] mx-auto rounded-2xl overflow-hidden">
           
           {/* Card Header matching Merxo Hub structure */}
           <div className="px-6 pt-6 text-center">

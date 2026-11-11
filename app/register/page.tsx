@@ -194,7 +194,7 @@ export default function RegisterPage() {
     <div className="w-full">
       <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12">
         {/* Merxo-Hub style container with Shikkha Nova Theme */}
-        <div className="max-w-[550px] mx-auto rounded-2xl bg-white shadow-xl border border-gray-100 overflow-hidden">
+        <div className="max-w-[550px] mx-auto overflow-hidden">
           
           {/* Card Header matching Merxo Hub */}
           <div className="px-6 pt-6 text-center">
