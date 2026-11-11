@@ -10,6 +10,15 @@ export const dynamic = 'force-dynamic';
 
 const LOCAL_RESULTS_PATH = path.join(process.cwd(), 'data', 'results.json');
 
+// Ensure nctb-mark-grading.png exists in public folder
+try {
+  const targetPath = path.join(process.cwd(), 'public', 'nctb-mark-grading.png');
+  const sourcePath = 'C:\\Users\\AL AMIN\\.gemini\\antigravity\\brain\\ac40c9e4-9e84-4560-92b8-3fe0bb211df5\\.user_uploaded\\media_1794339585242_c5d7cc14.png';
+  if (!fs.existsSync(targetPath) && fs.existsSync(sourcePath)) {
+    fs.copyFileSync(sourcePath, targetPath);
+  }
+} catch {}
+
 function enrichResultWithProfile(res: any) {
   if (!res) return res;
   const prof = getStudentProfile(res.classGrade, res.rollNumber);

@@ -169,21 +169,27 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
           </div>
 
           {/* ============================================================ */}
-          {/* INSTITUTE HEADER & GRADING SYSTEM (Unified Flex Row)         */}
-          {/* Prevents any overlap on student details and avoids clipping   */}
+          {/* INSTITUTE HEADER WITH NCTB GRADING IMAGE ON RIGHT CORNER     */}
+          {/* 3-Column Grid guarantees Center Alignment & Zero Overlap     */}
           {/* ============================================================ */}
-          <div className="flex items-start justify-between gap-4 border-b-2 border-[#C8102E] pb-3.5 relative z-10">
-            {/* Center Area: Logo, Address, Helpline, Exam Title */}
-            <div className="flex-1 text-center space-y-2 pt-0.5">
-              <div className="flex items-center justify-center mb-1">
-                <div className="bg-white px-3 py-1.5 rounded-2xl shadow-xs border border-slate-100">
+          <div className="grid grid-cols-[140px_1fr_140px] items-center gap-2 border-b-2 border-[#C8102E] pb-3 relative z-10">
+            {/* Left Column: Equal-width spacer to ensure Center column is 100% mathematically centered */}
+            <div className="w-[140px]"></div>
+
+            {/* Center Column: Logo, Location, Helpline, Exam Title (Exactly Center) */}
+            <div className="text-center space-y-1">
+              <div className="flex items-center justify-center mb-0.5">
+                <div className="bg-white px-3 py-1 rounded-2xl shadow-xs border border-slate-100">
                   <Logo size="md" clickable={false} />
                 </div>
               </div>
 
-              <p className="text-xs text-slate-600 font-semibold">
-                জুম্মাপাড়া, নীলফামারী সদর, নীলফামারী | হেল্পলাইন:{' '}
-                <span className="font-bn-normal font-bold text-[#0A1E3C]">০১৭১২৫৯২৫১৯</span>
+              <p className="text-xs text-slate-600 font-semibold leading-tight">
+                জুম্মাপাড়া, নীলফামারী সদর, নীলফামারী
+              </p>
+
+              <p className="text-xs text-slate-600 font-semibold leading-tight">
+                হেল্পলাইন: <span className="font-bn-normal font-bold text-[#0A1E3C]">০১৭১২৫৯২৫১৯</span>
               </p>
 
               {/* Exam Title Pill */}
@@ -196,62 +202,13 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
               </div>
             </div>
 
-            {/* Right: Bangladesh Education Board Grading System Table Box */}
-            <div className="w-[172px] shrink-0 pt-0.5">
-              <div className="bg-white border border-slate-300 rounded-lg overflow-hidden shadow-xs text-[9px]">
-                <table className="w-full border-collapse text-center">
-                  <thead>
-                    <tr className="bg-[#0A1E3C] text-white font-bold border-b border-slate-300">
-                      <th className="py-1 px-1 border-r border-slate-400/30 text-[8.5px] leading-tight">
-                        Letter<br />Grade
-                      </th>
-                      <th className="py-1 px-1 border-r border-slate-400/30 text-[8.5px] leading-tight">
-                        Class<br />Interval (%)
-                      </th>
-                      <th className="py-1 px-1 text-[8.5px] leading-tight">
-                        Grade<br />Point
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-200 text-slate-800 font-semibold">
-                    <tr className="hover:bg-slate-50">
-                      <td className="py-0.5 px-1 border-r border-slate-200 font-black text-emerald-700">A+</td>
-                      <td className="py-0.5 px-1 border-r border-slate-200">80-100</td>
-                      <td className="py-0.5 px-1 font-bold">5</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50">
-                      <td className="py-0.5 px-1 border-r border-slate-200 font-black text-emerald-600">A</td>
-                      <td className="py-0.5 px-1 border-r border-slate-200">70-79</td>
-                      <td className="py-0.5 px-1 font-bold">4</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50">
-                      <td className="py-0.5 px-1 border-r border-slate-200 font-black text-blue-600">A-</td>
-                      <td className="py-0.5 px-1 border-r border-slate-200">60-69</td>
-                      <td className="py-0.5 px-1 font-bold">3.5</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50">
-                      <td className="py-0.5 px-1 border-r border-slate-200 font-black text-amber-600">B</td>
-                      <td className="py-0.5 px-1 border-r border-slate-200">50-59</td>
-                      <td className="py-0.5 px-1 font-bold">3</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50">
-                      <td className="py-0.5 px-1 border-r border-slate-200 font-black text-orange-600">C</td>
-                      <td className="py-0.5 px-1 border-r border-slate-200">40-49</td>
-                      <td className="py-0.5 px-1 font-bold">2</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50">
-                      <td className="py-0.5 px-1 border-r border-slate-200 font-black text-amber-800">D</td>
-                      <td className="py-0.5 px-1 border-r border-slate-200">33-39</td>
-                      <td className="py-0.5 px-1 font-bold">1</td>
-                    </tr>
-                    <tr className="hover:bg-rose-50/50 bg-rose-50/30">
-                      <td className="py-0.5 px-1 border-r border-slate-200 font-black text-rose-600">F</td>
-                      <td className="py-0.5 px-1 border-r border-slate-200">00-32</td>
-                      <td className="py-0.5 px-1 font-bold text-rose-600">0</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+            {/* Right Column: nctb-mark-grading.png cleanly placed in Right Corner */}
+            <div className="w-[140px] flex justify-end items-center">
+              <img
+                src="/nctb-mark-grading.png"
+                alt="NCTB Grading System"
+                className="w-[136px] h-auto object-contain rounded-lg border border-slate-300 shadow-xs bg-white"
+              />
             </div>
           </div>
 
