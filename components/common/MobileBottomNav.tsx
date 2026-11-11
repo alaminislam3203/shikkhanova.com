@@ -269,49 +269,50 @@ export default function MobileBottomNav() {
       {/* ─────────────────────────────────────────────────────────────
           SIDE DRAWER USER ACCOUNT MENU (Mobile Only)
       ───────────────────────────────────────────────────────────── */}
-      <div
-        className={`fixed inset-0 z-50 lg:hidden transition-visibility duration-300 ${
-          isMenuOpen && session?.user ? 'visible' : 'invisible pointer-events-none delay-300'
-        }`}
-        aria-hidden={!isMenuOpen}
-      >
-        {/* Backdrop Overlay with blur */}
+      {session?.user && (
         <div
-          onClick={() => setIsMenuOpen(false)}
-          className={`fixed inset-0 bg-slate-950/50 backdrop-blur-xs transition-opacity duration-300 ease-out ${
-            isMenuOpen && session?.user ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          className={`fixed inset-0 z-50 lg:hidden transition-visibility duration-300 ${
+            isMenuOpen ? 'visible' : 'invisible pointer-events-none delay-300'
           }`}
-        />
-
-        {/* Side Menu Drawer (Smooth Slide-In From Right) */}
-        <aside
-          className={`fixed top-0 right-0 bottom-0 w-full max-w-[320px] sm:max-w-[360px] bg-slate-100 shadow-2xl flex flex-col z-[51] transition-transform duration-300 ease-out transform border-l border-slate-200/90 ${
-            isMenuOpen && session?.user ? 'translate-x-0' : 'translate-x-full'
-          }`}
-          role="dialog"
-          aria-label="অ্যাকাউন্ট মেনু"
+          aria-hidden={!isMenuOpen}
         >
-          {/* 1. Header Bar with Title & Close Button */}
-          <div className="bg-white px-5 py-3.5 border-b border-slate-200 flex items-center justify-between shrink-0 shadow-xs">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#0A1E3C] to-[#C8102E] text-white flex items-center justify-center shadow-xs">
-                <FaBars className="w-3.5 h-3.5" />
-              </div>
-              <div>
-                <h2 className="text-base font-black text-[#0A1E3C] leading-tight">অ্যাকাউন্ট মেনু</h2>
-                <p className="text-[10px] text-slate-500 font-medium">শিক্ষানোভা একাডেমি পোর্টাল</p>
-              </div>
-            </div>
+          {/* Backdrop Overlay with blur */}
+          <div
+            onClick={() => setIsMenuOpen(false)}
+            className={`fixed inset-0 bg-slate-950/50 backdrop-blur-xs transition-opacity duration-300 ease-out ${
+              isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+            }`}
+          />
 
-            <button
-              type="button"
-              onClick={() => setIsMenuOpen(false)}
-              aria-label="মেনু বন্ধ করুন"
-              className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 active:scale-90 text-slate-700 flex items-center justify-center transition"
-            >
-              <FaXmark className="w-4 h-4" />
-            </button>
-          </div>
+          {/* Side Menu Drawer (Smooth Slide-In From Right) */}
+          <aside
+            className={`fixed top-0 right-0 bottom-0 w-full max-w-[320px] sm:max-w-[360px] bg-slate-100 shadow-2xl flex flex-col z-[51] transition-transform duration-300 ease-out transform border-l border-slate-200/90 ${
+              isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+            }`}
+            role="dialog"
+            aria-label="অ্যাকাউন্ট মেনু"
+          >
+            {/* 1. Header Bar with Title & Close Button */}
+            <div className="bg-white px-5 py-3.5 border-b border-slate-200 flex items-center justify-between shrink-0 shadow-xs">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#0A1E3C] to-[#C8102E] text-white flex items-center justify-center shadow-xs">
+                  <FaBars className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <h2 className="text-base font-black text-[#0A1E3C] leading-tight">অ্যাকাউন্ট মেনু</h2>
+                  <p className="text-[10px] text-slate-500 font-medium">শিক্ষানোভা একাডেমি পোর্টাল</p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsMenuOpen(false)}
+                aria-label="মেনু বন্ধ করুন"
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 active:scale-90 text-slate-700 flex items-center justify-center transition"
+              >
+                <FaXmark className="w-4 h-4" />
+              </button>
+            </div>
 
             {/* 2. Scrollable Body Content */}
             <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-4 pb-12">
@@ -326,15 +327,15 @@ export default function MobileBottomNav() {
                 <div className="flex items-center gap-3.5">
                   {/* Avatar */}
                   <div className="w-14 h-14 rounded-2xl overflow-hidden ring-2 ring-white/30 bg-slate-900 flex items-center justify-center shrink-0 shadow-md">
-                    {session.user.image ? (
+                    {session?.user?.image ? (
                       <img
                         src={session.user.image}
-                        alt={session.user.name || 'User'}
+                        alt={session?.user?.name || 'User'}
                         className="w-full h-full object-cover"
                       />
                     ) : (
                       <span className="text-2xl font-black text-white">
-                        {session.user.name ? session.user.name.charAt(0) : '🎓'}
+                        {session?.user?.name ? session.user.name.charAt(0) : '🎓'}
                       </span>
                     )}
                   </div>
@@ -343,20 +344,20 @@ export default function MobileBottomNav() {
                   <div className="min-w-0 flex-1 space-y-1">
                     <div className="flex items-center gap-1.5 flex-wrap">
                       <h3 className="text-base font-black text-white truncate max-w-[180px]">
-                        {session.user.name}
+                        {session?.user?.name}
                       </h3>
                       <span className="bg-[#C8102E] text-white text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0">
-                        {session.user.role === 'ADMIN' ? 'অ্যাডমিন' : 'শিক্ষার্থী'}
+                        {session?.user?.role === 'ADMIN' ? 'অ্যাডমিন' : 'শিক্ষার্থী'}
                       </span>
                     </div>
-                    <p className="text-[11px] text-blue-200 truncate">{session.user.email}</p>
+                    <p className="text-[11px] text-blue-200 truncate">{session?.user?.email}</p>
                     <div className="flex items-center gap-1.5 text-[10px] text-slate-300">
-                      {session.user.classGrade && (
+                      {session?.user?.classGrade && (
                         <span className="bg-white/10 px-2 py-0.5 rounded font-bold border border-white/10">
                           শ্রেণি {session.user.classGrade}
                         </span>
                       )}
-                      {session.user.rollNumber && (
+                      {session?.user?.rollNumber && (
                         <span className="bg-white/10 px-2 py-0.5 rounded font-bold border border-white/10">
                           রোল {session.user.rollNumber}
                         </span>
@@ -376,8 +377,13 @@ export default function MobileBottomNav() {
                     <span>প্রোফাইল সেটিংস</span>
                   </Link>
 
-                  {session.user.role === 'ADMIN' && (
+                  {session?.user?.role === 'ADMIN' && (
                     <Link
+                      href="/admin"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="py-2 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-xs font-bold text-white shadow-xs flex items-center gap-1.5 transition active:scale-98"
+                    >
+                      <FaUserShield className="w-3.5 h-3.5" />
                       href="/admin"
                       onClick={() => setIsMenuOpen(false)}
                       className="py-2 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-xs font-bold text-white shadow-xs flex items-center gap-1.5 transition active:scale-98"
