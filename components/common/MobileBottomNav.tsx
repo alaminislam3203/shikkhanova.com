@@ -354,12 +354,12 @@ export default function MobileBottomNav() {
                     <div className="flex items-center gap-1.5 text-[10px] text-slate-300">
                       {session?.user?.classGrade && (
                         <span className="bg-white/10 px-2 py-0.5 rounded font-bold border border-white/10">
-                          শ্রেণি {session.user.classGrade}
+                          শ্রেণি {session?.user?.classGrade}
                         </span>
                       )}
                       {session?.user?.rollNumber && (
                         <span className="bg-white/10 px-2 py-0.5 rounded font-bold border border-white/10">
-                          রোল {session.user.rollNumber}
+                          রোল {session?.user?.rollNumber}
                         </span>
                       )}
                     </div>
@@ -672,8 +672,9 @@ export default function MobileBottomNav() {
                 <span>লগআউট করুন</span>
               </button>
             </div>
-        </aside>
-      </div>
+          </aside>
+        </div>
+      )}
     </>
   );
 }
