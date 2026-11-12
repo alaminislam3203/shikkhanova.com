@@ -195,8 +195,8 @@ export default function BranchContactSection() {
         </p>
       </div>
 
-      {/* 2. Top 4 Contact Info Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12 sm:mb-14">
+      {/* 2. Top 4 Contact Info Cards Grid (2 cols on Mobile, 4 cols on Desktop) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-6 mb-8 sm:mb-14">
         {contactCards.map((item, index) => {
           const IconComponent = item.icon;
           return (
@@ -205,19 +205,19 @@ export default function BranchContactSection() {
               href={item.href}
               target={item.href.startsWith("http") ? "_blank" : undefined}
               rel="noopener noreferrer"
-              className="group relative bg-slate-50/70 hover:bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
+              className="group relative bg-slate-50/70 hover:bg-white rounded-2xl p-3.5 sm:p-5 lg:p-6 border border-slate-200/80 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
             >
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 text-white bg-[#0F2C59] group-hover:scale-105 group-hover:bg-[#C8102E] transition-all duration-300 shadow-md">
-                <IconComponent size={20} />
+              <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mb-3 sm:mb-5 text-white bg-[#0F2C59] group-hover:scale-105 group-hover:bg-[#C8102E] transition-all duration-300 shadow-md">
+                <IconComponent className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
-              <div>
-                <h3 className="text-base font-bold text-slate-900 mb-1">
+              <div className="space-y-0.5 sm:space-y-1">
+                <h3 className="text-xs sm:text-base font-bold text-slate-900 truncate">
                   {item.title}
                 </h3>
-                <p className="text-sm font-semibold text-slate-800 group-hover:text-[#C8102E] transition-colors">
+                <p className="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-[#C8102E] transition-colors truncate">
                   {item.content}
                 </p>
-                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                <p className="text-[10px] sm:text-xs text-slate-500 leading-tight sm:leading-relaxed line-clamp-2 sm:line-clamp-none">
                   {item.description}
                 </p>
               </div>
