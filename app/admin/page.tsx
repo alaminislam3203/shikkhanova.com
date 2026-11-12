@@ -20,6 +20,7 @@ import AdminAchieversManager from "@/components/admin/AdminAchieversManager";
 import AdminQuizManager from "@/components/admin/AdminQuizManager";
 import AdminGalleryManager from "@/components/admin/AdminGalleryManager";
 import AdminLandingManager from "@/components/admin/AdminLandingManager";
+import AdminSmsManager from "@/components/admin/AdminSmsManager";
 import { PurchaseRecord } from "@/types";
 import {
   FaBars,
@@ -47,6 +48,7 @@ const VALID_ADMIN_TABS: AdminTab[] = [
   "students",
   "subjects",
   "attendance",
+  "sms",
   "settings",
 ];
 
