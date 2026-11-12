@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { PaymentStatus } from '@prisma/client';
+import { sendBulkSms, SMS_TEMPLATES } from '@/lib/smsService';
 
 export async function GET(req: Request) {
   try {
@@ -73,7 +74,32 @@ export async function PATCH(req: Request) {
         status: status as PaymentStatus,
         note: note || null,
       },
+      include: {
+        pdf: { select: { title: true } },
+        student: { select: { name: true, phone: true } },
+      },
     });
+
+    // Send Payment Confirmation SMS on approval
+    if (status === 'APPROVED') {
+      const recipientPhone = updated.senderPhone || updated.student?.phone;
+      if (recipientPhone) {
+        try {
+          const smsMsg = SMS_TEMPLATES.paymentConfirmation({
+            studentName: updated.student?.name || 'শিক্ষার্থী',
+            itemTitle: updated.pdf?.title || 'পিডিএফ শিট',
+            amount: updated.amount,
+            trxId: updated.trxId,
+          });
+
+          await sendBulkSms({
+            numbers: [recipientPhone],
+            message: smsMsg,
+            type: 'payment',
+          });
+        } catch {}
+      }
+    }
 
     return NextResponse.json({ message: `স্ট্যাটাস সফলভাবে ${status} করা হয়েছে`, updated });
   } catch (error: any) {

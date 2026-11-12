@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { AttendanceStatus } from '@prisma/client';
+import { sendBulkSms, SMS_TEMPLATES } from '@/lib/smsService';
 
 export async function GET(req: Request) {
   try {
@@ -74,7 +75,50 @@ export async function POST(req: Request) {
       })
     );
 
-    return NextResponse.json({ message: 'উপস্থিতি সফলভাবে সংরক্ষিত হয়েছে!', count: created.length });
+    // Optional Absent SMS Trigger
+    let smsSentCount = 0;
+    if (body.sendAbsentSms) {
+      const absentStudents = records.filter((r: any) => r.status === 'ABSENT');
+      const dateStr = attendanceDate.toLocaleDateString('bn-BD', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      });
+
+      for (const absent of absentStudents) {
+        try {
+          const user = await prisma.user.findFirst({
+            where: {
+              classGrade: parseInt(classGrade.toString()),
+              rollNumber: absent.rollNumber,
+            },
+            select: { phone: true, name: true },
+          });
+
+          if (user?.phone) {
+            const smsText = SMS_TEMPLATES.attendance({
+              studentName: absent.studentName || user.name || `রোল ${absent.rollNumber}`,
+              classGrade: parseInt(classGrade.toString()),
+              rollNumber: absent.rollNumber,
+              date: dateStr,
+            });
+
+            await sendBulkSms({
+              numbers: [user.phone],
+              message: smsText,
+              type: 'attendance',
+            });
+            smsSentCount++;
+          }
+        } catch {}
+      }
+    }
+
+    return NextResponse.json({
+      message: 'উপস্থিতি সফলভাবে সংরক্ষিত হয়েছে!',
+      count: created.length,
+      absentSmsCount: smsSentCount,
+    });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

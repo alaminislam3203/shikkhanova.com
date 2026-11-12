@@ -5,6 +5,7 @@ import { authOptions } from '@/lib/auth';
 import fs from 'fs';
 import path from 'path';
 import { getStudentProfile } from '@/lib/studentProfiles';
+import { sendBulkSms, SMS_TEMPLATES } from '@/lib/smsService';
 
 export const dynamic = 'force-dynamic';
 
@@ -276,6 +277,32 @@ export async function POST(req: Request) {
       local.unshift(resultRecord);
     }
     writeLocalResults(local);
+
+    // 3. Optional Exam Result SMS Notification
+    if (body.sendResultSms) {
+      try {
+        const studentUser = await prisma.user.findFirst({
+          where: { classGrade: cGrade, rollNumber: rNum },
+          select: { phone: true, name: true },
+        });
+        const targetPhone = studentUser?.phone || body.phone;
+        if (targetPhone) {
+          const smsText = SMS_TEMPLATES.examResult({
+            studentName: resultRecord.studentName || studentUser?.name || `রোল ${rNum}`,
+            examTitle: resultRecord.examTitle,
+            obtainedMarks: oMarks,
+            totalMarks: tMarks,
+            gpa: fGpa,
+            grade: resultRecord.grade,
+          });
+          await sendBulkSms({
+            numbers: [targetPhone],
+            message: smsText,
+            type: 'result',
+          });
+        }
+      } catch {}
+    }
 
     return NextResponse.json({
       message: savedInDb
