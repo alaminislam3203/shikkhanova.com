@@ -1,5 +1,39 @@
 [
   {
+    "id": "sms-1794494749047-6p1uh",
+    "timestamp": "2026-11-12T14:45:49.773Z",
+    "type": "custom",
+    "recipientCount": 1,
+    "numbers": [
+      "8801313334279"
+    ],
+    "message": "সম্মানিত অভিভাবক ও শিক্ষার্থী, সরকারি ছুটি উপলক্ষে আগামী রবিবার ও সোমবার কোচিংয়ের সকল ক্লাস বন্ধ থাকবে। মঙ্গলবার থেকে স্বাভাবিক রুটিনে ক্লাস চলবে। — শিক্ষানোভা একাডেমি",
+    "status": "FAILED",
+    "response": {
+      "response_code": 1002,
+      "success_message": "",
+      "error_message": "8809617618999 sender id is disabled in this yiOGwBffLM6RQA9jRDQO key"
+    },
+    "error": "8809617618999 sender id is disabled in this yiOGwBffLM6RQA9jRDQO key"
+  },
+  {
+    "id": "sms-1794494739997-gewmr",
+    "timestamp": "2026-11-12T14:45:40.431Z",
+    "type": "custom",
+    "recipientCount": 1,
+    "numbers": [
+      "8801313334279"
+    ],
+    "message": "সম্মানিত অভিভাবক ও শিক্ষার্থী, সরকারি ছুটি উপলক্ষে আগামী রবিবার ও সোমবার কোচিংয়ের সকল ক্লাস বন্ধ থাকবে। মঙ্গলবার থেকে স্বাভাবিক রুটিনে ক্লাস চলবে। — শিক্ষানোভা একাডেমি",
+    "status": "FAILED",
+    "response": {
+      "response_code": 1002,
+      "success_message": "",
+      "error_message": "8809617618999 sender id is disabled in this yiOGwBffLM6RQA9jRDQO key"
+    },
+    "error": "8809617618999 sender id is disabled in this yiOGwBffLM6RQA9jRDQO key"
+  },
+  {
     "id": "sms-1794494406241-8qisp",
     "timestamp": "2026-11-12T14:40:06.606Z",
     "type": "custom",

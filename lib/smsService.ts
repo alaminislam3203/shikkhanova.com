@@ -1,5 +1,4 @@
-import fs from 'fs';
-import path from 'path';
+import prisma from '@/lib/prisma';
 
 export interface SmsSendParams {
   numbers: string | string[];
@@ -28,8 +27,6 @@ export interface SmsBalanceResponse {
   message?: string;
 }
 
-const SMS_LOGS_PATH = path.join(process.cwd(), 'data', 'sms_logs.json');
-
 // Helper to format Bangladeshi phone numbers to 8801XXXXXXXXX
 export function formatBdPhone(phone: string): string | null {
   if (!phone) return null;
@@ -51,38 +48,91 @@ export function formatBdPhone(phone: string): string | null {
   return null;
 }
 
-// Read SMS delivery logs
-export function getSmsLogs(): SmsLogEntry[] {
+let isSmsTableReady = false;
+async function ensureSmsLogTable(): Promise<void> {
+  if (isSmsTableReady) return;
   try {
-    if (fs.existsSync(SMS_LOGS_PATH)) {
-      const raw = fs.readFileSync(SMS_LOGS_PATH, 'utf-8');
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed;
-    }
-  } catch {}
-  return [];
-}
-
-// Append an SMS log entry
-export function appendSmsLog(entry: SmsLogEntry): void {
-  try {
-    const dir = path.dirname(SMS_LOGS_PATH);
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    const logs = getSmsLogs();
-    logs.unshift(entry); // newest first
-    // Keep last 500 logs
-    const trimmed = logs.slice(0, 500);
-    fs.writeFileSync(SMS_LOGS_PATH, JSON.stringify(trimmed, null, 2), 'utf-8');
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "SmsLog" (
+        "id" TEXT PRIMARY KEY,
+        "timestamp" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+        "type" TEXT NOT NULL,
+        "recipientCount" INTEGER NOT NULL,
+        "numbers" TEXT[] DEFAULT ARRAY[]::TEXT[],
+        "message" TEXT NOT NULL,
+        "status" TEXT NOT NULL,
+        "response" JSONB,
+        "error" TEXT
+      );
+    `);
+    isSmsTableReady = true;
   } catch (err) {
-    console.error('Failed to write SMS log:', err);
+    console.error('ensureSmsLogTable error:', err);
   }
 }
 
-// Clear all SMS logs
-export function clearSmsLogs(): void {
+// Read SMS delivery logs from Database (PostgreSQL)
+export async function getSmsLogs(): Promise<SmsLogEntry[]> {
   try {
-    fs.writeFileSync(SMS_LOGS_PATH, JSON.stringify([], null, 2), 'utf-8');
-  } catch {}
+    await ensureSmsLogTable();
+    const rows = await prisma.$queryRawUnsafe<any[]>(
+      `SELECT "id", "timestamp", "type", "recipientCount", "numbers", "message", "status", "response", "error"
+       FROM "SmsLog"
+       ORDER BY "timestamp" DESC
+       LIMIT 500`
+    );
+    if (Array.isArray(rows) && rows.length > 0) {
+      return rows.map((r) => ({
+        id: r.id,
+        timestamp: r.timestamp
+          ? new Date(r.timestamp).toISOString()
+          : new Date().toISOString(),
+        type: r.type,
+        recipientCount: Number(r.recipientCount || 0),
+        numbers: Array.isArray(r.numbers) ? r.numbers : [],
+        message: r.message || '',
+        status: r.status,
+        response: r.response,
+        error: r.error || undefined,
+      }));
+    }
+  } catch (err) {
+    console.error('Failed to read SMS logs from Database:', err);
+  }
+  return [];
+}
+
+// Append an SMS log entry directly into Database
+export async function appendSmsLog(entry: SmsLogEntry): Promise<void> {
+  try {
+    await ensureSmsLogTable();
+    await prisma.$executeRawUnsafe(
+      `INSERT INTO "SmsLog" ("id", "timestamp", "type", "recipientCount", "numbers", "message", "status", "response", "error")
+       VALUES ($1, $2::timestamptz, $3, $4, $5, $6, $7, $8::jsonb, $9)
+       ON CONFLICT ("id") DO NOTHING`,
+      entry.id,
+      entry.timestamp,
+      entry.type,
+      entry.recipientCount,
+      entry.numbers,
+      entry.message,
+      entry.status,
+      JSON.stringify(entry.response || {}),
+      entry.error || null
+    );
+  } catch (err) {
+    console.error('Failed to write SMS log to Database:', err);
+  }
+}
+
+// Clear all SMS logs in Database
+export async function clearSmsLogs(): Promise<void> {
+  try {
+    await ensureSmsLogTable();
+    await prisma.$executeRawUnsafe(`TRUNCATE TABLE "SmsLog"`);
+  } catch (err) {
+    console.error('Failed to clear SMS logs in Database:', err);
+  }
 }
 
 /**
@@ -240,8 +290,13 @@ export async function sendBulkSms(params: SmsSendParams): Promise<{
     let friendlyError = resData?.error_message || 'BulkSMSBD থেকে এসএমএস পাঠাতে ব্যর্থ হয়েছে';
     if (resData?.response_code === 1032 || String(resData?.error_message || '').toLowerCase().includes('not whitelisted')) {
       friendlyError = `আপনার আইপি হোয়াইটলিস্ট করা নেই: ${resData?.error_message || ''}। BulkSMSBD ড্যাশবোর্ডে গিয়ে আপনার বর্তমান আইপি (Whitelist IP) যুক্ত করুন বা IP Checking Disable করুন।`;
-    } else if (resData?.response_code === 1005 || String(resData?.error_message || '').includes('is_masking')) {
-      friendlyError = `ভুল Sender ID: আপনার BulkSMSBD অ্যাকাউন্টে এই Sender ID অনুমোদিত নয়। ড্যাশবোর্ডের বাম পাশের "Sender ID" মেনু থেকে সঠিক অনুমোদিত Sender ID কপি করে .env ফাইলে BULKSMSBD_SENDER_ID তে বসান।`;
+    } else if (
+      resData?.response_code === 1005 ||
+      resData?.response_code === 1002 ||
+      String(resData?.error_message || '').includes('is_masking') ||
+      String(resData?.error_message || '').includes('sender id is disabled')
+    ) {
+      friendlyError = `ভুল Sender ID: আপনার অ্যাকাউন্টে এই Sender ID ('${resolvedSenderId}') বরাদ্দকৃত বা সক্রিয় নয়। BulkSMSBD ড্যাশবোর্ডের বাম পাশের "Sender ID" মেনু থেকে আপনার অনুমোদিত আসল Sender ID কপি করে .env ফাইলে BULKSMSBD_SENDER_ID তে বসান।`;
     }
 
     const logEntry: SmsLogEntry = {
@@ -255,7 +310,7 @@ export async function sendBulkSms(params: SmsSendParams): Promise<{
       response: resData,
       error: isSuccess ? undefined : friendlyError,
     };
-    appendSmsLog(logEntry);
+    await appendSmsLog(logEntry);
 
     return {
       success: isSuccess,
@@ -278,7 +333,7 @@ export async function sendBulkSms(params: SmsSendParams): Promise<{
       response: null,
       error: err.message || 'Network dispatch failure',
     };
-    appendSmsLog(logEntry);
+    await appendSmsLog(logEntry);
 
     return {
       success: false,

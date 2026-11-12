@@ -15,7 +15,7 @@ export async function GET() {
       );
     }
 
-    const logs = getSmsLogs();
+    const logs = await getSmsLogs();
     return NextResponse.json({ logs });
   } catch (error: any) {
     return NextResponse.json(
@@ -35,7 +35,7 @@ export async function DELETE() {
       );
     }
 
-    clearSmsLogs();
+    await clearSmsLogs();
     return NextResponse.json({ message: 'এসএমএস লগ সফলভাবে মুছে ফেলা হয়েছে' });
   } catch (error: any) {
     return NextResponse.json(
