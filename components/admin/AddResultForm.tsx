@@ -69,6 +69,7 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
   const [studentName, setStudentName] = useState<string>(formData?.studentName || '');
   const [religion, setReligion] = useState<'ইসলাম' | 'হিন্দু'>('ইসলাম');
   const [editingResultId, setEditingResultId] = useState<string | null>(null);
+  const [sendResultSms, setSendResultSms] = useState<boolean>(true);
 
   // Class Students from Database / Local
   const [classStudents, setClassStudents] = useState<
@@ -294,6 +295,7 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
       grade: summary.grade,
       gpa: summary.gpa,
       subjectMarks: subjectRows,
+      sendResultSms,
     };
 
     try {
@@ -909,7 +911,18 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
         {/* ─────────────────────────────────────────────────────────────
             5. SUBMISSION ACTION BUTTONS
         ───────────────────────────────────────────────────────────── */}
-        <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-end gap-3">
+        <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <label className="flex items-center gap-2 px-3 py-2 rounded-xl bg-red-50 text-xs font-bold text-slate-800 border border-red-200 cursor-pointer hover:bg-red-100/70 transition">
+            <input
+              type="checkbox"
+              checked={sendResultSms}
+              onChange={(e) => setSendResultSms(e.target.checked)}
+              className="accent-[#C8102E] w-3.5 h-3.5"
+            />
+            <span>ফলাফল SMS পাঠান</span>
+          </label>
+
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
           
           {editingResultId && (
             <button
@@ -956,6 +969,8 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
               <span>সংরক্ষণ ও পরবর্তী রোল (Save & Next)</span>
             </button>
           )}
+
+          </div>
 
         </div>
 
