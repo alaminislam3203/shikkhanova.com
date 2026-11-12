@@ -261,9 +261,9 @@ export default function ModelTestShowcaseSection() {
           </div>
         )}
 
-        {/* 2. DYNAMIC SPECIAL PACKAGES SHOWCASE (Shown in 'all' or 'packages') */}
-        {(activeTab === 'all' || activeTab === 'packages') && (
-          <div className="mt-8 pt-8 border-t border-slate-100 space-y-5">
+        {/* 2. DYNAMIC SPECIAL PACKAGES SHOWCASE (Shown ONLY when 'packages' tab is clicked) */}
+        {activeTab === 'packages' && (
+          <div className="pt-6 space-y-5">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
               <div>
                 <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#C8102E] bg-red-50 px-3 py-0.5 rounded-full border border-red-200 mb-1">
