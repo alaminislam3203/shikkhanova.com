@@ -127,8 +127,12 @@ export default function RootLayout({
     <html
       lang="bn"
       className={`scroll-smooth ${exo2.variable} ${hindSiliguri.variable}`}
+      suppressHydrationWarning
     >
-      <body className="min-h-screen bg-[#F4F6F9] text-[#1E293B] font-sans antialiased selection:bg-[#C8102E] selection:text-white">
+      <body
+        className="min-h-screen bg-[#F4F6F9] text-[#1E293B] font-sans antialiased selection:bg-[#C8102E] selection:text-white"
+        suppressHydrationWarning
+      >
         <AuthProvider>
           <Toaster
             position="top-center"

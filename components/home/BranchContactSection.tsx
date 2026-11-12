@@ -93,28 +93,25 @@ export default function BranchContactSection() {
     },
   ];
 
-  const cleanPhone = (contact.helpline || '01712592519').replace(/\D/g, '');
-  const cleanWhatsapp = (contact.whatsapp || '01712592519').replace(/\D/g, '');
-
   const contactCards = [
     {
       icon: FiMail,
       title: 'ইমেইল',
-      content: contact.email || 'shikkhanova@gmail.com',
+      content: 'shikkhanova@gmail.com',
       description: 'সাধারণত ২৪ ঘণ্টার মধ্যে উত্তর দেওয়া হয়',
-      href: `mailto:${contact.email || 'shikkhanova@gmail.com'}`,
+      href: 'mailto:shikkhanova@gmail.com',
     },
     {
       icon: FiPhone,
       title: 'হেল্পলাইন ফোন',
-      content: contact.helpline || '০১৭১২৫৯২৫১৯',
-      description: `প্রতিদিন ${contact.hours || 'সকাল ৮টা – রাত ৯টা'}`,
-      href: `tel:${cleanPhone}`,
+      content: '০১৭১২৫৯২৫১৯',
+      description: 'প্রতিদিন সকাল ৮টা – রাত ৯টা',
+      href: 'tel:01712592519',
     },
     {
       icon: FiMapPin,
       title: 'ক্যাম্পাস ও ঠিকানা',
-      content: contact.address || 'জুম্মাপাড়া, নীলফামারী সদর',
+      content: 'জুম্মাপাড়া, নীলফামারী সদর',
       description: 'শিক্ষানোভা একাডেমি',
       href: 'https://maps.google.com?q=Jummapara,Nilphamari',
     },
@@ -123,7 +120,7 @@ export default function BranchContactSection() {
       title: 'সরাসরি হোয়াটসঅ্যাপ',
       content: 'চ্যাট করুন',
       description: 'তাৎক্ষণিক তথ্য ও সহায়তা',
-      href: `https://wa.me/88${cleanWhatsapp}`,
+      href: 'https://wa.me/8801712592519',
     },
   ];
 
