@@ -21,6 +21,7 @@ import {
   FaBookOpen,
   FaUserCheck,
   FaImages,
+  FaCommentSms,
 } from 'react-icons/fa6';
 import { TbCashBanknote } from 'react-icons/tb';
 
@@ -37,6 +38,7 @@ export type AdminTab =
   | 'students'
   | 'subjects'
   | 'attendance'
+  | 'sms'
   | 'settings';
 
 export interface AdminProfileInfo {
@@ -163,6 +165,13 @@ export default function AdminSidebar({
       label: 'রোল উপস্থিতি (Attendance)',
       sublabel: 'শ্রেণি ৫-১০ হাজিরা গ্রহণ',
       icon: FaUserCheck,
+    },
+    {
+      id: 'sms',
+      label: 'এসএমএস সেন্টার (BulkSMS)',
+      sublabel: 'হাজিরা, রেজাল্ট ও ফি নোটিফিকেশন',
+      icon: FaCommentSms,
+      badge: 'SMS',
     },
     {
       id: 'gallery',
