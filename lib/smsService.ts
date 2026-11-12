@@ -323,3 +323,4 @@ export const SMS_TEMPLATES = {
   announcement: (opts: { title: string; details: string }) =>
     `জরুরি বিজ্ঞপ্তি: ${opts.title}। ${opts.details} — পরিচালক, শিক্ষানোভা একাডেমি`,
 };
+
