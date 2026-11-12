@@ -669,8 +669,8 @@ export default function Navbar() {
                 </span>
               </Link>
 
-              {session?.user ? (
-                <div className="hidden lg:block relative">
+              {mounted && session?.user ? (
+                <div className="hidden lg:block relative" suppressHydrationWarning>
                   {/* Profile Trigger Button - Avatar Only */}
                   <button
                     type="button"
@@ -822,8 +822,8 @@ export default function Navbar() {
                   );
                 })}
 
-                {session?.user && (
-                  <div className="pt-3 mt-2 border-t border-slate-200 space-y-1.5">
+                {mounted && session?.user && (
+                  <div className="pt-3 mt-2 border-t border-slate-200 space-y-1.5" suppressHydrationWarning>
                     <button
                       type="button"
                       onClick={() => {

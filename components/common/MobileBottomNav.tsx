@@ -35,7 +35,12 @@ import { HiSparkles } from 'react-icons/hi2';
 export default function MobileBottomNav() {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const [mounted, setMounted] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Close menu on route change
   useEffect(() => {
@@ -79,6 +84,7 @@ export default function MobileBottomNav() {
     <>
       <nav
         aria-label="মোবাইল নেভিগেশন"
+        suppressHydrationWarning
         className="fixed bottom-0 left-0 right-0 z-40 lg:hidden pointer-events-none"
       >
         <div className="relative max-w-md mx-auto pointer-events-auto">
@@ -190,7 +196,7 @@ export default function MobileBottomNav() {
               </Link>
 
               {/* 5. মেনু / প্রোফাইল (Menu / Profile) Slot */}
-              {session?.user ? (
+              {mounted && session?.user ? (
                 <button
                   type="button"
                   onClick={() => setIsMenuOpen(true)}
