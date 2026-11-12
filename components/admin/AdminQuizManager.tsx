@@ -134,7 +134,7 @@ export default function AdminQuizManager() {
   }, [availableSubjects, selectedSubject]);
 
   const [activeTab, setActiveTab] = useState<
-    "list" | "add" | "bulk" | "prices" | "covers"
+    "list" | "add" | "bulk" | "prices" | "covers" | "cards"
   >("list");
   const [questions, setQuestions] = useState<RawQuestion[]>([]);
 
@@ -144,8 +144,12 @@ export default function AdminQuizManager() {
     DEFAULT_QUIZ_PACKAGES,
   );
   const [covers, setCovers] = useState<QuizCovers>(DEFAULT_QUIZ_COVERS);
+  const [customCards, setCustomCards] = useState<CustomQuizCard[]>(
+    DEFAULT_CUSTOM_QUIZ_CARDS,
+  );
   const [isSavingPrices, setIsSavingPrices] = useState<boolean>(false);
   const [isSavingCovers, setIsSavingCovers] = useState<boolean>(false);
+  const [isSavingCards, setIsSavingCards] = useState<boolean>(false);
   const [uploadingTarget, setUploadingTarget] = useState<string | null>(null);
 
   // Add / Edit Form State
@@ -239,6 +243,23 @@ export default function AdminQuizManager() {
               setCovers(data.covers);
             }
           }
+        }
+      })
+      .catch(() => {});
+
+    try {
+      const storedCards = getStoredCustomQuizCards();
+      if (storedCards && storedCards.length > 0) {
+        setCustomCards(storedCards);
+      }
+    } catch {}
+
+    fetch("/api/quiz/cards", { cache: "no-store" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.cards && Array.isArray(data.cards)) {
+          setCustomCards(data.cards);
+          saveStoredCustomQuizCards(data.cards);
         }
       })
       .catch(() => {});
