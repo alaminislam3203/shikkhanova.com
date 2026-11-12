@@ -206,6 +206,7 @@ export default function AdminSidebar({
 
       {/* Light Mode Collapsible & Sticky Sidebar Container */}
       <aside
+        suppressHydrationWarning
         className={`fixed top-0 bottom-0 left-0 z-50 w-72 ${
           isCollapsed ? 'lg:w-20 lg:px-3 lg:py-5' : 'lg:w-72 lg:p-5'
         } p-5 bg-white text-slate-800 flex flex-col justify-between border-r border-slate-200/90 shadow-xl lg:shadow-xs transition-all duration-300 lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen lg:max-h-screen lg:overflow-y-auto lg:overflow-x-hidden lg:self-start lg:z-30 shrink-0 ${
