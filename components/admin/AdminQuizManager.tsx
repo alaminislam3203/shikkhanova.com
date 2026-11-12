@@ -2327,6 +2327,326 @@ export default function AdminQuizManager() {
           </div>
         </div>
       )}
+
+      {/* ─────────────────────────────────────────────────────────────
+          TAB 6: DYNAMIC CUSTOM MCQ / MODEL TEST CARDS MANAGER
+      ───────────────────────────────────────────────────────────── */}
+      {activeTab === "cards" && (
+        <div className="space-y-6 animate-in fade-in duration-200">
+          {/* Header */}
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full mb-1">
+                <FaLayerGroup /> আনলিমিটেড MCQ টেস্ট কার্ড তৈরি
+              </div>
+              <h3 className="text-base sm:text-lg font-black text-slate-800">
+                কাস্টম MCQ ও মডেল টেস্ট কার্ড ম্যানেজমেন্ট
+              </h3>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                অ্যাডমিন এখানে ইচ্ছামতো নতুন নতুন মডেল টেস্ট কার্ড তৈরি করতে পারবেন এবং প্রতিটির জন্য আলাদা কভার ছবি আপলোড করতে পারবেন।
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleAddNewCard}
+                className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-700 hover:opacity-95 text-white font-black text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer"
+              >
+                <FaPlus className="w-3.5 h-3.5" />
+                <span>নতুন কার্ড যোগ করুন</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSaveCardsToApi(customCards)}
+                disabled={isSavingCards}
+                className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:opacity-95 text-white font-black text-xs shadow-md transition flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+              >
+                <FaFloppyDisk className="w-3.5 h-3.5" />
+                <span>{isSavingCards ? "সংরক্ষণ হচ্ছে..." : "সব কার্ড সেভ করুন"}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Cards List / Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {customCards.map((card, cIdx) => (
+              <div
+                key={card.id || cIdx}
+                className={`bg-white rounded-3xl border-2 p-5 space-y-4 shadow-sm hover:shadow-md transition relative flex flex-col justify-between ${
+                  card.isActive
+                    ? card.isPaid
+                      ? "border-red-200"
+                      : "border-emerald-200"
+                    : "border-dashed border-slate-300 opacity-70"
+                }`}
+              >
+                {/* Top Bar: Card index, Active toggle, Delete */}
+                <div className="flex items-center justify-between gap-2 pb-2 border-b border-slate-100">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                      কার্ড #{cIdx + 1}
+                    </span>
+                    <label className="inline-flex items-center gap-1.5 cursor-pointer text-xs font-bold">
+                      <input
+                        type="checkbox"
+                        checked={card.isActive}
+                        onChange={(e) => {
+                          const val = e.target.checked;
+                          handleUpdateCard(card.id, { isActive: val });
+                          const next = customCards.map((c) =>
+                            c.id === card.id ? { ...c, isActive: val } : c
+                          );
+                          handleSaveCardsToApi(next);
+                        }}
+                        className="rounded text-emerald-600 focus:ring-emerald-500 w-3.5 h-3.5 cursor-pointer"
+                      />
+                      <span>{card.isActive ? "সক্রিয়" : "লুকানো"}</span>
+                    </label>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteCard(card.id)}
+                    className="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg transition cursor-pointer"
+                    title="কার্ডটি মুছে ফেলুন"
+                  >
+                    <FaTrash className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                {/* Individual Cover Image Container */}
+                <div className="space-y-2">
+                  <div className="w-full aspect-video rounded-2xl bg-slate-100 border border-slate-200/80 overflow-hidden relative group flex items-center justify-center">
+                    {card.coverImage ? (
+                      <>
+                        <img
+                          src={card.coverImage}
+                          alt={card.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        <div className="absolute inset-0 bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                          <label className="px-3 py-1.5 bg-white/95 hover:bg-white text-slate-900 rounded-xl text-xs font-bold cursor-pointer shadow">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => {
+                                if (e.target.files?.[0]) {
+                                  handleCardCoverUpload(
+                                    card.id,
+                                    e.target.files[0]
+                                  );
+                                }
+                              }}
+                            />
+                            ছবি পরিবর্তন
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              handleUpdateCard(card.id, { coverImage: "" });
+                              const next = customCards.map((c) =>
+                                c.id === card.id ? { ...c, coverImage: "" } : c
+                              );
+                              handleSaveCardsToApi(next);
+                            }}
+                            className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold cursor-pointer"
+                          >
+                            রিমুভ
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="text-center p-3 space-y-1.5">
+                        <FaImage className="w-7 h-7 mx-auto text-slate-300" />
+                        <label className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-xl text-xs font-black cursor-pointer border border-blue-200 transition">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              if (e.target.files?.[0]) {
+                                handleCardCoverUpload(
+                                  card.id,
+                                  e.target.files[0]
+                                );
+                              }
+                            }}
+                          />
+                          <FaCloudArrowUp className="w-3.5 h-3.5" />
+                          <span>আলাদা ছবি আপলোড করুন</span>
+                        </label>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Manual URL input fallback */}
+                  <input
+                    type="url"
+                    placeholder="অথবা কভার ইমেজ লিঙ্ক পেস্ট করুন..."
+                    value={card.coverImage || ""}
+                    onChange={(e) =>
+                      handleUpdateCard(card.id, { coverImage: e.target.value })
+                    }
+                    onBlur={(e) => {
+                      const val = e.target.value.trim();
+                      const next = customCards.map((c) =>
+                        c.id === card.id ? { ...c, coverImage: val } : c
+                      );
+                      handleSaveCardsToApi(next);
+                    }}
+                    className="w-full text-[11px] bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1 text-slate-700 outline-none focus:bg-white focus:border-blue-500"
+                  />
+                </div>
+
+                {/* Form Fields: Title, Subtitle */}
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                      কার্ডের শিরোনাম (Title)
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={card.title}
+                      onChange={(e) =>
+                        handleUpdateCard(card.id, { title: e.target.value })
+                      }
+                      onBlur={() => handleSaveCardsToApi(customCards)}
+                      className="w-full text-xs font-bold bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 outline-none focus:bg-white focus:border-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                      উপ-শিরোনাম / সংক্ষিপ্ত বিবরণ
+                    </label>
+                    <input
+                      type="text"
+                      value={card.subtitle || ""}
+                      onChange={(e) =>
+                        handleUpdateCard(card.id, { subtitle: e.target.value })
+                      }
+                      onBlur={() => handleSaveCardsToApi(customCards)}
+                      placeholder="যেমন: অধ্যায় ১-৩ প্রস্তুতি ও ব্যাখ্যা"
+                      className="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 outline-none focus:bg-white focus:border-blue-500"
+                    />
+                  </div>
+
+                  {/* Class, Subject, Badge Grid */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-[10px] font-bold text-slate-700 block mb-1">
+                        শ্রেণি (Class)
+                      </label>
+                      <select
+                        value={card.classGrade}
+                        onChange={(e) => {
+                          const val = Number(e.target.value);
+                          handleUpdateCard(card.id, { classGrade: val });
+                          const next = customCards.map((c) =>
+                            c.id === card.id ? { ...c, classGrade: val } : c
+                          );
+                          handleSaveCardsToApi(next);
+                        }}
+                        className="w-full text-xs font-bold bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-1.5 text-slate-900 outline-none cursor-pointer"
+                      >
+                        {[5, 6, 7, 8, 9, 10].map((c) => (
+                          <option key={c} value={c}>
+                            {toBengaliClass(c)} শ্রেণি
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-bold text-slate-700 block mb-1">
+                        ব্যাজ / ট্যাগ (Badge)
+                      </label>
+                      <input
+                        type="text"
+                        value={card.badge || ""}
+                        onChange={(e) =>
+                          handleUpdateCard(card.id, { badge: e.target.value })
+                        }
+                        onBlur={() => handleSaveCardsToApi(customCards)}
+                        placeholder="যেমন: স্পেশাল / মেগা"
+                        className="w-full text-xs font-bold bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-1.5 text-slate-900 outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-700 block mb-1">
+                      বিষয় (Subject)
+                    </label>
+                    <input
+                      type="text"
+                      value={card.subject}
+                      onChange={(e) =>
+                        handleUpdateCard(card.id, { subject: e.target.value })
+                      }
+                      onBlur={() => handleSaveCardsToApi(customCards)}
+                      placeholder="যেমন: পদার্থবিজ্ঞান"
+                      className="w-full text-xs font-bold bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-slate-900 outline-none"
+                    />
+                  </div>
+
+                  {/* Free vs Paid Toggle & Price */}
+                  <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="inline-flex items-center gap-2 cursor-pointer text-xs font-black">
+                        <input
+                          type="checkbox"
+                          checked={card.isPaid}
+                          onChange={(e) => {
+                            const isPaid = e.target.checked;
+                            const price = isPaid ? card.price || 50 : 0;
+                            handleUpdateCard(card.id, { isPaid, price });
+                            const next = customCards.map((c) =>
+                              c.id === card.id ? { ...c, isPaid, price } : c
+                            );
+                            handleSaveCardsToApi(next);
+                          }}
+                          className="rounded text-[#C8102E] focus:ring-[#C8102E] w-4 h-4 cursor-pointer"
+                        />
+                        <span>
+                          {card.isPaid
+                            ? "💎 পেইড মডেল টেস্ট"
+                            : "🎁 ১০০% ফ্রি টেস্ট"}
+                        </span>
+                      </label>
+
+                      {card.isPaid && (
+                        <div className="flex items-center gap-1">
+                          <span className="text-xs font-bold text-slate-500">
+                            ফি: ৳
+                          </span>
+                          <input
+                            type="number"
+                            min="0"
+                            step="5"
+                            value={card.price}
+                            onChange={(e) =>
+                              handleUpdateCard(card.id, {
+                                price: Number(e.target.value) || 0,
+                              })
+                            }
+                            onBlur={() => handleSaveCardsToApi(customCards)}
+                            className="w-16 bg-white border border-slate-300 rounded-lg px-2 py-0.5 text-xs font-black text-[#C8102E] outline-none"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
