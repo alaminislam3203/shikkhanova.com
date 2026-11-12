@@ -6,7 +6,6 @@ import ModelTestShowcaseSection from '@/components/home/ModelTestShowcaseSection
 import SuccessStoriesSection from '@/components/home/SuccessStoriesSection';
 import WhyChooseUsSection from '@/components/home/WhyChooseUsSection';
 import FeaturesGrid from '@/components/home/FeaturesGrid';
-import DirectorMessageSection from '@/components/home/DirectorMessageSection';
 import HomeGallerySection from '@/components/home/HomeGallerySection';
 import FaqSection from '@/components/home/FaqSection';
 import BranchContactSection from '@/components/home/BranchContactSection';
@@ -35,16 +34,13 @@ export default function HomePage() {
       {/* 7. Key Features & Academic Infrastructure Grid */}
       <FeaturesGrid />
 
-      {/* 8. Director's Speech & Institutional Leadership */}
-      <DirectorMessageSection />
-
-      {/* 9. Campus Life & Event Photo Gallery */}
+      {/* 8. Campus Life & Event Photo Gallery */}
       <HomeGallerySection />
 
-      {/* 10. Frequently Asked Questions (Accordion) */}
+      {/* 9. Frequently Asked Questions (Accordion) */}
       <FaqSection />
 
-      {/* 11. Branch Location, Helpline & Contact CTA */}
+      {/* 10. Contact Us & Campus Location CTA */}
       <BranchContactSection />
     </div>
   );
