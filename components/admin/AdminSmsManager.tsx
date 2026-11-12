@@ -345,7 +345,7 @@ export default function AdminSmsManager() {
   const feeSmsInfo = getSmsCount(feeCustomMessage);
 
   return (
-    <div className="space-y-6">
+    <div suppressHydrationWarning className="space-y-6">
       {/* 1. Header & Live Balance Hero Card */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#07172C] via-[#0F2C59] to-[#0A1E3C] p-6 sm:p-8 text-white shadow-xl border border-slate-700/60">
         <div className="absolute top-0 right-1/4 w-80 h-80 bg-[#C8102E]/15 rounded-full blur-3xl pointer-events-none" />

@@ -378,7 +378,7 @@ export default function AdminPage() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-100/80 flex flex-col lg:flex-row items-start">
+    <div suppressHydrationWarning className="min-h-screen bg-slate-100/80 flex flex-col lg:flex-row items-start">
       {/* Hidden File Input for Quick Admin Photo Upload from Anywhere in Admin Panel */}
       <input
         type="file"
