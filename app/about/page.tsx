@@ -2,16 +2,13 @@
 
 import React from 'react';
 import Link from 'next/link';
-import Logo from '@/components/common/Logo';
 import {
-  FaGraduationCap,
-  FaArrowRight,
   FaCircleCheck,
   FaLocationDot,
   FaPhone,
 } from 'react-icons/fa6';
 
-// Decorative Section Header Component matching the reference style
+// Decorative Section Header Component matching the reference editorial style
 function EditorialHeading({
   title,
   highlight,
@@ -22,7 +19,7 @@ function EditorialHeading({
   subtitle?: string;
 }) {
   return (
-    <div className="text-center space-y-2.5 max-w-3xl mx-auto mb-6 sm:mb-8">
+    <div className="text-center space-y-2.5 max-w-4xl mx-auto mb-6 sm:mb-8">
       <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 tracking-tight">
         {title}{' '}
         {highlight && (
@@ -32,9 +29,9 @@ function EditorialHeading({
 
       {/* Decorative Red Accent Line with Diamond */}
       <div className="flex items-center justify-center gap-2">
-        <span className="h-0.5 w-10 sm:w-16 bg-[#C8102E]/30 rounded-full" />
+        <span className="h-0.5 w-12 sm:w-20 bg-[#C8102E]/30 rounded-full" />
         <span className="w-2 h-2 rotate-45 bg-[#C8102E] rounded-xs" />
-        <span className="h-0.5 w-10 sm:w-16 bg-[#C8102E]/30 rounded-full" />
+        <span className="h-0.5 w-12 sm:w-20 bg-[#C8102E]/30 rounded-full" />
       </div>
 
       {subtitle && (
@@ -48,42 +45,8 @@ function EditorialHeading({
 
 export default function AboutPage() {
   return (
-    <div className="space-y-8 sm:space-y-12 select-none" suppressHydrationWarning>
+    <div className="space-y-8 sm:space-y-12 select-none w-full max-w-6xl mx-auto" suppressHydrationWarning>
       
-      {/* ─────────────────────────────────────────────────────────────
-          TOP BRAND HERO BANNER (Compact & Prestigious)
-      ───────────────────────────────────────────────────────────── */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#07172C] via-[#0F2C59] to-[#0A1E3C] p-6 sm:p-10 text-white shadow-xl border-b-4 border-[#C8102E]">
-        <div className="absolute top-0 right-10 w-96 h-96 bg-[#C8102E]/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-10 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-3 text-center md:text-left max-w-2xl">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-rose-300 text-xs font-bold border border-white/15 backdrop-blur-md">
-              <FaGraduationCap className="text-[#C8102E]" />
-              <span>শিক্ষানোভা একাডেমি — মেধা, যত্ন ও সাফল্যের প্রতিশ্রুতি</span>
-            </span>
-            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white leading-tight">
-              আমাদের পরিচিতি ও একাডেমিক ধারা
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-200 leading-relaxed max-w-xl">
-              ৫ম থেকে ১০ম শ্রেণির শিক্ষার্থীদের জন্য আধুনিক প্রযুক্তি, নিবিড় যত্ন ও বোর্ড সেরা ফলাফলের এক নির্ভরযোগ্য বিদ্যাপীঠ।
-            </p>
-          </div>
-
-          <div className="bg-white/95 backdrop-blur-md rounded-2xl p-5 shadow-2xl flex flex-col items-center gap-3 shrink-0 border border-slate-100">
-            <Logo size="md" clickable={false} />
-            <Link
-              href="/chairman-message"
-              className="inline-flex items-center gap-2 bg-[#C8102E] hover:bg-[#A50D26] text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow-sm"
-            >
-              <span>পরিচালকের বার্তা</span>
-              <FaArrowRight className="w-3 h-3" />
-            </Link>
-          </div>
-        </div>
-      </div>
-
       {/* ─────────────────────────────────────────────────────────────
           SECTION 1: শিক্ষানোভা-র যাত্রা যেভাবে (Our Inception & Story)
           Style: White clean background, narrative editorial prose
@@ -91,7 +54,7 @@ export default function AboutPage() {
       <section className="bg-white rounded-3xl p-6 sm:p-10 lg:p-12 border border-slate-200/90 shadow-xs">
         <EditorialHeading title="শিক্ষানোভা-র যাত্রা" highlight="যেভাবে" />
 
-        <div className="max-w-4xl mx-auto space-y-4 text-xs sm:text-sm md:text-base text-slate-700 leading-relaxed sm:leading-loose text-justify">
+        <div className="max-w-5xl mx-auto space-y-4 text-xs sm:text-sm md:text-base text-slate-700 leading-relaxed sm:leading-loose text-justify">
           <p>
             শিক্ষানোভা একাডেমির প্রতিষ্ঠাতা ও পরিচালক <strong>মোঃ রবিউল ইসলাম</strong> নীলফামারী জেলার একঝাঁক মেধাবী ও উদ্যমী তরুণকে সাথে নিয়ে এক মহৎ লক্ষ্যকে সামনে রেখে এই প্রতিষ্ঠানের সূচনা করেন। তাঁর উদ্দেশ্য ছিল কেবল মুখস্থবিদ্যার গণ্ডিতে আবদ্ধ না রেখে ৫ম থেকে ১০ম শ্রেণির শিক্ষার্থীদের প্রতিটি বিষয়ের মৌলিক ভিত্তি (Basic Foundation) অত্যন্ত মজবুত ও স্বচ্ছ করে গড়ে তোলা। নীলফামারীর আঞ্চলিক পর্যায়ে এমন একটি সমন্বিত প্ল্যাটফর্ম তৈরি করা যেখানে উন্নত শহরগুলোর মতো আধুনিক প্রযুক্তি, সুপরিকল্পিত শিট এবং নিয়মিত ডিজিটাল মনিটরিং নিশ্চিত করা যায়।
           </p>
@@ -113,9 +76,9 @@ export default function AboutPage() {
       <section className="bg-[#FAF4F4] rounded-3xl p-6 sm:p-10 lg:p-12 border border-rose-100 shadow-xs">
         <EditorialHeading title="শিক্ষানোভা-র" highlight="বৈশিষ্ট্য সমূহ" />
 
-        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3.5 text-xs sm:text-[13px] md:text-sm text-slate-800 leading-relaxed">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3.5 text-xs sm:text-[13px] md:text-sm text-slate-800 leading-relaxed">
           {/* Column 1 */}
-          <div className="space-y-3">
+          <div className="space-y-3.5">
             <div className="flex items-start gap-2.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#C8102E] mt-2 shrink-0" />
               <p>
@@ -160,7 +123,7 @@ export default function AboutPage() {
           </div>
 
           {/* Column 2 */}
-          <div className="space-y-3">
+          <div className="space-y-3.5">
             <div className="flex items-start gap-2.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#C8102E] mt-2 shrink-0" />
               <p>
@@ -216,7 +179,7 @@ export default function AboutPage() {
           highlight="ফলাফল খতিয়ান"
         />
 
-        <div className="max-w-4xl mx-auto space-y-4 text-xs sm:text-sm md:text-base text-slate-700 leading-relaxed sm:leading-loose text-justify">
+        <div className="max-w-5xl mx-auto space-y-4 text-xs sm:text-sm md:text-base text-slate-700 leading-relaxed sm:leading-loose text-justify">
           <p>
             একটি শিক্ষা প্রতিষ্ঠানের আসল পরিচয় গড়ে ওঠে তার শিক্ষার্থীদের সাফল্যের ওপর ভিত্তি করে। বিগত বছরগুলোতে নীলফামারী জেলার সেরা স্কুলগুলোর বার্ষিক মূল্যায়ন পরীক্ষা এবং এসএসসি (SSC) বোর্ড পরীক্ষায় শিক্ষানোভা একাডেমির শিক্ষার্থীদের অসাধারণ কৃতিত্ব জেলাজুড়ে প্রশংসিত হয়েছে। আমাদের ধারাবাহিক শতভাগ পাশের হার এবং সিংহভাগ শিক্ষার্থীর এ+ (GPA-5.00) অর্জন আমাদের সঠিক দিকনির্দেশনা ও কঠোর মেধা চর্চারই প্রমাণ বহন করে।
           </p>
@@ -242,7 +205,7 @@ export default function AboutPage() {
           subtitle="শিক্ষানোভা এমন একটি বিশেষ কেয়ার প্রোগ্রাম চালু করেছে, যা প্রতিটি শিক্ষার্থীর মেধা বিকাশ ও ঘাটতি পূরণে অনন্য ভূমিকা রাখে।"
         />
 
-        <div className="max-w-4xl mx-auto space-y-5 text-xs sm:text-sm md:text-base text-slate-700 leading-relaxed sm:leading-loose text-justify">
+        <div className="max-w-5xl mx-auto space-y-5 text-xs sm:text-sm md:text-base text-slate-700 leading-relaxed sm:leading-loose text-justify">
           <p>
             প্রতিটি শিক্ষার্থীর মেধা ও ধারণক্ষমতা এক নয়। অনেকেই শ্রেণিকক্ষে সাধারণ ক্লাসে কোনো একটি নির্দিষ্ট অধ্যায় বা সূত্র পুরোপুরি বুঝতে হিমশিম খায়। প্রচলিত কোচিং সিস্টেমে এদের প্রতি আলাদা নজর দেওয়ার সুযোগ থাকে না। কিন্তু শিক্ষানোভা একাডেমি বিশ্বাস করে, একজন শিক্ষার্থীও যাতে পিছিয়ে না থাকে। এই লক্ষ্যকে সামনে রেখেই আমাদের উদ্ভাবনী <strong>"Intensive Care Program"</strong>।
           </p>
@@ -295,7 +258,7 @@ export default function AboutPage() {
       <section className="bg-white rounded-3xl p-6 sm:p-10 lg:p-12 border border-slate-200/90 shadow-xs">
         <EditorialHeading title="১ম ব্যাচসমূহে" highlight="ভর্তির সুবিধা" />
 
-        <div className="max-w-4xl mx-auto space-y-4 text-xs sm:text-sm md:text-base text-slate-700 leading-relaxed sm:leading-loose text-justify">
+        <div className="max-w-5xl mx-auto space-y-4 text-xs sm:text-sm md:text-base text-slate-700 leading-relaxed sm:leading-loose text-justify">
           <p>
             শিক্ষাবর্ষের শুরুতেই যেসকল শিক্ষার্থী ১ম ব্যাচসমূহে ভর্তি হয়, তারা পড়ালেখায় অন্যদের চেয়ে স্বাভাবিকভাবেই এগিয়ে থাকে। বছরের প্রথমার্ধ থেকে সুশৃঙ্খল পাঠদান শুরু হওয়ায় তাদের ওপর শেষ মুহূর্তের কোনো মানসিক চাপ থাকে না।
           </p>
@@ -304,7 +267,7 @@ export default function AboutPage() {
             <strong>প্রথম ব্যাচের শিক্ষার্থীদের বিশেষ সুবিধাসমূহ:</strong>
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
               <h4 className="font-bold text-xs sm:text-sm text-slate-900 flex items-center gap-1.5">
                 <FaCircleCheck className="text-emerald-600 w-3.5 h-3.5" />
@@ -358,7 +321,7 @@ export default function AboutPage() {
           highlight="কোচিং করার প্রয়োজনীয়তা"
         />
 
-        <div className="max-w-4xl mx-auto space-y-4 text-xs sm:text-sm md:text-base text-slate-700 leading-relaxed sm:leading-loose text-justify">
+        <div className="max-w-5xl mx-auto space-y-4 text-xs sm:text-sm md:text-base text-slate-700 leading-relaxed sm:leading-loose text-justify">
           <p>
             অনেক শিক্ষার্থী ভিন্ন ভিন্ন শিক্ষকের কাছে দৌড়াদৌড়ি করতে গিয়ে দিনের সিংহভাগ সময় ও শক্তি অপচয় করে ফেলে। এর ফলে তাদের নিজস্ব পড়ার (Self-Study) জন্য পর্যাপ্ত সময় থাকে না। এছাড়া বিভিন্ন শিক্ষকের পরীক্ষার সময়সূচি ও পাঠদানের ধারার মধ্যে কোনো সমন্বয় থাকে না, যার কারণে শিক্ষার্থী তীব্র মানসিক ক্লান্তিতে ভোগে।
           </p>
@@ -383,7 +346,7 @@ export default function AboutPage() {
       <section className="bg-white rounded-3xl p-6 sm:p-10 lg:p-12 border border-slate-200/90 shadow-xs">
         <EditorialHeading title="ADVANCED BATCH-এ" highlight="ভর্তির সুবিধা" />
 
-        <div className="max-w-4xl mx-auto space-y-4 text-xs sm:text-sm md:text-base text-slate-700 leading-relaxed sm:leading-loose">
+        <div className="max-w-5xl mx-auto space-y-4 text-xs sm:text-sm md:text-base text-slate-700 leading-relaxed sm:leading-loose">
           <p className="text-justify">
             শীর্ষস্থানীয় মেধাবী এবং বোর্ড পরীক্ষায় ট্যালেন্টপুল বৃত্তি ও গোল্ডেন জিপিএ-৫ প্রত্যাশী শিক্ষার্থীদের জন্য আমাদের রয়েছে বিশেষায়িত <strong>Advanced Batch</strong>। এই ব্যাচে নিয়মিত বোর্ড সিলেবাসের পাশাপাশি উচ্চতর বিশ্লেষণ ও কঠিন সমস্যার সমাধানের কৌশল শেখানো হয়।
           </p>
