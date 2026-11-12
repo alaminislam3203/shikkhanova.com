@@ -149,3 +149,4 @@ export function saveStoredLandingContent(content: LandingContent): void {
     localStorage.setItem('sn_landing_content_v1', JSON.stringify(content));
   } catch {}
 }
+

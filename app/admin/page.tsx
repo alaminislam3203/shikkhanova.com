@@ -19,6 +19,7 @@ import AdminBannersManager from "@/components/admin/AdminBannersManager";
 import AdminAchieversManager from "@/components/admin/AdminAchieversManager";
 import AdminQuizManager from "@/components/admin/AdminQuizManager";
 import AdminGalleryManager from "@/components/admin/AdminGalleryManager";
+import AdminLandingManager from "@/components/admin/AdminLandingManager";
 import { PurchaseRecord } from "@/types";
 import {
   FaBars,
@@ -580,9 +581,10 @@ export default function AdminPage() {
 
         {/* TAB 5: Admin Profile Photo & Center Settings */}
         {activeTab === "settings" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* Left: Admin Profile & Photo Upload Card (7 Cols) */}
-            <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              {/* Left: Admin Profile & Photo Upload Card (7 Cols) */}
+              <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
               <div className="border-b border-slate-100 pb-4">
                 <span className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-brand-700 bg-brand-50 px-2.5 py-0.5 rounded-full mb-1">
                   <FaUserShield /> মাস্টার অ্যাডমিন প্রোফাইল
@@ -760,7 +762,11 @@ export default function AdminPage() {
               </div>
             </div>
           </div>
-        )}
+
+          {/* Dynamic Landing Page Content Manager */}
+          <AdminLandingManager />
+        </div>
+      )}
       </div>
     </div>
   );
