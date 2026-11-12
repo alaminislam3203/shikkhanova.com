@@ -639,6 +639,9 @@ export default function AdminPage() {
         {/* TAB 4.8: Admin Roll Attendance Manager */}
         {activeTab === "attendance" && <AdminAttendanceManager />}
 
+        {/* TAB 4.9: BulkSMSBD Notification & SMS Center */}
+        {activeTab === "sms" && <AdminSmsManager />}
+
         {/* TAB 5: Admin Profile Photo & Center Settings */}
         {activeTab === "settings" && (
           <div className="space-y-8">
