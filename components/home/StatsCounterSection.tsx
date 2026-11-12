@@ -11,8 +11,6 @@ import {
   FaAward,
   FaBookOpen,
   FaClock,
-  FaUsers,
-  FaTrophy,
   FaArrowTrendUp,
   FaCircleCheck,
 } from 'react-icons/fa6';
@@ -92,9 +90,12 @@ const CARD_STYLES: CardStyleConfig[] = [
 ];
 
 export default function StatsCounterSection() {
+  const [mounted, setMounted] = useState(false);
   const [stats, setStats] = useState<LandingStatItem[]>(DEFAULT_LANDING_CONTENT.stats);
 
   useEffect(() => {
+    setMounted(true);
+
     try {
       const stored = getStoredLandingContent();
       if (stored?.stats && Array.isArray(stored.stats)) {
@@ -123,16 +124,20 @@ export default function StatsCounterSection() {
     return config.defaultIcon;
   };
 
+  // Safe items to guarantee 100% hydration matching between SSR and initial client render
+  const currentStats = mounted ? stats : DEFAULT_LANDING_CONTENT.stats;
+
   return (
-    <section className="relative py-2">
+    <section className="relative py-2" suppressHydrationWarning>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
-        {stats.map((item, idx) => {
+        {currentStats.map((item, idx) => {
           const config = CARD_STYLES[idx % CARD_STYLES.length];
           const IconComp = getStatIconComponent(item, idx);
 
           return (
             <div
               key={item.id || idx}
+              suppressHydrationWarning
               className={`group relative overflow-hidden rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 p-5 sm:p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between ${config.borderHover}`}
             >
               {/* Subtle Ambient Glow inside Card */}
@@ -159,10 +164,11 @@ export default function StatsCounterSection() {
                 </div>
 
                 <div
+                  suppressHydrationWarning
                   className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-bold border backdrop-blur-sm shadow-xs ${config.badgeBg}`}
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
-                  <span>{config.badgeText}</span>
+                  <span suppressHydrationWarning>{config.badgeText}</span>
                 </div>
               </div>
 
@@ -170,6 +176,7 @@ export default function StatsCounterSection() {
               <div className="relative z-10 space-y-1.5 mt-auto">
                 <div className="flex items-baseline gap-2">
                   <span
+                    suppressHydrationWarning
                     className={`text-3xl sm:text-4xl lg:text-4xl xl:text-5xl font-black font-mono tracking-tight text-slate-900 dark:text-white transition-all duration-300 group-hover:bg-clip-text group-hover:text-transparent bg-gradient-to-r ${config.textGradient}`}
                   >
                     {item.value}
@@ -177,11 +184,17 @@ export default function StatsCounterSection() {
                   <FaArrowTrendUp className="w-4 h-4 text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
 
-                <h3 className="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100 leading-snug">
+                <h3
+                  suppressHydrationWarning
+                  className="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100 leading-snug"
+                >
                   {item.label}
                 </h3>
 
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1.5 pt-1 border-t border-slate-100 dark:border-slate-800/80">
+                <p
+                  suppressHydrationWarning
+                  className="text-xs text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1.5 pt-1 border-t border-slate-100 dark:border-slate-800/80"
+                >
                   <FaCircleCheck className="w-3 h-3 text-emerald-500 flex-shrink-0" />
                   <span className="truncate">{config.defaultDesc}</span>
                 </p>

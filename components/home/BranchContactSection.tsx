@@ -171,7 +171,7 @@ export default function BranchContactSection() {
   };
 
   return (
-    <section className="relative rounded-3xl bg-white border border-slate-200/90 shadow-sm p-6 sm:p-10 lg:p-12 overflow-hidden">
+    <section className="relative rounded-3xl bg-white border border-slate-200/90 shadow-sm p-6 sm:p-10 lg:p-12 overflow-hidden" suppressHydrationWarning>
       {/* 1. Header Section matching /contact-us */}
       <div className="text-center mb-10 sm:mb-14">
         <div className="inline-block mb-3">

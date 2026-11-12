@@ -94,7 +94,7 @@ export default function ModelTestShowcaseSection() {
   }, []);
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-6" suppressHydrationWarning>
       <div className="bg-gradient-to-br from-white via-red-50/20 to-white rounded-3xl p-6 sm:p-10 border border-red-100 shadow-md relative overflow-hidden">
         {/* Ambient Top Glow */}
         <div className="absolute top-0 right-0 w-80 h-80 bg-red-500/5 rounded-full blur-3xl pointer-events-none" />
