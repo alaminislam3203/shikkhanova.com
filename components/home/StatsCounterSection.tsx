@@ -13,7 +13,6 @@ import {
   FaClock,
   FaCircleCheck,
   FaArrowTrendUp,
-  FaSparkles,
 } from 'react-icons/fa6';
 
 interface StatData {

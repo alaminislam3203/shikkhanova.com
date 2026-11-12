@@ -1,5 +1,21 @@
 [
   {
+    "id": "sms-1794482219128-hala7",
+    "timestamp": "2026-11-12T11:16:59.757Z",
+    "type": "custom",
+    "recipientCount": 1,
+    "numbers": [
+      "8801313334279"
+    ],
+    "message": "সম্মানিত অভিভাবক ও শিক্ষার্থী, সরকারি ছুটি উপলক্ষে আগামী রবিবার ও সোমবার কোচিংয়ের সকল ক্লাস বন্ধ থাকবে। মঙ্গলবার থেকে স্বাভাবিক রুটিনে ক্লাস চলবে। — শিক্ষানোভা একাডেমি",
+    "status": "SENT",
+    "response": {
+      "response_code": 1032,
+      "success_message": "",
+      "error_message": "Your ip 103.167.15.9 not Whitelisted. Please whitelist ip from Phonebook"
+    }
+  },
+  {
     "id": "sms-1794480796800-812f3",
     "timestamp": "2026-11-12T10:53:16.800Z",
     "type": "custom",
