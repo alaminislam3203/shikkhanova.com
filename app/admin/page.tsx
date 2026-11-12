@@ -445,6 +445,7 @@ export default function AdminPage() {
                   {activeTab === "students" && "শিক্ষার্থী ম্যানেজ ও ভর্তি"}
                   {activeTab === "subjects" && "শ্রেণিভিত্তিক বিষয় ও NCTB বই"}
                   {activeTab === "attendance" && "রোল উপস্থিতি শিট"}
+                  {activeTab === "sms" && "এসএমএস সেন্টার (BulkSMSBD)"}
                   {activeTab === "settings" && "প্রোফাইল ও সেন্টার সেটিংস"}
                 </span>
               </div>
@@ -470,6 +471,8 @@ export default function AdminPage() {
                   "শ্রেণি ৫-১০ বিষয় ও NCTB পাঠ্যবই ম্যানেজমেন্ট"}
                 {activeTab === "attendance" &&
                   "রোল উপস্থিতি ও প্রতিদিনের হাজিরা গ্রহণ"}
+                {activeTab === "sms" &&
+                  "বাল্ক নোটিফিকেশন, ফি রিমাইন্ডার ও লাইভ এসএমএস হিস্ট্রি"}
                 {activeTab === "settings" &&
                   "অ্যাডমিন প্রোফাইল, সেন্টার ও ল্যান্ডিং পেজ সেটিংস"}
               </h1>
