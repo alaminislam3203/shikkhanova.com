@@ -476,8 +476,16 @@ export default function AdminQuizManager() {
     }
   };
 
-  const handleSaveCovers = async (customCovers?: QuizCovers) => {
-    const payload = customCovers || covers;
+  const handleSaveCovers = async (customCovers?: QuizCovers | any) => {
+    // Guard against React SyntheticEvent / MouseEvent being passed from onClick
+    const isRealCovers =
+      customCovers &&
+      typeof customCovers === "object" &&
+      !("nativeEvent" in customCovers) &&
+      !("target" in customCovers) &&
+      ("classes" in customCovers || "subjects" in customCovers);
+
+    const payload: QuizCovers = isRealCovers ? customCovers : covers;
     setIsSavingCovers(true);
     const saveToastId = toast.loading("কভার ইমেজ সংরক্ষণ ও আপডেট করা হচ্ছে...");
     try {
@@ -1852,7 +1860,7 @@ export default function AdminQuizManager() {
 
             <button
               type="button"
-              onClick={handleSaveCovers}
+              onClick={() => handleSaveCovers()}
               disabled={isSavingCovers}
               className="px-6 py-2.5 rounded-2xl bg-gradient-to-r from-purple-700 to-indigo-800 hover:opacity-95 text-white font-black text-xs shadow-md transition flex items-center gap-2 disabled:opacity-50 shrink-0 self-start sm:self-auto cursor-pointer"
             >
@@ -2164,7 +2172,7 @@ export default function AdminQuizManager() {
           <div className="flex items-center justify-end gap-3 pt-2">
             <button
               type="button"
-              onClick={handleSaveCovers}
+              onClick={() => handleSaveCovers()}
               disabled={isSavingCovers}
               className="px-8 py-3 rounded-2xl bg-gradient-to-r from-purple-700 to-indigo-800 hover:opacity-95 text-white font-black text-sm shadow-lg transition active:scale-98 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
             >

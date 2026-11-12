@@ -49,8 +49,15 @@ export default function AdminLandingManager() {
       .catch(() => {});
   }, []);
 
-  const handleSave = async (updatedContent?: LandingContent) => {
-    const payload = updatedContent || content;
+  const handleSave = async (updatedContent?: LandingContent | any) => {
+    const isRealLandingContent =
+      updatedContent &&
+      typeof updatedContent === 'object' &&
+      !('nativeEvent' in updatedContent) &&
+      !('target' in updatedContent) &&
+      'stats' in updatedContent;
+
+    const payload: LandingContent = isRealLandingContent ? updatedContent : content;
     setSaving(true);
     setStatusMsg(null);
 
