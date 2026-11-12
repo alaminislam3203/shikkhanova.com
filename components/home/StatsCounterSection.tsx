@@ -280,7 +280,7 @@ export default function StatsCounterSection() {
           const config = LIGHT_CARD_CONFIGS[idx % LIGHT_CARD_CONFIGS.length];
           const IconComp = getIconComponent(item, idx);
           const currentCount = counts[idx] || 1;
-          const displayCount = mounted ? toBengaliNumber(currentCount) : toBengaliNumber(item.targetNumber);
+          const displayCount = toBengaliNumber(currentCount);
 
           return (
             <div

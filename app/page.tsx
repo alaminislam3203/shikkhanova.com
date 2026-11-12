@@ -1,6 +1,6 @@
 import React from 'react';
+import dynamic from 'next/dynamic';
 import HeroSection from '@/components/home/HeroSection';
-import StatsCounterSection from '@/components/home/StatsCounterSection';
 import ClassSelector from '@/components/home/ClassSelector';
 import ModelTestShowcaseSection from '@/components/home/ModelTestShowcaseSection';
 import SuccessStoriesSection from '@/components/home/SuccessStoriesSection';
@@ -9,6 +9,24 @@ import FeaturesGrid from '@/components/home/FeaturesGrid';
 import HomeGallerySection from '@/components/home/HomeGallerySection';
 import FaqSection from '@/components/home/FaqSection';
 import BranchContactSection from '@/components/home/BranchContactSection';
+
+// Dynamically import client-only animated stats counter with ssr: false to prevent hydration text mismatch
+const StatsCounterSection = dynamic(
+  () => import('@/components/home/StatsCounterSection'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 py-2">
+        {[1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="h-44 rounded-2xl bg-white border border-slate-200/80 p-6 shadow-xs animate-pulse"
+          />
+        ))}
+      </div>
+    ),
+  }
+);
 
 export default function HomePage() {
   return (

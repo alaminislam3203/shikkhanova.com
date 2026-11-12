@@ -1,0 +1,17 @@
+[
+  {
+    "id": "sms-1794480796800-812f3",
+    "timestamp": "2026-11-12T10:53:16.800Z",
+    "type": "custom",
+    "recipientCount": 1,
+    "numbers": [
+      "8801313334279"
+    ],
+    "message": "শিক্ষানোভা একাডেমি থেকে এটি একটি টেস্ট এসএমএস। বাল্ক এসএমএস সিস্টেম সফলভাবে সক্রিয় আছে!",
+    "status": "MOCK_SENT",
+    "response": {
+      "response_code": 202,
+      "success_message": "Mock: SMS logged successfully (Please add real BULKSMSBD_API_KEY in .env)"
+    }
+  }
+]
