@@ -231,10 +231,16 @@ export async function sendBulkSms(params: SmsSendParams): Promise<{
       return { raw: text };
     });
 
+    // BulkSMSBD success response has response_code: 202 and no error_message
     const isSuccess =
-      resData?.response_code === 202 ||
-      resData?.success_message !== undefined ||
-      String(resData?.raw || '').includes('202');
+      resData?.response_code === 202 &&
+      !resData?.error_message &&
+      Boolean(resData?.success_message || resData?.message_id);
+
+    let friendlyError = resData?.error_message || 'BulkSMSBD থেকে এসএমএস পাঠাতে ব্যর্থ হয়েছে';
+    if (resData?.response_code === 1032 || String(resData?.error_message || '').toLowerCase().includes('not whitelisted')) {
+      friendlyError = `আপনার আইপি হোয়াইটলিস্ট করা নেই: ${resData?.error_message || ''}। BulkSMSBD ড্যাশবোর্ডে গিয়ে আপনার বর্তমান আইপি (Whitelist IP) যুক্ত করুন।`;
+    }
 
     const logEntry: SmsLogEntry = {
       id: logId,
@@ -245,7 +251,7 @@ export async function sendBulkSms(params: SmsSendParams): Promise<{
       message,
       status: isSuccess ? 'SENT' : 'FAILED',
       response: resData,
-      error: isSuccess ? undefined : resData?.error_message || 'BulkSMSBD API Error',
+      error: isSuccess ? undefined : friendlyError,
     };
     appendSmsLog(logEntry);
 
@@ -253,7 +259,7 @@ export async function sendBulkSms(params: SmsSendParams): Promise<{
       success: isSuccess,
       message: isSuccess
         ? `${validNumbers.length}টি নম্বরে এসএমএস সফলভাবে পাঠানো হয়েছে!`
-        : resData?.error_message || 'BulkSMSBD থেকে এসএমএস পাঠাতে ব্যর্থ হয়েছে',
+        : friendlyError,
       sentCount: isSuccess ? validNumbers.length : 0,
       logId,
       response: resData,
