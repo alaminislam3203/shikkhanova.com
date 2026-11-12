@@ -1,136 +1,261 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import Logo from '@/components/common/Logo';
-import {
-  FaQuoteLeft,
-  FaPhone,
-  FaLocationDot,
-  FaEnvelope,
-  FaCircleCheck,
-  FaArrowLeft,
-} from 'react-icons/fa6';
+import React from "react";
+import { FaFacebookF, FaLinkedinIn, FaYoutube } from "react-icons/fa6";
 
 export default function ChairmanMessagePage() {
   return (
-    <div className="max-w-5xl mx-auto space-y-5 sm:space-y-8">
-      {/* Header Banner (Compact on Mobile) */}
-      <div
-        style={{
-          background: 'linear-gradient(135deg, #071426 0%, #0A1E3C 55%, #2A0B1E 100%)',
-        }}
-        className="relative overflow-hidden text-white p-4 sm:p-8 lg:p-10 rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl border-b-4 border-[#C8102E]"
-      >
-        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-          <div className="space-y-1 sm:space-y-2">
-            <span className="inline-block bg-[#C8102E] text-white text-[10px] sm:text-xs font-bold px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-sm uppercase">
-              আমাদের সম্পর্কে
-            </span>
-            <h1 className="text-lg sm:text-3xl md:text-4xl font-black tracking-tight leading-snug sm:leading-tight">
-              চেয়ারম্যানের বার্তা
-            </h1>
-            <p className="text-[11px] sm:text-sm text-slate-200">
-              শিক্ষা নোভা একাডেমির প্রতিষ্ঠাতা ও পরিচালকের শুভেচ্ছা ও দিকনির্দেশনা
-            </p>
-          </div>
+    <div
+      suppressHydrationWarning
+      className="w-full max-w-6xl xl:max-w-7xl mx-auto py-8 sm:py-14 px-4 sm:px-6 lg:px-8 select-none"
+    >
+      <div className="bg-white rounded-3xl p-6 sm:p-12 lg:p-16 xl:p-20 border border-slate-200/80 shadow-xs space-y-8 sm:space-y-12">
+        {/* ─────────────────────────────────────────────────────────────
+            TOP SECTION: Circular Photo with Pastel Background & Details
+            (Exact match to Reference Screenshot)
+        ───────────────────────────────────────────────────────────── */}
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8 sm:gap-12">
+          {/* Left: Circular Headshot with Artistic Pastel Circles */}
+          <div className="relative shrink-0 flex items-center justify-center p-3">
+            {/* Top-Left Yellow Circle */}
+            <div className="absolute top-0 left-0 w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-[#FFE566] pointer-events-none opacity-90" />
 
-          <Link
-            href="/about"
-            className="inline-flex items-center gap-1.5 sm:gap-2 bg-white/10 hover:bg-white/20 text-white text-[11px] sm:text-xs font-bold px-3 py-1.5 sm:px-4 sm:py-2.5 rounded-sm border border-white/15 transition self-start sm:self-auto"
-          >
-            <FaArrowLeft className="w-3 h-3" />
-            <span>শিক্ষা নোভা সম্পর্কে</span>
-          </Link>
-        </div>
-      </div>
+            {/* Bottom-Right Soft Pink / Peach Circle */}
+            <div className="absolute bottom-0 right-0 w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-[#FFB3BA] pointer-events-none opacity-85" />
 
-      {/* Main Message Card */}
-      <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-10 border border-slate-200 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
-        {/* Left Profile Column */}
-        <div className="lg:col-span-4 bg-slate-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-slate-200/80 text-center space-y-3.5 sm:space-y-4">
-          <div className="w-40 h-48 sm:w-44 sm:h-52 mx-auto rounded-2xl bg-gradient-to-br from-[#0A1E3C] to-[#C8102E] p-1 shadow-lg">
-            <div className="w-full h-full rounded-xl bg-white overflow-hidden">
+            {/* Circular Headshot Photo */}
+            <div className="relative z-10 w-44 h-44 sm:w-52 sm:h-52 rounded-full overflow-hidden bg-slate-100 shadow-md border-4 border-white">
               <img
                 src="/chairman.png"
-                alt="রবিউল ইসলাম - চেয়ারম্যান ও পরিচালক, শিক্ষা নোভা একাডেমি"
+                alt="মোঃ রবিউল ইসলাম"
                 className="w-full h-full object-cover object-top"
+                onError={(e) => {
+                  (e.target as HTMLElement).style.display = "none";
+                }}
               />
             </div>
           </div>
 
-          <div className="space-y-1">
-            <h2 className="text-lg font-bold text-[#0A1E3C]">রবিউল ইসলাম</h2>
-            <p className="text-xs font-bold text-[#C8102E]">
-              চেয়ারম্যান ও পরিচালক, শিক্ষা নোভা একাডেমি
+          {/* Right: Chairman Title, Designation, Email, Phone, Social Icons */}
+          <div className="space-y-2 text-center sm:text-left flex-1 min-w-0 pt-2">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#111827] tracking-tight">
+              মোঃ রবিউল ইসলাম
+            </h1>
+
+            <p className="text-sm sm:text-[15px] font-semibold text-slate-700">
+              প্রতিষ্ঠাতা ও পরিচালক - শিক্ষানোভা একাডেমি
             </p>
-            <p className="text-[11px] text-slate-500">জুম্মাপাড়া, নীলফামারী সদর</p>
-          </div>
 
-          <div className="pt-3 border-t border-slate-200 text-left space-y-2 text-xs text-slate-600">
-            <div className="flex items-center gap-2">
-              <FaPhone className="text-emerald-600 shrink-0" />
-              <span className="font-bn-normal font-bold text-slate-800">০১৭১২৫৯২৫১৯</span>
+            <div className="pt-1.5 space-y-1 text-xs sm:text-sm text-slate-600 font-medium">
+              <p>
+                <strong className="text-slate-800">Email :</strong>{" "}
+                <a
+                  href="mailto:robiulnil101@gmail.com"
+                  className="hover:underline text-slate-700"
+                >
+                  robiulnil101@gmail.com
+                </a>
+              </p>
+              <p>
+                <strong className="text-slate-800">Phone :</strong>{" "}
+                <a
+                  href="tel:01712592519"
+                  className="hover:underline text-slate-700 font-mono"
+                >
+                  01712592519
+                </a>
+              </p>
             </div>
-            <div className="flex items-center gap-2">
-              <FaEnvelope className="text-[#C8102E] shrink-0" />
-              <span className="truncate">robiulnil101@gmail.com</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <FaLocationDot className="text-[#0A1E3C] shrink-0" />
-              <span>জুম্মাপাড়া, নীলফামারী সদর</span>
-            </div>
-          </div>
 
-          <div className="pt-2 flex justify-center">
-            <Logo size="sm" clickable={false} />
+            {/* Small Grey Social Media Icon Circles */}
+            <div className="pt-3 flex items-center justify-center sm:justify-start gap-2">
+              <a
+                href="https://www.facebook.com/share/18bQRL5wH7/"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Facebook"
+                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-[#1877F2] text-slate-600 hover:text-white flex items-center justify-center transition shadow-2xs text-xs"
+              >
+                <FaFacebookF />
+              </a>
+
+              <a
+                href="https://linkedin.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="LinkedIn"
+                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-[#0A66C2] text-slate-600 hover:text-white flex items-center justify-center transition shadow-2xs text-xs"
+              >
+                <FaLinkedinIn />
+              </a>
+
+              <a
+                href="https://youtube.com/@ShikkhaNova"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="YouTube"
+                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-[#FF0000] text-slate-600 hover:text-white flex items-center justify-center transition shadow-2xs text-xs"
+              >
+                <FaYoutube />
+              </a>
+            </div>
           </div>
         </div>
 
-        {/* Right Letter Column */}
-        <div className="lg:col-span-8 space-y-5 text-slate-700 leading-relaxed text-sm sm:text-base">
-          <div className="w-10 h-10 rounded-xl bg-red-50 text-[#C8102E] flex items-center justify-center text-lg">
-            <FaQuoteLeft />
-          </div>
+        {/* ─────────────────────────────────────────────────────────────
+            MIDDLE: Narrative Letter Body (Exact Structure & Tone)
+        ───────────────────────────────────────────────────────────── */}
+        <div className="space-y-4 sm:space-y-5 text-xs sm:text-[14px] md:text-[15px] text-[#222222] leading-relaxed sm:leading-[2.05] text-justify font-normal pt-2">
+          <h2 className="text-sm sm:text-base font-bold text-slate-900">
+            স্নেহাস্পদ ছাত্র-ছাত্রী ভাই ও বোনেরা,
+          </h2>
 
-          <h3 className="text-xl sm:text-2xl font-bold text-[#0A1E3C]">
-            প্রিয় শিক্ষার্থী ও সম্মানিত অভিভাবকবৃন্দ, আসসালামু আলাইকুম।
+          <p>
+            শিক্ষানোভা পরিবারের পক্ষ থেকে তোমাদের সকলকে জানাই হৃদয়-উৎসারিত একরাশ
+            প্রীতি, শুভেচ্ছা ও প্রাণঢালা অভিনন্দন। তোমরা হয়তো অবগত আছো যে, ৫ম
+            থেকে ১০ম শ্রেণির এই সময়টা প্রতিটি শিক্ষার্থীর ভবিষ্যৎ মেধার বিকাশ ও
+            শিক্ষাজীবনের মজবুত ভিত্তিপ্রস্তর গড়ে তোলার সবচেয়ে মূল্যবান মুহূর্ত।
+            কালের সীমাহীন গণ্ডি পেরিয়ে গতানুগতিক মুখস্থবিদ্যার যুগ শেষ হয়ে এখন
+            মেধা ও সৃজনশীলতার বিকাশই সাফল্যের প্রধান সোপান। শুরু থেকেই
+            শিক্ষানোভা পরিবারের পথচলা—মনন, মেধা, শ্রম, নিষ্ঠা, দক্ষতা, আধুনিক
+            শিক্ষাদান পদ্ধতি ও আন্তরিক পরিচর্যার মাধ্যমে প্রতিটি শিক্ষার্থীকে
+            সাফল্যের সোনালী শীর্ষে পৌঁছে দেওয়ার দৃঢ় প্রত্যয় নিয়ে।
+          </p>
+
+          <p>
+            তোমরা জেনে আনন্দিত হবে যে, প্রতি বছরের ন্যায় আমাদের একঝাঁক কৃতী
+            শিক্ষার্থী স্কুল মূল্যায়ন পরীক্ষা ও এসএসসি বোর্ড পরীক্ষায় অসাধারণ
+            কৃতিত্ব প্রদর্শন করে আসছে। তাদের এই সাফল্য আমাদের জন্য বয়ে এনেছে পরম
+            আত্মতৃপ্তি এবং অনাবিল আনন্দ। শিক্ষানোভার অতীত সাফল্যমণ্ডিত ইতিহাস,
+            ছাত্র-ছাত্রী ও শিক্ষকদের আন্তরিক নিরলস প্রচেষ্টা, সুপরিকল্পিত
+            উন্নতমানের নিখুঁত পাঠদান পদ্ধতি ও অধ্যায়ভিত্তিক রঙিন শিট
+            শিক্ষার্থীদের বরাবরই শীর্ষস্থানে অধিষ্ঠিত রেখেছে।
+          </p>
+
+          <p>
+            আমরা আমাদের সর্বোচ্চ মেধা, পরিশ্রম ও আন্তরিক যত্ন দিয়ে এ সাফল্যকে
+            ধরে রেখে আগামী দিনে আরও সুষ্ঠু, সুসংগঠিত ও সুনিপুণ পদ্ধতিতে প্রতিটি
+            ছাত্র-ছাত্রীর মেধা শাণিত করে কাঙ্ক্ষিত লক্ষ্যে পৌঁছে দিতে পারব বলে
+            আমার পূর্ণ বিশ্বাস। মনে রাখবে, সাফল্যের মূল চাবিকাঠি হচ্ছে অধ্যবসায়।
+            গতানুগতিক সাজেশন-নির্ভর মুখস্থ বিদ্যার বেড়াজাল ডিঙিয়ে নিয়মিত অনুশীলন
+            ও গঠনমূলক পরীক্ষার মাধ্যমেই পৌঁছতে হবে তোমাদের স্বপ্নের গন্তব্যে।
+          </p>
+
+          <p>
+            ৫ম থেকে ১০ম শ্রেণির এই শিক্ষাবর্ষের প্রতিটি দিন অত্যন্ত মূল্যবান।
+            সঠিক সময়ে সঠিকভাবে সময়ের সদ্ব্যবহার করাই বুদ্ধিমানের কাজ। তাই
+            শিক্ষানোভা একাডেমি পরীক্ষার পূর্ব থেকেই সুনির্দিষ্ট পাঠপরিকল্পনা ও
+            পরীক্ষার মাধ্যমে সম্পূর্ণ সিলেবাস শেষ করার নিশ্চয়তা দিচ্ছে।
+            শিক্ষার্থীদের মেধা আরও শাণিত করতে নিয়মিত ক্লাসের পাশাপাশি দুর্বলদের
+            জন্য ইনটেনসিভ কেয়ার, অনলাইন কুইজ এবং স্বয়ংক্রিয় রেজাল্ট কার্ড দেখার
+            সুব্যবস্থা রাখা হয়েছে। আমরা আমাদের ধারাবাহিক সাফল্য বজায় রাখতে
+            বরাবরই প্রতিশ্রুতিবদ্ধ।
+          </p>
+
+          {/* Valediction */}
+          <div className="pt-2 space-y-1">
+            <p className="font-bold text-slate-900">
+              সকলের শুভ কামনায়- আল্লাহ হাফেজ।
+            </p>
+            <p className="font-bold text-slate-900 pt-2">শুভেচ্ছান্তে -</p>
+          </div>
+        </div>
+
+        {/* ─────────────────────────────────────────────────────────────
+            BOTTOM: Two-Column Credentials & Designations (Square Bullets)
+            (Exact match to Reference Screenshot)
+        ───────────────────────────────────────────────────────────── */}
+        <div className="pt-4 space-y-4">
+          <h3 className="text-lg sm:text-xl font-bold text-slate-900">
+            মোঃ রবিউল ইসলাম
           </h3>
 
-          <p>
-            একজন শিক্ষার্থীর শিক্ষাজীবনের সবচেয়ে গুরুত্বপূর্ণ ভিত্তি গড়ে ওঠে ৫ম থেকে ১০ম শ্রেণির মধ্যে। এই সময়ে সঠিক দিকনির্দেশনা, মানসম্মত নোট এবং নিয়মিত মূল্যায়ন একজন সাধারণ শিক্ষার্থীকেও অসাধারণ সাফল্যের চূড়ায় পৌঁছে দিতে পারে। সেই লক্ষ্যকে সামনে রেখেই নীলফামারী সদরের জুম্মাপাড়ায় আমাদের প্রিয় প্রতিষ্ঠান{' '}
-            <strong className="text-[#0A1E3C]">“শিক্ষা নোভা (ShikkhaNova)”</strong>-এর যাত্রা।
-          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2 text-xs sm:text-[13px] text-slate-800 leading-relaxed">
+            {/* Column 1 */}
+            <div className="space-y-2">
+              <div className="flex items-start gap-2.5">
+                <span className="w-1.5 h-1.5 bg-[#222222] mt-2 shrink-0 rounded-xs" />
+                <p>
+                  <strong>প্রতিষ্ঠাতা ও পরিচালক</strong> - শিক্ষানোভা একাডেমি
+                </p>
+              </div>
 
-          <p>
-            আমাদের মূলমন্ত্র <strong className="text-[#C8102E]">“শিখবো, জিতবো”</strong>। আমরা বিশ্বাস করি, প্রতিটি শিক্ষার্থীর ভেতরেই অসীম সম্ভাবনা লুকিয়ে আছে। শুধু প্রয়োজন সঠিক যত্ন, অধ্যায়ভিত্তিক সুস্পষ্ট ধারণা এবং নিয়মিত অনুশীলনের মাধ্যমে আত্মবিশ্বাস তৈরি করা।
-          </p>
+              <div className="flex items-start gap-2.5">
+                <span className="w-1.5 h-1.5 bg-[#222222] mt-2 shrink-0 rounded-xs" />
+                <p>
+                  <strong>প্রধান সমন্বয়ক ও গণিত প্রশিক্ষক</strong> - শিক্ষানোভা
+                  একাডেমিক টিম
+                </p>
+              </div>
 
-          <p>
-            সময়ের সাথে তাল মিলিয়ে আমরা আমাদের শিক্ষা ব্যবস্থাকে সম্পূর্ণ ডিজিটাল প্ল্যাটফর্মে রূপান্তর করেছি—যেখানে শিক্ষার্থীরা ঘরে বসেই অধ্যায়ভিত্তিক প্রিমিয়াম পিডিএফ হ্যান্ডনোট সংগ্রহ করতে পারছে, পরীক্ষার সাথে সাথে অনলাইনে রোল নম্বর দিয়ে অফিশিয়াল মার্কশিট দেখতে পারছে এবং ইউটিউব ভিডিও ক্লাসের মাধ্যমে যেকোনো অধ্যায় সহজেই রিভিশন দিতে পারছে।
-          </p>
+              <div className="flex items-start gap-2.5">
+                <span className="w-1.5 h-1.5 bg-[#222222] mt-2 shrink-0 rounded-xs" />
+                <p>
+                  <strong>কারিকুলাম ও শিট গবেষক</strong> - এনসিটিবি নতুন
+                  পাঠ্যক্রম
+                </p>
+              </div>
 
-          <div className="bg-slate-50 p-4 rounded-xl border-l-4 border-[#C8102E] space-y-2 text-xs sm:text-sm">
-            <p className="font-bold text-[#0A1E3C] flex items-center gap-1.5">
-              <FaCircleCheck className="text-[#C8102E]" /> আমাদের অঙ্গীকার:
-            </p>
-            <p className="text-slate-600">
-              প্রতিটি শিক্ষার্থীকে নিজের সন্তানের মতো যত্ন নিয়ে পাঠদান করা এবং অভিভাবকদের কাছে শতভাগ স্বচ্ছ জবাবদিহিতা নিশ্চিত করাই আমাদের প্রধান দায়িত্ব।
-            </p>
-          </div>
+              <div className="flex items-start gap-2.5">
+                <span className="w-1.5 h-1.5 bg-[#222222] mt-2 shrink-0 rounded-xs" />
+                <p>
+                  <strong>সদস্য</strong> - বাংলাদেশ গণিত একাডেমি ফোরাম
+                </p>
+              </div>
 
-          <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <p className="font-bold text-[#0A1E3C] text-base">রবিউল ইসলাম</p>
-              <p className="text-xs text-slate-500">চেয়ারম্যান ও পরিচালক, শিক্ষা নোভা একাডেমি</p>
+              <div className="flex items-start gap-2.5">
+                <span className="w-1.5 h-1.5 bg-[#222222] mt-2 shrink-0 rounded-xs" />
+                <p>
+                  <strong>সংকলক ও সম্পাদক</strong> - শিক্ষানোভা এক্সক্লুসিভ শিট
+                  সিরিজ
+                </p>
+              </div>
             </div>
-            <span className="inline-block bg-[#C8102E] text-white text-xs font-bold px-3.5 py-1.5 rounded-sm self-start sm:self-auto">
-              “শিখবো, জিতবো”
-            </span>
+
+            {/* Column 2 */}
+            <div className="space-y-2">
+              <div className="flex items-start gap-2.5">
+                <span className="w-1.5 h-1.5 bg-[#222222] mt-2 shrink-0 rounded-xs" />
+                <p>
+                  <strong>প্রতিষ্ঠাতা</strong> - শিক্ষানোভা ডিজিটাল রেজাল্ট ও
+                  লার্নিং পোর্টাল
+                </p>
+              </div>
+
+              <div className="flex items-start gap-2.5">
+                <span className="w-1.5 h-1.5 bg-[#222222] mt-2 shrink-0 rounded-xs" />
+                <p>
+                  <strong>প্রধান মেন্টর</strong> - ইনটেনসিভ কেয়ার ও মেধা বৃত্তি
+                  উইং
+                </p>
+              </div>
+
+              <div className="flex items-start gap-2.5">
+                <span className="w-1.5 h-1.5 bg-[#222222] mt-2 shrink-0 rounded-xs" />
+                <p>
+                  <strong>ক্যারিয়ার ও একাডেমিক কাউন্সেলর</strong>
+                </p>
+              </div>
+
+              <div className="flex items-start gap-2.5">
+                <span className="w-1.5 h-1.5 bg-[#222222] mt-2 shrink-0 rounded-xs" />
+                <p>
+                  <strong>পরিচালক</strong> - শিক্ষানোভা মডেল টেস্ট ও অলিম্পিয়াড
+                  ক্লাব
+                </p>
+              </div>
+
+              <div className="flex items-start gap-2.5">
+                <span className="w-1.5 h-1.5 bg-[#222222] mt-2 shrink-0 rounded-xs" />
+                <p>
+                  <strong>শিক্ষা উদ্যোক্তা ও সমাজসেবক</strong> - জুম্মাপাড়া,
+                  নীলফামারী
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
 }
-
