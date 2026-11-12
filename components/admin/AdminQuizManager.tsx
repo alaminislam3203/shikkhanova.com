@@ -205,12 +205,35 @@ export default function AdminQuizManager() {
       }
     } catch {}
 
-    fetch("/api/quiz/covers")
+    fetch("/api/quiz/covers", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
         if (data?.covers && typeof data.covers === "object") {
-          setCovers(data.covers);
-          saveStoredQuizCovers(data.covers);
+          const serverHasCovers =
+            (data.covers.classes && Object.keys(data.covers.classes).length > 0) ||
+            (data.covers.subjects && Object.keys(data.covers.subjects).length > 0);
+
+          if (serverHasCovers) {
+            setCovers(data.covers);
+            saveStoredQuizCovers(data.covers);
+          } else {
+            // If server file is empty, check if localStorage has covers and push to server
+            const localCovers = getStoredQuizCovers();
+            const localHasCovers =
+              (localCovers?.classes && Object.keys(localCovers.classes).length > 0) ||
+              (localCovers?.subjects && Object.keys(localCovers.subjects).length > 0);
+
+            if (localHasCovers) {
+              setCovers(localCovers);
+              fetch("/api/quiz/covers", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ covers: localCovers }),
+              }).catch(() => {});
+            } else {
+              setCovers(data.covers);
+            }
+          }
         }
       })
       .catch(() => {});
@@ -224,7 +247,7 @@ export default function AdminQuizManager() {
       "সব মূল্য ও প্যাকেজ সংরক্ষণ করা হচ্ছে...",
     );
     try {
-      const [resPrices, resPackages] = await Promise.all([
+      const [resPrices, resPackages, resCovers] = await Promise.all([
         fetch("/api/quiz/prices", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -235,6 +258,11 @@ export default function AdminQuizManager() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ packages }),
         }),
+        fetch("/api/quiz/covers", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ covers }),
+        }),
       ]);
 
       const dataPrices = await resPrices.json();
@@ -243,6 +271,7 @@ export default function AdminQuizManager() {
       if (resPrices.ok && resPackages.ok) {
         saveStoredQuizPrices(prices);
         saveStoredQuizPackages(packages);
+        saveStoredQuizCovers(covers);
         toast.success(
           dataPackages.message ||
             "কুইজ ও স্পেশাল প্যাকেজ সফলভাবে সংরক্ষিত হয়েছে!",
@@ -375,20 +404,44 @@ export default function AdminQuizManager() {
       });
       const data = await res.json();
       if (res.ok && data.url) {
-        setCovers((prev) => ({
-          ...prev,
+        const nextCovers: QuizCovers = {
+          ...covers,
           [type]: {
-            ...prev[type],
+            ...covers[type],
             [key]: data.url,
           },
-        }));
-        toast.success(
-          'ছবি আপলোড সফল হয়েছে! সংরক্ষণ করতে "কভার ইমেজ সংরক্ষণ করুন" চাপুন।',
-          {
+        };
+        setCovers(nextCovers);
+        saveStoredQuizCovers(nextCovers);
+
+        // Auto-save to server immediately upon successful Cloudinary upload
+        try {
+          const saveRes = await fetch("/api/quiz/covers", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ covers: nextCovers }),
+          });
+          if (saveRes.ok) {
+            toast.success("কভার ছবি ক্লাউডে সফলভাবে আপলোড ও স্থায়ীভাবে সংরক্ষণ করা হয়েছে!", {
+              id: uploadToastId,
+              duration: 4000,
+            });
+            setMsg({
+              text: "কভার ছবি সফলভাবে আপলোড ও সেভ করা হয়েছে!",
+              type: "success",
+            });
+          } else {
+            toast.success("ছবি আপলোড হয়েছে এবং ব্রাউজারে সংরক্ষিত হয়েছে!", {
+              id: uploadToastId,
+              duration: 4000,
+            });
+          }
+        } catch {
+          toast.success("ছবি আপলোড হয়েছে এবং ব্রাউজারে সংরক্ষিত হয়েছে!", {
             id: uploadToastId,
             duration: 4000,
-          },
-        );
+          });
+        }
       } else {
         toast.error(data.error || "ছবি আপলোড ব্যর্থ হয়েছে।", {
           id: uploadToastId,
@@ -401,32 +454,45 @@ export default function AdminQuizManager() {
     }
   };
 
-  const handleRemoveCover = (key: string, type: "classes" | "subjects") => {
-    setCovers((prev) => {
-      const nextType = { ...prev[type] };
-      delete nextType[key];
-      return {
-        ...prev,
-        [type]: nextType,
-      };
-    });
-    toast.success(
-      'কভার ইমেজ সরানো হয়েছে। স্থায়ী করতে "কভার ইমেজ সংরক্ষণ করুন" বাটনে ক্লিক করুন।',
-    );
+  const handleRemoveCover = async (key: string, type: "classes" | "subjects") => {
+    const nextType = { ...covers[type] };
+    delete nextType[key];
+    const nextCovers: QuizCovers = {
+      ...covers,
+      [type]: nextType,
+    };
+    setCovers(nextCovers);
+    saveStoredQuizCovers(nextCovers);
+
+    try {
+      await fetch("/api/quiz/covers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ covers: nextCovers }),
+      });
+      toast.success("কভার ইমেজ সফলভাবে রিমুভ ও স্থায়ীভাবে আপডেট করা হয়েছে!");
+    } catch {
+      toast.success("কভার ইমেজ ব্রাউজার থেকে রিমুভ হয়েছে।");
+    }
   };
 
-  const handleSaveCovers = async () => {
+  const handleSaveCovers = async (customCovers?: QuizCovers) => {
+    const payload = customCovers || covers;
     setIsSavingCovers(true);
     const saveToastId = toast.loading("কভার ইমেজ সংরক্ষণ ও আপডেট করা হচ্ছে...");
     try {
+      saveStoredQuizCovers(payload);
       const res = await fetch("/api/quiz/covers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ covers }),
+        body: JSON.stringify({ covers: payload }),
       });
       const data = await res.json();
       if (res.ok) {
-        saveStoredQuizCovers(covers);
+        if (data.covers) {
+          setCovers(data.covers);
+          saveStoredQuizCovers(data.covers);
+        }
         toast.success(data.message || "সকল কভার ইমেজ সফলভাবে সংরক্ষিত হয়েছে!", {
           id: saveToastId,
           duration: 4000,
@@ -1885,13 +1951,27 @@ export default function AdminQuizManager() {
                         placeholder="অথবা ইমেজ লিংক পেস্ট করুন..."
                         value={coverUrl || ""}
                         onChange={(e) => {
+                          const val = e.target.value;
                           setCovers((prev) => ({
                             ...prev,
                             classes: {
                               ...prev.classes,
-                              [cls]: e.target.value,
+                              [cls]: val,
                             },
                           }));
+                        }}
+                        onBlur={(e) => {
+                          const val = e.target.value.trim();
+                          const nextCovers = {
+                            ...covers,
+                            classes: { ...covers.classes, [cls]: val },
+                          };
+                          saveStoredQuizCovers(nextCovers);
+                          fetch("/api/quiz/covers", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ covers: nextCovers }),
+                          }).catch(() => {});
                         }}
                         className="w-full bg-white border border-slate-200 focus:border-purple-600 rounded-xl px-2.5 py-1 text-[11px] text-slate-700 outline-none"
                       />
@@ -2049,13 +2129,27 @@ export default function AdminQuizManager() {
                         placeholder="অথবা ইমেজ লিংক পেস্ট করুন..."
                         value={coverUrl || ""}
                         onChange={(e) => {
+                          const val = e.target.value;
                           setCovers((prev) => ({
                             ...prev,
                             subjects: {
                               ...prev.subjects,
-                              [sub.name]: e.target.value,
+                              [sub.name]: val,
                             },
                           }));
+                        }}
+                        onBlur={(e) => {
+                          const val = e.target.value.trim();
+                          const nextCovers = {
+                            ...covers,
+                            subjects: { ...covers.subjects, [sub.name]: val },
+                          };
+                          saveStoredQuizCovers(nextCovers);
+                          fetch("/api/quiz/covers", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ covers: nextCovers }),
+                          }).catch(() => {});
                         }}
                         className="w-full bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-2.5 py-1 text-[11px] text-slate-700 outline-none"
                       />

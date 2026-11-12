@@ -196,7 +196,7 @@ export default function ModelTestShowcaseSection() {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
               {classBadges.map((c) => {
                 const clsPrice = quizPrices.classPrices[c.grade] || 50;
-                const coverImage = quizCovers.classes[c.grade];
+                const coverImage = quizCovers.classes[c.grade] || quizCovers.classes[String(c.grade)];
                 const showPaidBadge = activeTab === 'paid';
 
                 return (

@@ -42,7 +42,14 @@ function writeQuizCovers(covers: QuizCovers): void {
 export async function GET() {
   try {
     const covers = readQuizCovers();
-    return NextResponse.json({ covers });
+    return NextResponse.json(
+      { covers },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        },
+      }
+    );
   } catch (error: any) {
     return NextResponse.json(
       { error: error.message || 'কভার ইমেজ লোড করতে সমস্যা হয়েছে' },
@@ -54,7 +61,12 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (session?.user?.role !== 'ADMIN') {
+    const adminEmail = (process.env.ADMIN_EMAIL || 'robiulnil101@gmail.com').toLowerCase();
+    const isAdmin =
+      session?.user?.role === 'ADMIN' ||
+      session?.user?.email?.toLowerCase() === adminEmail;
+
+    if (!isAdmin) {
       return NextResponse.json(
         { error: 'শুধুমাত্র অ্যাডমিন কভার ইমেজ পরিবর্তন করতে পারেন।' },
         { status: 403 }
@@ -71,9 +83,27 @@ export async function POST(req: Request) {
       );
     }
 
+    // Clean and normalize keys
+    const rawClasses = typeof covers.classes === 'object' && covers.classes ? covers.classes : {};
+    const rawSubjects = typeof covers.subjects === 'object' && covers.subjects ? covers.subjects : {};
+
+    const cleanClasses: Record<string, string> = {};
+    for (const [k, v] of Object.entries(rawClasses)) {
+      if (typeof v === 'string' && v.trim()) {
+        cleanClasses[String(k).trim()] = v.trim();
+      }
+    }
+
+    const cleanSubjects: Record<string, string> = {};
+    for (const [k, v] of Object.entries(rawSubjects)) {
+      if (typeof v === 'string' && v.trim()) {
+        cleanSubjects[String(k).trim()] = v.trim();
+      }
+    }
+
     const sanitized: QuizCovers = {
-      classes: typeof covers.classes === 'object' && covers.classes ? covers.classes : {},
-      subjects: typeof covers.subjects === 'object' && covers.subjects ? covers.subjects : {},
+      classes: cleanClasses,
+      subjects: cleanSubjects,
     };
 
     writeQuizCovers(sanitized);

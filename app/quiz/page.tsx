@@ -159,7 +159,7 @@ export default function QuizPage() {
       }
     } catch {}
 
-    fetch('/api/quiz/covers')
+    fetch('/api/quiz/covers', { cache: 'no-store' })
       .then((res) => res.json())
       .then((data) => {
         if (data?.covers && typeof data.covers === 'object') {
@@ -711,10 +711,10 @@ export default function QuizPage() {
               >
                 <div className="space-y-1.5 sm:space-y-2">
                   {/* Optional Cover Image */}
-                  {quizCovers.classes[cls] && (
+                  {(quizCovers.classes[cls] || quizCovers.classes[String(cls)]) && (
                     <div className="w-full aspect-video rounded-xl sm:rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/80 mb-2 relative group">
                       <img
-                        src={quizCovers.classes[cls]}
+                        src={quizCovers.classes[cls] || quizCovers.classes[String(cls)]}
                         alt={`${toBengaliClass(cls)} শ্রেণি`}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
@@ -784,10 +784,10 @@ export default function QuizPage() {
               >
                 <div className="space-y-1.5 sm:space-y-2">
                   {/* Optional Cover Image */}
-                  {quizCovers.classes[cls] && (
+                  {(quizCovers.classes[cls] || quizCovers.classes[String(cls)]) && (
                     <div className="w-full aspect-video rounded-xl sm:rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/80 mb-2 relative group">
                       <img
-                        src={quizCovers.classes[cls]}
+                        src={quizCovers.classes[cls] || quizCovers.classes[String(cls)]}
                         alt={`${toBengaliClass(cls)} শ্রেণি`}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
