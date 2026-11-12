@@ -239,7 +239,9 @@ export async function sendBulkSms(params: SmsSendParams): Promise<{
 
     let friendlyError = resData?.error_message || 'BulkSMSBD থেকে এসএমএস পাঠাতে ব্যর্থ হয়েছে';
     if (resData?.response_code === 1032 || String(resData?.error_message || '').toLowerCase().includes('not whitelisted')) {
-      friendlyError = `আপনার আইপি হোয়াইটলিস্ট করা নেই: ${resData?.error_message || ''}। BulkSMSBD ড্যাশবোর্ডে গিয়ে আপনার বর্তমান আইপি (Whitelist IP) যুক্ত করুন।`;
+      friendlyError = `আপনার আইপি হোয়াইটলিস্ট করা নেই: ${resData?.error_message || ''}। BulkSMSBD ড্যাশবোর্ডে গিয়ে আপনার বর্তমান আইপি (Whitelist IP) যুক্ত করুন বা IP Checking Disable করুন।`;
+    } else if (resData?.response_code === 1005 || String(resData?.error_message || '').includes('is_masking')) {
+      friendlyError = `ভুল Sender ID: আপনার BulkSMSBD অ্যাকাউন্টে এই Sender ID অনুমোদিত নয়। ড্যাশবোর্ডের বাম পাশের "Sender ID" মেনু থেকে সঠিক অনুমোদিত Sender ID কপি করে .env ফাইলে BULKSMSBD_SENDER_ID তে বসান।`;
     }
 
     const logEntry: SmsLogEntry = {
