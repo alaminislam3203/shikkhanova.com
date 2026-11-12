@@ -549,6 +549,108 @@ export default function AdminQuizManager() {
     }
   };
 
+  // 🃏 Dynamic Custom MCQ Card Handlers
+  const handleSaveCardsToApi = async (cardsToSave: CustomQuizCard[]) => {
+    setIsSavingCards(true);
+    saveStoredCustomQuizCards(cardsToSave);
+    try {
+      const res = await fetch("/api/quiz/cards", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cards: cardsToSave }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        if (data.cards) {
+          setCustomCards(data.cards);
+          saveStoredCustomQuizCards(data.cards);
+        }
+        toast.success(data.message || "MCQ কার্ডসমূহ সফলভাবে সংরক্ষণ করা হয়েছে!");
+        setMsg({
+          text: "সকল কাস্টম MCQ কার্ড সফলভাবে আপডেট ও সংরক্ষিত হয়েছে!",
+          type: "success",
+        });
+      } else {
+        toast.error(data.error || "কার্ড সংরক্ষণ ব্যর্থ হয়েছে।");
+      }
+    } catch {
+      toast.success("কার্ডসমূহ ব্রাউজারে সংরক্ষিত হয়েছে।");
+    } finally {
+      setIsSavingCards(false);
+    }
+  };
+
+  const handleAddNewCard = () => {
+    const newCard: CustomQuizCard = {
+      id: `card_${Date.now()}`,
+      title: `${toBengaliClass(selectedClass)} শ্রেণি স্পেশাল মডেল টেস্ট`,
+      subtitle: "পূর্ণাঙ্গ অধ্যায়ভিত্তিক ও বোর্ড স্ট্যান্ডার্ড প্রস্তুতি টেস্ট",
+      classGrade: selectedClass,
+      subject: selectedSubject || "সাধারণ গণিত",
+      group: selectedClass >= 9 ? selectedGroup : undefined,
+      isPaid: false,
+      price: 0,
+      badge: "নতুন টেস্ট",
+      coverImage: "",
+      questionCount: 20,
+      durationMinutes: 20,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+    };
+    const nextCards = [newCard, ...customCards];
+    setCustomCards(nextCards);
+    handleSaveCardsToApi(nextCards);
+    toast.success("নতুন MCQ কার্ড তৈরি হয়েছে! তথ্য ও কভার ছবি যুক্ত করুন।");
+  };
+
+  const handleUpdateCard = (id: string, updates: Partial<CustomQuizCard>) => {
+    const nextCards = customCards.map((c) =>
+      c.id === id ? { ...c, ...updates } : c
+    );
+    setCustomCards(nextCards);
+    saveStoredCustomQuizCards(nextCards);
+  };
+
+  const handleDeleteCard = (id: string) => {
+    if (!confirm("আপনি কি নিশ্চিত যে এই MCQ কার্ডটি মুছে ফেলতে চান?")) return;
+    const nextCards = customCards.filter((c) => c.id !== id);
+    setCustomCards(nextCards);
+    handleSaveCardsToApi(nextCards);
+    toast.success("কার্ডটি মুছে ফেলা হয়েছে।");
+  };
+
+  const handleCardCoverUpload = async (cardId: string, file: File) => {
+    if (!file) return;
+    setUploadingTarget(`card_${cardId}`);
+    const uploadToastId = toast.loading("কার্ডের আলাদা কভার ছবি আপলোড হচ্ছে...");
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        const nextCards = customCards.map((c) =>
+          c.id === cardId ? { ...c, coverImage: data.url } : c
+        );
+        setCustomCards(nextCards);
+        handleSaveCardsToApi(nextCards);
+        toast.success("কার্ডের কভার ছবি সফলভাবে আপলোড ও ক্লাউডে সংরক্ষিত হয়েছে!", {
+          id: uploadToastId,
+          duration: 4000,
+        });
+      } else {
+        toast.error(data.error || "আপলোড ব্যর্থ হয়েছে।", { id: uploadToastId });
+      }
+    } catch (err: any) {
+      toast.error(err.message || "আপলোডে সমস্যা হয়েছে।", { id: uploadToastId });
+    } finally {
+      setUploadingTarget(null);
+    }
+  };
+
   // Load questions whenever category, class, or subject changes
   useEffect(() => {
     loadCurrentQuestions();
@@ -1044,6 +1146,19 @@ export default function AdminQuizManager() {
         >
           <FaImage className="w-3.5 h-3.5 text-purple-300" />
           <span>কার্ডের কভার ইমেজ (Cover Images)</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("cards")}
+          className={`px-4 py-2 rounded-2xl text-xs font-bold transition flex items-center gap-2 ${
+            activeTab === "cards"
+              ? "bg-gradient-to-r from-blue-700 to-indigo-800 text-white shadow-sm"
+              : "bg-white hover:bg-slate-100 text-slate-700 border border-slate-200"
+          }`}
+        >
+          <FaLayerGroup className="w-3.5 h-3.5 text-blue-300" />
+          <span>MCQ কার্ড তৈরি ও কভার ({customCards.length})</span>
         </button>
       </div>
 
