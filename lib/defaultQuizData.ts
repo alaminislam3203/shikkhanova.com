@@ -1472,4 +1472,109 @@ export function saveStoredQuizCovers(covers: QuizCovers): void {
   } catch {}
 }
 
+// ─── 🃏 Dynamic Custom MCQ / Model Test Cards ───
+export interface CustomQuizCard {
+  id: string;
+  title: string;
+  subtitle?: string;
+  classGrade: number; // 5 to 10
+  subject: string; // e.g. "পদার্থবিজ্ঞান", "সাধারণ গণিত", "English"
+  group?: AcademicGroup; // "science", "humanities", "commerce", "compulsory"
+  isPaid: boolean;
+  price: number; // 0 if free, or e.g. 50
+  badge?: string; // e.g. "নতুন", "স্পেশাল", "ফ্রি", "মেগা টেস্ট"
+  coverImage?: string; // Individual card cover image URL
+  questionCount?: number; // e.g. 20
+  durationMinutes?: number; // e.g. 25
+  isActive: boolean;
+  createdAt?: string;
+}
+
+export const DEFAULT_CUSTOM_QUIZ_CARDS: CustomQuizCard[] = [
+  {
+    id: 'card_ssc_physics_mega',
+    title: '১০ম শ্রেণি পদার্থবিজ্ঞান মেগা টেস্ট',
+    subtitle: 'বোর্ড স্ট্যান্ডার্ড পূর্ণাঙ্গ মডেল টেস্ট ও ব্যাখ্যাসহ সমাধান',
+    classGrade: 10,
+    subject: 'পদার্থবিজ্ঞান',
+    group: 'science',
+    isPaid: true,
+    price: 50,
+    badge: 'মেগা টেস্ট',
+    coverImage: '',
+    questionCount: 25,
+    durationMinutes: 25,
+    isActive: true,
+    createdAt: '2026-01-01',
+  },
+  {
+    id: 'card_class8_math_champ',
+    title: '৮ম শ্রেণি গণিত মেধা চ্যালেঞ্জ',
+    subtitle: 'অধ্যায়ভিত্তিক বাছাইকৃত সৃজনশীল ও বহুনির্বাচনী প্রশ্ন',
+    classGrade: 8,
+    subject: 'সাধারণ গণিত',
+    isPaid: false,
+    price: 0,
+    badge: 'ফ্রি টেস্ট',
+    coverImage: '',
+    questionCount: 20,
+    durationMinutes: 20,
+    isActive: true,
+    createdAt: '2026-01-01',
+  },
+  {
+    id: 'card_ssc_chemistry_board',
+    title: '৯ম শ্রেণি রসায়ন স্পেশাল কুইজ',
+    subtitle: 'নতুন কারিকুলাম ও বোর্ড সিলেবাস অনুযায়ী অনুশীলন',
+    classGrade: 9,
+    subject: 'রসায়ন',
+    group: 'science',
+    isPaid: true,
+    price: 50,
+    badge: 'স্পেশাল',
+    coverImage: '',
+    questionCount: 20,
+    durationMinutes: 20,
+    isActive: true,
+    createdAt: '2026-01-01',
+  },
+  {
+    id: 'card_class7_english_grammar',
+    title: '৭ম শ্রেণি ইংরেজি গ্রামার টেস্ট',
+    subtitle: 'Grammar & Vocabulary Mastery Quiz',
+    classGrade: 7,
+    subject: 'ইংরেজি ১ম পত্র',
+    isPaid: false,
+    price: 0,
+    badge: '১০০% ফ্রি',
+    coverImage: '',
+    questionCount: 15,
+    durationMinutes: 15,
+    isActive: true,
+    createdAt: '2026-01-01',
+  },
+];
+
+export function getStoredCustomQuizCards(): CustomQuizCard[] {
+  if (typeof window === 'undefined') return DEFAULT_CUSTOM_QUIZ_CARDS;
+  try {
+    const raw = localStorage.getItem('sn_custom_quiz_cards_v1');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch {}
+  return DEFAULT_CUSTOM_QUIZ_CARDS;
+}
+
+export function saveStoredCustomQuizCards(cards: CustomQuizCard[]): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem('sn_custom_quiz_cards_v1', JSON.stringify(cards));
+  } catch {}
+}
+
+
 
