@@ -170,7 +170,7 @@ export default function ChairmanMessagePage() {
             মোঃ রবিউল ইসলাম
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2 text-xs sm:text-[13px] text-slate-800 leading-relaxed">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 lg:gap-x-20 gap-y-2 text-xs sm:text-[13px] text-slate-800 leading-relaxed">
             {/* Column 1 */}
             <div className="space-y-2">
               <div className="flex items-start gap-2.5">
