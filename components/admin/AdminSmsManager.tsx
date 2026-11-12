@@ -959,12 +959,15 @@ export default function AdminSmsManager() {
               <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200/70 text-amber-900 space-y-2">
                 <div className="flex items-center gap-2 font-bold text-xs">
                   <FaCircleInfo className="text-amber-600" />
-                  <span>কীভাবে BulkSMSBD থেকে API Key সংগ্রহ করবেন?</span>
+                  <span>কীভাবে BulkSMSBD থেকে API সেটআপ ও আইপি হোয়াইটলিস্ট করবেন?</span>
                 </div>
-                <ol className="text-xs space-y-1 list-decimal list-inside text-amber-800">
+                <ol className="text-xs space-y-1.5 list-decimal list-inside text-amber-800">
                   <li><a href="https://bulksmsbd.net" target="_blank" rel="noopener noreferrer" className="underline font-bold">bulksmsbd.net</a> এ লগইন করুন।</li>
-                  <li>ড্যাশবোর্ডের <strong>Developer API</strong> অথবা <strong>API Settings</strong> এ যান।</li>
-                  <li>সেখান থেকে আপনার <strong>API Key</strong> এবং <strong>Sender ID</strong> কপি করে আপনার <code className="bg-white/80 px-1 py-0.5 rounded">.env</code> ফাইলে বসিয়ে সার্ভার রিস্টার্ট দিন।</li>
+                  <li>ড্যাশবোর্ডের <strong>Developer API</strong> অথবা <strong>API Settings / IP Whitelist</strong> এ যান।</li>
+                  <li>
+                    নিরাপত্তার কারণে BulkSMSBD শুধুমাত্র হোয়াইটলিস্ট করা আইপি থেকে এসএমএস অ্যাপ্রুভ করে। আপনার বর্তমান পাবলিক আইপি <strong className="font-mono bg-white px-1.5 py-0.5 rounded border border-amber-300">103.167.15.9</strong> সেখানে যুক্ত করুন।
+                  </li>
+                  <li>সেখান থেকে আপনার <strong>API Key</strong> এবং <strong>Sender ID</strong> কপি করে আপনার <code className="bg-white/80 px-1 py-0.5 rounded">.env</code> ফাইলে বসিয়ে নিন।</li>
                 </ol>
               </div>
 
