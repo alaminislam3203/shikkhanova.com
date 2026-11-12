@@ -1,5 +1,39 @@
 [
   {
+    "id": "sms-1794494228301-qafqs",
+    "timestamp": "2026-11-12T14:37:08.627Z",
+    "type": "custom",
+    "recipientCount": 1,
+    "numbers": [
+      "8801313334279"
+    ],
+    "message": "সম্মানিত অভিভাবক ও শিক্ষার্থী, সরকারি ছুটি উপলক্ষে আগামী রবিবার ও সোমবার কোচিংয়ের সকল ক্লাস বন্ধ থাকবে। মঙ্গলবার থেকে স্বাভাবিক রুটিনে ক্লাস চলবে। — শিক্ষানোভা একাডেমি",
+    "status": "FAILED",
+    "response": {
+      "response_code": 1005,
+      "success_message": "",
+      "error_message": "Attempt to read property \"is_masking\" on null"
+    },
+    "error": "Attempt to read property \"is_masking\" on null"
+  },
+  {
+    "id": "sms-1794494222127-sgkjy",
+    "timestamp": "2026-11-12T14:37:02.443Z",
+    "type": "custom",
+    "recipientCount": 1,
+    "numbers": [
+      "8801313334279"
+    ],
+    "message": "সম্মানিত অভিভাবক ও শিক্ষার্থী, সরকারি ছুটি উপলক্ষে আগামী রবিবার ও সোমবার কোচিংয়ের সকল ক্লাস বন্ধ থাকবে। মঙ্গলবার থেকে স্বাভাবিক রুটিনে ক্লাস চলবে। — শিক্ষানোভা একাডেমি",
+    "status": "FAILED",
+    "response": {
+      "response_code": 1005,
+      "success_message": "",
+      "error_message": "Attempt to read property \"is_masking\" on null"
+    },
+    "error": "Attempt to read property \"is_masking\" on null"
+  },
+  {
     "id": "sms-1794482219128-hala7",
     "timestamp": "2026-11-12T11:16:59.757Z",
     "type": "custom",
