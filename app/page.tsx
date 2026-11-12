@@ -16,11 +16,11 @@ const StatsCounterSection = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 py-2">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-6 py-2">
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="h-44 rounded-2xl bg-white border border-slate-200/80 p-6 shadow-xs animate-pulse"
+            className="h-36 sm:h-44 rounded-2xl sm:rounded-3xl bg-white border border-slate-200/80 p-3.5 sm:p-6 shadow-xs animate-pulse"
           />
         ))}
       </div>

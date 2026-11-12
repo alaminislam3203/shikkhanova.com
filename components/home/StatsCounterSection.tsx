@@ -274,7 +274,7 @@ export default function StatsCounterSection() {
 
   return (
     <section className="relative py-2 select-none" suppressHydrationWarning>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-6">
         {statsData.map((item, idx) => {
           const config = LIGHT_CARD_CONFIGS[idx % LIGHT_CARD_CONFIGS.length];
           const IconComp = getIconComponent(item, idx);
@@ -285,7 +285,7 @@ export default function StatsCounterSection() {
             <div
               key={item.id || idx}
               suppressHydrationWarning
-              className={`group relative overflow-hidden rounded-2xl sm:rounded-3xl ${config.cardBg} border border-slate-200/80 p-5 sm:p-6 shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between ${config.borderHover}`}
+              className={`group relative overflow-hidden rounded-2xl sm:rounded-3xl ${config.cardBg} border border-slate-200/80 p-3.5 sm:p-5 lg:p-6 shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between ${config.borderHover}`}
             >
               {/* Top Accent Strip with Hover Expansion */}
               <div
@@ -294,48 +294,50 @@ export default function StatsCounterSection() {
 
               {/* Faint Background Watermark Icon */}
               <div className="absolute -right-3 -top-3 opacity-[0.035] group-hover:opacity-[0.07] group-hover:scale-125 group-hover:rotate-6 transition-all duration-500 pointer-events-none text-slate-800">
-                <IconComp className="w-28 h-28" />
+                <IconComp className="w-20 h-20 sm:w-28 sm:h-28" />
               </div>
 
               {/* Card Top Row: 3D-styled Vibrant Icon + Light Theme Badge */}
-              <div className="relative z-10 flex items-center justify-between gap-3 mb-4">
+              <div className="relative z-10 flex items-center justify-between gap-2 sm:gap-3 mb-3 sm:mb-4">
                 <div
-                  className={`w-12 h-12 sm:w-13 sm:h-13 rounded-2xl flex items-center justify-center shadow-md ${config.iconShadow} transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 ${config.iconBg}`}
+                  className={`w-9 h-9 sm:w-12 sm:h-12 lg:w-13 lg:h-13 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-md ${config.iconShadow} transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 ${config.iconBg}`}
                 >
-                  <IconComp className="w-6 h-6" />
+                  <IconComp className="w-4.5 h-4.5 sm:w-6 sm:h-6" />
                 </div>
 
                 <div
                   suppressHydrationWarning
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold border shadow-2xs ${config.badgeBg} ${config.badgeBorder}`}
+                  className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[9px] sm:text-xs font-bold border shadow-2xs ${config.badgeBg} ${config.badgeBorder}`}
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
-                  <span suppressHydrationWarning>{item.badgeText || config.badgeText}</span>
+                  <span suppressHydrationWarning className="truncate max-w-[70px] sm:max-w-none">
+                    {item.badgeText || config.badgeText}
+                  </span>
                 </div>
               </div>
 
               {/* Card Middle: Counting Number with Live Suffix */}
-              <div className="relative z-10 space-y-1.5 mt-auto">
-                <div className="flex items-baseline gap-1.5">
+              <div className="relative z-10 space-y-1 sm:space-y-1.5 mt-auto">
+                <div className="flex items-baseline gap-1 sm:gap-1.5">
                   <span
                     suppressHydrationWarning
-                    className={`text-3xl sm:text-4xl lg:text-4xl xl:text-5xl font-black font-mono tracking-tight transition-colors duration-200 ${config.numberColor}`}
+                    className={`text-2xl sm:text-4xl lg:text-4xl xl:text-5xl font-black font-mono tracking-tight transition-colors duration-200 ${config.numberColor}`}
                   >
                     {displayCount}
                   </span>
                   <span
                     suppressHydrationWarning
-                    className={`text-2xl sm:text-3xl font-extrabold font-mono transition-transform duration-300 group-hover:scale-110 origin-left ${config.suffixColor}`}
+                    className={`text-xl sm:text-2xl lg:text-3xl font-extrabold font-mono transition-transform duration-300 group-hover:scale-110 origin-left ${config.suffixColor}`}
                   >
                     {item.suffix}
                   </span>
-                  <FaArrowTrendUp className="w-3.5 h-3.5 text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ml-1" />
+                  <FaArrowTrendUp className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ml-0.5 sm:ml-1 hidden sm:inline-block" />
                 </div>
 
                 {/* Card Title Label */}
                 <h3
                   suppressHydrationWarning
-                  className="text-base sm:text-lg font-bold text-slate-800 leading-snug group-hover:text-slate-900 transition-colors"
+                  className="text-xs sm:text-base lg:text-lg font-bold text-slate-800 leading-tight sm:leading-snug group-hover:text-slate-900 transition-colors"
                 >
                   {item.label}
                 </h3>
@@ -343,9 +345,9 @@ export default function StatsCounterSection() {
                 {/* Card Footnote / Dynamic Subtitle */}
                 <p
                   suppressHydrationWarning
-                  className="text-xs text-slate-500 font-medium flex items-center gap-1.5 pt-2 border-t border-slate-100 mt-2"
+                  className="text-[10px] sm:text-xs text-slate-500 font-medium flex items-center gap-1 sm:gap-1.5 pt-1.5 sm:pt-2 border-t border-slate-100 mt-1.5 sm:mt-2"
                 >
-                  <FaCircleCheck className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+                  <FaCircleCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-500 flex-shrink-0" />
                   <span className="truncate">{item.description}</span>
                 </p>
               </div>
