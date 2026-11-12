@@ -56,21 +56,9 @@ export default function AdminPage() {
   const { data: session, update } = useSession();
   const photoInputRef = useRef<HTMLInputElement>(null);
 
-  // Lazy initialize activeTab from URL ?tab=... or localStorage fallback
-  const [activeTab, setActiveTab] = useState<AdminTab>(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const tabParam = params.get("tab") as AdminTab | null;
-      if (tabParam && VALID_ADMIN_TABS.includes(tabParam)) {
-        return tabParam;
-      }
-      const stored = localStorage.getItem("sn_admin_active_tab") as AdminTab | null;
-      if (stored && VALID_ADMIN_TABS.includes(stored)) {
-        return stored;
-      }
-    }
-    return "dashboard";
-  });
+  // Initialize with deterministic default for SSR to prevent hydration mismatch
+  const [activeTab, setActiveTab] = useState<AdminTab>("dashboard");
+  const [mounted, setMounted] = useState<boolean>(false);
 
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
@@ -130,6 +118,7 @@ export default function AdminPage() {
 
   // Check URL query param & keep in sync on popstate and refresh
   useEffect(() => {
+    setMounted(true);
     const syncTabFromUrl = () => {
       if (typeof window !== "undefined") {
         const params = new URLSearchParams(window.location.search);
