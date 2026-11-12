@@ -236,6 +236,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
+  const [mounted, setMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [aboutMenuOpen, setAboutMenuOpen] = useState(false);
@@ -251,6 +252,10 @@ export default function Navbar() {
   const searchRef = useRef<HTMLDivElement>(null);
   const mobileSearchInputRef = useRef<HTMLInputElement>(null);
   const mobileSearchContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Lock scroll & handle ESC key for the right slide-over drawer
   useEffect(() => {
