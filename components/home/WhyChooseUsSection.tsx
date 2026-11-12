@@ -50,7 +50,7 @@ export default function WhyChooseUsSection() {
   };
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-6" suppressHydrationWarning>
       <div className="text-center space-y-2 max-w-2xl mx-auto">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-black border border-blue-200">
           <FaLightbulb className="w-3 h-3 text-amber-500" />

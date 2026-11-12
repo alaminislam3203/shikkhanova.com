@@ -153,7 +153,7 @@ export default function HeroSection() {
   };
 
   return (
-    <div className="flex flex-col gap-4 sm:gap-5">
+    <div className="flex flex-col gap-4 sm:gap-5" suppressHydrationWarning>
       {/* 2. Smooth Vertical Swipe-Up Pinned Notice Board (Shown right after Hero Banner) */}
       <div
         onMouseEnter={() => setNoticePaused(true)}
