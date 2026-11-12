@@ -34,11 +34,42 @@ import {
   FaUserShield,
 } from "react-icons/fa6";
 
+const VALID_ADMIN_TABS: AdminTab[] = [
+  "dashboard",
+  "banners",
+  "achievers",
+  "purchases",
+  "addResult",
+  "addPdf",
+  "mcqQuiz",
+  "gallery",
+  "notices",
+  "students",
+  "subjects",
+  "attendance",
+  "settings",
+];
+
 export default function AdminPage() {
   const { data: session, update } = useSession();
   const photoInputRef = useRef<HTMLInputElement>(null);
 
-  const [activeTab, setActiveTab] = useState<AdminTab>("dashboard");
+  // Lazy initialize activeTab from URL ?tab=... or localStorage fallback
+  const [activeTab, setActiveTab] = useState<AdminTab>(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get("tab") as AdminTab | null;
+      if (tabParam && VALID_ADMIN_TABS.includes(tabParam)) {
+        return tabParam;
+      }
+      const stored = localStorage.getItem("sn_admin_active_tab") as AdminTab | null;
+      if (stored && VALID_ADMIN_TABS.includes(stored)) {
+        return stored;
+      }
+    }
+    return "dashboard";
+  });
+
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
   const [purchases, setPurchases] = useState<PurchaseRecord[]>([]);
@@ -50,6 +81,19 @@ export default function AdminPage() {
     text: string;
     type: "success" | "error";
   } | null>(null);
+
+  // Dynamic URL Sync on Tab Change
+  const handleTabChange = (newTab: AdminTab) => {
+    setActiveTab(newTab);
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("sn_admin_active_tab", newTab);
+        const url = new URL(window.location.href);
+        url.searchParams.set("tab", newTab);
+        window.history.pushState({ tab: newTab }, "", url.toString());
+      } catch {}
+    }
+  };
 
   // Admin Profile State (Synced with DB & Cloudinary)
   const [adminProfile, setAdminProfile] = useState<AdminProfileInfo>({
@@ -82,35 +126,40 @@ export default function AdminPage() {
     isFree: false,
   });
 
-  // Check URL query param ?tab=addPdf on mount
+  // Check URL query param & keep in sync on popstate and refresh
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const tabParam = params.get("tab") as AdminTab | null;
-      if (
-        tabParam &&
-        [
-          "dashboard",
-          "banners",
-          "achievers",
-          "purchases",
-          "addResult",
-          "addPdf",
-          "mcqQuiz",
-          "gallery",
-          "notices",
-          "students",
-          "subjects",
-          "attendance",
-          "settings",
-        ].includes(tabParam)
-      ) {
-        setActiveTab(tabParam);
+    const syncTabFromUrl = () => {
+      if (typeof window !== "undefined") {
+        const params = new URLSearchParams(window.location.search);
+        let tabParam = params.get("tab") as AdminTab | null;
+
+        if (!tabParam || !VALID_ADMIN_TABS.includes(tabParam)) {
+          const stored = localStorage.getItem("sn_admin_active_tab") as AdminTab | null;
+          if (stored && VALID_ADMIN_TABS.includes(stored)) {
+            tabParam = stored;
+          } else {
+            tabParam = "dashboard";
+          }
+        }
+
+        if (tabParam && VALID_ADMIN_TABS.includes(tabParam)) {
+          setActiveTab(tabParam);
+          // Sync URL address bar with current active tab
+          const url = new URL(window.location.href);
+          url.searchParams.set("tab", tabParam);
+          window.history.replaceState({ tab: tabParam }, "", url.toString());
+        }
       }
-    }
+    };
+
+    syncTabFromUrl();
+    window.addEventListener("popstate", syncTabFromUrl);
+
     fetchPurchases();
     fetchAdminProfile();
     fetchPdfCount();
+
+    return () => window.removeEventListener("popstate", syncTabFromUrl);
   }, []);
 
   // Sync session user image if loaded
@@ -351,7 +400,7 @@ export default function AdminPage() {
       {/* Sticky Side Menu Navigation */}
       <AdminSidebar
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={handleTabChange}
         pendingCount={pendingPurchases.length}
         pdfCount={pdfCount}
         isOpen={sidebarOpen}
@@ -388,6 +437,8 @@ export default function AdminPage() {
                   {activeTab === "purchases" && "পেমেন্ট রিকোয়েস্ট যাচাই"}
                   {activeTab === "addPdf" && "পিডিএফ শিট ও কার্ড ম্যানেজমেন্ট"}
                   {activeTab === "addResult" && "কোচিং পরীক্ষার রেজাল্ট আপলোড"}
+                  {activeTab === "mcqQuiz" && "অনলাইন কুইজ ও MCQ পরীক্ষা"}
+                  {activeTab === "gallery" && "ফটো গ্যালারি ম্যানেজ"}
                   {activeTab === "notices" && "নোটিশ বোর্ড ম্যানেজমেন্ট"}
                   {activeTab === "students" && "শিক্ষার্থী ম্যানেজ ও ভর্তি"}
                   {activeTab === "subjects" && "শ্রেণিভিত্তিক বিষয় ও NCTB বই"}
@@ -406,6 +457,10 @@ export default function AdminPage() {
                 {activeTab === "addPdf" &&
                   "পিডিএফ শিট আপলোড ও কার্ড কাস্টমাইজেশন"}
                 {activeTab === "addResult" && "নতুন পরীক্ষার ফলাফল সংরক্ষণ"}
+                {activeTab === "mcqQuiz" &&
+                  "অনলাইন কুইজ, MCQ প্রশ্ন ও মডেল টেস্ট কার্ড ম্যানেজমেন্ট"}
+                {activeTab === "gallery" &&
+                  "ফটো গ্যালারি আপলোড, এডিট ও অ্যালবাম ব্যবস্থাপনা"}
                 {activeTab === "notices" && "ডায়নামিক নোটিশ প্রকাশ ও সম্পাদনা"}
                 {activeTab === "students" &&
                   "শিক্ষার্থী ভর্তি, তালিকা ও হাজিরা ব্যবস্থাপনা"}
@@ -414,7 +469,7 @@ export default function AdminPage() {
                 {activeTab === "attendance" &&
                   "রোল উপস্থিতি ও প্রতিদিনের হাজিরা গ্রহণ"}
                 {activeTab === "settings" &&
-                  "অ্যাডমিন প্রোফাইল ও সেন্টার সেটিংস"}
+                  "অ্যাডমিন প্রোফাইল, সেন্টার ও ল্যান্ডিং পেজ সেটিংস"}
               </h1>
             </div>
           </div>
@@ -424,7 +479,7 @@ export default function AdminPage() {
             <div className="flex items-center gap-2 flex-wrap">
               <button
                 type="button"
-                onClick={() => setActiveTab("addPdf")}
+                onClick={() => handleTabChange("addPdf")}
                 className="bg-blue-50 hover:bg-blue-100 border border-blue-200/80 px-3 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs font-bold text-brand-800 transition"
               >
                 <FaFilePdf className="text-brand-600" />
@@ -433,7 +488,7 @@ export default function AdminPage() {
 
               <button
                 type="button"
-                onClick={() => setActiveTab("purchases")}
+                onClick={() => handleTabChange("purchases")}
                 className="bg-amber-50 hover:bg-amber-100 border border-amber-200/80 px-3 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs font-bold text-amber-800 transition"
               >
                 <FaClock className="text-amber-600" />
@@ -449,9 +504,9 @@ export default function AdminPage() {
             {/* Admin Profile Avatar Trigger in Header */}
             <button
               type="button"
-              onClick={() => setActiveTab("settings")}
+              onClick={() => handleTabChange("settings")}
               title="অ্যাডমিন প্রোফাইল ও ফটো সেটিংস"
-              className="w-10 h-10 rounded-full overflow-hidden border-2 border-brand-600 bg-brand-50 flex items-center justify-center shrink-0 shadow-sm hover:scale-105 transition-transform relative"
+              className="w-10 h-10 rounded-full overflow-hidden border-2 border-brand-600 bg-brand-50 flex items-center justify-center shrink-0 shadow-sm hover:scale-105 transition-transform relative cursor-pointer"
             >
               {adminProfile.image ? (
                 <img
@@ -502,7 +557,7 @@ export default function AdminPage() {
         {/* TAB 0: Dynamic Overview Dashboard */}
         {activeTab === "dashboard" && (
           <AdminDashboard
-            onNavigateTab={setActiveTab}
+            onNavigateTab={handleTabChange}
             onStatusUpdated={() => {
               fetchPurchases();
               fetchPdfCount();
