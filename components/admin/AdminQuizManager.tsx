@@ -37,6 +37,10 @@ import {
   DEFAULT_QUIZ_COVERS,
   getStoredQuizCovers,
   saveStoredQuizCovers,
+  CustomQuizCard,
+  DEFAULT_CUSTOM_QUIZ_CARDS,
+  getStoredCustomQuizCards,
+  saveStoredCustomQuizCards,
 } from "@/lib/defaultQuizData";
 import {
   FaPlus,
@@ -57,6 +61,7 @@ import {
   FaTag,
   FaImage,
   FaCloudArrowUp,
+  FaLayerGroup,
 } from "react-icons/fa6";
 
 type QuizCategory = "free" | "paid" | "subject";
