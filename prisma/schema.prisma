@@ -133,3 +133,18 @@ model VideoLesson {
   @@index([classGrade, subject])
 }
 
+model SmsLog {
+  id             String   @id
+  timestamp      DateTime @default(now())
+  type           String
+  recipientCount Int
+  numbers        String[]
+  message        String
+  status         String
+  response       Json?
+  error          String?
+
+  @@index([timestamp])
+}
+
+

@@ -247,7 +247,7 @@ export async function sendBulkSms(params: SmsSendParams): Promise<{
         success_message: 'Mock: SMS logged successfully (Please add real BULKSMSBD_API_KEY in .env)',
       },
     };
-    appendSmsLog(mockEntry);
+    await appendSmsLog(mockEntry);
 
     return {
       success: true,
