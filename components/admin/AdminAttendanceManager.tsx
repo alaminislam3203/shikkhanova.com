@@ -23,6 +23,7 @@ export default function AdminAttendanceManager() {
   const [students, setStudents] = useState<StudentRollItem[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [saving, setSaving] = useState<boolean>(false);
+  const [sendAbsentSms, setSendAbsentSms] = useState<boolean>(true);
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
   useEffect(() => {
@@ -145,6 +146,7 @@ export default function AdminAttendanceManager() {
           classGrade: selectedClass,
           date: selectedDate,
           records: students,
+          sendAbsentSms,
         }),
       });
 
@@ -153,8 +155,15 @@ export default function AdminAttendanceManager() {
         throw new Error(data.error || 'সংরক্ষণ ব্যর্থ হয়েছে');
       }
 
-      setMessage({ text: 'হাজিরা সফলভাবে ডেটাবেজে সংরক্ষিত হয়েছে!', type: 'success' });
-      toast.success('রোল উপস্থিতি সফলভাবে সংরক্ষিত হয়েছে!');
+      const smsMsg =
+        data.absentSmsCount > 0
+          ? ` এবং ${data.absentSmsCount} জন অভিভাবককে অনুপস্থিতি এসএমএস পাঠানো হয়েছে!`
+          : '';
+      setMessage({
+        text: `হাজিরা সফলভাবে ডেটাবেজে সংরক্ষিত হয়েছে!${smsMsg}`,
+        type: 'success',
+      });
+      toast.success(`রোল উপস্থিতি সফলভাবে সংরক্ষিত হয়েছে!${smsMsg}`);
     } catch (err: any) {
       setMessage({
         text: err.message || 'হাজিরা সংরক্ষণ ব্যর্থ হয়েছে',
@@ -211,11 +220,21 @@ export default function AdminAttendanceManager() {
             >
               সবাইকে Absent
             </button>
+            <label className="flex items-center gap-1.5 px-3 py-2 bg-red-50/80 border border-red-200 rounded-sm text-xs font-bold text-slate-700 cursor-pointer hover:bg-red-100/70 transition">
+              <input
+                type="checkbox"
+                checked={sendAbsentSms}
+                onChange={(e) => setSendAbsentSms(e.target.checked)}
+                className="accent-[#C8102E] w-3.5 h-3.5"
+              />
+              <span>অনুপস্থিত হলে SMS পাঠান ({absentCount})</span>
+            </label>
+
             <button
               type="button"
               onClick={handleSave}
               disabled={saving || loading}
-              className="px-4 py-2.5 bg-[#C8102E] hover:bg-[#A50D26] text-white font-bold text-xs rounded-sm shadow-sm transition flex items-center gap-2 disabled:opacity-70"
+              className="px-4 py-2.5 bg-[#C8102E] hover:bg-[#A50D26] text-white font-bold text-xs rounded-sm shadow-sm transition flex items-center gap-2 disabled:opacity-70 cursor-pointer"
             >
               <FaFloppyDisk className="w-3.5 h-3.5" />
               <span>{saving ? 'সংরক্ষণ হচ্ছে...' : 'হাজিরা সংরক্ষণ করুন'}</span>
