@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import toast from 'react-hot-toast';
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import toast from "react-hot-toast";
 import {
   FiMail,
   FiPhone,
@@ -14,13 +14,13 @@ import {
   FiCheckCircle,
   FiHelpCircle,
   FiUser,
-} from 'react-icons/fi';
-import { FaWhatsapp } from 'react-icons/fa6';
+} from "react-icons/fi";
+import { FaWhatsapp } from "react-icons/fa6";
 import {
   DEFAULT_LANDING_CONTENT,
   getStoredLandingContent,
   LandingContactInfo,
-} from '@/lib/defaultLandingContent';
+} from "@/lib/defaultLandingContent";
 
 interface ContactReason {
   id: string;
@@ -30,13 +30,15 @@ interface ContactReason {
 }
 
 export default function BranchContactSection() {
-  const [contact, setContact] = useState<LandingContactInfo>(DEFAULT_LANDING_CONTENT.contact);
+  const [contact, setContact] = useState<LandingContactInfo>(
+    DEFAULT_LANDING_CONTENT.contact,
+  );
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    reason: 'admission',
-    message: '',
+    name: "",
+    email: "",
+    subject: "",
+    reason: "admission",
+    message: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -50,7 +52,7 @@ export default function BranchContactSection() {
       }
     } catch {}
 
-    fetch('/api/landing', { cache: 'no-store' })
+    fetch("/api/landing", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
         if (data?.content?.contact) {
@@ -62,68 +64,70 @@ export default function BranchContactSection() {
 
   const contactReasons: ContactReason[] = [
     {
-      id: 'admission',
-      label: 'ভর্তি ও পাঠদান',
+      id: "admission",
+      label: "ভর্তি ও পাঠদান",
       icon: FiBook,
-      description: '৫ম-১০ম শ্রেণি ভর্তি ও ব্যাচ',
+      description: "৫ম-১০ম শ্রেণি ভর্তি ও ব্যাচ",
     },
     {
-      id: 'notes',
-      label: 'শিট ও হ্যান্ডনোট',
+      id: "notes",
+      label: "শিট ও হ্যান্ডনোট",
       icon: FiFileText,
-      description: 'রঙিন শিট ও পিডিএফ সংগ্রহ',
+      description: "রঙিন শিট ও পিডিএফ সংগ্রহ",
     },
     {
-      id: 'results',
-      label: 'রেজাল্ট ও মার্কশিট',
+      id: "results",
+      label: "রেজাল্ট ও মার্কশিট",
       icon: FiAward,
-      description: 'পরীক্ষার নম্বর ও গ্রেডশিট',
+      description: "পরীক্ষার নম্বর ও গ্রেডশিট",
     },
     {
-      id: 'modeltest',
-      label: 'মডেল টেস্ট ও কুইজ',
+      id: "modeltest",
+      label: "মডেল টেস্ট ও কুইজ",
       icon: FiCheckCircle,
-      description: 'অনলাইন পরীক্ষা ও লিডারবোর্ড',
+      description: "অনলাইন পরীক্ষা ও লিডারবোর্ড",
     },
     {
-      id: 'other',
-      label: 'অন্যান্য জিজ্ঞাসা',
+      id: "other",
+      label: "অন্যান্য জিজ্ঞাসা",
       icon: FiHelpCircle,
-      description: 'যেকোনো সাধারণ তথ্য',
+      description: "যেকোনো সাধারণ তথ্য",
     },
   ];
 
-  const cleanPhone = (contact.helpline || '01712592519').replace(/\D/g, '') || '01712592519';
-  const cleanWhatsapp = (contact.whatsapp || '01712592519').replace(/\D/g, '') || '01712592519';
+  const cleanPhone =
+    (contact.helpline || "01712592519").replace(/\D/g, "") || "01712592519";
+  const cleanWhatsapp =
+    (contact.whatsapp || "01712592519").replace(/\D/g, "") || "01712592519";
 
   const contactCards = [
     {
       icon: FiMail,
-      title: 'ইমেইল',
-      content: 'shikkhanova@gmail.com',
-      description: 'সাধারণত ২৪ ঘণ্টার মধ্যে উত্তর দেওয়া হয়',
-      href: 'mailto:shikkhanova@gmail.com',
+      title: "ইমেইল",
+      content: "shikkhanova@gmail.com",
+      description: "সাধারণত ২৪ ঘণ্টার মধ্যে উত্তর দেওয়া হয়",
+      href: "mailto:shikkhanova@gmail.com",
     },
     {
       icon: FiPhone,
-      title: 'হেল্পলাইন ফোন',
-      content: '০১৭১২৫৯২৫১৯',
-      description: 'প্রতিদিন সকাল ৮টা – রাত ৯টা',
-      href: 'tel:01712592519',
+      title: "হেল্পলাইন ফোন",
+      content: "০১৭১২৫৯২৫১৯",
+      description: "প্রতিদিন সকাল ৮টা – রাত ৯টা",
+      href: "tel:01712592519",
     },
     {
       icon: FiMapPin,
-      title: 'ক্যাম্পাস ও ঠিকানা',
-      content: 'জুম্মাপাড়া, নীলফামারী সদর',
-      description: 'শিক্ষানোভা একাডেমি',
-      href: 'https://maps.google.com?q=Jummapara,Nilphamari',
+      title: "ক্যাম্পাস ও ঠিকানা",
+      content: "জুম্মাপাড়া, নীলফামারী সদর",
+      description: "শিক্ষানোভা একাডেমি",
+      href: "https://maps.google.com?q=Jummapara,Nilphamari",
     },
     {
       icon: FaWhatsapp,
-      title: 'সরাসরি হোয়াটসঅ্যাপ',
-      content: 'চ্যাট করুন',
-      description: 'তাৎক্ষণিক তথ্য ও সহায়তা',
-      href: 'https://wa.me/8801712592519',
+      title: "সরাসরি হোয়াটসঅ্যাপ",
+      content: "চ্যাট করুন",
+      description: "তাৎক্ষণিক তথ্য ও সহায়তা",
+      href: "https://wa.me/8801712592519",
     },
   ];
 
@@ -143,7 +147,7 @@ export default function BranchContactSection() {
       !formData.email.trim() ||
       !formData.message.trim()
     ) {
-      toast.error('অনুগ্রহ করে নাম, ইমেইল এবং বার্তা পূরণ করুন');
+      toast.error("অনুগ্রহ করে নাম, ইমেইল এবং বার্তা পূরণ করুন");
       setLoading(false);
       return;
     }
@@ -153,25 +157,28 @@ export default function BranchContactSection() {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       setSuccess(true);
       toast.success(
-        'আপনার বার্তা সফলভাবে পাঠানো হয়েছে! দ্রুত উত্তর দেওয়া হবে।',
+        "আপনার বার্তা সফলভাবে পাঠানো হয়েছে! দ্রুত উত্তর দেওয়া হবে।",
       );
       setFormData({
-        name: '',
-        email: '',
-        subject: '',
-        reason: 'admission',
-        message: '',
+        name: "",
+        email: "",
+        subject: "",
+        reason: "admission",
+        message: "",
       });
       setTimeout(() => setSuccess(false), 5000);
     } catch {
-      toast.error('বার্তা পাঠাতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।');
+      toast.error("বার্তা পাঠাতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <section className="relative rounded-3xl bg-white border border-slate-200/90 shadow-sm p-6 sm:p-10 lg:p-12 overflow-hidden" suppressHydrationWarning>
+    <section
+      className="relative p-6 sm:p-10 lg:p-12 overflow-hidden"
+      suppressHydrationWarning
+    >
       {/* 1. Header Section matching /contact-us */}
       <div className="text-center mb-10 sm:mb-14">
         <div className="inline-block mb-3">
@@ -183,7 +190,8 @@ export default function BranchContactSection() {
           চলুন কথা বলি
         </h2>
         <p className="text-xs sm:text-sm md:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
-          শিক্ষানোভা একাডেমি, ৫ম-১০ম শ্রেণি ভর্তি, অধ্যায়ভিত্তিক রঙিন শিট কিংবা পরীক্ষার রেজাল্ট নিয়ে যেকোনো প্রশ্ন থাকলে নির্দ্বিধায় বার্তা দিন।
+          শিক্ষানোভা একাডেমি, ৫ম-১০ম শ্রেণি ভর্তি, অধ্যায়ভিত্তিক রঙিন শিট কিংবা
+          পরীক্ষার রেজাল্ট নিয়ে যেকোনো প্রশ্ন থাকলে নির্দ্বিধায় বার্তা দিন।
         </p>
       </div>
 
@@ -195,7 +203,7 @@ export default function BranchContactSection() {
             <a
               key={index}
               href={item.href}
-              target={item.href.startsWith('http') ? '_blank' : undefined}
+              target={item.href.startsWith("http") ? "_blank" : undefined}
               rel="noopener noreferrer"
               className="group relative bg-slate-50/70 hover:bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
             >
@@ -227,7 +235,8 @@ export default function BranchContactSection() {
               বার্তা পাঠান
             </h3>
             <p className="text-xs sm:text-sm text-slate-500 mb-6">
-              নিচের ফর্মটি পূরণ করে সাবমিট করুন, আমরা দ্রুত আপনার সাথে যোগাযোগ করব।
+              নিচের ফর্মটি পূরণ করে সাবমিট করুন, আমরা দ্রুত আপনার সাথে যোগাযোগ
+              করব।
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-5">
@@ -321,15 +330,15 @@ export default function BranchContactSection() {
                         }
                         className={`text-left p-3 rounded-xl border transition-all duration-200 cursor-pointer ${
                           isSelected
-                            ? 'border-[#0F2C59] bg-[#0F2C59] text-white shadow-md'
-                            : 'border-slate-200 bg-white hover:border-slate-300 text-slate-700 hover:bg-slate-50'
+                            ? "border-[#0F2C59] bg-[#0F2C59] text-white shadow-md"
+                            : "border-slate-200 bg-white hover:border-slate-300 text-slate-700 hover:bg-slate-50"
                         }`}
                       >
                         <div
                           className={`w-7 h-7 rounded-lg flex items-center justify-center mb-1.5 ${
                             isSelected
-                              ? 'bg-white/20 text-white'
-                              : 'bg-slate-100 text-slate-600'
+                              ? "bg-white/20 text-white"
+                              : "bg-slate-100 text-slate-600"
                           }`}
                         >
                           <ReasonIcon size={14} />
@@ -339,7 +348,7 @@ export default function BranchContactSection() {
                         </p>
                         <p
                           className={`text-[10px] mt-0.5 leading-snug line-clamp-1 ${
-                            isSelected ? 'text-blue-100' : 'text-slate-400'
+                            isSelected ? "text-blue-100" : "text-slate-400"
                           }`}
                         >
                           {reason.description}
@@ -419,7 +428,8 @@ export default function BranchContactSection() {
                   আমরা সবসময় পাশে
                 </h3>
                 <p className="text-xs text-slate-300 mt-2">
-                  শিক্ষার্থীদের সার্বিক উন্নতি ও সঠিক দিকনির্দেশনাই আমাদের মূল ব্রত।
+                  শিক্ষার্থীদের সার্বিক উন্নতি ও সঠিক দিকনির্দেশনাই আমাদের মূল
+                  ব্রত।
                 </p>
               </div>
 
@@ -434,7 +444,8 @@ export default function BranchContactSection() {
                       দ্রুত উত্তর
                     </h4>
                     <p className="text-xs text-slate-300 leading-relaxed">
-                      ভর্তি, পরীক্ষা বা শিট সংক্রান্ত যেকোনো প্রশ্নের উত্তর যথাসম্ভব দ্রুত দেওয়া হয়।
+                      ভর্তি, পরীক্ষা বা শিট সংক্রান্ত যেকোনো প্রশ্নের উত্তর
+                      যথাসম্ভব দ্রুত দেওয়া হয়।
                     </p>
                   </div>
                 </div>
@@ -449,7 +460,8 @@ export default function BranchContactSection() {
                       অভিজ্ঞ শিক্ষক প্যানেল
                     </h4>
                     <p className="text-xs text-slate-300 leading-relaxed">
-                      গণিত, বিজ্ঞান ও ইংরেজির দক্ষ শিক্ষকগণ প্রতিটি প্রশ্নের সমাধান দিতে প্রস্তুত।
+                      গণিত, বিজ্ঞান ও ইংরেজির দক্ষ শিক্ষকগণ প্রতিটি প্রশ্নের
+                      সমাধান দিতে প্রস্তুত।
                     </p>
                   </div>
                 </div>
@@ -464,7 +476,8 @@ export default function BranchContactSection() {
                       সরাসরি যোগাযোগ
                     </h4>
                     <p className="text-xs text-slate-300 leading-relaxed">
-                      ফোন, হোয়াটসঅ্যাপ ও সরাসরি ক্যাম্পাসে এসে যোগাযোগ করার সুব্যবস্থা।
+                      ফোন, হোয়াটসঅ্যাপ ও সরাসরি ক্যাম্পাসে এসে যোগাযোগ করার
+                      সুব্যবস্থা।
                     </p>
                   </div>
                 </div>
@@ -473,7 +486,8 @@ export default function BranchContactSection() {
               {/* Hotline & WhatsApp Section */}
               <div className="pt-6 border-t border-white/15 space-y-4">
                 <p className="text-xs text-slate-300">
-                  জরুরি প্রয়োজনে প্রতিদিন সকাল ৮টা থেকে রাত ৯টার মধ্যে সরাসরি হেল্পলাইনে ফোন করুন।
+                  জরুরি প্রয়োজনে প্রতিদিন সকাল ৮টা থেকে রাত ৯টার মধ্যে সরাসরি
+                  হেল্পলাইনে ফোন করুন।
                 </p>
 
                 <div className="flex flex-wrap items-center gap-3">
@@ -492,7 +506,7 @@ export default function BranchContactSection() {
                     className="inline-flex items-center gap-2 bg-white text-[#0A1E3C] hover:bg-slate-100 px-5 py-2.5 rounded-full font-bold text-xs transition-transform hover:scale-105 active:scale-95 shadow-md"
                   >
                     <FiPhone size={14} />
-                    <span>{contact.helpline || '০১৭১২৫৯২৫১৯'}</span>
+                    <span>{contact.helpline || "০১৭১২৫৯২৫১৯"}</span>
                   </a>
                 </div>
               </div>
@@ -510,7 +524,7 @@ export default function BranchContactSection() {
                 আমাদের অবস্থান মানচিত্র
               </h4>
               <p className="text-xs text-slate-500">
-                {contact.address || 'জুম্মাপাড়া, নীলফামারী সদর, নীলফামারী'}
+                {contact.address || "জুম্মাপাড়া, নীলফামারী সদর, নীলফামারী"}
               </p>
             </div>
             <a

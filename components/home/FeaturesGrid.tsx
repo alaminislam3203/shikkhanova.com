@@ -82,62 +82,67 @@ const SERVICES: ServiceItem[] = [
 
 export default function FeaturesGrid() {
   return (
-    <section className="relative py-8 sm:py-12 space-y-8 overflow-hidden bg-gradient-to-b from-rose-50/40 via-white to-slate-50/50 p-4 sm:p-8">
+    <section
+      suppressHydrationWarning
+      className="w-screen relative left-1/2 -translate-x-1/2 py-12 sm:py-16 lg:py-20 overflow-hidden bg-gradient-to-b from-rose-50/50 via-white to-slate-50/60 border-y border-rose-100/70 select-none"
+    >
       {/* Background Decorative Faint Shapes */}
-      <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-red-100/30 blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-blue-100/20 blur-3xl pointer-events-none" />
+      <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-red-100/30 blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-blue-100/20 blur-3xl pointer-events-none" />
 
-      {/* Section Header (Matching Screenshot) */}
-      <div className="text-center space-y-2 relative z-10">
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0A1E3C] tracking-tight">
-          অন্যান্য সব <span className="text-[#C8102E]">সেবা পরিক্রমা</span>
-        </h2>
+      <div className="max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10 relative z-10">
+        {/* Section Header (Matching Screenshot) */}
+        <div className="text-center space-y-2">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#0A1E3C] tracking-tight">
+            অন্যান্য সব <span className="text-[#C8102E]">সেবা পরিক্রমা</span>
+          </h2>
 
-        {/* UCC Style Red Center Accent Line (━━━ ■ ━━━) */}
-        <div className="flex items-center justify-center gap-1.5 pt-1">
-          <div className="w-9 h-[3px] bg-[#C8102E] rounded-full" />
-          <div className="w-3 h-[6px] bg-[#C8102E] rounded-xs" />
-          <div className="w-9 h-[3px] bg-[#C8102E] rounded-full" />
+          {/* UCC Style Red Center Accent Line (━━━ ■ ━━━) */}
+          <div className="flex items-center justify-center gap-1.5 pt-1">
+            <div className="w-9 h-[3px] bg-[#C8102E] rounded-full" />
+            <div className="w-3 h-[6px] bg-[#C8102E] rounded-xs" />
+            <div className="w-9 h-[3px] bg-[#C8102E] rounded-full" />
+          </div>
+
+          <p className="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto pt-1 font-medium">
+            শিক্ষার্থী ও অভিভাবকদের জন্য শিক্ষা নোভা একাডেমির আধুনিক ও
+            প্রযুক্তিনির্ভর একাডেমিক সেবাসমূহ
+          </p>
         </div>
 
-        <p className="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto pt-1 font-medium">
-          শিক্ষার্থী ও অভিভাবকদের জন্য শিক্ষা নোভা একাডেমির আধুনিক ও
-          প্রযুক্তিনির্ভর একাডেমিক সেবাসমূহ
-        </p>
-      </div>
+        {/* 8-Card Grid (2 Rows x 4 Columns on Desktop, 2 Columns on Mobile) */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 sm:gap-6">
+          {SERVICES.map((item) => {
+            const Icon = item.icon;
+            const content = (
+              <div className="group h-full bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-red-100/70 shadow-[0_4px_20px_rgba(200,16,46,0.05)] hover:shadow-[0_10px_30px_rgba(200,16,46,0.12)] hover:border-[#C8102E]/40 hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center space-y-3 cursor-pointer">
+                {/* Center Squircle Red Icon Container */}
+                <div className="w-13 h-13 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#FF334B] via-[#E11333] to-[#C8102E] text-white flex items-center justify-center text-xl sm:text-2xl shadow-md group-hover:scale-110 group-hover:rotate-2 transition-transform duration-300">
+                  <Icon className="w-6 h-6 sm:w-7 sm:h-7" />
+                </div>
 
-      {/* 8-Card Grid (2 Rows x 4 Columns on Desktop, 2 Columns on Mobile) */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 sm:gap-6 relative z-10">
-        {SERVICES.map((item) => {
-          const Icon = item.icon;
-          const content = (
-            <div className="group h-full bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-red-100/70 shadow-[0_4px_20px_rgba(200,16,46,0.05)] hover:shadow-[0_10px_30px_rgba(200,16,46,0.12)] hover:border-[#C8102E]/40 hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center space-y-3 cursor-pointer">
-              {/* Center Squircle Red Icon Container */}
-              <div className="w-13 h-13 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#FF334B] via-[#E11333] to-[#C8102E] text-white flex items-center justify-center text-xl sm:text-2xl shadow-md group-hover:scale-110 group-hover:rotate-2 transition-transform duration-300">
-                <Icon className="w-6 h-6 sm:w-7 sm:h-7" />
+                {/* Title */}
+                <h3 className="text-xs sm:text-sm md:text-base font-bold text-[#0A1E3C] group-hover:text-[#C8102E] transition-colors leading-snug">
+                  {item.title}
+                </h3>
               </div>
-
-              {/* Title */}
-              <h3 className="text-xs sm:text-sm md:text-base font-bold text-[#0A1E3C] group-hover:text-[#C8102E] transition-colors leading-snug">
-                {item.title}
-              </h3>
-            </div>
-          );
-
-          if (item.href) {
-            return (
-              <Link key={item.id} href={item.href} className="block h-full">
-                {content}
-              </Link>
             );
-          }
 
-          return (
-            <div key={item.id} className="h-full">
-              {content}
-            </div>
-          );
-        })}
+            if (item.href) {
+              return (
+                <Link key={item.id} href={item.href} className="block h-full">
+                  {content}
+                </Link>
+              );
+            }
+
+            return (
+              <div key={item.id} className="h-full">
+                {content}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
