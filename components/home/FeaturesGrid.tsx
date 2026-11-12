@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
+import React from "react";
+import Link from "next/link";
 import {
   FaLaptopCode,
   FaChalkboardUser,
@@ -11,7 +11,7 @@ import {
   FaCommentSms,
   FaChartPie,
   FaWindowMaximize,
-} from 'react-icons/fa6';
+} from "react-icons/fa6";
 
 interface ServiceItem {
   id: string;
@@ -23,66 +23,66 @@ interface ServiceItem {
 
 const SERVICES: ServiceItem[] = [
   {
-    id: 'srv-1',
-    title: 'অফলাইন/অনলাইন প্রোগ্রাম',
-    subtitle: 'সরাসরি ক্লাসরুম ও ডিজিটাল লাইভ ক্লাস',
+    id: "srv-1",
+    title: "অফলাইন/অনলাইন প্রোগ্রাম",
+    subtitle: "সরাসরি ক্লাসরুম ও ডিজিটাল লাইভ ক্লাস",
     icon: FaLaptopCode,
-    href: '/videos',
+    href: "/videos",
   },
   {
-    id: 'srv-2',
-    title: 'মেধাবী ও অভিজ্ঞ শিক্ষক',
-    subtitle: 'বিষয়ভিত্তিক অভিজ্ঞ শিক্ষকমণ্ডলী দ্বারা পাঠদান',
+    id: "srv-2",
+    title: "মেধাবী ও অভিজ্ঞ শিক্ষক",
+    subtitle: "বিষয়ভিত্তিক অভিজ্ঞ শিক্ষকমণ্ডলী দ্বারা পাঠদান",
     icon: FaChalkboardUser,
-    href: '/about',
+    href: "/about",
   },
   {
-    id: 'srv-3',
-    title: 'মানসম্মত স্টাডি ম্যাটেরিয়ালস',
-    subtitle: 'অধ্যায়ভিত্তিক রঙিন হ্যান্ডনোট ও স্পেশাল শিট',
+    id: "srv-3",
+    title: "মানসম্মত স্টাডি ম্যাটেরিয়ালস",
+    subtitle: "অধ্যায়ভিত্তিক রঙিন হ্যান্ডনোট ও স্পেশাল শিট",
     icon: FaBookBookmark,
-    href: '/pdfs',
+    href: "/pdfs",
   },
   {
-    id: 'srv-4',
-    title: 'কনসেপ্ট বেইজড ক্লাস',
-    subtitle: 'মৌলিক বেসিক ক্লিয়ার ও প্রয়োগমূলক শিক্ষাদান',
+    id: "srv-4",
+    title: "কনসেপ্ট বেইজড ক্লাস",
+    subtitle: "মৌলিক বেসিক ক্লিয়ার ও প্রয়োগমূলক শিক্ষাদান",
     icon: FaUsersViewfinder,
-    href: '/videos',
+    href: "/videos",
   },
   {
-    id: 'srv-5',
-    title: 'ইউনিক এক্সাম সিস্টেম',
-    subtitle: 'সাপ্তাহিক, মাসিক ও বিশেষ মডেল টেস্ট পরীক্ষা',
+    id: "srv-5",
+    title: "ইউনিক এক্সাম সিস্টেম",
+    subtitle: "সাপ্তাহিক, মাসিক ও বিশেষ মডেল টেস্ট পরীক্ষা",
     icon: FaFileSignature,
-    href: '/quiz',
+    href: "/quiz",
   },
   {
-    id: 'srv-6',
-    title: 'AUTO SMS রেজাল্ট',
-    subtitle: 'পরীক্ষা শেষে অভিভাবকের ফোনে স্বয়ংক্রিয় রেজাল্ট SMS',
+    id: "srv-6",
+    title: "AUTO SMS রেজাল্ট",
+    subtitle: "পরীক্ষা শেষে অভিভাবকের ফোনে স্বয়ংক্রিয় রেজাল্ট SMS",
     icon: FaCommentSms,
-    href: '/results',
+    href: "/results",
   },
   {
-    id: 'srv-7',
-    title: 'এক্সাম এনালাইসিস রিপোর্ট',
-    subtitle: 'মার্কশিট, জিপিএ ও সাবজেক্টভিত্তিক দুর্বলতা বিশ্লেষণ',
+    id: "srv-7",
+    title: "এক্সাম এনালাইসিস রিপোর্ট",
+    subtitle: "মার্কশিট, জিপিএ ও সাবজেক্টভিত্তিক দুর্বলতা বিশ্লেষণ",
     icon: FaChartPie,
-    href: '/results',
+    href: "/results",
   },
   {
-    id: 'srv-8',
-    title: 'বেস্ট স্টুডেন্ট পোর্টাল',
-    subtitle: 'রোল হাজিরা, ফলাফল ও ডিজিটাল রিসোর্স ম্যানেজমেন্ট',
+    id: "srv-8",
+    title: "বেস্ট স্টুডেন্ট পোর্টাল",
+    subtitle: "রোল হাজিরা, ফলাফল ও ডিজিটাল রিসোর্স ম্যানেজমেন্ট",
     icon: FaWindowMaximize,
-    href: '/login',
+    href: "/login",
   },
 ];
 
 export default function FeaturesGrid() {
   return (
-    <section className="relative py-8 sm:py-12 space-y-8 overflow-hidden rounded-3xl bg-gradient-to-b from-rose-50/40 via-white to-slate-50/50 p-4 sm:p-8 border border-red-100/60 shadow-xs">
+    <section className="relative py-8 sm:py-12 space-y-8 overflow-hidden bg-gradient-to-b from-rose-50/40 via-white to-slate-50/50 p-4 sm:p-8">
       {/* Background Decorative Faint Shapes */}
       <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-red-100/30 blur-3xl pointer-events-none" />
       <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-blue-100/20 blur-3xl pointer-events-none" />
@@ -101,7 +101,8 @@ export default function FeaturesGrid() {
         </div>
 
         <p className="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto pt-1 font-medium">
-          শিক্ষার্থী ও অভিভাবকদের জন্য শিক্ষা নোভা একাডেমির আধুনিক ও প্রযুক্তিনির্ভর একাডেমিক সেবাসমূহ
+          শিক্ষার্থী ও অভিভাবকদের জন্য শিক্ষা নোভা একাডেমির আধুনিক ও
+          প্রযুক্তিনির্ভর একাডেমিক সেবাসমূহ
         </p>
       </div>
 

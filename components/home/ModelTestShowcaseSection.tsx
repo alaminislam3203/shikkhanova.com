@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import {
   toBengaliClass,
   QuizPrices,
@@ -16,7 +16,7 @@ import {
   DEFAULT_QUIZ_COVERS,
   getStoredQuizCovers,
   saveStoredQuizCovers,
-} from '@/lib/defaultQuizData';
+} from "@/lib/defaultQuizData";
 import {
   FaBolt,
   FaGem,
@@ -25,21 +25,25 @@ import {
   FaArrowRight,
   FaLock,
   FaCrown,
-} from 'react-icons/fa6';
+} from "react-icons/fa6";
 
 export default function ModelTestShowcaseSection() {
-  const [activeTab, setActiveTab] = useState<'all' | 'free' | 'paid' | 'packages'>('all');
+  const [activeTab, setActiveTab] = useState<
+    "all" | "free" | "paid" | "packages"
+  >("all");
   const [quizPrices, setQuizPrices] = useState<QuizPrices>(DEFAULT_QUIZ_PRICES);
-  const [quizPackages, setQuizPackages] = useState<QuizPackageItem[]>(DEFAULT_QUIZ_PACKAGES);
+  const [quizPackages, setQuizPackages] = useState<QuizPackageItem[]>(
+    DEFAULT_QUIZ_PACKAGES,
+  );
   const [quizCovers, setQuizCovers] = useState<QuizCovers>(DEFAULT_QUIZ_COVERS);
 
   const classBadges = [
-    { grade: 5, tag: 'বৃত্তি ও ফাইনাল' },
-    { grade: 6, tag: 'নতুন কারিকুলাম' },
-    { grade: 7, tag: 'অধ্যায়ভিত্তিক' },
-    { grade: 8, tag: 'জুনিয়র স্পেশাল' },
-    { grade: 9, tag: 'বিজ্ঞান/মানবিক/ব্যবসায়' },
-    { grade: 10, tag: 'এসএসসি ক্র্যাশ ব্যাচ' },
+    { grade: 5, tag: "বৃত্তি ও ফাইনাল" },
+    { grade: 6, tag: "নতুন কারিকুলাম" },
+    { grade: 7, tag: "অধ্যায়ভিত্তিক" },
+    { grade: 8, tag: "জুনিয়র স্পেশাল" },
+    { grade: 9, tag: "বিজ্ঞান/মানবিক/ব্যবসায়" },
+    { grade: 10, tag: "এসএসসি ক্র্যাশ ব্যাচ" },
   ];
 
   // Hydrate Dynamic Prices, Packages, and Covers
@@ -60,7 +64,7 @@ export default function ModelTestShowcaseSection() {
     } catch {}
 
     // Fetch live prices
-    fetch('/api/quiz/prices', { cache: 'no-store' })
+    fetch("/api/quiz/prices", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
         if (data?.prices) {
@@ -71,7 +75,7 @@ export default function ModelTestShowcaseSection() {
       .catch(() => {});
 
     // Fetch live packages
-    fetch('/api/quiz/packages', { cache: 'no-store' })
+    fetch("/api/quiz/packages", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
         if (data?.packages && Array.isArray(data.packages)) {
@@ -82,10 +86,10 @@ export default function ModelTestShowcaseSection() {
       .catch(() => {});
 
     // Fetch live covers
-    fetch('/api/quiz/covers', { cache: 'no-store' })
+    fetch("/api/quiz/covers", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
-        if (data?.covers && typeof data.covers === 'object') {
+        if (data?.covers && typeof data.covers === "object") {
           setQuizCovers(data.covers);
           saveStoredQuizCovers(data.covers);
         }
@@ -95,7 +99,7 @@ export default function ModelTestShowcaseSection() {
 
   return (
     <section className="space-y-6" suppressHydrationWarning>
-      <div className="bg-gradient-to-br from-white via-red-50/20 to-white rounded-3xl p-6 sm:p-10 border border-red-100 shadow-md relative overflow-hidden">
+      <div className="p-6 sm:p-10 relative overflow-hidden">
         {/* Ambient Top Glow */}
         <div className="absolute top-0 right-0 w-80 h-80 bg-red-500/5 rounded-full blur-3xl pointer-events-none" />
 
@@ -107,10 +111,13 @@ export default function ModelTestShowcaseSection() {
               <span>ইন্টারেক্টিভ কুইজ ও প্রস্তুতি</span>
             </div>
             <h2 className="text-xl sm:text-3xl font-black text-[#0A1E3C] tracking-tight">
-              আজই তোমার প্রস্তুতি যাচাই করো — <span className="text-[#C8102E]">অনলাইন মডেল টেস্ট</span>
+              আজই তোমার প্রস্তুতি যাচাই করো —{" "}
+              <span className="text-[#C8102E]">অনলাইন মডেল টেস্ট</span>
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 font-medium max-w-2xl leading-relaxed">
-              ৫ম থেকে ১০ম শ্রেণির প্রতিটি বিষয়ের অধ্যায়ভিত্তিক ফ্রি ও পেইড MCQ পরীক্ষা। তাৎক্ষণিক স্বয়ংক্রিয় ফলাফল, সমাধান, মেধা তালিকা ও স্পেশাল মডেল টেস্ট প্যাকেজ।
+              ৫ম থেকে ১০ম শ্রেণির প্রতিটি বিষয়ের অধ্যায়ভিত্তিক ফ্রি ও পেইড MCQ
+              পরীক্ষা। তাৎক্ষণিক স্বয়ংক্রিয় ফলাফল, সমাধান, মেধা তালিকা ও স্পেশাল
+              মডেল টেস্ট প্যাকেজ।
             </p>
           </div>
 
@@ -127,11 +134,11 @@ export default function ModelTestShowcaseSection() {
         <div className="flex flex-wrap items-center gap-2 pt-6">
           <button
             type="button"
-            onClick={() => setActiveTab('all')}
+            onClick={() => setActiveTab("all")}
             className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer ${
-              activeTab === 'all'
-                ? 'bg-[#0A1E3C] text-white shadow-sm'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              activeTab === "all"
+                ? "bg-[#0A1E3C] text-white shadow-sm"
+                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
             }`}
           >
             সবগুলো দেখুন (All)
@@ -139,11 +146,11 @@ export default function ModelTestShowcaseSection() {
 
           <button
             type="button"
-            onClick={() => setActiveTab('free')}
+            onClick={() => setActiveTab("free")}
             className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer ${
-              activeTab === 'free'
-                ? 'bg-emerald-600 text-white shadow-sm'
-                : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
+              activeTab === "free"
+                ? "bg-emerald-600 text-white shadow-sm"
+                : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200"
             }`}
           >
             <FaGift className="w-3 h-3" />
@@ -152,11 +159,11 @@ export default function ModelTestShowcaseSection() {
 
           <button
             type="button"
-            onClick={() => setActiveTab('paid')}
+            onClick={() => setActiveTab("paid")}
             className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer ${
-              activeTab === 'paid'
-                ? 'bg-[#C8102E] text-white shadow-sm'
-                : 'bg-red-50 text-[#C8102E] hover:bg-red-100 border border-red-200'
+              activeTab === "paid"
+                ? "bg-[#C8102E] text-white shadow-sm"
+                : "bg-red-50 text-[#C8102E] hover:bg-red-100 border border-red-200"
             }`}
           >
             <FaGem className="w-3 h-3" />
@@ -165,11 +172,11 @@ export default function ModelTestShowcaseSection() {
 
           <button
             type="button"
-            onClick={() => setActiveTab('packages')}
+            onClick={() => setActiveTab("packages")}
             className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer ${
-              activeTab === 'packages'
-                ? 'bg-purple-600 text-white shadow-sm'
-                : 'bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200'
+              activeTab === "packages"
+                ? "bg-purple-600 text-white shadow-sm"
+                : "bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200"
             }`}
           >
             <FaCrown className="w-3 h-3 text-amber-500" />
@@ -178,15 +185,15 @@ export default function ModelTestShowcaseSection() {
         </div>
 
         {/* 1. CLASS-WISE MODEL TESTS GRID (Shown in 'all', 'free', or 'paid') */}
-        {activeTab !== 'packages' && (
+        {activeTab !== "packages" && (
           <div className="space-y-4 pt-6">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-black text-slate-800">
-                {activeTab === 'free'
-                  ? '🎁 শ্রেণিভিত্তিক ফ্রি মডেল টেস্ট'
-                  : activeTab === 'paid'
-                  ? '💎 শ্রেণিভিত্তিক পেইড / প্রিমিয়াম মডেল টেস্ট'
-                  : 'শ্রেণিভিত্তিক মডেল টেস্ট (ফ্রি ও পেইড)'}
+                {activeTab === "free"
+                  ? "🎁 শ্রেণিভিত্তিক ফ্রি মডেল টেস্ট"
+                  : activeTab === "paid"
+                    ? "💎 শ্রেণিভিত্তিক পেইড / প্রিমিয়াম মডেল টেস্ট"
+                    : "শ্রেণিভিত্তিক মডেল টেস্ট (ফ্রি ও পেইড)"}
               </h3>
               <span className="text-[11px] font-bold text-slate-400">
                 ৫ম – ১০ম শ্রেণি
@@ -196,8 +203,10 @@ export default function ModelTestShowcaseSection() {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
               {classBadges.map((c) => {
                 const clsPrice = quizPrices.classPrices[c.grade] || 50;
-                const coverImage = quizCovers.classes[c.grade] || quizCovers.classes[String(c.grade)];
-                const showPaidBadge = activeTab === 'paid';
+                const coverImage =
+                  quizCovers.classes[c.grade] ||
+                  quizCovers.classes[String(c.grade)];
+                const showPaidBadge = activeTab === "paid";
 
                 return (
                   <Link
@@ -205,8 +214,8 @@ export default function ModelTestShowcaseSection() {
                     href={`/quiz`}
                     className={`group bg-white hover:bg-gradient-to-b hover:from-white hover:to-red-50/60 p-3.5 sm:p-4 rounded-2xl border transition-all flex flex-col justify-between text-center relative overflow-hidden shadow-xs hover:shadow-md ${
                       showPaidBadge
-                        ? 'border-red-200 hover:border-[#C8102E]'
-                        : 'border-slate-200/90 hover:border-red-300'
+                        ? "border-red-200 hover:border-[#C8102E]"
+                        : "border-slate-200/90 hover:border-red-300"
                     }`}
                   >
                     {/* Optional Cover Image */}
@@ -233,7 +242,7 @@ export default function ModelTestShowcaseSection() {
                         <div className="inline-flex items-center gap-1 text-[11px] font-black text-[#C8102E] bg-red-50 px-2 py-0.5 rounded-md border border-red-200">
                           <FaGem className="w-2.5 h-2.5" /> ৳{clsPrice}
                         </div>
-                      ) : activeTab === 'free' ? (
+                      ) : activeTab === "free" ? (
                         <div className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
                           <FaGift className="w-2.5 h-2.5" /> ১০০% ফ্রি
                         </div>
@@ -251,7 +260,9 @@ export default function ModelTestShowcaseSection() {
                     </div>
 
                     <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-center gap-1 text-[11px] font-black text-[#C8102E] group-hover:translate-x-0.5 transition-transform">
-                      <span>{showPaidBadge ? 'পেইড টেস্ট দিন' : 'টেস্ট দিন'}</span>
+                      <span>
+                        {showPaidBadge ? "পেইড টেস্ট দিন" : "টেস্ট দিন"}
+                      </span>
                       <FaArrowRight className="w-2.5 h-2.5" />
                     </div>
                   </Link>
@@ -262,7 +273,7 @@ export default function ModelTestShowcaseSection() {
         )}
 
         {/* 2. DYNAMIC SPECIAL PACKAGES SHOWCASE (Shown ONLY when 'packages' tab is clicked) */}
-        {activeTab === 'packages' && (
+        {activeTab === "packages" && (
           <div className="pt-6 space-y-5">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
               <div>
@@ -273,7 +284,8 @@ export default function ModelTestShowcaseSection() {
                   স্পেশাল মডেল টেস্ট প্যাকেজ
                 </h3>
                 <p className="text-xs text-slate-500 font-medium">
-                  বিকাশ, নগদ, রকেট বা উপায়ের মাধ্যমে সহজে যেকোনো আকর্ষণীয় প্যাকেজ আনলক করুন
+                  বিকাশ, নগদ, রকেট বা উপায়ের মাধ্যমে সহজে যেকোনো আকর্ষণীয়
+                  প্যাকেজ আনলক করুন
                 </p>
               </div>
 
@@ -294,7 +306,11 @@ export default function ModelTestShowcaseSection() {
                   const isPopular = pkg.isPopular;
                   const discountPct =
                     pkg.originalPrice && pkg.originalPrice > pkg.price
-                      ? Math.round(((pkg.originalPrice - pkg.price) / pkg.originalPrice) * 100)
+                      ? Math.round(
+                          ((pkg.originalPrice - pkg.price) /
+                            pkg.originalPrice) *
+                            100,
+                        )
                       : null;
 
                   return (
@@ -302,14 +318,14 @@ export default function ModelTestShowcaseSection() {
                       key={pkg.id}
                       className={`bg-white rounded-3xl p-5 sm:p-6 transition-all duration-300 space-y-4 relative flex flex-col justify-between ${
                         isPopular
-                          ? 'border-2 border-[#C8102E] shadow-xl md:-translate-y-1'
-                          : 'border border-slate-200/90 shadow-sm hover:shadow-lg hover:border-slate-300'
+                          ? "border-2 border-[#C8102E] shadow-xl md:-translate-y-1"
+                          : "border border-slate-200/90 shadow-sm hover:shadow-lg hover:border-slate-300"
                       }`}
                     >
                       {/* Popular Badge */}
                       {isPopular && (
                         <div className="absolute top-0 right-0 bg-gradient-to-r from-[#9B0D23] to-[#C8102E] text-white text-[10px] font-black uppercase px-3.5 py-1 rounded-bl-2xl shadow-xs">
-                          {pkg.badge || 'জনপ্রিয় অফার'}
+                          {pkg.badge || "জনপ্রিয় অফার"}
                         </div>
                       )}
 
@@ -330,11 +346,12 @@ export default function ModelTestShowcaseSection() {
                           <span className="text-2xl sm:text-3xl font-black text-[#C8102E]">
                             ৳{pkg.price}
                           </span>
-                          {pkg.originalPrice && pkg.originalPrice > pkg.price && (
-                            <span className="text-xs sm:text-sm font-bold text-slate-400 line-through">
-                              ৳{pkg.originalPrice}
-                            </span>
-                          )}
+                          {pkg.originalPrice &&
+                            pkg.originalPrice > pkg.price && (
+                              <span className="text-xs sm:text-sm font-bold text-slate-400 line-through">
+                                ৳{pkg.originalPrice}
+                              </span>
+                            )}
                           {discountPct && (
                             <span className="text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded">
                               {discountPct}% ছাড়
@@ -350,7 +367,9 @@ export default function ModelTestShowcaseSection() {
                         <ul className="text-xs text-slate-600 space-y-2 pt-3 border-t border-slate-100">
                           {pkg.features.slice(0, 4).map((feat, fIdx) => (
                             <li key={fIdx} className="flex items-start gap-2">
-                              <span className="text-emerald-600 font-black shrink-0 mt-0.5">✓</span>
+                              <span className="text-emerald-600 font-black shrink-0 mt-0.5">
+                                ✓
+                              </span>
                               <span className="leading-snug">{feat}</span>
                             </li>
                           ))}
@@ -363,8 +382,8 @@ export default function ModelTestShowcaseSection() {
                           href="/quiz"
                           className={`w-full py-2.5 sm:py-3 rounded-2xl font-black text-xs transition flex items-center justify-center gap-1.5 active:scale-98 shadow-sm ${
                             isPopular
-                              ? 'bg-gradient-to-r from-[#0A1E3C] via-[#0F2C59] to-[#C8102E] text-white hover:opacity-95 shadow-md'
-                              : 'bg-slate-100 hover:bg-[#0A1E3C] text-slate-800 hover:text-white'
+                              ? "bg-gradient-to-r from-[#0A1E3C] via-[#0F2C59] to-[#C8102E] text-white hover:opacity-95 shadow-md"
+                              : "bg-slate-100 hover:bg-[#0A1E3C] text-slate-800 hover:text-white"
                           }`}
                         >
                           <FaLock className="w-3 h-3" />
