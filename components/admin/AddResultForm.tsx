@@ -379,7 +379,7 @@ export default function AddResultForm({ formData, onChange, onSubmit }: AddResul
   };
 
   return (
-    <div className="space-y-6 sm:space-y-8 max-w-4xl mx-auto">
+    <div suppressHydrationWarning className="space-y-6 sm:space-y-8 max-w-4xl mx-auto">
       
       {/* ─────────────────────────────────────────────────────────────
           1. HEADER BANNER
