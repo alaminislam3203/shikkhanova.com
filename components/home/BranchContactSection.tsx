@@ -93,6 +93,9 @@ export default function BranchContactSection() {
     },
   ];
 
+  const cleanPhone = (contact.helpline || '01712592519').replace(/\D/g, '') || '01712592519';
+  const cleanWhatsapp = (contact.whatsapp || '01712592519').replace(/\D/g, '') || '01712592519';
+
   const contactCards = [
     {
       icon: FiMail,
