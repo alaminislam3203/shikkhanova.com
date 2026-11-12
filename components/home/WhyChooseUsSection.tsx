@@ -36,10 +36,10 @@ export default function WhyChooseUsSection() {
   }, []);
 
   const getIcon = (idx: number) => {
-    if (idx === 0) return <FaChartPie className="w-5 h-5 text-blue-600" />;
-    if (idx === 1) return <FaBookBookmark className="w-5 h-5 text-emerald-600" />;
-    if (idx === 2) return <FaUserShield className="w-5 h-5 text-amber-600" />;
-    return <FaAward className="w-5 h-5 text-rose-600" />;
+    if (idx === 0) return <FaChartPie className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />;
+    if (idx === 1) return <FaBookBookmark className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />;
+    if (idx === 2) return <FaUserShield className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />;
+    return <FaAward className="w-4 h-4 sm:w-5 sm:h-5 text-rose-600" />;
   };
 
   const getAccentGradient = (idx: number) => {
@@ -64,27 +64,27 @@ export default function WhyChooseUsSection() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-6">
         {whyUsList.map((item, idx) => (
           <div
             key={item.id || idx}
-            className={`bg-white rounded-3xl p-6 border ${getAccentGradient(
+            className={`bg-white rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 lg:p-6 border ${getAccentGradient(
               idx
-            )} shadow-sm hover:shadow-xl transition-all duration-300 space-y-3.5 flex flex-col justify-between group hover:-translate-y-1`}
+            )} shadow-xs hover:shadow-xl transition-all duration-300 space-y-2.5 sm:space-y-3.5 flex flex-col justify-between group hover:-translate-y-1`}
           >
-            <div className="space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-center shadow-xs group-hover:scale-110 transition-transform">
+            <div className="space-y-2 sm:space-y-3">
+              <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-center shadow-2xs group-hover:scale-110 transition-transform">
                 {getIcon(idx)}
               </div>
-              <h3 className="text-base font-black text-slate-800 group-hover:text-brand-800 transition-colors leading-snug">
+              <h3 className="text-xs sm:text-base font-black text-slate-800 group-hover:text-brand-800 transition-colors leading-tight sm:leading-snug">
                 {item.title}
               </h3>
-              <p className="text-xs text-slate-600 leading-relaxed font-medium">
+              <p className="text-[11px] sm:text-xs text-slate-600 leading-relaxed font-medium line-clamp-3 sm:line-clamp-none">
                 {item.description}
               </p>
             </div>
 
-            <div className="pt-2 border-t border-slate-100 flex items-center gap-1 text-[11px] font-bold text-slate-400 group-hover:text-slate-600">
+            <div className="pt-1.5 sm:pt-2 border-t border-slate-100 flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-slate-400 group-hover:text-slate-600">
               <span>বৈশিষ্ট্য #{idx + 1}</span>
             </div>
           </div>
