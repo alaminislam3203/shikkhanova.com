@@ -1,6 +1,7 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
 import HeroSection from '@/components/home/HeroSection';
+import AboutPreviewSection from '@/components/home/AboutPreviewSection';
 import ClassSelector from '@/components/home/ClassSelector';
 import ModelTestShowcaseSection from '@/components/home/ModelTestShowcaseSection';
 import SuccessStoriesSection from '@/components/home/SuccessStoriesSection';
@@ -31,10 +32,13 @@ const StatsCounterSection = dynamic(
 export default function HomePage() {
   return (
     <div className="space-y-12 sm:space-y-16">
-      {/* 1. Hero Dynamic Banners & Quick Action Badges */}
+      {/* 1. Hero Dynamic Banners & Notice Board */}
       <HeroSection />
 
-      {/* 2. Live Impact Stats Counter (Dynamic Social Proof) */}
+      {/* 2. Institutional About Showcase (Matching Reference with 'আরও পড়ুন' -> /about) */}
+      <AboutPreviewSection />
+
+      {/* 3. Live Impact Stats Counter (Dynamic Social Proof) */}
       <StatsCounterSection />
 
       {/* 3. Class 5 to 10 Academic Section Selector */}
