@@ -467,7 +467,9 @@ export default function Navbar() {
 
             {/* Desktop Navigation Links + Global Search Box */}
             <nav className="hidden lg:flex items-center gap-1">
-              {navLinks.map((link) => {
+              {navLinks
+                .filter((link) => !link.mobileOnly)
+                .map((link) => {
                 const Icon = link.icon;
                 const isChildActive = link.children?.some(
                   (c) => pathname === c.href,
