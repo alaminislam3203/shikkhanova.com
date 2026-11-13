@@ -31,6 +31,7 @@ import {
   FaGlobe,
   FaShieldHalved,
 } from "react-icons/fa6";
+import { TbCashBanknote } from "react-icons/tb";
 import { HiSparkles } from "react-icons/hi2";
 
 const INSTANT_SITE_INDEX = [
@@ -199,6 +200,15 @@ const INSTANT_SITE_INDEX = [
     href: "/my-notes",
     keywords: "my notes pdf download সংগৃহীত শিট হ্যান্ডনোট ডাউনলোড",
   },
+  {
+    id: "page-pay-fee",
+    title: "কোচিং মাসিক ফি পেমেন্ট ও রসিদ (৳১,২০০)",
+    subtitle: "বিকাশ, নগদ ও রকেটে অনলাইন ফি জমা ও ট্রানজেকশন ট্র্যাকিং",
+    categoryLabel: "ফি পেমেন্ট",
+    href: "/pay-fee",
+    badge: "৳১২০০",
+    keywords: "pay fee coaching fee tuition fee কোচিং ফি মাসিক ফি বিকাশ নগদ রকেট ট্রানজেকশন রসিদ",
+  },
 ];
 
 interface NavLinkItem {
@@ -223,6 +233,7 @@ const navLinks: NavLinkItem[] = [
   { href: "/notices", label: "নোটিশ" },
   { href: "/results", label: "রেজাল্ট" },
   { href: "/pdfs", label: "শিট ও নোট" },
+  { href: "/pay-fee", label: "কোচিং ফি", badge: "৳১২০০" },
   { href: "/gallery", label: "ফটো গ্যালারি" },
   {
     href: "/videos",
@@ -887,6 +898,20 @@ export default function Navbar() {
                       </span>
                     </Link>
 
+                    <Link
+                      href="/pay-fee"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-bold text-emerald-700 hover:bg-emerald-50"
+                    >
+                      <span className="flex items-center gap-2">
+                        <TbCashBanknote className="w-4 h-4 text-emerald-600" />
+                        <span>কোচিং ফি প্রদান ও রসিদ</span>
+                      </span>
+                      <span className="text-[10px] font-black px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                        ৳১২০০
+                      </span>
+                    </Link>
+
                     {session.user.role === "STUDENT" && (
                       <Link
                         href="/account"
@@ -1166,6 +1191,21 @@ export default function Navbar() {
               >
                 <FaFilePdf className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors shrink-0" />
                 <span>পিডিএফ নোট ও হ্যান্ডনোট</span>
+              </Link>
+
+              {/* Monthly Coaching Fee */}
+              <Link
+                href="/pay-fee"
+                onClick={() => setDrawerOpen(false)}
+                className="group flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:text-slate-950 hover:bg-slate-50 transition"
+              >
+                <div className="flex items-center gap-3.5">
+                  <TbCashBanknote className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>কোচিং ফি প্রদান ও রসিদ</span>
+                </div>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  ৳১২০০
+                </span>
               </Link>
 
               {/* Quiz Leaderboard */}
