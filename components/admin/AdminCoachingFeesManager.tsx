@@ -41,7 +41,11 @@ const MONTH_LIST = [
   "ডিসেম্বর ২০২৬",
 ];
 
-export default function AdminCoachingFeesManager() {
+interface AdminCoachingFeesManagerProps {
+  onUpdate?: () => void;
+}
+
+export default function AdminCoachingFeesManager({ onUpdate }: AdminCoachingFeesManagerProps = {}) {
   const [fees, setFees] = useState<CoachingFeeRecord[]>([]);
   const [stats, setStats] = useState({
     totalRecords: 0,
@@ -81,6 +85,7 @@ export default function AdminCoachingFeesManager() {
       if (data?.stats) {
         setStats(data.stats);
       }
+      onUpdate?.();
     } catch (err) {
       console.error(err);
     } finally {
