@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
 import { QuizSubmission, CustomExam } from "@/lib/quizExamStorage";
 import { toBengaliClass } from "@/lib/defaultQuizData";
+import { showConfirmToast } from "@/lib/confirmToast";
 import {
   FaAward,
   FaTrophy,
@@ -69,48 +70,60 @@ export default function AdminQuizResultsTab({ initialExamId }: AdminQuizResultsT
     loadData();
   };
 
-  const handleDeleteSubmission = async (id: string, name: string) => {
-    if (!confirm(`আপনি কি "${name}" এর পরীক্ষার রেকর্ডটি মুছে ফেলতে চান?`)) {
-      return;
-    }
-
-    try {
-      const res = await fetch(`/api/quiz/submissions?id=${encodeURIComponent(id)}`, {
-        method: "DELETE",
-      });
-      if (res.ok) {
-        toast.success("রেকর্ড মুছে ফেলা হয়েছে।");
-        setSubmissions((prev) => prev.filter((s) => s.id !== id));
-      } else {
-        toast.error("মুছে ফেলা সম্ভব হয়নি।");
-      }
-    } catch {
-      toast.error("নেটওয়ার্কে সমস্যা হয়েছে।");
-    }
+  const handleDeleteSubmission = (id: string, name: string) => {
+    showConfirmToast({
+      title: "রেজাল্ট রেকর্ড মুছবেন?",
+      message: `আপনি কি "${name}" এর পরীক্ষার রেকর্ডটি মুছে ফেলতে চান?`,
+      confirmText: "হ্যাঁ, মুছে ফেলুন",
+      cancelText: "বাতিল",
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`/api/quiz/submissions?id=${encodeURIComponent(id)}`, {
+            method: "DELETE",
+          });
+          if (res.ok) {
+            toast.success("রেকর্ড মুছে ফেলা হয়েছে।");
+            setSubmissions((prev) => prev.filter((s) => s.id !== id));
+          } else {
+            toast.error("মুছে ফেলা সম্ভব হয়নি।");
+          }
+        } catch {
+          toast.error("নেটওয়ার্কে সমস্যা হয়েছে।");
+        }
+      },
+    });
   };
 
-  const handleClearAll = async () => {
+  const handleClearAll = () => {
     const isExamFiltered = filterExamId !== "all";
     const targetExam = exams.find((e) => e.id === filterExamId);
     const confirmMsg = isExamFiltered
-      ? `আপনি কি "${targetExam?.title || filterExamId}" পরীক্ষার সকল ফলাফল মুছে ফেলতে চান?`
+      ? `আপনি কি "${targetExam?.title || filterExamId}" পরীক্ষার সকল ফলাফল ডাটাবেজ থেকে মুছে ফেলতে চান?`
       : "আপনি কি সকল শিক্ষার্থীর পরীক্ষার ফলাফল ডাটাবেজ থেকে পরিষ্কার করতে চান?";
 
-    if (!confirm(confirmMsg)) return;
+    showConfirmToast({
+      title: "ফলাফল তালিকা পরিষ্কার করবেন?",
+      message: confirmMsg,
+      confirmText: "হ্যাঁ, পরিষ্কার করুন",
+      cancelText: "বাতিল",
+      onConfirm: async () => {
+        try {
+          const url = isExamFiltered
+            ? `/api/quiz/submissions?clearAll=true&examId=${encodeURIComponent(filterExamId)}`
+            : `/api/quiz/submissions?clearAll=true`;
 
-    try {
-      const url = isExamFiltered
-        ? `/api/quiz/submissions?clearAll=true&examId=${encodeURIComponent(filterExamId)}`
-        : `/api/quiz/submissions?clearAll=true`;
-
-      const res = await fetch(url, { method: "DELETE" });
-      if (res.ok) {
-        toast.success("ফলাফল তালিকা সফলভাবে পরিষ্কার করা হয়েছে।");
-        loadData();
-      }
-    } catch {
-      toast.error("নেটওয়ার্কে সমস্যা হয়েছে।");
-    }
+          const res = await fetch(url, { method: "DELETE" });
+          if (res.ok) {
+            toast.success("ফলাফল তালিকা সফলভাবে পরিষ্কার করা হয়েছে।");
+            loadData();
+          } else {
+            toast.error("পরিষ্কার করা সম্ভব হয়নি।");
+          }
+        } catch {
+          toast.error("নেটওয়ার্কে সমস্যা হয়েছে।");
+        }
+      },
+    });
   };
 
   const handlePrint = () => {

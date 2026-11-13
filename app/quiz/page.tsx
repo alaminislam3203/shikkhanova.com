@@ -57,6 +57,7 @@ import {
 } from "react-icons/fa6";
 import { HiSparkles } from "react-icons/hi2";
 import { CustomExam } from "@/lib/quizExamStorage";
+import { showConfirmToast } from "@/lib/confirmToast";
 
 interface QuizResultItem {
   id: string;
@@ -861,12 +862,19 @@ export default function QuizPage() {
 
   // Clear Leaderboard
   const handleClearResults = () => {
-    if (confirm("আপনি কি রেজাল্ট বোর্ডের সকল ফলাফল পরিষ্কার করতে চান?")) {
-      setResultsList([]);
-      try {
-        localStorage.removeItem("sn_quiz_results");
-      } catch {}
-    }
+    showConfirmToast({
+      title: "লিডারবোর্ড পরিষ্কার করবেন?",
+      message: "আপনি কি রেজাল্ট বোর্ডের সকল ফলাফল পরিষ্কার করতে চান?",
+      confirmText: "হ্যাঁ, পরিষ্কার করুন",
+      cancelText: "বাতিল",
+      onConfirm: () => {
+        setResultsList([]);
+        try {
+          localStorage.removeItem("sn_quiz_results");
+        } catch {}
+        toast.success("রেজাল্ট বোর্ড সফলভাবে পরিষ্কার করা হয়েছে।");
+      },
+    });
   };
 
   return (
