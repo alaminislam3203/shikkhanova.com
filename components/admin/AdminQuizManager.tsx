@@ -63,7 +63,11 @@ import {
   FaCloudArrowUp,
   FaLayerGroup,
   FaDownload,
+  FaAward,
+  FaClipboardList,
 } from "react-icons/fa6";
+import AdminCustomExamsTab from "./AdminCustomExamsTab";
+import AdminQuizResultsTab from "./AdminQuizResultsTab";
 
 type QuizCategory = "free" | "paid" | "subject";
 
@@ -135,8 +139,17 @@ export default function AdminQuizManager() {
   }, [availableSubjects, selectedSubject]);
 
   const [activeTab, setActiveTab] = useState<
-    "list" | "add" | "bulk" | "prices" | "covers" | "cards" | "import-json"
+    | "list"
+    | "add"
+    | "bulk"
+    | "prices"
+    | "covers"
+    | "cards"
+    | "import-json"
+    | "custom-exams"
+    | "results"
   >("list");
+  const [selectedResultExamId, setSelectedResultExamId] = useState<string | null>(null);
   const [questions, setQuestions] = useState<RawQuestion[]>([]);
 
   // JSON Auto-Import State
@@ -1704,7 +1717,36 @@ export default function AdminQuizManager() {
           }`}
         >
           <FaLayerGroup className="w-3.5 h-3.5 text-blue-300" />
-          <span>MCQ কার্ড তৈরি ও কভার ({customCards.length})</span>
+          <span>MCQ কার্ড ({customCards.length})</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("custom-exams")}
+          className={`px-4 py-2 rounded-2xl text-xs font-bold transition flex items-center gap-2 ${
+            activeTab === "custom-exams"
+              ? "bg-gradient-to-r from-[#0A1E3C] to-[#163668] text-white shadow-sm"
+              : "bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200"
+          }`}
+        >
+          <FaClipboardList className={`w-3.5 h-3.5 ${activeTab === "custom-exams" ? "text-amber-300" : "text-blue-600"}`} />
+          <span>🎯 কাস্টম এক্সাম</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("results")}
+          className={`px-4 py-2 rounded-2xl text-xs font-bold transition flex items-center gap-2 ${
+            activeTab === "results"
+              ? "bg-gradient-to-r from-emerald-700 to-teal-800 text-white shadow-sm"
+              : "bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200"
+          }`}
+        >
+          <FaAward className={`w-3.5 h-3.5 ${activeTab === "results" ? "text-amber-300" : "text-emerald-600"}`} />
+          <span>📊 ফলাফল শিট</span>
+          <span className="px-1.5 py-0.2 bg-emerald-200 text-emerald-900 text-[10px] rounded-full font-black">
+            লাইভ
+          </span>
         </button>
       </div>
 
@@ -3752,6 +3794,25 @@ export default function AdminQuizManager() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────
+          9. CUSTOM EXAMS TAB
+      ───────────────────────────────────────────────────────────── */}
+      {activeTab === "custom-exams" && (
+        <AdminCustomExamsTab
+          onNavigateToResults={(examId) => {
+            setSelectedResultExamId(examId);
+            setActiveTab("results");
+          }}
+        />
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────
+          10. EXAM RESULTS & LEADERBOARD TAB
+      ───────────────────────────────────────────────────────────── */}
+      {activeTab === "results" && (
+        <AdminQuizResultsTab initialExamId={selectedResultExamId} />
       )}
     </div>
   );

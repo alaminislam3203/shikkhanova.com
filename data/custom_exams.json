@@ -1,0 +1,28 @@
+[
+  {
+    "id": "exam_class6_math_weekly",
+    "title": "৬ষ্ঠ শ্রেণি গণিত সাপ্তাহিক মূল্যায়ন টেস্ট",
+    "subtitle": "প্রথম অধ্যায়ের মৌলিক ধারণা ও বহুনির্বাচনী প্রশ্ন",
+    "classGrade": 6,
+    "subject": "গণিত",
+    "examCode": "",
+    "durationMinutes": 20,
+    "questionCount": 20,
+    "sourceType": "auto_bank",
+    "isActive": true,
+    "createdAt": "2026-11-13T09:21:13.399Z"
+  },
+  {
+    "id": "exam_class6_ict_special",
+    "title": "৬ষ্ঠ শ্রেণি ICT স্পেশাল কুইজ ২০২৬",
+    "subtitle": "তথ্য ও যোগাযোগ প্রযুক্তি অধ্যায়ভিত্তিক প্রস্তুতি",
+    "classGrade": 6,
+    "subject": "ICT",
+    "examCode": "",
+    "durationMinutes": 15,
+    "questionCount": 15,
+    "sourceType": "auto_bank",
+    "isActive": true,
+    "createdAt": "2026-11-13T09:21:13.399Z"
+  }
+]

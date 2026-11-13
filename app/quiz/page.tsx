@@ -50,8 +50,13 @@ import {
   FaClock,
   FaFilter,
   FaBookOpen,
+  FaUsers,
+  FaClipboardList,
+  FaUserGraduate,
+  FaLockOpen,
 } from "react-icons/fa6";
 import { HiSparkles } from "react-icons/hi2";
+import { CustomExam } from "@/lib/quizExamStorage";
 
 interface QuizResultItem {
   id: string;
@@ -121,6 +126,15 @@ export default function QuizPage() {
 
   // Student Identity
   const [studentNameInput, setStudentNameInput] = useState<string>("");
+  const [studentRollInput, setStudentRollInput] = useState<string>("");
+
+  // Custom Live Exams State
+  const [customExams, setCustomExams] = useState<CustomExam[]>([]);
+  const [loadingCustomExams, setLoadingCustomExams] = useState<boolean>(false);
+  const [activeCustomExamId, setActiveCustomExamId] = useState<string | null>(null);
+  const [examCodeModalOpen, setExamCodeModalOpen] = useState<boolean>(false);
+  const [targetExamForCode, setTargetExamForCode] = useState<CustomExam | null>(null);
+  const [inputExamCode, setInputExamCode] = useState<string>("");
 
   // Leaderboard / Result Board State
   const [resultsList, setResultsList] = useState<QuizResultItem[]>([]);
@@ -240,12 +254,71 @@ export default function QuizPage() {
       .finally(() => setIsLoadingCounts(false));
   }, [selectedClass]);
 
+  // Fetch active custom exams for the selected class
+  useEffect(() => {
+    setLoadingCustomExams(true);
+    fetch(`/api/quiz/custom-exams?classGrade=${selectedClass}&activeOnly=true`, {
+      cache: "no-store",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data?.exams)) {
+          setCustomExams(data.exams);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoadingCustomExams(false));
+  }, [selectedClass]);
+
+  // Fetch live centralized leaderboard submissions
+  const loadLiveLeaderboard = () => {
+    fetch(`/api/quiz/submissions?classGrade=${selectedClass}`, {
+      cache: "no-store",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data?.submissions) && data.submissions.length > 0) {
+          const mapped: QuizResultItem[] = data.submissions.map((s: any) => ({
+            id: s.id,
+            name: s.rollNumber ? `${s.studentName} (রোল: ${s.rollNumber})` : s.studentName,
+            classGrade: s.classGrade,
+            subject: s.examTitle || s.subject,
+            score: s.score,
+            total: s.total,
+            percentage: s.percentage,
+            medal: s.medal || "⭐ Top 10",
+            date: new Date(s.submittedAt).toLocaleDateString("bn-BD", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            }),
+          }));
+          setResultsList(mapped);
+        }
+      })
+      .catch(() => {});
+  };
+
+  useEffect(() => {
+    loadLiveLeaderboard();
+  }, [selectedClass]);
+
   // Load persisted results and user-specific unlocked classes on mount
   useEffect(() => {
     try {
       const storedResults = localStorage.getItem("sn_quiz_results");
       if (storedResults) {
         setResultsList(JSON.parse(storedResults));
+      }
+
+      const storedName = localStorage.getItem("sn_student_quiz_name");
+      if (storedName) {
+        setStudentNameInput(storedName);
+      }
+
+      const storedRoll = localStorage.getItem("sn_student_quiz_roll");
+      if (storedRoll) {
+        setStudentRollInput(storedRoll);
       }
 
       if (session?.user?.id) {
@@ -260,8 +333,11 @@ export default function QuizPage() {
         setUnlockedClasses([]);
       }
 
-      if (session?.user?.name) {
+      if (session?.user?.name && !storedName) {
         setStudentNameInput(session.user.name);
+      }
+      if ((session?.user as any)?.rollNumber && !storedRoll) {
+        setStudentRollInput(String((session?.user as any)?.rollNumber));
       }
 
       // Check if URL has #leaderboard and scroll smoothly
@@ -509,20 +585,30 @@ export default function QuizPage() {
     else if (percentage >= 80) medal = "🥈 Silver";
     else if (percentage >= 60) medal = "🥉 Bronze";
 
-    const studentName =
+    const finalStudentName =
       studentNameInput.trim() ||
       session?.user?.name ||
       `শিক্ষার্থী #${Math.floor(100 + Math.random() * 900)}`;
+
+    const finalRoll =
+      studentRollInput.trim() ||
+      (session?.user as any)?.rollNumber ||
+      undefined;
 
     if (studentNameInput.trim()) {
       try {
         localStorage.setItem("sn_student_quiz_name", studentNameInput.trim());
       } catch {}
     }
+    if (studentRollInput.trim()) {
+      try {
+        localStorage.setItem("sn_student_quiz_roll", studentRollInput.trim());
+      } catch {}
+    }
 
     const newRecord: QuizResultItem = {
       id: String(Date.now()),
-      name: studentName,
+      name: finalRoll ? `${finalStudentName} (রোল: ${finalRoll})` : finalStudentName,
       classGrade: selectedClass,
       subject: activeTestTitle.split("—")[1]?.trim() || "মডেল টেস্ট",
       score,
@@ -542,8 +628,101 @@ export default function QuizPage() {
       localStorage.setItem("sn_quiz_results", JSON.stringify(updated));
     } catch {}
 
+    // Save to centralized server API
+    fetch("/api/quiz/submissions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        examId: activeCustomExamId || "general_model_test",
+        examTitle: activeTestTitle,
+        classGrade: selectedClass,
+        subject: activeTestTitle.split("—")[1]?.trim() || "মডেল টেস্ট",
+        studentName: finalStudentName,
+        rollNumber: finalRoll,
+        score,
+        total,
+        timeTakenSeconds: totalTime - timeLeft,
+      }),
+    })
+      .then(() => loadLiveLeaderboard())
+      .catch(() => {});
+
     if (!isAuto) {
       toast.success(`পরীক্ষা জমা দেওয়া হয়েছে! আপনার স্কোর: ${score}/${total}`);
+    }
+  };
+
+  // Start Custom Exam Created by Admin
+  const handleStartCustomExam = (exam: CustomExam) => {
+    if (!session?.user) {
+      requireLoginForQuiz();
+      return;
+    }
+
+    if (exam.examCode && exam.examCode.trim()) {
+      setTargetExamForCode(exam);
+      setInputExamCode("");
+      setExamCodeModalOpen(true);
+      return;
+    }
+
+    launchCustomExam(exam);
+  };
+
+  const handleVerifyExamCodeAndStart = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!targetExamForCode) return;
+
+    if (
+      inputExamCode.trim().toUpperCase() !==
+      targetExamForCode.examCode?.trim().toUpperCase()
+    ) {
+      toast.error("সঠিক অ্যাক্সেস কোড প্রদান করুন।");
+      return;
+    }
+
+    setExamCodeModalOpen(false);
+    launchCustomExam(targetExamForCode);
+  };
+
+  const launchCustomExam = async (exam: CustomExam) => {
+    const loadingToastId = toast.loading("পরীক্ষার প্রশ্ন লোড হচ্ছে...");
+    try {
+      const res = await fetch(
+        `/api/quiz/custom-exams?id=${encodeURIComponent(exam.id)}`,
+        { cache: "no-store" }
+      );
+      const data = await res.json();
+      toast.dismiss(loadingToastId);
+
+      if (Array.isArray(data?.questions) && data.questions.length > 0) {
+        setActiveCustomExamId(exam.id);
+        setActiveQuestions(data.questions);
+        setSelectedAnswers({});
+        setIsSubmitted(false);
+        setIsTestActive(true);
+        setReviewFilter("all");
+        setActiveTestTitle(exam.title);
+        setActiveTestSubtitle(
+          exam.subtitle ||
+            `${toBengaliClass(exam.classGrade)} শ্রেণি — ${exam.subject} স্পেশাল টেস্ট`
+        );
+        setActiveTestBadge(`🎯 ${exam.subject}`);
+
+        const secs = (exam.durationMinutes || 20) * 60;
+        setTimeLeft(secs);
+        setTotalTime(secs);
+
+        scrollTo(testAreaRef);
+        toast.success(
+          `"${exam.title}" শুরু হয়েছে! সময়: ${exam.durationMinutes} মিনিট`
+        );
+      } else {
+        toast.error("এই পরীক্ষার জন্য কোনো প্রশ্ন পাওয়া যায়নি।");
+      }
+    } catch {
+      toast.dismiss(loadingToastId);
+      toast.error("পরীক্ষা লোড করতে সমস্যা হয়েছে।");
     }
   };
 
@@ -746,18 +925,33 @@ export default function QuizPage() {
             )}
           </div>
 
-          {/* Student Name Input */}
-          <div className="pt-1 sm:pt-2 flex flex-row items-center gap-2 text-[11px] sm:text-xs text-slate-300">
-            <span className="font-bold text-slate-200 shrink-0">
-              আপনার নাম:
-            </span>
-            <input
-              type="text"
-              value={studentNameInput}
-              onChange={(e) => setStudentNameInput(e.target.value)}
-              placeholder="নাম লিখুন (লিডারবোর্ডে যুক্ত হবে)"
-              className="bg-white/10 border border-white/20 focus:border-[#C8102E] rounded-xl px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs text-white placeholder-slate-400 outline-none w-48 sm:w-64"
-            />
+          {/* Student Name & Roll Inputs */}
+          <div className="pt-1 sm:pt-2 flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-xs text-slate-300">
+            <div className="flex items-center gap-1.5">
+              <span className="font-bold text-slate-200 shrink-0">
+                আপনার নাম:
+              </span>
+              <input
+                type="text"
+                value={studentNameInput}
+                onChange={(e) => setStudentNameInput(e.target.value)}
+                placeholder="নাম লিখুন"
+                className="bg-white/10 border border-white/20 focus:border-[#C8102E] rounded-xl px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs text-white placeholder-slate-400 outline-none w-36 sm:w-44"
+              />
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <span className="font-bold text-slate-200 shrink-0">
+                রোল:
+              </span>
+              <input
+                type="text"
+                value={studentRollInput}
+                onChange={(e) => setStudentRollInput(e.target.value)}
+                placeholder="রোল (ঐচ্ছিক)"
+                className="bg-white/10 border border-white/20 focus:border-[#C8102E] rounded-xl px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs text-white placeholder-slate-400 outline-none w-24 sm:w-28 font-mono"
+              />
+            </div>
           </div>
         </div>
       </section>
