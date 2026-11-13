@@ -194,6 +194,16 @@ export default function AdminPage() {
     } catch {}
   };
 
+  const fetchFeeCount = async () => {
+    try {
+      const res = await fetch("/api/coaching-fees?limit=1", { cache: "no-store" });
+      const data = await res.json();
+      if (data.stats && typeof data.stats.pendingCount === "number") {
+        setFeePendingCount(data.stats.pendingCount);
+      }
+    } catch {}
+  };
+
   const fetchPurchases = async () => {
     setLoading(true);
     try {
@@ -397,6 +407,7 @@ export default function AdminPage() {
         activeTab={activeTab}
         setActiveTab={handleTabChange}
         pendingCount={pendingPurchases.length}
+        feePendingCount={feePendingCount}
         pdfCount={pdfCount}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
@@ -430,6 +441,7 @@ export default function AdminPage() {
                   {activeTab === "banners" && "হোমপেজ ব্যানার স্লাইডার"}
                   {activeTab === "achievers" && "আমাদের সাফল্য গাঁথা"}
                   {activeTab === "purchases" && "পেমেন্ট রিকোয়েস্ট যাচাই"}
+                  {activeTab === "coachingFees" && "কোচিং মাসিক ফি (৳১২০০)"}
                   {activeTab === "addPdf" && "পিডিএফ শিট ও কার্ড ম্যানেজমেন্ট"}
                   {activeTab === "addResult" && "কোচিং পরীক্ষার রেজাল্ট আপলোড"}
                   {activeTab === "mcqQuiz" && "অনলাইন কুইজ ও MCQ পরীক্ষা"}
@@ -450,6 +462,8 @@ export default function AdminPage() {
                 {activeTab === "achievers" &&
                   "আমাদের সাফল্য গাঁথা (৬ষ্ঠ - ১০ম শ্রেণি)"}
                 {activeTab === "purchases" && "বিকাশ ও নগদ পেমেন্ট অনুমোদন"}
+                {activeTab === "coachingFees" &&
+                  "অনলাইন কোচিং মাসিক ফি যাচাই, অনুমোদন ও ডিজিটাল মানি রসিদ"}
                 {activeTab === "addPdf" &&
                   "পিডিএফ শিট আপলোড ও কার্ড কাস্টমাইজেশন"}
                 {activeTab === "addResult" && "নতুন পরীক্ষার ফলাফল সংরক্ষণ"}
@@ -591,6 +605,11 @@ export default function AdminPage() {
               onUpdateStatus={updatePurchaseStatus}
             />
           </div>
+        )}
+
+        {/* TAB 1.5: Manage Coaching Monthly Fees (৳1,200) */}
+        {activeTab === "coachingFees" && (
+          <AdminCoachingFeesManager onUpdate={fetchFeeCount} />
         )}
 
         {/* TAB 2: Manage & Upload PDF Materials */}
