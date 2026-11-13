@@ -123,9 +123,21 @@ export default function AdminQuizManager() {
       return JUNIOR_SUBJECTS_5_8 || [];
     }
 
-    if (selectedGroup === "science") return SCIENCE_SUBJECTS_9_10 || [];
-    if (selectedGroup === "humanities") return HUMANITIES_SUBJECTS_9_10 || [];
-    if (selectedGroup === "commerce") return COMMERCE_SUBJECTS_9_10 || [];
+    const combineWithCompulsory = (deptSubjects: QuizSubjectItem[]) => {
+      const seen = new Set<string>();
+      const result: QuizSubjectItem[] = [];
+      for (const item of [...(COMPULSORY_SUBJECTS_9_10 || []), ...(deptSubjects || [])]) {
+        if (!seen.has(item.name)) {
+          seen.add(item.name);
+          result.push(item);
+        }
+      }
+      return result;
+    };
+
+    if (selectedGroup === "science") return combineWithCompulsory(SCIENCE_SUBJECTS_9_10 || []);
+    if (selectedGroup === "humanities") return combineWithCompulsory(HUMANITIES_SUBJECTS_9_10 || []);
+    if (selectedGroup === "commerce") return combineWithCompulsory(COMMERCE_SUBJECTS_9_10 || []);
     return COMPULSORY_SUBJECTS_9_10 || [];
   }, [selectedClass, selectedGroup]);
 

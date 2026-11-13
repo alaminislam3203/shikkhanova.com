@@ -485,10 +485,22 @@ export function getSubjectsForClassAndGroup(
     return JUNIOR_SUBJECTS_5_8;
   }
 
-  // Class 9-10
-  if (group === 'science') return SCIENCE_SUBJECTS_9_10;
-  if (group === 'humanities') return HUMANITIES_SUBJECTS_9_10;
-  if (group === 'commerce') return COMMERCE_SUBJECTS_9_10;
+  // Class 9-10: Show Compulsory subjects + Department specific subjects together
+  const combineWithCompulsory = (deptSubjects: QuizSubjectItem[]) => {
+    const seen = new Set<string>();
+    const result: QuizSubjectItem[] = [];
+    for (const item of [...COMPULSORY_SUBJECTS_9_10, ...deptSubjects]) {
+      if (!seen.has(item.name)) {
+        seen.add(item.name);
+        result.push(item);
+      }
+    }
+    return result;
+  };
+
+  if (group === 'science') return combineWithCompulsory(SCIENCE_SUBJECTS_9_10);
+  if (group === 'humanities') return combineWithCompulsory(HUMANITIES_SUBJECTS_9_10);
+  if (group === 'commerce') return combineWithCompulsory(COMMERCE_SUBJECTS_9_10);
   if (group === 'compulsory') return COMPULSORY_SUBJECTS_9_10;
 
   // If 'all' or undefined, return science + humanities + commerce + compulsory combined without duplicates
