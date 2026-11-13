@@ -209,6 +209,22 @@ export default function QuizPage() {
       .catch(() => {});
   }, []);
 
+  // Fetch dynamic question counts for the currently selected class
+  useEffect(() => {
+    setIsLoadingCounts(true);
+    fetch(`/api/quiz/questions?classGrade=${selectedClass}&action=summary`, {
+      cache: 'no-store',
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.summary && typeof data.summary === 'object') {
+          setSubjectCounts(data.summary);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setIsLoadingCounts(false));
+  }, [selectedClass]);
+
   // Load persisted results and user-specific unlocked classes on mount
   useEffect(() => {
     try {
@@ -241,6 +257,34 @@ export default function QuizPage() {
       }
     } catch {}
   }, [session?.user?.id, session?.user?.name]);
+
+  // Countdown Timer Effect
+  useEffect(() => {
+    if (!isTestActive || isSubmitted || timeLeft <= 0) return;
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          handleSubmitTest(true);
+          toast('⏰ সময় সমাপ্ত! আপনার পরীক্ষা স্বয়ংক্রিয়ভাবে জমা নেওয়া হয়েছে।', {
+            icon: '⏱️',
+            duration: 5000,
+          });
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isTestActive, isSubmitted, timeLeft]);
+
+  const formatTime = (secs: number) => {
+    const mins = Math.floor(secs / 60);
+    const remainderSecs = secs % 60;
+    return `${mins.toString().padStart(2, '0')}:${remainderSecs.toString().padStart(2, '0')}`;
+  };
 
   const scrollTo = (ref: React.RefObject<HTMLDivElement>) => {
     setTimeout(() => {
@@ -280,12 +324,17 @@ export default function QuizPage() {
     setSelectedAnswers({});
     setIsSubmitted(false);
     setIsTestActive(true);
+    setReviewFilter('all');
     setActiveTestTitle(
-      `${toBengaliClass(classGrade)} শ্রেণি — ফ্রি মডেল টেস্ট${
-        questions.length > 25 ? ' (২৫টি প্রশ্নের সেট)' : ''
-      }`
+      `${toBengaliClass(classGrade)} শ্রেণি — অল-ইন-ওয়ান ফ্রি মডেল টেস্ট`
     );
-    setActiveTestBadge('🎁 Free Model Test');
+    setActiveTestSubtitle('বোর্ড স্ট্যান্ডার্ড সকল বিষয়ের সমন্বয়ে ২৫টি গুরুত্বপূর্ণ MCQ');
+    setActiveTestBadge('🎁 Free Board Model Test');
+
+    const secs = Math.max(10, Math.min(25, displayQuestions.length)) * 60;
+    setTimeLeft(secs);
+    setTotalTime(secs);
+
     scrollTo(testAreaRef);
   };
 
@@ -334,6 +383,7 @@ export default function QuizPage() {
       }
     } catch {}
 
+    const totalBankCount = questions.length;
     let displayQuestions = questions;
     if (questions.length > 30) {
       const shuffled = [...questions].sort(() => 0.5 - Math.random());
@@ -344,12 +394,21 @@ export default function QuizPage() {
     setSelectedAnswers({});
     setIsSubmitted(false);
     setIsTestActive(true);
+    setReviewFilter('all');
     setActiveTestTitle(
-      `${toBengaliClass(selectedClass)} শ্রেণি — ${subjectName} বিষয়ভিত্তিক টেস্ট${
-        questions.length > 30 ? ' (৩০টি প্রশ্নের মডেল টেস্ট)' : ''
-      }`
+      `${toBengaliClass(selectedClass)} শ্রেণি — ${subjectName} বিষয়ভিত্তিক টেস্ট`
+    );
+    setActiveTestSubtitle(
+      totalBankCount > 30
+        ? `মোট ${totalBankCount.toLocaleString('bn-BD')}টি প্রশ্নের ব্যাংক থেকে ৩০টি বাছাইকৃত প্রশ্ন`
+        : `মোট ${totalBankCount}টি প্রশ্নের মডেল টেস্ট`
     );
     setActiveTestBadge(`📖 ${subjectName}`);
+
+    const secs = Math.max(10, Math.min(30, displayQuestions.length)) * 60;
+    setTimeLeft(secs);
+    setTotalTime(secs);
+
     scrollTo(testAreaRef);
   };
 
@@ -377,10 +436,17 @@ export default function QuizPage() {
       setSelectedAnswers({});
       setIsSubmitted(false);
       setIsTestActive(true);
+      setReviewFilter('all');
       setActiveTestTitle(card.title);
+      setActiveTestSubtitle(card.subtitle || `${card.subject} স্পেশাল মডেল টেস্ট`);
       setActiveTestBadge(
         card.badge || (card.isPaid ? '💎 Premium Test' : '🎁 Free Test')
       );
+
+      const secs = Math.max(10, Math.min(30, questions.length)) * 60;
+      setTimeLeft(secs);
+      setTotalTime(secs);
+
       scrollTo(testAreaRef);
     } else {
       setPaymentTargetClass(card.classGrade);
@@ -392,7 +458,7 @@ export default function QuizPage() {
   };
 
   // Submit Active Test
-  const handleSubmitTest = () => {
+  const handleSubmitTest = (isAuto = false) => {
     let score = 0;
     activeQuestions.forEach((q, idx) => {
       if (selectedAnswers[idx] === q.ans) {
@@ -404,6 +470,7 @@ export default function QuizPage() {
     const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
     setQuizScore(score);
     setIsSubmitted(true);
+    setReviewFilter('all');
 
     // Determine Medal
     let medal = '⭐ Top 10';
@@ -437,6 +504,43 @@ export default function QuizPage() {
     try {
       localStorage.setItem('sn_quiz_results', JSON.stringify(updated));
     } catch {}
+
+    if (!isAuto) {
+      toast.success(`পরীক্ষা জমা দেওয়া হয়েছে! আপনার স্কোর: ${score}/${total}`);
+    }
+  };
+
+  // Filtered Questions and Stats for Review
+  const filteredReviewQuestions = useMemo(() => {
+    const mapped = activeQuestions.map((q, idx) => ({ ...q, originalIndex: idx }));
+    if (!isSubmitted || reviewFilter === 'all') return mapped;
+    return mapped.filter((item) => {
+      const userSelected = selectedAnswers[item.originalIndex];
+      const isAnswered = userSelected !== undefined;
+      const isCorrect = isAnswered && userSelected === item.ans;
+      if (reviewFilter === 'wrong') return isAnswered && !isCorrect;
+      if (reviewFilter === 'correct') return isCorrect;
+      if (reviewFilter === 'unanswered') return !isAnswered;
+      return true;
+    });
+  }, [activeQuestions, selectedAnswers, isSubmitted, reviewFilter]);
+
+  const reviewStats = useMemo(() => {
+    let correct = 0;
+    let wrong = 0;
+    let unanswered = 0;
+    activeQuestions.forEach((q, idx) => {
+      const userSelected = selectedAnswers[idx];
+      if (userSelected === undefined) {
+        unanswered++;
+      } else if (userSelected === q.ans) {
+        correct++;
+      } else {
+        wrong++;
+      }
+    });
+    return { correct, wrong, unanswered, total: activeQuestions.length };
+  }, [activeQuestions, selectedAnswers]);
 
     scrollTo(testAreaRef);
   };
@@ -510,12 +614,19 @@ export default function QuizPage() {
     setSelectedAnswers({});
     setIsSubmitted(false);
     setIsTestActive(true);
+    setReviewFilter('all');
     setActiveTestTitle(
-      `${toBengaliClass(classGrade)} শ্রেণি — প্রিমিয়াম মডেল টেস্ট${
-        questions.length > 30 ? ' (৩০টি প্রশ্নের মডেল টেস্ট)' : ''
-      }`
+      `${toBengaliClass(classGrade)} শ্রেণি — প্রিমিয়াম মডেল টেস্ট`
+    );
+    setActiveTestSubtitle(
+      `বোর্ড স্ট্যান্ডার্ড সকল বিষয় থেকে বাছাইকৃত স্পেশাল ৩০টি প্রশ্ন`
     );
     setActiveTestBadge('💎 Premium Test');
+
+    const secs = Math.max(10, Math.min(30, displayQuestions.length)) * 60;
+    setTimeLeft(secs);
+    setTotalTime(secs);
+
     scrollTo(testAreaRef);
   };
 
@@ -643,8 +754,15 @@ export default function QuizPage() {
             {/* Header */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 border-b border-slate-200">
               <div className="space-y-1">
-                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-red-50 text-[#C8102E] text-xs font-bold border border-red-200">
-                  {activeTestBadge}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-red-50 text-[#C8102E] text-xs font-bold border border-red-200">
+                    {activeTestBadge}
+                  </span>
+                  {activeTestSubtitle && (
+                    <span className="text-xs text-slate-500 font-semibold bg-slate-100 px-2.5 py-0.5 rounded-full">
+                      {activeTestSubtitle}
+                    </span>
+                  )}
                 </div>
                 <h3 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">{activeTestTitle}</h3>
                 <p className="text-xs text-slate-500 font-medium">
@@ -652,25 +770,153 @@ export default function QuizPage() {
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
+              {/* Timer & Controls */}
+              <div className="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end shrink-0">
+                {!isSubmitted && totalTime > 0 && (
+                  <div
+                    className={`flex items-center gap-2 px-3.5 py-2 rounded-2xl border font-mono font-black text-sm shadow-xs transition ${
+                      timeLeft <= 180
+                        ? 'bg-rose-50 text-rose-600 border-rose-300 animate-pulse'
+                        : 'bg-teal-50 text-teal-800 border-teal-200'
+                    }`}
+                  >
+                    <FaClock className={timeLeft <= 180 ? 'text-rose-600' : 'text-teal-600'} />
+                    <span>{formatTime(timeLeft)}</span>
+                  </div>
+                )}
+
                 <button
                   type="button"
-                  onClick={() => setIsTestActive(false)}
-                  className="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold transition"
+                  onClick={() => {
+                    if (!isSubmitted) {
+                      if (!confirm('আপনি কি পরীক্ষাটি বন্ধ করতে চান?')) return;
+                    }
+                    setIsTestActive(false);
+                  }}
+                  className="px-3.5 py-2 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold transition cursor-pointer"
                 >
                   ✕ বন্ধ করুন
                 </button>
               </div>
             </div>
 
+            {/* Results Score Banner & Mistakes Filter Bar (Visible after Submission) */}
+            {isSubmitted && (
+              <div className="space-y-4">
+                <div className="p-6 rounded-2xl bg-gradient-to-r from-slate-900 to-[#0A1E3C] text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
+                  <div className="space-y-1 text-center sm:text-left">
+                    <div className="inline-flex items-center gap-1.5 text-xs text-amber-300 font-bold bg-white/10 px-3 py-0.5 rounded-full">
+                      <FaAward /> পরীক্ষার ফলাফল ও মূল্যায়ন
+                    </div>
+                    <h4 className="text-2xl font-black">
+                      আপনার স্কোর: {quizScore} / {activeQuestions.length} (
+                      {Math.round((quizScore / activeQuestions.length) * 100)}%)
+                    </h4>
+                    <p className="text-xs text-slate-300">
+                      {quizScore === activeQuestions.length
+                        ? '🎉 অসাধারণ! আপনি ১০০% সঠিক উত্তর দিয়ে গোল্ড মেডেল অর্জন করেছেন!'
+                        : quizScore >= activeQuestions.length * 0.8
+                        ? '👏 খুব চমৎকার ফলাফল! সিলভার মেডেল নিশ্চিত হয়েছে।'
+                        : 'ভুল উত্তরগুলো ফিল্টার করে সঠিক ব্যাখ্যা পড়ে নিন। পরবর্তী টেস্টের জন্য শুভকামনা!'}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedAnswers({});
+                        setIsSubmitted(false);
+                        const secs = Math.max(10, Math.min(30, activeQuestions.length)) * 60;
+                        setTimeLeft(secs);
+                        setTotalTime(secs);
+                      }}
+                      className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <FaRotateRight className="w-3.5 h-3.5" /> পুনরায় পরীক্ষা দিন
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => scrollTo(resultsRef)}
+                      className="px-5 py-2.5 rounded-xl bg-[#C8102E] hover:bg-[#A50D26] text-white text-xs font-black shadow-lg transition cursor-pointer"
+                    >
+                      🏆 লিডারবোর্ড দেখুন
+                    </button>
+                  </div>
+                </div>
+
+                {/* Filter Review Questions Bar */}
+                <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-slate-100/90 rounded-2xl border border-slate-200">
+                  <span className="text-xs font-black text-slate-700 flex items-center gap-1.5">
+                    <FaFilter className="text-slate-500" />
+                    <span>উত্তর পর্যালোচনা ফিল্টার:</span>
+                  </span>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setReviewFilter('all')}
+                      className={`px-3 py-1 rounded-xl text-xs font-black transition cursor-pointer ${
+                        reviewFilter === 'all'
+                          ? 'bg-[#0A1E3C] text-white shadow-xs'
+                          : 'bg-white text-slate-700 hover:bg-slate-200'
+                      }`}
+                    >
+                      সকল প্রশ্ন ({reviewStats.total})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setReviewFilter('wrong')}
+                      className={`px-3 py-1 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1 ${
+                        reviewFilter === 'wrong'
+                          ? 'bg-rose-600 text-white shadow-xs'
+                          : 'bg-rose-50 text-rose-800 hover:bg-rose-100 border border-rose-200'
+                      }`}
+                    >
+                      <FaCircleXmark className="w-3 h-3" />
+                      <span>ভুল উত্তর ({reviewStats.wrong})</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setReviewFilter('correct')}
+                      className={`px-3 py-1 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1 ${
+                        reviewFilter === 'correct'
+                          ? 'bg-emerald-600 text-white shadow-xs'
+                          : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200'
+                      }`}
+                    >
+                      <FaCircleCheck className="w-3 h-3" />
+                      <span>সঠিক উত্তর ({reviewStats.correct})</span>
+                    </button>
+                    {reviewStats.unanswered > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setReviewFilter('unanswered')}
+                        className={`px-3 py-1 rounded-xl text-xs font-black transition cursor-pointer ${
+                          reviewFilter === 'unanswered'
+                            ? 'bg-amber-600 text-white shadow-xs'
+                            : 'bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200'
+                        }`}
+                      >
+                        উত্তরহীন ({reviewStats.unanswered})
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Questions List */}
-            {activeQuestions.length === 0 ? (
-              <div className="py-12 text-center text-slate-500 text-sm">
-                এই ক্যাটাগরিতে এখনও কোনো প্রশ্ন আপলোড করা হয়নি।
+            {filteredReviewQuestions.length === 0 ? (
+              <div className="py-12 text-center text-slate-500 text-sm bg-slate-50 rounded-2xl border border-slate-200">
+                {isSubmitted
+                  ? 'এই ফিল্টারে কোনো প্রশ্ন নেই! 🎉'
+                  : 'এই ক্যাটাগরিতে এখনও কোনো প্রশ্ন আপলোড করা হয়নি।'}
               </div>
             ) : (
               <div className="space-y-6">
-                {activeQuestions.map((item, qIdx) => {
+                {filteredReviewQuestions.map((item) => {
+                  const qIdx = item.originalIndex;
                   const userSelected = selectedAnswers[qIdx];
                   const isAnswered = userSelected !== undefined;
                   const isCorrect = isAnswered && userSelected === item.ans;
@@ -682,7 +928,9 @@ export default function QuizPage() {
                         isSubmitted
                           ? isCorrect
                             ? 'bg-emerald-50/60 border-emerald-300'
-                            : 'bg-rose-50/50 border-rose-300'
+                            : isAnswered
+                            ? 'bg-rose-50/50 border-rose-300'
+                            : 'bg-amber-50/40 border-amber-200'
                           : isAnswered
                           ? 'bg-slate-50/80 border-[#C8102E]/30'
                           : 'bg-slate-50/40 border-slate-200'
@@ -761,63 +1009,21 @@ export default function QuizPage() {
               </div>
             )}
 
-            {/* Submit / Score Action Footer */}
-            {activeQuestions.length > 0 && (
+            {/* Submit Action Footer (Shown during test) */}
+            {activeQuestions.length > 0 && !isSubmitted && (
               <div className="pt-4 border-t border-slate-200">
-                {!isSubmitted ? (
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <p className="text-xs text-slate-500 font-medium">
-                      উত্তর দেওয়া হয়েছে: {Object.keys(selectedAnswers).length} / {activeQuestions.length} টি
-                    </p>
-                    <button
-                      type="button"
-                      onClick={handleSubmitTest}
-                      className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-black text-sm shadow-xl transition active:scale-95"
-                    >
-                       পরীক্ষা জমা দিন (Submit Test)
-                    </button>
-                  </div>
-                ) : (
-                  <div className="p-6 rounded-2xl bg-gradient-to-r from-slate-900 to-[#0A1E3C] text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
-                    <div className="space-y-1 text-center sm:text-left">
-                      <div className="inline-flex items-center gap-1.5 text-xs text-amber-300 font-bold bg-white/10 px-3 py-0.5 rounded-full">
-                        <FaAward /> পরীক্ষার ফলাফল ও মূল্যায়ন
-                      </div>
-                      <h4 className="text-2xl font-black">
-                        আপনার স্কোর: {quizScore} / {activeQuestions.length} (
-                        {Math.round((quizScore / activeQuestions.length) * 100)}%)
-                      </h4>
-                      <p className="text-xs text-slate-300">
-                        {quizScore === activeQuestions.length
-                          ? '🎉 অসাধারণ! আপনি ১০০% সঠিক উত্তর দিয়ে গোল্ড মেডেল অর্জন করেছেন!'
-                          : quizScore >= activeQuestions.length * 0.8
-                          ? '👏 খুব চমৎকার ফলাফল! সিলভার মেডেল নিশ্চিত হয়েছে।'
-                          : 'পরবর্তী মডেল টেস্টে আরও ভালো করার চেষ্টা করুন। শুভকামনা!'}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-3 shrink-0">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedAnswers({});
-                          setIsSubmitted(false);
-                        }}
-                        className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition flex items-center gap-1.5"
-                      >
-                        <FaRotateRight className="w-3.5 h-3.5" /> পুনরায় পরীক্ষা দিন
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => scrollTo(resultsRef)}
-                        className="px-5 py-2.5 rounded-xl bg-[#C8102E] hover:bg-[#A50D26] text-white text-xs font-black shadow-lg transition"
-                      >
-                        🏆 লিডারবোর্ড দেখুন
-                      </button>
-                    </div>
-                  </div>
-                )}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <p className="text-xs text-slate-500 font-medium">
+                    উত্তর দেওয়া হয়েছে: <span className="font-bold text-[#C8102E]">{Object.keys(selectedAnswers).length}</span> / {activeQuestions.length} টি
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => handleSubmitTest(false)}
+                    className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-black text-sm shadow-xl transition active:scale-95 cursor-pointer"
+                  >
+                     পরীক্ষা জমা দিন (Submit Test)
+                  </button>
+                </div>
               </div>
             )}
           </section>
