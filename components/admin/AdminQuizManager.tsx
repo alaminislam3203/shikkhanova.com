@@ -68,6 +68,7 @@ import {
 } from "react-icons/fa6";
 import AdminCustomExamsTab from "./AdminCustomExamsTab";
 import AdminQuizResultsTab from "./AdminQuizResultsTab";
+import { showConfirmToast } from "@/lib/confirmToast";
 
 type QuizCategory = "free" | "paid" | "subject";
 
@@ -866,34 +867,45 @@ export default function AdminQuizManager() {
 
   // Delete Question
   const handleDeleteQuestion = (index: number) => {
-    if (!confirm(`আপনি কি ${index + 1} নম্বর প্রশ্নটি মুছে ফেলতে চান?`)) return;
-    const updated = questions.filter((_, i) => i !== index);
-    persistQuestions(updated);
-    toast.success("প্রশ্ন মুছে ফেলা হয়েছে।");
-    setMsg({ text: "🗑️ প্রশ্ন মুছে ফেলা হয়েছে।", type: "success" });
+    showConfirmToast({
+      title: "প্রশ্ন মুছে ফেলবেন?",
+      message: `আপনি কি ${index + 1} নম্বর প্রশ্নটি তালিকা থেকে মুছে ফেলতে চান?`,
+      confirmText: "হ্যাঁ, মুছে ফেলুন",
+      cancelText: "বাতিল",
+      onConfirm: () => {
+        const updated = questions.filter((_, i) => i !== index);
+        persistQuestions(updated);
+        toast.success("প্রশ্ন মুছে ফেলা হয়েছে।");
+        setMsg({ text: "🗑️ প্রশ্ন মুছে ফেলা হয়েছে।", type: "success" });
+      },
+    });
   };
 
   // Reset to Factory Defaults
   const handleResetToDefault = () => {
-    const confirmed = confirm(
-      "সতর্কতা: এটি বর্তমান শ্রেণি ও ক্যাটাগরির সকল কাস্টম পরিবর্তন মুছে দিয়ে মূল ডিফল্ট প্রশ্নগুলো ফিরিয়ে আনবে। আপনি কি নিশ্চিত?",
-    );
-    if (!confirmed) return;
+    showConfirmToast({
+      title: "ডিফল্ট প্রশ্ন ফিরিয়ে আনবেন?",
+      message:
+        "সতর্কতা: এটি বর্তমান শ্রেণি ও ক্যাটাগরির সকল কাস্টম পরিবর্তন মুছে দিয়ে মূল ডিফল্ট প্রশ্নগুলো ফিরিয়ে আনবে। আপনি কি নিশ্চিত?",
+      confirmText: "হ্যাঁ, রিসেট করুন",
+      cancelText: "বাতিল",
+      onConfirm: () => {
+        let defaults: RawQuestion[] = [];
+        if (category === "free") {
+          defaults = FREE_CLASS_QUESTIONS[selectedClass] || [];
+        } else if (category === "paid") {
+          defaults = PAID_CLASS_QUESTIONS[selectedClass] || [];
+        } else {
+          defaults = SUBJECT_QUESTIONS[selectedSubject] || [];
+        }
 
-    let defaults: RawQuestion[] = [];
-    if (category === "free") {
-      defaults = FREE_CLASS_QUESTIONS[selectedClass] || [];
-    } else if (category === "paid") {
-      defaults = PAID_CLASS_QUESTIONS[selectedClass] || [];
-    } else {
-      defaults = SUBJECT_QUESTIONS[selectedSubject] || [];
-    }
-
-    persistQuestions(defaults);
-    toast.success("ডিফল্ট প্রশ্ন সফলভাবে রিস্টোর হয়েছে।");
-    setMsg({
-      text: "🔄 ডিফল্ট প্রশ্ন সফলভাবে রিস্টোর হয়েছে।",
-      type: "success",
+        persistQuestions(defaults);
+        toast.success("ডিফল্ট প্রশ্ন সফলভাবে রিস্টোর হয়েছে।");
+        setMsg({
+          text: "🔄 ডিফল্ট প্রশ্ন সফলভাবে রিস্টোর হয়েছে।",
+          type: "success",
+        });
+      },
     });
   };
 
@@ -1355,54 +1367,55 @@ export default function AdminQuizManager() {
   };
 
   // One-click Auto Import from Server File data/mcq_questions.json
-  const handleImportServerFileDirect = async () => {
-    if (
-      !confirm(
-        `আপনি কি সার্ভারে বিদ্যমান data/mcq_questions.json ফাইল থেকে ${toBengaliClass(importTargetClass)} শ্রেণির সকল বিষয়ে প্রশ্নগুলো অটো-ইমপোর্ট করতে চান?`,
-      )
-    ) {
-      return;
-    }
-
-    setIsImportingJson(true);
-    const importToastId = toast.loading(
-      "সার্ভারের mcq_questions.json থেকে প্রশ্ন প্রসেস ও ইমপোর্ট করা হচ্ছে...",
-    );
-
-    try {
-      const res = await fetch("/api/quiz/questions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "import_server_file",
-          classGrade: importTargetClass,
-        }),
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        toast.success(
-          data.message || "সার্ভার ফাইল থেকে সকল প্রশ্ন সফলভাবে ইমপোর্ট হয়েছে!",
-          { id: importToastId, duration: 5000 },
+  const handleImportServerFileDirect = () => {
+    showConfirmToast({
+      title: "সার্ভার ফাইল ইমপোর্ট করবেন?",
+      message: `আপনি কি সার্ভারে বিদ্যমান data/mcq_questions.json ফাইল থেকে ${toBengaliClass(importTargetClass)} শ্রেণির সকল বিষয়ে প্রশ্নগুলো অটো-ইমপোর্ট করতে চান?`,
+      confirmText: "হ্যাঁ, ইমপোর্ট করুন",
+      cancelText: "বাতিল",
+      confirmButtonClass: "bg-teal-700 hover:bg-teal-800",
+      onConfirm: async () => {
+        setIsImportingJson(true);
+        const importToastId = toast.loading(
+          "সার্ভারের mcq_questions.json থেকে প্রশ্ন প্রসেস ও ইমপোর্ট করা হচ্ছে...",
         );
-        setMsg({
-          text: `🎉 ${toBengaliClass(importTargetClass)} শ্রেণির সকল বিষয়ের প্রশ্ন সফলভাবে ইমপোর্ট সম্পন্ন হয়েছে! (মোট: ${data.totalImported?.toLocaleString("bn-BD")}টি প্রশ্ন)`,
-          type: "success",
-        });
-        loadCurrentQuestions();
-        setActiveTab("list");
-      } else {
-        toast.error(data.error || "সার্ভার ফাইল ইমপোর্ট ব্যর্থ হয়েছে।", {
-          id: importToastId,
-        });
-      }
-    } catch (err: any) {
-      toast.error(err.message || "নেটওয়ার্কে সমস্যা হয়েছে।", {
-        id: importToastId,
-      });
-    } finally {
-      setIsImportingJson(false);
-    }
+
+        try {
+          const res = await fetch("/api/quiz/questions", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "import_server_file",
+              classGrade: importTargetClass,
+            }),
+          });
+
+          const data = await res.json();
+          if (res.ok) {
+            toast.success(
+              data.message || "সার্ভার ফাইল থেকে সকল প্রশ্ন সফলভাবে ইমপোর্ট হয়েছে!",
+              { id: importToastId, duration: 5000 },
+            );
+            setMsg({
+              text: `🎉 ${toBengaliClass(importTargetClass)} শ্রেণির সকল বিষয়ের প্রশ্ন সফলভাবে ইমপোর্ট সম্পন্ন হয়েছে! (মোট: ${data.totalImported?.toLocaleString("bn-BD")}টি প্রশ্ন)`,
+              type: "success",
+            });
+            loadCurrentQuestions();
+            setActiveTab("list");
+          } else {
+            toast.error(data.error || "সার্ভার ফাইল ইমপোর্ট ব্যর্থ হয়েছে।", {
+              id: importToastId,
+            });
+          }
+        } catch (err: any) {
+          toast.error(err.message || "নেটওয়ার্কে সমস্যা হয়েছে।", {
+            id: importToastId,
+          });
+        } finally {
+          setIsImportingJson(false);
+        }
+      },
+    });
   };
 
   return (
