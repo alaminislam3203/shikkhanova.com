@@ -707,7 +707,7 @@ export default function QuizPage() {
           exam.subtitle ||
             `${toBengaliClass(exam.classGrade)} শ্রেণি — ${exam.subject} স্পেশাল টেস্ট`
         );
-        setActiveTestBadge(`🎯 ${exam.subject}`);
+        setActiveTestBadge(` ${exam.subject}`);
 
         const secs = (exam.durationMinutes || 20) * 60;
         setTimeLeft(secs);
@@ -1312,7 +1312,7 @@ export default function QuizPage() {
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          3.5 🎯 LIVE CLASS TESTS & CUSTOM EXAMS (Created by Teacher/Admin)
+          3.5  LIVE CLASS TESTS & CUSTOM EXAMS (Created by Teacher/Admin)
       ───────────────────────────────────────────────────────────── */}
       <section className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-200 pb-3">
@@ -1321,7 +1321,7 @@ export default function QuizPage() {
               <FaClipboardList /> শিক্ষক কর্তৃক নির্ধারিত ক্লাস টেস্ট
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">
-              🎯 {toBengaliClass(selectedClass)} শ্রেণির লাইভ কাস্টম এক্সাম
+               {toBengaliClass(selectedClass)} শ্রেণির লাইভ কাস্টম এক্সাম
             </h2>
             <p className="text-xs text-slate-500 font-medium">
               আপনার ব্যাচ বা শ্রেণির জন্য নির্ধারিত সাপ্তাহিক ও মাসিক মূল্যায়ন পরীক্ষা

@@ -70,6 +70,12 @@ export async function POST(req: NextRequest) {
 
     let exams = getCustomExams();
     const examId = id || `exam_${Date.now()}`;
+    const existingIndex = exams.findIndex((e) => e.id === examId);
+    const existing = existingIndex >= 0 ? exams[existingIndex] : null;
+
+    const finalQuestions = Array.isArray(questions)
+      ? questions
+      : existing?.questions;
 
     const newExam: CustomExam = {
       id: examId,
@@ -79,14 +85,13 @@ export async function POST(req: NextRequest) {
       subject: subject.trim(),
       examCode: examCode ? examCode.trim().toUpperCase() : '',
       durationMinutes: Number(durationMinutes) || 20,
-      questionCount: Number(questionCount) || 20,
+      questionCount: Number(questionCount) || (finalQuestions ? finalQuestions.length : 20),
       sourceType: sourceType === 'custom' ? 'custom' : 'auto_bank',
-      questions: Array.isArray(questions) ? questions : undefined,
+      questions: finalQuestions,
       isActive: isActive !== false,
-      createdAt: new Date().toISOString(),
+      createdAt: existing?.createdAt || new Date().toISOString(),
     };
 
-    const existingIndex = exams.findIndex((e) => e.id === examId);
     if (existingIndex >= 0) {
       exams[existingIndex] = { ...exams[existingIndex], ...newExam };
     } else {

@@ -213,7 +213,7 @@ export default function AdminCustomExamsTab({ onNavigateToResults }: AdminCustom
       <div className="bg-gradient-to-r from-[#0A1E3C] via-[#0F2C59] to-[#200A18] text-white p-6 sm:p-8 rounded-3xl shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#C8102E] text-white text-xs font-bold">
-            <span>🎯 কাস্টম MCQ এক্সাম কন্ট্রোল</span>
+            <span> কাস্টম MCQ এক্সাম কন্ট্রোল</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-black">
             ব্যাচ ও শিক্ষার্থীদের জন্য কাস্টম পরীক্ষা

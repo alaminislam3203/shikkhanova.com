@@ -149,7 +149,9 @@ export default function AdminQuizManager() {
     | "custom-exams"
     | "results"
   >("list");
-  const [selectedResultExamId, setSelectedResultExamId] = useState<string | null>(null);
+  const [selectedResultExamId, setSelectedResultExamId] = useState<
+    string | null
+  >(null);
   const [questions, setQuestions] = useState<RawQuestion[]>([]);
 
   // JSON Auto-Import State
@@ -967,7 +969,7 @@ export default function AdminQuizManager() {
     data: any,
     targetClass: number,
     scope: "all" | "single" = importScope,
-    singleSubjName: string = importTargetSubject
+    singleSubjName: string = importTargetSubject,
   ) => {
     const iconMap: Record<string, string> = {
       bangla: "📖",
@@ -1134,7 +1136,7 @@ export default function AdminQuizManager() {
         rawParsedJson,
         importTargetClass,
         importScope,
-        importTargetSubject
+        importTargetSubject,
       );
       setJsonImportPreview(preview);
     }
@@ -1161,11 +1163,11 @@ export default function AdminQuizManager() {
           parsed,
           importTargetClass,
           importScope,
-          importTargetSubject
+          importTargetSubject,
         );
         if (preview.totalQuestions === 0) {
           toast.error(
-            "ফাইলের ভেতর কোনো প্রশ্ন পাওয়া যায়নি। ফরম্যাট পরীক্ষা করুন।"
+            "ফাইলের ভেতর কোনো প্রশ্ন পাওয়া যায়নি। ফরম্যাট পরীক্ষা করুন।",
           );
           setJsonImportPreview(null);
         } else {
@@ -1173,7 +1175,7 @@ export default function AdminQuizManager() {
           toast.success(
             importScope === "single"
               ? `"${importTargetSubject}" বিষয়ে ${preview.totalQuestions.toLocaleString("bn-BD")}টি প্রশ্ন সফলভাবে শনাক্ত হয়েছে!`
-              : `মোট ${preview.subjects.length}টি বিষয়ে ${preview.totalQuestions.toLocaleString("bn-BD")}টি প্রশ্ন সফলভাবে শনাক্ত হয়েছে!`
+              : `মোট ${preview.subjects.length}টি বিষয়ে ${preview.totalQuestions.toLocaleString("bn-BD")}টি প্রশ্ন সফলভাবে শনাক্ত হয়েছে!`,
           );
         }
       } catch (err: any) {
@@ -1195,28 +1197,33 @@ export default function AdminQuizManager() {
       sampleData = [
         {
           q: "বাংলাদেশের জাতীয় কবি কে?",
-          o: ["কাজী নজরুল ইসলাম", "রবীন্দ্রনাথ ঠাকুর", "জসীমউদ্দীন", "জীবনানন্দ দাশ"],
+          o: [
+            "কাজী নজরুল ইসলাম",
+            "রবীন্দ্রনাথ ঠাকুর",
+            "জসীমউদ্দীন",
+            "জীবনানন্দ দাশ",
+          ],
           a: 0,
-          e: "কাজী নজরুল ইসলাম বাংলাদেশের জাতীয় কবি।"
+          e: "কাজী নজরুল ইসলাম বাংলাদেশের জাতীয় কবি।",
         },
         {
           q: "বৃত্তের কেন্দ্রগামী বৃহত্তম জ্যা-কে কী বলা হয়?",
           o: ["ব্যাসার্ধ", "পরিধি", "ব্যাস", "চাপ"],
           a: 2,
-          e: "বৃত্তের কেন্দ্র দিয়ে অতিক্রমকারী জ্যা হলো ব্যাস, যা বৃত্তের বৃহত্তম জ্যা।"
+          e: "বৃত্তের কেন্দ্র দিয়ে অতিক্রমকারী জ্যা হলো ব্যাস, যা বৃত্তের বৃহত্তম জ্যা।",
         },
         {
           q: "উদ্ভিদ সালোকসংশ্লেষণ প্রক্রিয়ায় বায়ুমণ্ডল থেকে কোন গ্যাস গ্রহণ করে?",
           o: ["অক্সিজেন", "কার্বন ডাই-অক্সাইড", "নাইট্রোজেন", "মিথেন"],
           a: 1,
-          e: "সূর্যালোকের উপস্থিতিতে সবুজ উদ্ভিদ কার্বন ডাই-অক্সাইড শোষণ করে শর্করা ও অক্সিজেন তৈরি করে।"
+          e: "সূর্যালোকের উপস্থিতিতে সবুজ উদ্ভিদ কার্বন ডাই-অক্সাইড শোষণ করে শর্করা ও অক্সিজেন তৈরি করে।",
         },
         {
           q: "কম্পিউটারের মূল মস্তিষ্কের মতো কাজ করে কোনটি?",
           o: ["Monitor", "RAM", "CPU", "Hard Disk"],
           a: 2,
-          e: "CPU (Central Processing Unit) কম্পিউটারের সকল গণনা ও নিয়ন্ত্রণ সম্পন্ন করে।"
-        }
+          e: "CPU (Central Processing Unit) কম্পিউটারের সকল গণনা ও নিয়ন্ত্রণ সম্পন্ন করে।",
+        },
       ];
     } else {
       fileName = `sample_multi_subjects_mcq.json`;
@@ -1227,13 +1234,18 @@ export default function AdminQuizManager() {
               qs: [
                 {
                   q: "‘বিদ্রোহী’ কবিতার রচয়িতা কে?",
-                  o: ["কাজী নজরুল ইসলাম", "রবীন্দ্রনাথ ঠাকুর", "জসীমউদ্দীন", "সুকান্ত ভট্টাচার্য"],
+                  o: [
+                    "কাজী নজরুল ইসলাম",
+                    "রবীন্দ্রনাথ ঠাকুর",
+                    "জসীমউদ্দীন",
+                    "সুকান্ত ভট্টাচার্য",
+                  ],
                   a: 0,
-                  e: "কাজী নজরুল ইসলাম ১৯২১ সালে যুগান্তকারী ‘বিদ্রোহী’ কবিতা রচনা করেন।"
-                }
-              ]
-            }
-          ]
+                  e: "কাজী নজরুল ইসলাম ১৯২১ সালে যুগান্তকারী ‘বিদ্রোহী’ কবিতা রচনা করেন।",
+                },
+              ],
+            },
+          ],
         },
         math: {
           tests: [
@@ -1243,11 +1255,11 @@ export default function AdminQuizManager() {
                   q: "√৬৪ এর মান কত?",
                   o: ["৬", "৭", "৮", "৯"],
                   a: 2,
-                  e: "৮ এর বর্গ হলো ৬৪।"
-                }
-              ]
-            }
-          ]
+                  e: "৮ এর বর্গ হলো ৬৪।",
+                },
+              ],
+            },
+          ],
         },
         science: {
           tests: [
@@ -1257,12 +1269,12 @@ export default function AdminQuizManager() {
                   q: "পানির রাসায়নিক সংকেত কোনটি?",
                   o: ["CO2", "H2O", "NaCl", "O2"],
                   a: 1,
-                  e: "পানি হাইড্রোজেন ও অক্সিজেনের সমন্বয়ে গঠিত (H2O)।"
-                }
-              ]
-            }
-          ]
-        }
+                  e: "পানি হাইড্রোজেন ও অক্সিজেনের সমন্বয়ে গঠিত (H2O)।",
+                },
+              ],
+            },
+          ],
+        },
       };
     }
 
@@ -1729,8 +1741,10 @@ export default function AdminQuizManager() {
               : "bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200"
           }`}
         >
-          <FaClipboardList className={`w-3.5 h-3.5 ${activeTab === "custom-exams" ? "text-amber-300" : "text-blue-600"}`} />
-          <span>🎯 কাস্টম এক্সাম</span>
+          <FaClipboardList
+            className={`w-3.5 h-3.5 ${activeTab === "custom-exams" ? "text-amber-300" : "text-blue-600"}`}
+          />
+          <span>কাস্টম এক্সাম</span>
         </button>
 
         <button
@@ -1742,8 +1756,10 @@ export default function AdminQuizManager() {
               : "bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200"
           }`}
         >
-          <FaAward className={`w-3.5 h-3.5 ${activeTab === "results" ? "text-amber-300" : "text-emerald-600"}`} />
-          <span>📊 ফলাফল শিট</span>
+          <FaAward
+            className={`w-3.5 h-3.5 ${activeTab === "results" ? "text-amber-300" : "text-emerald-600"}`}
+          />
+          <span>ফলাফল শিট</span>
           <span className="px-1.5 py-0.2 bg-emerald-200 text-emerald-900 text-[10px] rounded-full font-black">
             লাইভ
           </span>
@@ -3254,7 +3270,9 @@ export default function AdminQuizManager() {
                 JSON ফাইল থেকে বিষয়ভিত্তিক ও সকল বিষয়ের MCQ ইমপোর্ট
               </h3>
               <p className="text-xs text-slate-500 max-w-2xl font-medium">
-                এক ক্লিকে সকল বিষয়ের প্রশ্ন একসাথে অথবা পছন্দের নির্দিষ্ট একটি বিষয় সিলেক্ট করে JSON ফাইল আপলোড করুন। স্বয়ংক্রিয়ভাবে সংশ্লিষ্ট বিষয়ের অধীনে সাজিয়ে সার্ভারে সেভ হয়ে যাবে।
+                এক ক্লিকে সকল বিষয়ের প্রশ্ন একসাথে অথবা পছন্দের নির্দিষ্ট একটি
+                বিষয় সিলেক্ট করে JSON ফাইল আপলোড করুন। স্বয়ংক্রিয়ভাবে সংশ্লিষ্ট
+                বিষয়ের অধীনে সাজিয়ে সার্ভারে সেভ হয়ে যাবে।
               </p>
             </div>
 
@@ -3281,7 +3299,6 @@ export default function AdminQuizManager() {
                     : "text-slate-600 hover:text-slate-900"
                 }`}
               >
-                <span>🎯</span>
                 <span>নির্দিষ্ট বিষয়ভিত্তিক</span>
               </button>
             </div>
@@ -3319,7 +3336,6 @@ export default function AdminQuizManager() {
             {importScope === "single" ? (
               <div className="flex items-center gap-2.5 bg-white px-3 py-1.5 rounded-xl border border-red-200 shadow-xs">
                 <span className="text-xs font-black text-red-950 flex items-center gap-1">
-                  <span>🎯</span>
                   <span>বিষয় নির্বাচন করুন:</span>
                 </span>
                 <select
@@ -3336,7 +3352,8 @@ export default function AdminQuizManager() {
               </div>
             ) : (
               <div className="text-xs font-bold text-teal-800 bg-teal-100/60 px-3 py-1.5 rounded-xl border border-teal-200">
-                ✓ সকল বিষয়ের কী (bangla, math, science ইত্যাদি) স্বয়ংক্রিয়ভাবে শনাক্ত হবে
+                ✓ সকল বিষয়ের কী (bangla, math, science ইত্যাদি) স্বয়ংক্রিয়ভাবে
+                শনাক্ত হবে
               </div>
             )}
           </div>
@@ -3373,13 +3390,15 @@ export default function AdminQuizManager() {
                 <div className="flex items-center gap-1.5 text-teal-800 font-bold">
                   <span>✓</span>
                   <span>
-                    ৭টি বিষয়ের প্রায় ৭,০০০+ প্রশ্ন সেকেন্ডের মধ্যে অটো-ম্যাপ হয়ে সার্ভারে সেভ হবে।
+                    ৭টি বিষয়ের প্রায় ৭,০০০+ প্রশ্ন সেকেন্ডের মধ্যে অটো-ম্যাপ হয়ে
+                    সার্ভারে সেভ হবে।
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 text-teal-800 font-bold">
                   <span>✓</span>
                   <span>
-                    টার্গেট: {toBengaliClass(importTargetClass)} শ্রেণির সকল বিষয়ের প্রশ্নব্যাংক।
+                    টার্গেট: {toBengaliClass(importTargetClass)} শ্রেণির সকল
+                    বিষয়ের প্রশ্নব্যাংক।
                   </span>
                 </div>
               </div>
@@ -3398,7 +3417,8 @@ export default function AdminQuizManager() {
                 ) : (
                   <>
                     <span>
-                      ⚡ সার্ভারের mcq_questions.json থেকে সব বিষয়ে অটো-ইমপোর্ট করুন
+                      ⚡ সার্ভারের mcq_questions.json থেকে সব বিষয়ে অটো-ইমপোর্ট
+                      করুন
                     </span>
                   </>
                 )}
@@ -3481,16 +3501,27 @@ export default function AdminQuizManager() {
                   <h4 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
                     {importScope === "single" ? (
                       <>
-                        <span>{importAvailableSubjects.find(s => s.name === importTargetSubject)?.icon || "📚"}</span>
+                        <span>
+                          {importAvailableSubjects.find(
+                            (s) => s.name === importTargetSubject,
+                          )?.icon || "📚"}
+                        </span>
                         <span>{importTargetSubject}</span>
                         <span className="text-emerald-400 font-mono text-sm">
-                          ({jsonImportPreview.totalQuestions.toLocaleString("bn-BD")}টি MCQ পাওয়া গেছে)
+                          (
+                          {jsonImportPreview.totalQuestions.toLocaleString(
+                            "bn-BD",
+                          )}
+                          টি MCQ পাওয়া গেছে)
                         </span>
                       </>
                     ) : (
                       <>
                         মোট {jsonImportPreview.subjects.length}টি বিষয়ে{" "}
-                        {jsonImportPreview.totalQuestions.toLocaleString("bn-BD")}টি প্রশ্ন প্রস্তুত আছে
+                        {jsonImportPreview.totalQuestions.toLocaleString(
+                          "bn-BD",
+                        )}
+                        টি প্রশ্ন প্রস্তুত আছে
                       </>
                     )}
                   </h4>
@@ -3532,54 +3563,69 @@ export default function AdminQuizManager() {
               </div>
 
               {/* In Single Subject Mode: Display sample preview of first 3 questions */}
-              {importScope === "single" && jsonImportPreview.subjects[0]?.questions?.length > 0 && (
-                <div className="bg-slate-50 rounded-2xl p-4 sm:p-5 border border-slate-200 space-y-3">
-                  <div className="flex items-center justify-between text-xs font-black text-slate-700 border-b border-slate-200 pb-2">
-                    <span className="flex items-center gap-1.5">
-                      <span>👁️</span>
-                      <span>শনাক্তকৃত প্রশ্নের নমুনা প্রিভিউ (প্রথম ৩টি প্রশ্ন):</span>
-                    </span>
-                    <span className="text-teal-700">
-                      মোট: {jsonImportPreview.totalQuestions.toLocaleString("bn-BD")}টি প্রশ্ন
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    {jsonImportPreview.subjects[0].questions.slice(0, 3).map((q, idx) => (
-                      <div
-                        key={idx}
-                        className="bg-white p-3.5 rounded-xl border border-slate-200 text-xs space-y-2 shadow-2xs"
-                      >
-                        <p className="font-bold text-slate-800 line-clamp-2">
-                          <span className="text-red-600 font-mono mr-1">#{idx + 1}.</span>
-                          {q.q}
-                        </p>
-                        <div className="space-y-1">
-                          {q.options.map((opt, oIdx) => (
-                            <div
-                              key={oIdx}
-                              className={`px-2 py-1 rounded text-[11px] font-medium flex items-center justify-between ${
-                                oIdx === q.ans
-                                  ? "bg-emerald-50 text-emerald-800 font-bold border border-emerald-300"
-                                  : "bg-slate-50 text-slate-600"
-                              }`}
-                            >
-                              <span>{["ক", "খ", "গ", "ঘ"][oIdx]}. {opt}</span>
-                              {oIdx === q.ans && (
-                                <span className="text-[10px] text-emerald-700 font-bold">✓ সঠিক</span>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                        {q.explanation && (
-                          <p className="text-[10px] text-slate-500 italic bg-amber-50/60 p-1.5 rounded border border-amber-200/50 line-clamp-2">
-                            💡 {q.explanation}
-                          </p>
+              {importScope === "single" &&
+                jsonImportPreview.subjects[0]?.questions?.length > 0 && (
+                  <div className="bg-slate-50 rounded-2xl p-4 sm:p-5 border border-slate-200 space-y-3">
+                    <div className="flex items-center justify-between text-xs font-black text-slate-700 border-b border-slate-200 pb-2">
+                      <span className="flex items-center gap-1.5">
+                        <span>👁️</span>
+                        <span>
+                          শনাক্তকৃত প্রশ্নের নমুনা প্রিভিউ (প্রথম ৩টি প্রশ্ন):
+                        </span>
+                      </span>
+                      <span className="text-teal-700">
+                        মোট:{" "}
+                        {jsonImportPreview.totalQuestions.toLocaleString(
+                          "bn-BD",
                         )}
-                      </div>
-                    ))}
+                        টি প্রশ্ন
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      {jsonImportPreview.subjects[0].questions
+                        .slice(0, 3)
+                        .map((q, idx) => (
+                          <div
+                            key={idx}
+                            className="bg-white p-3.5 rounded-xl border border-slate-200 text-xs space-y-2 shadow-2xs"
+                          >
+                            <p className="font-bold text-slate-800 line-clamp-2">
+                              <span className="text-red-600 font-mono mr-1">
+                                #{idx + 1}.
+                              </span>
+                              {q.q}
+                            </p>
+                            <div className="space-y-1">
+                              {q.options.map((opt, oIdx) => (
+                                <div
+                                  key={oIdx}
+                                  className={`px-2 py-1 rounded text-[11px] font-medium flex items-center justify-between ${
+                                    oIdx === q.ans
+                                      ? "bg-emerald-50 text-emerald-800 font-bold border border-emerald-300"
+                                      : "bg-slate-50 text-slate-600"
+                                  }`}
+                                >
+                                  <span>
+                                    {["ক", "খ", "গ", "ঘ"][oIdx]}. {opt}
+                                  </span>
+                                  {oIdx === q.ans && (
+                                    <span className="text-[10px] text-emerald-700 font-bold">
+                                      ✓ সঠিক
+                                    </span>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                            {q.explanation && (
+                              <p className="text-[10px] text-slate-500 italic bg-amber-50/60 p-1.5 rounded border border-amber-200/50 line-clamp-2">
+                                💡 {q.explanation}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
               {/* In All Subjects Mode: Grid of detected subjects */}
               {importScope === "all" && (
@@ -3625,7 +3671,8 @@ export default function AdminQuizManager() {
                   <span>JSON ফাইল তৈরির নিয়মাবলী ও ফরম্যাট নির্দেশিকা</span>
                 </h4>
                 <p className="text-xs text-slate-500 font-medium">
-                  যেকোনো একটি সমর্থিত ফরম্যাটে আপনার প্রশ্নের .json ফাইল তৈরি করুন।
+                  যেকোনো একটি সমর্থিত ফরম্যাটে আপনার প্রশ্নের .json ফাইল তৈরি
+                  করুন।
                 </p>
               </div>
 
@@ -3656,7 +3703,9 @@ export default function AdminQuizManager() {
               <div className="bg-white rounded-2xl p-4 border border-slate-200 space-y-2.5 shadow-2xs">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black text-slate-800 flex items-center gap-1.5">
-                    <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-[11px] font-black">১</span>
+                    <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-[11px] font-black">
+                      ১
+                    </span>
                     <span>সরাসরি প্রশ্নের অ্যারে (সবচেয়ে সহজ)</span>
                   </span>
                   <span className="text-[10px] px-2 py-0.5 bg-emerald-50 text-emerald-700 font-black rounded-full border border-emerald-200">
@@ -3667,7 +3716,7 @@ export default function AdminQuizManager() {
                   একটি সাধারণ অ্যারে যাতে প্রতিটি প্রশ্নের জন্য অবজেক্ট থাকবে:
                 </p>
                 <pre className="bg-slate-900 text-emerald-300 p-3 rounded-xl text-[11px] font-mono overflow-x-auto leading-relaxed">
-{`[
+                  {`[
   {
     "q": "বাংলাদেশের রাজধানী কোনটি?",
     "o": ["ঢাকা", "চট্টগ্রাম", "খুলনা", "রাজশাহী"],
@@ -3687,7 +3736,9 @@ export default function AdminQuizManager() {
               <div className="bg-white rounded-2xl p-4 border border-slate-200 space-y-2.5 shadow-2xs">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black text-slate-800 flex items-center gap-1.5">
-                    <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center text-[11px] font-black">২</span>
+                    <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center text-[11px] font-black">
+                      ২
+                    </span>
                     <span>অধ্যায়/টেস্ট ভিত্তিক ফরম্যাট</span>
                   </span>
                   <span className="text-[10px] px-2 py-0.5 bg-blue-50 text-blue-700 font-black rounded-full border border-blue-200">
@@ -3698,7 +3749,7 @@ export default function AdminQuizManager() {
                   টেস্ট বা অধ্যায় ভিত্তিক সেটের ভেতরে প্রশ্নের লিস্ট:
                 </p>
                 <pre className="bg-slate-900 text-sky-300 p-3 rounded-xl text-[11px] font-mono overflow-x-auto leading-relaxed">
-{`{
+                  {`{
   "tests": [
     {
       "qs": [
@@ -3719,7 +3770,9 @@ export default function AdminQuizManager() {
               <div className="bg-white rounded-2xl p-4 border border-slate-200 space-y-2.5 shadow-2xs">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black text-slate-800 flex items-center gap-1.5">
-                    <span className="w-5 h-5 rounded-full bg-purple-100 text-purple-800 flex items-center justify-center text-[11px] font-black">৩</span>
+                    <span className="w-5 h-5 rounded-full bg-purple-100 text-purple-800 flex items-center justify-center text-[11px] font-black">
+                      ৩
+                    </span>
                     <span>একাধিক বিষয় একসাথে</span>
                   </span>
                   <span className="text-[10px] px-2 py-0.5 bg-purple-50 text-purple-700 font-black rounded-full border border-purple-200">
@@ -3730,7 +3783,7 @@ export default function AdminQuizManager() {
                   প্রতিটি বিষয়ের নাম বা কী দিয়ে আলাদা করা:
                 </p>
                 <pre className="bg-slate-900 text-purple-300 p-3 rounded-xl text-[11px] font-mono overflow-x-auto leading-relaxed">
-{`{
+                  {`{
   "bangla": {
     "tests": [{ "qs": [...] }]
   },
@@ -3751,43 +3804,81 @@ export default function AdminQuizManager() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
                   <div className="flex items-center justify-between">
-                    <code className="text-red-600 font-bold font-mono">q / question</code>
-                    <span className="text-[10px] bg-red-100 text-red-800 font-black px-1.5 py-0.5 rounded">আবশ্যক</span>
+                    <code className="text-red-600 font-bold font-mono">
+                      q / question
+                    </code>
+                    <span className="text-[10px] bg-red-100 text-red-800 font-black px-1.5 py-0.5 rounded">
+                      আবশ্যক
+                    </span>
                   </div>
                   <p className="text-slate-600 text-[11px] leading-relaxed">
-                    প্রশ্নের মূল টেক্সট বা বাক্য। যেমন: <span className="font-medium text-slate-800">"বাংলাদেশের জাতীয় ফুল কোনটি?"</span>
+                    প্রশ্নের মূল টেক্সট বা বাক্য। যেমন:{" "}
+                    <span className="font-medium text-slate-800">
+                      "বাংলাদেশের জাতীয় ফুল কোনটি?"
+                    </span>
                   </p>
                 </div>
 
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
                   <div className="flex items-center justify-between">
-                    <code className="text-red-600 font-bold font-mono">o / options</code>
-                    <span className="text-[10px] bg-red-100 text-red-800 font-black px-1.5 py-0.5 rounded">আবশ্যক</span>
+                    <code className="text-red-600 font-bold font-mono">
+                      o / options
+                    </code>
+                    <span className="text-[10px] bg-red-100 text-red-800 font-black px-1.5 py-0.5 rounded">
+                      আবশ্যক
+                    </span>
                   </div>
                   <p className="text-slate-600 text-[11px] leading-relaxed">
-                    ৪টি উত্তরের অপশনযুক্ত অ্যারে। যেমন: <span className="font-mono text-slate-700 font-medium">["গোলাপ", "শাপলা", "বেলি", "জবা"]</span>
+                    ৪টি উত্তরের অপশনযুক্ত অ্যারে। যেমন:{" "}
+                    <span className="font-mono text-slate-700 font-medium">
+                      ["গোলাপ", "শাপলা", "বেলি", "জবা"]
+                    </span>
                   </p>
                 </div>
 
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
                   <div className="flex items-center justify-between">
-                    <code className="text-red-600 font-bold font-mono">a / ans</code>
-                    <span className="text-[10px] bg-red-100 text-red-800 font-black px-1.5 py-0.5 rounded">আবশ্যক</span>
+                    <code className="text-red-600 font-bold font-mono">
+                      a / ans
+                    </code>
+                    <span className="text-[10px] bg-red-100 text-red-800 font-black px-1.5 py-0.5 rounded">
+                      আবশ্যক
+                    </span>
                   </div>
                   <p className="text-slate-600 text-[11px] leading-relaxed">
                     সঠিক উত্তরের ক্রমিক সংখ্যা (০ থেকে ৩):
                     <br />
-                    <span className="font-mono text-emerald-700 font-bold">0</span> = ১ম অপশন (ক), <span className="font-mono text-emerald-700 font-bold">1</span> = ২য় (খ), <span className="font-mono text-emerald-700 font-bold">2</span> = ৩য় (গ), <span className="font-mono text-emerald-700 font-bold">3</span> = ৪র্থ (ঘ)।
+                    <span className="font-mono text-emerald-700 font-bold">
+                      0
+                    </span>{" "}
+                    = ১ম অপশন (ক),{" "}
+                    <span className="font-mono text-emerald-700 font-bold">
+                      1
+                    </span>{" "}
+                    = ২য় (খ),{" "}
+                    <span className="font-mono text-emerald-700 font-bold">
+                      2
+                    </span>{" "}
+                    = ৩য় (গ),{" "}
+                    <span className="font-mono text-emerald-700 font-bold">
+                      3
+                    </span>{" "}
+                    = ৪র্থ (ঘ)।
                   </p>
                 </div>
 
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
                   <div className="flex items-center justify-between">
-                    <code className="text-slate-700 font-bold font-mono">e / explanation</code>
-                    <span className="text-[10px] bg-slate-200 text-slate-700 font-black px-1.5 py-0.5 rounded">ঐচ্ছিক</span>
+                    <code className="text-slate-700 font-bold font-mono">
+                      e / explanation
+                    </code>
+                    <span className="text-[10px] bg-slate-200 text-slate-700 font-black px-1.5 py-0.5 rounded">
+                      ঐচ্ছিক
+                    </span>
                   </div>
                   <p className="text-slate-600 text-[11px] leading-relaxed">
-                    সঠিক উত্তরের পেছনে তথ্যমূলক ব্যাখ্যা। শিক্ষার্থী পরীক্ষা শেষে এই ব্যাখ্যা দেখতে পাবে।
+                    সঠিক উত্তরের পেছনে তথ্যমূলক ব্যাখ্যা। শিক্ষার্থী পরীক্ষা
+                    শেষে এই ব্যাখ্যা দেখতে পাবে।
                   </p>
                 </div>
               </div>
