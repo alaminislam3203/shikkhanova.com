@@ -462,9 +462,15 @@ export default function AccountPage() {
                 <p className="text-[11px] text-slate-300">সাহায্য বা অনুসন্ধানের জন্য:</p>
                 <a
                   href="tel:01712592519"
-                  className="text-xs font-bold text-white hover:text-nova-400 font-mono transition"
+                  onClick={() => {
+                    navigator.clipboard?.writeText("01712592519");
+                    toast.success("হেল্পলাইন নম্বর (01712592519) কপি হয়েছে!");
+                  }}
+                  className="text-xs font-bold text-white hover:text-nova-400 font-mono transition cursor-pointer flex items-center gap-1.5"
+                  title="কল করতে ও নম্বর কপি করতে ক্লিক করুন"
                 >
-                  ০১৭১২৫৯২৫১৯
+                  <span>০১৭১২৫৯২৫১৯</span>
+                  <FaCopy className="w-2.5 h-2.5 opacity-60 hover:opacity-100" />
                 </a>
               </div>
             </div>
