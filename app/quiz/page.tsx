@@ -1058,7 +1058,17 @@ export default function QuizPage() {
                   type="button"
                   onClick={() => {
                     if (!isSubmitted) {
-                      if (!confirm("আপনি কি পরীক্ষাটি বন্ধ করতে চান?")) return;
+                      showConfirmToast({
+                        title: "পরীক্ষা বন্ধ করবেন?",
+                        message: "আপনি কি পরীক্ষাটি বন্ধ করতে চান?",
+                        confirmText: "হ্যাঁ, বন্ধ করুন",
+                        cancelText: "না, চালিয়ে যান",
+                        onConfirm: () => {
+                          setIsTestActive(false);
+                          toast.success("পরীক্ষা বন্ধ করা হয়েছে।");
+                        },
+                      });
+                      return;
                     }
                     setIsTestActive(false);
                   }}
