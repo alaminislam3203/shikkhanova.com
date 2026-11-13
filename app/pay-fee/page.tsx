@@ -251,9 +251,12 @@ export default function PayFeePage() {
             <span>হেল্পলাইন:</span>
             <a
               href="tel:01712592519"
-              className="text-[#C8102E] font-black hover:underline"
+              onClick={() => handleCopyNumber("01712592519", "হেল্পলাইন")}
+              className="text-[#C8102E] font-black hover:underline cursor-pointer flex items-center gap-1 group/call"
+              title="কল করতে ও নম্বর কপি করতে ক্লিক করুন"
             >
-              ০১৭১২৫৯২৫১৯
+              <span>০১৭১২৫৯২৫১৯</span>
+              <FaCopy className="w-2.5 h-2.5 opacity-60 group-hover/call:opacity-100 transition-opacity" />
             </a>
           </div>
         </div>
@@ -326,12 +329,19 @@ export default function PayFeePage() {
                   </div>
                 </div>
 
-                <div>
-                  <div className="text-xs sm:text-base md:text-lg font-black font-mono text-slate-900 tracking-tight sm:tracking-wide">
-                    {method.number}
+                {/* Clickable Phone Number that copies on tap */}
+                <div
+                  onClick={() => handleCopyNumber(method.number, method.name)}
+                  className="cursor-pointer group/num select-none"
+                  title="ক্লিক করলেই নম্বর কপি হবে"
+                >
+                  <div className="text-xs sm:text-base md:text-lg font-black font-mono text-slate-900 tracking-tight sm:tracking-wide group-hover/num:text-[#C8102E] transition-colors flex items-center gap-1.5">
+                    <span>{method.number}</span>
+                    <FaCopy className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-400 group-hover/num:text-[#C8102E] opacity-75 shrink-0" />
                   </div>
-                  <div className="text-[10px] sm:text-[11px] text-slate-500 font-medium truncate mt-0.5">
-                    শিক্ষা নোভা একাডেমি ({method.name})
+                  <div className="text-[10px] sm:text-[11px] text-slate-500 font-medium truncate mt-0.5 flex items-center gap-1">
+                    <span>শিক্ষা নোভা ({method.name})</span>
+                    <span className="text-[9px] text-[#C8102E] font-bold opacity-80 group-hover/num:opacity-100 transition-opacity">• ট্যাপে কপি</span>
                   </div>
                 </div>
 
@@ -447,25 +457,31 @@ export default function PayFeePage() {
 
                 {/* Selected Method Instruction Box */}
                 <div className="mt-3 p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between text-xs text-slate-600">
-                  <div className="flex items-center gap-2">
+                  <div
+                    onClick={() => handleCopyNumber(activeConfig.number, activeConfig.name)}
+                    className="flex items-center gap-2 cursor-pointer group/inst select-none"
+                    title="ক্লিক করলেই নম্বর কপি হবে"
+                  >
                     <img
                       src={activeConfig.logo}
                       alt={activeConfig.englishName}
                       className="h-4 w-auto object-contain"
                     />
                     <span>{activeConfig.name} পার্সোনাল নম্বর:</span>
-                    <strong className="font-mono text-slate-900 font-black">
+                    <span className="font-mono text-slate-900 font-black group-hover/inst:text-[#C8102E] flex items-center gap-1 transition">
                       {activeConfig.number}
-                    </strong>
+                      <FaCopy className="w-2.5 h-2.5 text-slate-400 group-hover/inst:text-[#C8102E]" />
+                    </span>
                   </div>
                   <button
                     type="button"
                     onClick={() =>
                       handleCopyNumber(activeConfig.number, activeConfig.name)
                     }
-                    className="text-[11px] font-bold text-blue-600 hover:underline cursor-pointer"
+                    className="text-[11px] font-bold text-blue-600 hover:underline cursor-pointer flex items-center gap-1"
                   >
-                    কপি করুন
+                    <FaCopy className="w-2.5 h-2.5" />
+                    <span>কপি করুন</span>
                   </button>
                 </div>
               </div>
