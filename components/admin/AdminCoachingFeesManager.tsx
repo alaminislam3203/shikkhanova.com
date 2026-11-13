@@ -465,14 +465,29 @@ export default function AdminCoachingFeesManager({ onUpdate }: AdminCoachingFees
                             <FaCopy className="w-3 h-3" />
                           </button>
                         </div>
-                        <div className="flex items-center gap-1 mt-1">
+                        <div className="flex items-center gap-1.5 mt-1">
+                          <img
+                            src={
+                              record.paymentMethod === "BKASH"
+                                ? "/assets/images/bkash.png"
+                                : record.paymentMethod === "NAGAD"
+                                ? "/assets/images/nagad.png"
+                                : record.paymentMethod === "ROCKET"
+                                ? "/assets/images/rocket.png"
+                                : "/assets/images/upay.png"
+                            }
+                            alt={record.paymentMethod}
+                            className="h-3.5 w-auto object-contain"
+                          />
                           <span
-                            className={`text-[10px] font-black uppercase px-1.5 py-0.2 rounded inline-block ${
+                            className={`text-[10px] font-black uppercase px-1.5 py-0.5 rounded inline-block ${
                               record.paymentMethod === "BKASH"
                                 ? "bg-rose-100 text-rose-800"
                                 : record.paymentMethod === "NAGAD"
                                 ? "bg-amber-100 text-amber-800"
-                                : "bg-purple-100 text-purple-800"
+                                : record.paymentMethod === "ROCKET"
+                                ? "bg-purple-100 text-purple-800"
+                                : "bg-sky-100 text-sky-800"
                             }`}
                           >
                             {record.paymentMethod}
@@ -660,9 +675,24 @@ export default function AdminCoachingFeesManager({ onUpdate }: AdminCoachingFees
                   <span className="text-slate-500 font-semibold">টাকার পরিমাণ:</span>
                   <span className="font-black text-base text-[#C8102E]">৳{selectedReceipt.amount}</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span className="text-slate-500 font-semibold">পেমেন্ট মাধ্যম:</span>
-                  <span className="font-bold text-slate-800">{selectedReceipt.paymentMethod}</span>
+                  <div className="flex items-center gap-1.5 font-bold text-slate-800">
+                    <img
+                      src={
+                        selectedReceipt.paymentMethod === "BKASH"
+                          ? "/assets/images/bkash.png"
+                          : selectedReceipt.paymentMethod === "NAGAD"
+                          ? "/assets/images/nagad.png"
+                          : selectedReceipt.paymentMethod === "ROCKET"
+                          ? "/assets/images/rocket.png"
+                          : "/assets/images/upay.png"
+                      }
+                      alt={selectedReceipt.paymentMethod}
+                      className="h-4 w-auto object-contain"
+                    />
+                    <span>{selectedReceipt.paymentMethod}</span>
+                  </div>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500 font-semibold">প্রেরকের নম্বর:</span>
