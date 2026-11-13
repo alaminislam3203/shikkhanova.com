@@ -29,6 +29,7 @@ import {
   FaGear,
   FaTrophy,
 } from 'react-icons/fa6';
+import { TbCashBanknote } from 'react-icons/tb';
 import { HiSparkles } from 'react-icons/hi2';
 
 export default function AccountPage() {
@@ -247,6 +248,14 @@ export default function AccountPage() {
       sublabel: 'সংগৃহীত শিট ও মার্কশিট',
       href: '/my-notes',
       icon: FaBookOpen,
+      active: false,
+    },
+    {
+      id: 'fee',
+      label: 'কোচিং মাসিক ফি (৳১২০০)',
+      sublabel: 'অনলাইন ফি জমা ও রসিদ ডাউনলোড',
+      href: '/pay-fee',
+      icon: TbCashBanknote,
       active: false,
     },
     {
@@ -488,7 +497,14 @@ export default function AccountPage() {
                 </p>
               </div>
 
-              <div className="shrink-0 flex items-center gap-2">
+              <div className="shrink-0 flex items-center gap-2 flex-wrap">
+                <Link
+                  href="/pay-fee"
+                  className="inline-flex items-center gap-1.5 bg-[#C8102E] hover:bg-[#a00d24] active:scale-98 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition shadow-xs"
+                >
+                  <TbCashBanknote className="w-3.5 h-3.5 text-amber-300" />
+                  <span>কোচিং ফি জমা (৳১২০০)</span>
+                </Link>
                 <Link
                   href="/profile"
                   className="inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 active:scale-98 text-white text-xs font-bold px-3.5 py-2 rounded-xl border border-white/15 transition shadow-xs"
