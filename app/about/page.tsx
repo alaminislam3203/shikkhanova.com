@@ -2,10 +2,12 @@
 
 import React from 'react';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 import {
   FaCircleCheck,
   FaLocationDot,
   FaPhone,
+  FaCopy,
 } from 'react-icons/fa6';
 
 // Decorative Section Header Component matching the reference editorial style

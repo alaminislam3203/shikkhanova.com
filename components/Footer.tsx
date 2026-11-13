@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import toast from "react-hot-toast";
 import Logo from "@/components/common/Logo";
 import {
   FaFacebook,
@@ -16,6 +17,7 @@ import {
   FaAward,
   FaFilePdf,
   FaChevronRight,
+  FaCopy,
 } from "react-icons/fa6";
 
 export default function Footer() {
@@ -40,8 +42,13 @@ export default function Footer() {
         <div className="rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg border border-slate-200/80 bg-white">
           <a
             href="tel:01712592519"
+            onClick={() => {
+              navigator.clipboard?.writeText("01712592519");
+              toast.success("হেল্পলাইন নম্বর (01712592519) কপি হয়েছে!");
+            }}
             aria-label="ভর্তি ও তথ্যের জন্য কল করুন ০১৭১২৫৯২৫১৯"
-            className="block w-full group"
+            className="block w-full group cursor-pointer"
+            title="কল করতে ও নম্বর কপি করতে ক্লিক করুন"
           >
             <img
               src="/banners/footer-banner.png"
@@ -107,8 +114,12 @@ export default function Footer() {
               </a>
               <a
                 href="tel:01712592519"
-                className="w-9 h-9 rounded-xl bg-rose-50 hover:bg-[#C8102E] text-[#C8102E] hover:text-white flex items-center justify-center transition border border-rose-100 shadow-2xs"
-                title="Call"
+                onClick={() => {
+                  navigator.clipboard?.writeText("01712592519");
+                  toast.success("হেল্পলাইন নম্বর (01712592519) কপি হয়েছে!");
+                }}
+                className="w-9 h-9 rounded-xl bg-rose-50 hover:bg-[#C8102E] text-[#C8102E] hover:text-white flex items-center justify-center transition border border-rose-100 shadow-2xs cursor-pointer"
+                title="কল ও কপি করুন (০১৭১২৫৯২৫১৯)"
               >
                 <FaPhone className="w-3.5 h-3.5" />
               </a>
@@ -282,9 +293,18 @@ export default function Footer() {
                 <p className="text-[11px] font-bold text-slate-600">
                   ফি পাঠানোর পার্সোনাল নম্বর:
                 </p>
-                <span className="font-bn-normal font-black text-[#C8102E] text-xs sm:text-sm tracking-wider">
-                  ০১৭১২৫৯২৫১৯
-                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard?.writeText("01712592519");
+                    toast.success("ফি পাঠানোর নম্বর (01712592519) কপি হয়েছে!");
+                  }}
+                  className="font-bn-normal font-black text-[#C8102E] text-xs sm:text-sm tracking-wider hover:underline flex items-center gap-1 cursor-pointer"
+                  title="ক্লিক করে নম্বর কপি করুন"
+                >
+                  <span>০১৭১২৫৯২৫১৯</span>
+                  <FaCopy className="w-2.5 h-2.5 text-slate-400" />
+                </button>
               </div>
               <div className="grid grid-cols-4 gap-1.5 bg-slate-50 p-2 rounded-xl border border-slate-200/90 shadow-2xs">
                 <div className="bg-white px-1.5 py-1 rounded-lg border border-slate-200 shadow-2xs flex items-center justify-center h-7" title="bKash">
