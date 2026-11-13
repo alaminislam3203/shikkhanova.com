@@ -302,6 +302,15 @@ export default function AdminDashboard({
           <div className="flex flex-wrap items-center gap-2.5 shrink-0">
             <button
               type="button"
+              onClick={() => onNavigateTab('coachingFees')}
+              className="inline-flex items-center gap-2 bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black px-4 py-2.5 rounded-2xl text-xs shadow-lg transition transform hover:-translate-y-0.5"
+            >
+              <TbCashBanknote className="w-4 h-4 text-emerald-900" />
+              <span>কোচিং ফি (৳১২০০)</span>
+            </button>
+
+            <button
+              type="button"
               onClick={() => onNavigateTab('banners')}
               className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-4 py-2.5 rounded-2xl text-xs shadow-lg transition transform hover:-translate-y-0.5"
             >
