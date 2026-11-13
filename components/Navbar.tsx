@@ -217,6 +217,7 @@ interface NavLinkItem {
   icon?: any;
   color?: string;
   badge?: string;
+  mobileOnly?: boolean;
   children?: { href: string; label: string }[];
 }
 
@@ -233,7 +234,7 @@ const navLinks: NavLinkItem[] = [
   { href: "/notices", label: "নোটিশ" },
   { href: "/results", label: "রেজাল্ট" },
   { href: "/pdfs", label: "শিট ও নোট" },
-  { href: "/pay-fee", label: "কোচিং ফি", badge: "৳১২০০" },
+  { href: "/pay-fee", label: "কোচিং ফি", badge: "৳১২০০", mobileOnly: true },
   { href: "/gallery", label: "ফটো গ্যালারি" },
   {
     href: "/videos",
