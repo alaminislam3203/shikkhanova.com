@@ -21,6 +21,7 @@ import AdminQuizManager from "@/components/admin/AdminQuizManager";
 import AdminGalleryManager from "@/components/admin/AdminGalleryManager";
 import AdminLandingManager from "@/components/admin/AdminLandingManager";
 import AdminSmsManager from "@/components/admin/AdminSmsManager";
+import AdminCoachingFeesManager from "@/components/admin/AdminCoachingFeesManager";
 import { PurchaseRecord } from "@/types";
 import {
   FaBars,
@@ -40,6 +41,7 @@ const VALID_ADMIN_TABS: AdminTab[] = [
   "banners",
   "achievers",
   "purchases",
+  "coachingFees",
   "addResult",
   "addPdf",
   "mcqQuiz",
@@ -64,6 +66,7 @@ export default function AdminPage() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
   const [purchases, setPurchases] = useState<PurchaseRecord[]>([]);
   const [pdfCount, setPdfCount] = useState<number>(0);
+  const [feePendingCount, setFeePendingCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [uploadingPhoto, setUploadingPhoto] = useState<boolean>(false);
   const [savingAdminProfile, setSavingAdminProfile] = useState<boolean>(false);
@@ -149,6 +152,7 @@ export default function AdminPage() {
     fetchPurchases();
     fetchAdminProfile();
     fetchPdfCount();
+    fetchFeeCount();
 
     return () => window.removeEventListener("popstate", syncTabFromUrl);
   }, []);
