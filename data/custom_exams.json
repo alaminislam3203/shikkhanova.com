@@ -7,9 +7,21 @@
     "subject": "ICT",
     "examCode": "",
     "durationMinutes": 15,
-    "questionCount": 15,
+    "questionCount": 1,
     "sourceType": "custom",
     "isActive": true,
-    "createdAt": "2026-11-13T09:28:25.654Z"
+    "createdAt": "2026-11-13T09:28:25.654Z",
+    "questions": [
+      {
+        "q": "bnb",
+        "options": [
+          "hh",
+          "hhy",
+          "yyy",
+          "iu"
+        ],
+        "ans": 0
+      }
+    ]
   }
 ]
