@@ -542,9 +542,6 @@ export default function QuizPage() {
     return { correct, wrong, unanswered, total: activeQuestions.length };
   }, [activeQuestions, selectedAnswers]);
 
-    scrollTo(testAreaRef);
-  };
-
   // Unlock paid test with access code or TrxID (scoped strictly to this logged-in user)
   const handleVerifyUnlock = (e: React.FormEvent) => {
     e.preventDefault();
