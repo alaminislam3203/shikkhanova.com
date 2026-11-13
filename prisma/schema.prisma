@@ -147,4 +147,11 @@ model SmsLog {
   @@index([timestamp])
 }
 
+model SystemSetting {
+  key       String   @id
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt @default(now())
+}
+
+
 

@@ -215,8 +215,19 @@ export default function QuizPage() {
       .then((res) => res.json())
       .then((data) => {
         if (data?.covers && typeof data.covers === "object") {
-          setQuizCovers(data.covers);
-          saveStoredQuizCovers(data.covers);
+          const localCovers = getStoredQuizCovers();
+          const mergedCovers: QuizCovers = {
+            classes: {
+              ...(localCovers?.classes || {}),
+              ...(data.covers.classes || {}),
+            },
+            subjects: {
+              ...(localCovers?.subjects || {}),
+              ...(data.covers.subjects || {}),
+            },
+          };
+          setQuizCovers(mergedCovers);
+          saveStoredQuizCovers(mergedCovers);
         }
       })
       .catch(() => {});
@@ -231,9 +242,19 @@ export default function QuizPage() {
     fetch("/api/quiz/cards", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
-        if (data?.cards && Array.isArray(data.cards)) {
-          setCustomCards(data.cards);
-          saveStoredCustomQuizCards(data.cards);
+        if (data?.cards && Array.isArray(data.cards) && data.cards.length > 0) {
+          const localCards = getStoredCustomQuizCards();
+          const merged = data.cards.map((sCard: CustomQuizCard) => {
+            if (!sCard.coverImage) {
+              const matched = localCards.find((lc) => lc.id === sCard.id);
+              if (matched?.coverImage) {
+                return { ...sCard, coverImage: matched.coverImage };
+              }
+            }
+            return sCard;
+          });
+          setCustomCards(merged);
+          saveStoredCustomQuizCards(merged);
         }
       })
       .catch(() => {});

@@ -1,49 +1,16 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { DEFAULT_QUIZ_COVERS, QuizCovers } from '@/lib/defaultQuizData';
-import fs from 'fs';
-import path from 'path';
+import { QuizCovers } from '@/lib/defaultQuizData';
+import { getQuizCoversFromDb, saveQuizCoversToDb } from '@/lib/dbSettings';
 
 export const dynamic = 'force-dynamic';
 
-const COVERS_FILE_PATH = path.join(process.cwd(), 'data', 'quiz-covers.json');
-
-function readQuizCovers(): QuizCovers {
-  try {
-    if (fs.existsSync(COVERS_FILE_PATH)) {
-      const raw = fs.readFileSync(COVERS_FILE_PATH, 'utf-8');
-      const parsed = JSON.parse(raw);
-      if (parsed && typeof parsed === 'object') {
-        return {
-          classes: parsed.classes || {},
-          subjects: parsed.subjects || {},
-        };
-      }
-    }
-  } catch (err) {
-    console.error('Failed to read quiz covers file:', err);
-  }
-  return DEFAULT_QUIZ_COVERS;
-}
-
-function writeQuizCovers(covers: QuizCovers): void {
-  try {
-    const dir = path.dirname(COVERS_FILE_PATH);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    fs.writeFileSync(COVERS_FILE_PATH, JSON.stringify(covers, null, 2), 'utf-8');
-  } catch (err) {
-    console.error('Failed to write quiz covers file:', err);
-  }
-}
-
 export async function GET() {
   try {
-    const covers = readQuizCovers();
+    const covers = await getQuizCoversFromDb();
     return NextResponse.json(
-      { covers },
+      { covers, success: true },
       {
         headers: {
           'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
@@ -61,10 +28,11 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    const adminEmail = (process.env.ADMIN_EMAIL || 'robiulnil101@gmail.com').toLowerCase();
-    const isAdmin =
-      session?.user?.role === 'ADMIN' ||
-      session?.user?.email?.toLowerCase() === adminEmail;
+    const adminEmail = (process.env.ADMIN_EMAIL || 'robiulnil101@gmail.com').toLowerCase().trim();
+    const userRole = String(session?.user?.role || '').toUpperCase().trim();
+    const userEmail = String(session?.user?.email || '').toLowerCase().trim();
+
+    const isAdmin = userRole === 'ADMIN' || userEmail === adminEmail;
 
     if (!isAdmin) {
       return NextResponse.json(
@@ -106,17 +74,19 @@ export async function POST(req: Request) {
       subjects: cleanSubjects,
     };
 
-    writeQuizCovers(sanitized);
+    // Save permanently to PostgreSQL Database & File Backup
+    await saveQuizCoversToDb(sanitized);
 
     return NextResponse.json({
-      message: 'কুইজ কার্ডের কভার ইমেজ সফলভাবে সংরক্ষণ ও আপডেট করা হয়েছে!',
+      message: 'কুইজ কার্ডের কভার ইমেজ সফলভাবে ডেটাবেজে সংরক্ষণ ও আপডেট করা হয়েছে!',
       covers: sanitized,
+      savedToDb: true,
     });
   } catch (error: any) {
+    console.error('Failed to save quiz covers:', error);
     return NextResponse.json(
       { error: error.message || 'কভার ইমেজ সংরক্ষণ করতে সমস্যা হয়েছে' },
       { status: 500 }
     );
   }
 }
-

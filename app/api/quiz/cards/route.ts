@@ -1,46 +1,16 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { DEFAULT_CUSTOM_QUIZ_CARDS, CustomQuizCard } from '@/lib/defaultQuizData';
-import fs from 'fs';
-import path from 'path';
+import { CustomQuizCard } from '@/lib/defaultQuizData';
+import { getQuizCardsFromDb, saveQuizCardsToDb } from '@/lib/dbSettings';
 
 export const dynamic = 'force-dynamic';
 
-const CARDS_FILE_PATH = path.join(process.cwd(), 'data', 'quiz-cards.json');
-
-function readQuizCards(): CustomQuizCard[] {
-  try {
-    if (fs.existsSync(CARDS_FILE_PATH)) {
-      const raw = fs.readFileSync(CARDS_FILE_PATH, 'utf-8');
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
-      }
-    }
-  } catch (err) {
-    console.error('Failed to read quiz cards file:', err);
-  }
-  return DEFAULT_CUSTOM_QUIZ_CARDS;
-}
-
-function writeQuizCards(cards: CustomQuizCard[]): void {
-  try {
-    const dir = path.dirname(CARDS_FILE_PATH);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    fs.writeFileSync(CARDS_FILE_PATH, JSON.stringify(cards, null, 2), 'utf-8');
-  } catch (err) {
-    console.error('Failed to write quiz cards file:', err);
-  }
-}
-
 export async function GET() {
   try {
-    const cards = readQuizCards();
+    const cards = await getQuizCardsFromDb();
     return NextResponse.json(
-      { cards },
+      { cards, success: true },
       {
         headers: {
           'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
@@ -58,10 +28,11 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    const adminEmail = (process.env.ADMIN_EMAIL || 'robiulnil101@gmail.com').toLowerCase();
-    const isAdmin =
-      session?.user?.role === 'ADMIN' ||
-      session?.user?.email?.toLowerCase() === adminEmail;
+    const adminEmail = (process.env.ADMIN_EMAIL || 'robiulnil101@gmail.com').toLowerCase().trim();
+    const userRole = String(session?.user?.role || '').toUpperCase().trim();
+    const userEmail = String(session?.user?.email || '').toLowerCase().trim();
+
+    const isAdmin = userRole === 'ADMIN' || userEmail === adminEmail;
 
     if (!isAdmin) {
       return NextResponse.json(
@@ -97,17 +68,19 @@ export async function POST(req: Request) {
       createdAt: c.createdAt || new Date().toISOString(),
     }));
 
-    writeQuizCards(sanitized);
+    // Save permanently to PostgreSQL Database & File Backup
+    await saveQuizCardsToDb(sanitized);
 
     return NextResponse.json({
-      message: 'সকল কুইজ কার্ড সফলভাবে সংরক্ষণ ও আপডেট করা হয়েছে!',
+      message: 'সকল কুইজ কার্ড সফলভাবে ডেটাবেজে সংরক্ষণ ও আপডেট করা হয়েছে!',
       cards: sanitized,
+      savedToDb: true,
     });
   } catch (error: any) {
+    console.error('Failed to save quiz cards:', error);
     return NextResponse.json(
       { error: error.message || 'কার্ড সংরক্ষণ করতে সমস্যা হয়েছে' },
       { status: 500 }
     );
   }
 }
-

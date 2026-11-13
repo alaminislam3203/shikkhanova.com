@@ -2,43 +2,13 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { DEFAULT_QUIZ_PACKAGES, QuizPackageItem } from '@/lib/defaultQuizData';
-import fs from 'fs';
-import path from 'path';
+import { getQuizPackagesFromDb, saveQuizPackagesToDb } from '@/lib/dbSettings';
 
 export const dynamic = 'force-dynamic';
 
-const PACKAGES_FILE_PATH = path.join(process.cwd(), 'data', 'quiz-packages.json');
-
-function readQuizPackages(): QuizPackageItem[] {
-  try {
-    if (fs.existsSync(PACKAGES_FILE_PATH)) {
-      const raw = fs.readFileSync(PACKAGES_FILE_PATH, 'utf-8');
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
-      }
-    }
-  } catch (err) {
-    console.error('Failed to read quiz packages file:', err);
-  }
-  return DEFAULT_QUIZ_PACKAGES;
-}
-
-function writeQuizPackages(packages: QuizPackageItem[]): void {
-  try {
-    const dir = path.dirname(PACKAGES_FILE_PATH);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    fs.writeFileSync(PACKAGES_FILE_PATH, JSON.stringify(packages, null, 2), 'utf-8');
-  } catch (err) {
-    console.error('Failed to write quiz packages file:', err);
-  }
-}
-
 export async function GET() {
   try {
-    const packages = readQuizPackages();
+    const packages = await getQuizPackagesFromDb();
     return NextResponse.json({ packages });
   } catch (error: any) {
     return NextResponse.json(
@@ -51,7 +21,12 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (session?.user?.role !== 'ADMIN') {
+    const adminEmail = (process.env.ADMIN_EMAIL || 'robiulnil101@gmail.com').toLowerCase().trim();
+    const userRole = String(session?.user?.role || '').toUpperCase().trim();
+    const userEmail = String(session?.user?.email || '').toLowerCase().trim();
+    const isAdmin = userRole === 'ADMIN' || userEmail === adminEmail;
+
+    if (!isAdmin) {
       return NextResponse.json(
         { error: 'শুধুমাত্র অ্যাডমিন প্যাকেজ পরিবর্তন করতে পারেন।' },
         { status: 403 }
@@ -87,7 +62,7 @@ export async function POST(req: Request) {
       accentColor: pkg.accentColor || 'red',
     }));
 
-    writeQuizPackages(cleanPackages);
+    await saveQuizPackagesToDb(cleanPackages);
 
     return NextResponse.json({
       message: 'স্পেশাল মডেল টেস্ট প্যাকেজসমূহ সফলভাবে সংরক্ষণ ও আপডেট করা হয়েছে!',
@@ -100,4 +75,3 @@ export async function POST(req: Request) {
     );
   }
 }
-

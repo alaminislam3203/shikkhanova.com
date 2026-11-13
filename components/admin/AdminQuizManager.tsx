@@ -274,35 +274,19 @@ export default function AdminQuizManager() {
       .then((res) => res.json())
       .then((data) => {
         if (data?.covers && typeof data.covers === "object") {
-          const serverHasCovers =
-            (data.covers.classes &&
-              Object.keys(data.covers.classes).length > 0) ||
-            (data.covers.subjects &&
-              Object.keys(data.covers.subjects).length > 0);
-
-          if (serverHasCovers) {
-            setCovers(data.covers);
-            saveStoredQuizCovers(data.covers);
-          } else {
-            // If server file is empty, check if localStorage has covers and push to server
-            const localCovers = getStoredQuizCovers();
-            const localHasCovers =
-              (localCovers?.classes &&
-                Object.keys(localCovers.classes).length > 0) ||
-              (localCovers?.subjects &&
-                Object.keys(localCovers.subjects).length > 0);
-
-            if (localHasCovers) {
-              setCovers(localCovers);
-              fetch("/api/quiz/covers", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ covers: localCovers }),
-              }).catch(() => {});
-            } else {
-              setCovers(data.covers);
-            }
-          }
+          const localCovers = getStoredQuizCovers();
+          const mergedCovers: QuizCovers = {
+            classes: {
+              ...(localCovers?.classes || {}),
+              ...(data.covers.classes || {}),
+            },
+            subjects: {
+              ...(localCovers?.subjects || {}),
+              ...(data.covers.subjects || {}),
+            },
+          };
+          setCovers(mergedCovers);
+          saveStoredQuizCovers(mergedCovers);
         }
       })
       .catch(() => {});
@@ -317,9 +301,19 @@ export default function AdminQuizManager() {
     fetch("/api/quiz/cards", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
-        if (data?.cards && Array.isArray(data.cards)) {
-          setCustomCards(data.cards);
-          saveStoredCustomQuizCards(data.cards);
+        if (data?.cards && Array.isArray(data.cards) && data.cards.length > 0) {
+          const localCards = getStoredCustomQuizCards();
+          const merged = data.cards.map((sCard: CustomQuizCard) => {
+            if (!sCard.coverImage) {
+              const matched = localCards.find((lc) => lc.id === sCard.id);
+              if (matched?.coverImage) {
+                return { ...sCard, coverImage: matched.coverImage };
+              }
+            }
+            return sCard;
+          });
+          setCustomCards(merged);
+          saveStoredCustomQuizCards(merged);
         }
       })
       .catch(() => {});
@@ -472,7 +466,7 @@ export default function AdminQuizManager() {
     toast.success("প্যাকেজসমূহ ডিফল্ট অবস্থায় ফিরিয়ে আনা হয়েছে।");
   };
 
-  // 🖼️ Cover Image Handlers
+  // 🖼️ Cover Image Handlers (PostgreSQL Database Persistence)
   const handleCoverUpload = async (
     key: string,
     file: File,
@@ -484,51 +478,63 @@ export default function AdminQuizManager() {
     try {
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("folder", "shikkha_nova/quiz_covers");
+
       const res = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
       const data = await res.json();
       if (res.ok && data.url) {
-        const nextCovers: QuizCovers = {
-          ...covers,
-          [type]: {
-            ...covers[type],
-            [key]: data.url,
-          },
-        };
-        setCovers(nextCovers);
-        saveStoredQuizCovers(nextCovers);
+        let updatedCovers: QuizCovers;
+        setCovers((prev) => {
+          updatedCovers = {
+            ...prev,
+            [type]: {
+              ...prev[type],
+              [key]: data.url,
+            },
+          };
+          saveStoredQuizCovers(updatedCovers);
+          return updatedCovers;
+        });
 
-        // Auto-save to server immediately upon successful Cloudinary upload
+        // Auto-save to PostgreSQL database immediately via /api/quiz/covers
         try {
+          const nextCovers: QuizCovers = {
+            ...covers,
+            [type]: {
+              ...covers[type],
+              [key]: data.url,
+            },
+          };
           const saveRes = await fetch("/api/quiz/covers", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ covers: nextCovers }),
           });
+          const saveData = await saveRes.json();
           if (saveRes.ok) {
             toast.success(
-              "কভার ছবি ক্লাউডে সফলভাবে আপলোড ও স্থায়ীভাবে সংরক্ষণ করা হয়েছে!",
+              "কভার ছবি ক্লাউডে আপলোড ও ডেটাবেজে স্থায়ীভাবে সংরক্ষণ করা হয়েছে!",
               {
                 id: uploadToastId,
                 duration: 4000,
               },
             );
             setMsg({
-              text: "কভার ছবি সফলভাবে আপলোড ও সেভ করা হয়েছে!",
+              text: "কভার ছবি ডেটাবেজে সফলভাবে সংরক্ষণ করা হয়েছে!",
               type: "success",
             });
           } else {
-            toast.success("ছবি আপলোড হয়েছে এবং ব্রাউজারে সংরক্ষিত হয়েছে!", {
-              id: uploadToastId,
-              duration: 4000,
-            });
+            toast.error(
+              saveData.error || "ছবি আপলোড হয়েছে তবে ডেটাবেজে সেভ হয়নি।",
+              { id: uploadToastId },
+            );
           }
         } catch {
-          toast.success("ছবি আপলোড হয়েছে এবং ব্রাউজারে সংরক্ষিত হয়েছে!", {
+          toast.error("ছবি আপলোড হয়েছে তবে সার্ভারে সংযোগে সমস্যা হয়েছে।", {
             id: uploadToastId,
-            duration: 4000,
           });
         }
       } else {
@@ -557,12 +563,16 @@ export default function AdminQuizManager() {
     saveStoredQuizCovers(nextCovers);
 
     try {
-      await fetch("/api/quiz/covers", {
+      const res = await fetch("/api/quiz/covers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ covers: nextCovers }),
       });
-      toast.success("কভার ইমেজ সফলভাবে রিমুভ ও স্থায়ীভাবে আপডেট করা হয়েছে!");
+      if (res.ok) {
+        toast.success("কভার ইমেজ ডেটাবেজ থেকে রিমুভ ও স্থায়ীভাবে আপডেট করা হয়েছে!");
+      } else {
+        toast.success("কভার ইমেজ ব্রাউজার থেকে রিমুভ হয়েছে।");
+      }
     } catch {
       toast.success("কভার ইমেজ ব্রাউজার থেকে রিমুভ হয়েছে।");
     }
@@ -579,7 +589,7 @@ export default function AdminQuizManager() {
 
     const payload: QuizCovers = isRealCovers ? customCovers : covers;
     setIsSavingCovers(true);
-    const saveToastId = toast.loading("কভার ইমেজ সংরক্ষণ ও আপডেট করা হচ্ছে...");
+    const saveToastId = toast.loading("কভার ইমেজ ডেটাবেজে সংরক্ষণ করা হচ্ছে...");
     try {
       saveStoredQuizCovers(payload);
       const res = await fetch("/api/quiz/covers", {
@@ -593,12 +603,12 @@ export default function AdminQuizManager() {
           setCovers(data.covers);
           saveStoredQuizCovers(data.covers);
         }
-        toast.success(data.message || "সকল কভার ইমেজ সফলভাবে সংরক্ষিত হয়েছে!", {
+        toast.success(data.message || "সকল কভার ইমেজ ডেটাবেজে সফলভাবে সংরক্ষিত হয়েছে!", {
           id: saveToastId,
           duration: 4000,
         });
         setMsg({
-          text: "কুইজ কার্ডের কভার ইমেজ সফলভাবে সংরক্ষণ ও আপডেট করা হয়েছে!",
+          text: "কুইজ কার্ডের কভার ইমেজ ডেটাবেজে সফলভাবে সংরক্ষণ ও আপডেট করা হয়েছে!",
           type: "success",
         });
       } else {
@@ -615,7 +625,7 @@ export default function AdminQuizManager() {
     }
   };
 
-  // 🃏 Dynamic Custom MCQ Card Handlers
+  // 🃏 Dynamic Custom MCQ Card Handlers (PostgreSQL Database Persistence)
   const handleSaveCardsToApi = async (cardsToSave: CustomQuizCard[]) => {
     setIsSavingCards(true);
     saveStoredCustomQuizCards(cardsToSave);
@@ -632,17 +642,17 @@ export default function AdminQuizManager() {
           saveStoredCustomQuizCards(data.cards);
         }
         toast.success(
-          data.message || "MCQ কার্ডসমূহ সফলভাবে সংরক্ষণ করা হয়েছে!",
+          data.message || "MCQ কার্ডসমূহ ডেটাবেজে সফলভাবে সংরক্ষণ করা হয়েছে!",
         );
         setMsg({
-          text: "সকল কাস্টম MCQ কার্ড সফলভাবে আপডেট ও সংরক্ষিত হয়েছে!",
+          text: "সকল কাস্টম MCQ কার্ড ডেটাবেজে সফলভাবে আপডেট ও সংরক্ষিত হয়েছে!",
           type: "success",
         });
       } else {
-        toast.error(data.error || "কার্ড সংরক্ষণ ব্যর্থ হয়েছে।");
+        toast.error(data.error || "কার্ড ডেটাবেজে সংরক্ষণ ব্যর্থ হয়েছে।");
       }
     } catch {
-      toast.success("কার্ডসমূহ ব্রাউজারে সংরক্ষিত হয়েছে।");
+      toast.error("সার্ভারের সাথে সংযোগে সমস্যা হয়েছে।");
     } finally {
       setIsSavingCards(false);
     }
@@ -696,24 +706,50 @@ export default function AdminQuizManager() {
     try {
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("folder", "shikkha_nova/quiz_cards");
+
       const res = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
       const data = await res.json();
       if (res.ok && data.url) {
-        const nextCards = customCards.map((c) =>
-          c.id === cardId ? { ...c, coverImage: data.url } : c,
-        );
-        setCustomCards(nextCards);
-        handleSaveCardsToApi(nextCards);
-        toast.success(
-          "কার্ডের কভার ছবি সফলভাবে আপলোড ও ক্লাউডে সংরক্ষিত হয়েছে!",
-          {
+        let updatedCards: CustomQuizCard[] = [];
+        setCustomCards((prev) => {
+          updatedCards = prev.map((c) =>
+            c.id === cardId ? { ...c, coverImage: data.url } : c,
+          );
+          saveStoredCustomQuizCards(updatedCards);
+          return updatedCards;
+        });
+
+        // Save immediately to PostgreSQL Database
+        try {
+          const cardSaveRes = await fetch("/api/quiz/cards", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cards: updatedCards }),
+          });
+          const cardSaveData = await cardSaveRes.json();
+          if (cardSaveRes.ok) {
+            toast.success(
+              "কার্ডের কভার ছবি ক্লাউডে আপলোড ও ডেটাবেজে স্থায়ীভাবে সংরক্ষণ করা হয়েছে!",
+              {
+                id: uploadToastId,
+                duration: 4000,
+              },
+            );
+          } else {
+            toast.error(
+              cardSaveData.error || "ছবি আপলোড হয়েছে তবে ডেটাবেজে সেভ হয়নি।",
+              { id: uploadToastId },
+            );
+          }
+        } catch {
+          toast.error("ছবি আপলোড হয়েছে তবে সার্ভারে সংযোগে সমস্যা হয়েছে।", {
             id: uploadToastId,
-            duration: 4000,
-          },
-        );
+          });
+        }
       } else {
         toast.error(data.error || "আপলোড ব্যর্থ হয়েছে।", { id: uploadToastId });
       }
