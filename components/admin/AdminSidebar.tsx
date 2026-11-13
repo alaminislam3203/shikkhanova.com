@@ -30,6 +30,7 @@ export type AdminTab =
   | 'banners'
   | 'achievers'
   | 'purchases'
+  | 'coachingFees'
   | 'addPdf'
   | 'mcqQuiz'
   | 'addResult'
@@ -52,6 +53,7 @@ interface AdminSidebarProps {
   activeTab: AdminTab;
   setActiveTab: (tab: AdminTab) => void;
   pendingCount: number;
+  feePendingCount?: number;
   pdfCount?: number;
   isOpen: boolean;
   onClose: () => void;
@@ -74,6 +76,7 @@ export default function AdminSidebar({
   activeTab,
   setActiveTab,
   pendingCount,
+  feePendingCount,
   pdfCount,
   isOpen,
   onClose,
@@ -121,11 +124,19 @@ export default function AdminSidebar({
     },
     {
       id: 'purchases',
-      label: 'পেমেন্ট রিকোয়েস্ট (TrxID)',
-      sublabel: 'বিকাশ ও নগদ অনুমোদন',
+      label: 'শিট পেমেন্ট (TrxID)',
+      sublabel: 'PDF কেনার বিকাশ ও নগদ অনুমোদন',
       icon: TbCashBanknote,
       badge: pendingCount > 0 ? `${pendingCount}টি নতুন` : undefined,
       isAlertBadge: true,
+    },
+    {
+      id: 'coachingFees',
+      label: 'কোচিং মাসিক ফি (৳১২০০)',
+      sublabel: 'অনলাইন ফি ভেরিফিকেশন ও রসিদ',
+      icon: TbCashBanknote,
+      badge: feePendingCount && feePendingCount > 0 ? `${feePendingCount}টি বাকি` : '৳১২০০',
+      isAlertBadge: feePendingCount !== undefined && feePendingCount > 0,
     },
     {
       id: 'addPdf',
