@@ -4,6 +4,12 @@ import "./globals.css";
 import AuthProvider from "@/components/AuthProvider";
 import AppLayout from "@/components/common/AppLayout";
 import { Toaster } from "react-hot-toast";
+import { migrateExistingQuestionsDir } from "@/lib/quizStorage";
+
+// Automatically run filename migration for quiz files
+try {
+  migrateExistingQuestionsDir();
+} catch {}
 
 const hindSiliguri = localFont({
   src: [

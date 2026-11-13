@@ -62,6 +62,7 @@ import {
   FaImage,
   FaCloudArrowUp,
   FaLayerGroup,
+  FaDownload,
 } from "react-icons/fa6";
 
 type QuizCategory = "free" | "paid" | "subject";
@@ -134,9 +135,48 @@ export default function AdminQuizManager() {
   }, [availableSubjects, selectedSubject]);
 
   const [activeTab, setActiveTab] = useState<
-    "list" | "add" | "bulk" | "prices" | "covers" | "cards"
+    "list" | "add" | "bulk" | "prices" | "covers" | "cards" | "import-json"
   >("list");
   const [questions, setQuestions] = useState<RawQuestion[]>([]);
+
+  // JSON Auto-Import State
+  const [jsonImportFile, setJsonImportFile] = useState<File | null>(null);
+  const [rawParsedJson, setRawParsedJson] = useState<any>(null);
+  const [importScope, setImportScope] = useState<"all" | "single">("all");
+  const [importTargetClass, setImportTargetClass] = useState<number>(6);
+  const [importTargetSubject, setImportTargetSubject] =
+    useState<string>("বাংলা ১ম পত্র");
+  const [jsonImportPreview, setJsonImportPreview] = useState<{
+    totalQuestions: number;
+    subjects: {
+      key: string;
+      name: string;
+      icon: string;
+      count: number;
+      testsCount: number;
+      questions: RawQuestion[];
+    }[];
+  } | null>(null);
+  const [isImportingJson, setIsImportingJson] = useState<boolean>(false);
+
+  // Available subjects for the selected target class in JSON import
+  const importAvailableSubjects = useMemo(() => {
+    try {
+      const subs = getSubjectsForClassAndGroup(importTargetClass, "all");
+      if (Array.isArray(subs) && subs.length > 0) return subs;
+    } catch {}
+    return JUNIOR_SUBJECTS_5_8 || [];
+  }, [importTargetClass]);
+
+  // Keep importTargetSubject valid when target class changes
+  useEffect(() => {
+    if (
+      importAvailableSubjects.length > 0 &&
+      !importAvailableSubjects.some((s) => s.name === importTargetSubject)
+    ) {
+      setImportTargetSubject(importAvailableSubjects[0].name);
+    }
+  }, [importAvailableSubjects, importTargetSubject]);
 
   // Quiz Pricing & Special Packages Management State (SSR safe)
   const [prices, setPrices] = useState<QuizPrices>(DEFAULT_QUIZ_PRICES);
@@ -219,8 +259,10 @@ export default function AdminQuizManager() {
       .then((data) => {
         if (data?.covers && typeof data.covers === "object") {
           const serverHasCovers =
-            (data.covers.classes && Object.keys(data.covers.classes).length > 0) ||
-            (data.covers.subjects && Object.keys(data.covers.subjects).length > 0);
+            (data.covers.classes &&
+              Object.keys(data.covers.classes).length > 0) ||
+            (data.covers.subjects &&
+              Object.keys(data.covers.subjects).length > 0);
 
           if (serverHasCovers) {
             setCovers(data.covers);
@@ -229,8 +271,10 @@ export default function AdminQuizManager() {
             // If server file is empty, check if localStorage has covers and push to server
             const localCovers = getStoredQuizCovers();
             const localHasCovers =
-              (localCovers?.classes && Object.keys(localCovers.classes).length > 0) ||
-              (localCovers?.subjects && Object.keys(localCovers.subjects).length > 0);
+              (localCovers?.classes &&
+                Object.keys(localCovers.classes).length > 0) ||
+              (localCovers?.subjects &&
+                Object.keys(localCovers.subjects).length > 0);
 
             if (localHasCovers) {
               setCovers(localCovers);
@@ -448,10 +492,13 @@ export default function AdminQuizManager() {
             body: JSON.stringify({ covers: nextCovers }),
           });
           if (saveRes.ok) {
-            toast.success("কভার ছবি ক্লাউডে সফলভাবে আপলোড ও স্থায়ীভাবে সংরক্ষণ করা হয়েছে!", {
-              id: uploadToastId,
-              duration: 4000,
-            });
+            toast.success(
+              "কভার ছবি ক্লাউডে সফলভাবে আপলোড ও স্থায়ীভাবে সংরক্ষণ করা হয়েছে!",
+              {
+                id: uploadToastId,
+                duration: 4000,
+              },
+            );
             setMsg({
               text: "কভার ছবি সফলভাবে আপলোড ও সেভ করা হয়েছে!",
               type: "success",
@@ -480,7 +527,10 @@ export default function AdminQuizManager() {
     }
   };
 
-  const handleRemoveCover = async (key: string, type: "classes" | "subjects") => {
+  const handleRemoveCover = async (
+    key: string,
+    type: "classes" | "subjects",
+  ) => {
     const nextType = { ...covers[type] };
     delete nextType[key];
     const nextCovers: QuizCovers = {
@@ -565,7 +615,9 @@ export default function AdminQuizManager() {
           setCustomCards(data.cards);
           saveStoredCustomQuizCards(data.cards);
         }
-        toast.success(data.message || "MCQ কার্ডসমূহ সফলভাবে সংরক্ষণ করা হয়েছে!");
+        toast.success(
+          data.message || "MCQ কার্ডসমূহ সফলভাবে সংরক্ষণ করা হয়েছে!",
+        );
         setMsg({
           text: "সকল কাস্টম MCQ কার্ড সফলভাবে আপডেট ও সংরক্ষিত হয়েছে!",
           type: "success",
@@ -605,7 +657,7 @@ export default function AdminQuizManager() {
 
   const handleUpdateCard = (id: string, updates: Partial<CustomQuizCard>) => {
     const nextCards = customCards.map((c) =>
-      c.id === id ? { ...c, ...updates } : c
+      c.id === id ? { ...c, ...updates } : c,
     );
     setCustomCards(nextCards);
     saveStoredCustomQuizCards(nextCards);
@@ -622,7 +674,9 @@ export default function AdminQuizManager() {
   const handleCardCoverUpload = async (cardId: string, file: File) => {
     if (!file) return;
     setUploadingTarget(`card_${cardId}`);
-    const uploadToastId = toast.loading("কার্ডের আলাদা কভার ছবি আপলোড হচ্ছে...");
+    const uploadToastId = toast.loading(
+      "কার্ডের আলাদা কভার ছবি আপলোড হচ্ছে...",
+    );
     try {
       const formData = new FormData();
       formData.append("file", file);
@@ -633,14 +687,17 @@ export default function AdminQuizManager() {
       const data = await res.json();
       if (res.ok && data.url) {
         const nextCards = customCards.map((c) =>
-          c.id === cardId ? { ...c, coverImage: data.url } : c
+          c.id === cardId ? { ...c, coverImage: data.url } : c,
         );
         setCustomCards(nextCards);
         handleSaveCardsToApi(nextCards);
-        toast.success("কার্ডের কভার ছবি সফলভাবে আপলোড ও ক্লাউডে সংরক্ষিত হয়েছে!", {
-          id: uploadToastId,
-          duration: 4000,
-        });
+        toast.success(
+          "কার্ডের কভার ছবি সফলভাবে আপলোড ও ক্লাউডে সংরক্ষিত হয়েছে!",
+          {
+            id: uploadToastId,
+            duration: 4000,
+          },
+        );
       } else {
         toast.error(data.error || "আপলোড ব্যর্থ হয়েছে।", { id: uploadToastId });
       }
@@ -659,6 +716,7 @@ export default function AdminQuizManager() {
   }, [category, selectedClass, selectedSubject]);
 
   const loadCurrentQuestions = () => {
+    // 1. Instant sync from local storage
     if (category === "free") {
       setQuestions(getStoredFreeQuestions(selectedClass));
     } else if (category === "paid") {
@@ -666,6 +724,33 @@ export default function AdminQuizManager() {
     } else {
       setQuestions(getStoredSubjectQuestions(selectedClass, selectedSubject));
     }
+
+    // 2. Fetch from server API
+    fetch(
+      `/api/quiz/questions?classGrade=${selectedClass}&subject=${encodeURIComponent(
+        selectedSubject,
+      )}&category=${category}`,
+      { cache: "no-store" },
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data?.questions) && data.questions.length > 0) {
+          setQuestions(data.questions);
+          // Sync local storage as well
+          if (category === "free") {
+            saveStoredFreeQuestions(selectedClass, data.questions);
+          } else if (category === "paid") {
+            saveStoredPaidQuestions(selectedClass, data.questions);
+          } else {
+            saveStoredSubjectQuestions(
+              selectedClass,
+              selectedSubject,
+              data.questions,
+            );
+          }
+        }
+      })
+      .catch(() => {});
   };
 
   const persistQuestions = (updated: RawQuestion[]) => {
@@ -677,6 +762,18 @@ export default function AdminQuizManager() {
     } else {
       saveStoredSubjectQuestions(selectedClass, selectedSubject, updated);
     }
+
+    // Push to server API in background
+    fetch("/api/quiz/questions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        classGrade: selectedClass,
+        category,
+        subject: selectedSubject,
+        questions: updated,
+      }),
+    }).catch(() => {});
   };
 
   const resetForm = () => {
@@ -850,6 +947,437 @@ export default function AdminQuizManager() {
       type: "success",
     });
     setActiveTab("list");
+  };
+
+  // Helper for JSON parsing & subject mapping (Supports both All Subjects and Single Subject mode)
+  const parseJsonFileContent = (
+    data: any,
+    targetClass: number,
+    scope: "all" | "single" = importScope,
+    singleSubjName: string = importTargetSubject
+  ) => {
+    const iconMap: Record<string, string> = {
+      bangla: "📖",
+      math: "➗",
+      science: "🔬",
+      ict: "💻",
+      islam: "🕌",
+      hindu: "🛕",
+      bgs: "🌍",
+    };
+
+    const mapKeyToSubject = (key: string) => {
+      const k = key.toLowerCase().trim();
+      if (k === "bangla" || k === "bengali")
+        return targetClass === 5 ? "বাংলা" : "বাংলা ১ম পত্র";
+      if (k === "math" || k === "mathematics")
+        return targetClass === 5 ? "প্রাথমিক গণিত" : "গণিত";
+      if (k === "science")
+        return targetClass === 5 ? "প্রাথমিক বিজ্ঞান" : "বিজ্ঞান";
+      if (k === "ict")
+        return targetClass >= 9 ? "তথ্য ও যোগাযোগ প্রযুক্তি (ICT)" : "ICT";
+      if (k === "islam") return "ইসলাম ও নৈতিক শিক্ষা";
+      if (k === "hindu") return "হিন্দুধর্ম ও নৈতিক শিক্ষা";
+      if (k === "bgs") return "বাংলাদেশ ও বিশ্বপরিচয়";
+      return key;
+    };
+
+    // Deep recursive extractor that finds questions in any shape (flat array, tests.qs, or nested objects)
+    const extractQuestionsFromAny = (input: any, depth = 5): RawQuestion[] => {
+      if (!input || depth <= 0) return [];
+      const qs: RawQuestion[] = [];
+
+      if (Array.isArray(input)) {
+        for (const item of input) {
+          const qText = item?.q || item?.question;
+          const opts = item?.o || item?.options;
+          if (qText && Array.isArray(opts) && opts.length >= 2) {
+            const rawAns = item.a ?? item.ans;
+            const ansNum =
+              typeof rawAns === "number" && rawAns >= 0 && rawAns <= 3
+                ? rawAns
+                : 0;
+            qs.push({
+              q: String(qText).trim(),
+              options: [
+                String(opts[0] || ""),
+                String(opts[1] || ""),
+                String(opts[2] || ""),
+                String(opts[3] || ""),
+              ],
+              ans: ansNum,
+              explanation:
+                item.e || item.explanation
+                  ? String(item.e || item.explanation).trim()
+                  : undefined,
+              isPremium: category === "paid",
+            });
+          } else if (item && typeof item === "object") {
+            qs.push(...extractQuestionsFromAny(item, depth - 1));
+          }
+        }
+        return qs;
+      }
+
+      if (typeof input === "object") {
+        if (Array.isArray(input.tests)) {
+          for (const t of input.tests) {
+            if (Array.isArray(t?.qs)) {
+              qs.push(...extractQuestionsFromAny(t.qs, depth - 1));
+            }
+          }
+          if (qs.length > 0) return qs;
+        }
+
+        if (Array.isArray(input.questions)) {
+          return extractQuestionsFromAny(input.questions, depth - 1);
+        }
+
+        for (const v of Object.values(input)) {
+          qs.push(...extractQuestionsFromAny(v, depth - 1));
+        }
+      }
+
+      return qs;
+    };
+
+    // 1. Single Subject Mode: All detected questions are grouped into the chosen subject
+    if (scope === "single") {
+      const allQs = extractQuestionsFromAny(data);
+      const matchedIcon =
+        importAvailableSubjects.find((s) => s.name === singleSubjName)?.icon ||
+        "📚";
+
+      return {
+        totalQuestions: allQs.length,
+        subjects:
+          allQs.length > 0
+            ? [
+                {
+                  key: "single",
+                  name: singleSubjName,
+                  icon: matchedIcon,
+                  count: allQs.length,
+                  testsCount: 1,
+                  questions: allQs,
+                },
+              ]
+            : [],
+      };
+    }
+
+    // 2. All Subjects Mode: Detect keys for different subjects
+    const subjectsSummary: {
+      key: string;
+      name: string;
+      icon: string;
+      count: number;
+      testsCount: number;
+      questions: RawQuestion[];
+    }[] = [];
+    let total = 0;
+
+    if (data && typeof data === "object" && !Array.isArray(data)) {
+      for (const [key, val] of Object.entries(data)) {
+        const platformName = mapKeyToSubject(key);
+        const subQuestions = extractQuestionsFromAny(val);
+        const testsCount = Array.isArray((val as any)?.tests)
+          ? (val as any).tests.length
+          : 1;
+        if (subQuestions.length > 0) {
+          subjectsSummary.push({
+            key,
+            name: platformName,
+            icon: iconMap[key.toLowerCase()] || "📚",
+            count: subQuestions.length,
+            testsCount,
+            questions: subQuestions,
+          });
+          total += subQuestions.length;
+        }
+      }
+    } else if (Array.isArray(data)) {
+      const subQuestions = extractQuestionsFromAny(data);
+      if (subQuestions.length > 0) {
+        subjectsSummary.push({
+          key: "single",
+          name: singleSubjName,
+          icon: "📚",
+          count: subQuestions.length,
+          testsCount: 1,
+          questions: subQuestions,
+        });
+        total += subQuestions.length;
+      }
+    }
+
+    return { totalQuestions: total, subjects: subjectsSummary };
+  };
+
+  // Re-run parse automatically whenever raw JSON, class, scope, or selected subject changes
+  useEffect(() => {
+    if (rawParsedJson) {
+      const preview = parseJsonFileContent(
+        rawParsedJson,
+        importTargetClass,
+        importScope,
+        importTargetSubject
+      );
+      setJsonImportPreview(preview);
+    }
+  }, [rawParsedJson, importTargetClass, importScope, importTargetSubject]);
+
+  // Handle client-side file selection
+  const handleJsonFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.name.endsWith(".json")) {
+      toast.error("অনুগ্রহ করে একটি বৈধ .json ফাইল নির্বাচন করুন।");
+      return;
+    }
+
+    setJsonImportFile(file);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const text = event.target?.result as string;
+        const parsed = JSON.parse(text);
+        setRawParsedJson(parsed);
+        const preview = parseJsonFileContent(
+          parsed,
+          importTargetClass,
+          importScope,
+          importTargetSubject
+        );
+        if (preview.totalQuestions === 0) {
+          toast.error(
+            "ফাইলের ভেতর কোনো প্রশ্ন পাওয়া যায়নি। ফরম্যাট পরীক্ষা করুন।"
+          );
+          setJsonImportPreview(null);
+        } else {
+          setJsonImportPreview(preview);
+          toast.success(
+            importScope === "single"
+              ? `"${importTargetSubject}" বিষয়ে ${preview.totalQuestions.toLocaleString("bn-BD")}টি প্রশ্ন সফলভাবে শনাক্ত হয়েছে!`
+              : `মোট ${preview.subjects.length}টি বিষয়ে ${preview.totalQuestions.toLocaleString("bn-BD")}টি প্রশ্ন সফলভাবে শনাক্ত হয়েছে!`
+          );
+        }
+      } catch (err: any) {
+        toast.error("ফাইলটি সঠিক JSON ফরম্যাটে নেই: " + err.message);
+        setRawParsedJson(null);
+        setJsonImportPreview(null);
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  // Download Sample JSON Template
+  const handleDownloadSampleJson = (type: "single" | "multi") => {
+    let sampleData: any;
+    let fileName = "";
+    if (type === "single") {
+      const safeSubj = (importTargetSubject || "subject").replace(/\s+/g, "_");
+      fileName = `sample_mcq_${safeSubj}.json`;
+      sampleData = [
+        {
+          q: "বাংলাদেশের জাতীয় কবি কে?",
+          o: ["কাজী নজরুল ইসলাম", "রবীন্দ্রনাথ ঠাকুর", "জসীমউদ্দীন", "জীবনানন্দ দাশ"],
+          a: 0,
+          e: "কাজী নজরুল ইসলাম বাংলাদেশের জাতীয় কবি।"
+        },
+        {
+          q: "বৃত্তের কেন্দ্রগামী বৃহত্তম জ্যা-কে কী বলা হয়?",
+          o: ["ব্যাসার্ধ", "পরিধি", "ব্যাস", "চাপ"],
+          a: 2,
+          e: "বৃত্তের কেন্দ্র দিয়ে অতিক্রমকারী জ্যা হলো ব্যাস, যা বৃত্তের বৃহত্তম জ্যা।"
+        },
+        {
+          q: "উদ্ভিদ সালোকসংশ্লেষণ প্রক্রিয়ায় বায়ুমণ্ডল থেকে কোন গ্যাস গ্রহণ করে?",
+          o: ["অক্সিজেন", "কার্বন ডাই-অক্সাইড", "নাইট্রোজেন", "মিথেন"],
+          a: 1,
+          e: "সূর্যালোকের উপস্থিতিতে সবুজ উদ্ভিদ কার্বন ডাই-অক্সাইড শোষণ করে শর্করা ও অক্সিজেন তৈরি করে।"
+        },
+        {
+          q: "কম্পিউটারের মূল মস্তিষ্কের মতো কাজ করে কোনটি?",
+          o: ["Monitor", "RAM", "CPU", "Hard Disk"],
+          a: 2,
+          e: "CPU (Central Processing Unit) কম্পিউটারের সকল গণনা ও নিয়ন্ত্রণ সম্পন্ন করে।"
+        }
+      ];
+    } else {
+      fileName = `sample_multi_subjects_mcq.json`;
+      sampleData = {
+        bangla: {
+          tests: [
+            {
+              qs: [
+                {
+                  q: "‘বিদ্রোহী’ কবিতার রচয়িতা কে?",
+                  o: ["কাজী নজরুল ইসলাম", "রবীন্দ্রনাথ ঠাকুর", "জসীমউদ্দীন", "সুকান্ত ভট্টাচার্য"],
+                  a: 0,
+                  e: "কাজী নজরুল ইসলাম ১৯২১ সালে যুগান্তকারী ‘বিদ্রোহী’ কবিতা রচনা করেন।"
+                }
+              ]
+            }
+          ]
+        },
+        math: {
+          tests: [
+            {
+              qs: [
+                {
+                  q: "√৬৪ এর মান কত?",
+                  o: ["৬", "৭", "৮", "৯"],
+                  a: 2,
+                  e: "৮ এর বর্গ হলো ৬৪।"
+                }
+              ]
+            }
+          ]
+        },
+        science: {
+          tests: [
+            {
+              qs: [
+                {
+                  q: "পানির রাসায়নিক সংকেত কোনটি?",
+                  o: ["CO2", "H2O", "NaCl", "O2"],
+                  a: 1,
+                  e: "পানি হাইড্রোজেন ও অক্সিজেনের সমন্বয়ে গঠিত (H2O)।"
+                }
+              ]
+            }
+          ]
+        }
+      };
+    }
+
+    const blob = new Blob([JSON.stringify(sampleData, null, 2)], {
+      type: "application/json;charset=utf-8",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast.success(`স্যাম্পল ফাইল (${fileName}) ডাউনলোড শুরু হয়েছে!`);
+  };
+
+  // Upload and Save Client-Parsed Batch to Server
+  const handleSaveImportedBatch = async () => {
+    if (!jsonImportPreview || jsonImportPreview.subjects.length === 0) {
+      toast.error("কোনো প্রশ্ন পাওয়া যায়নি।");
+      return;
+    }
+
+    setIsImportingJson(true);
+    const saveToastId = toast.loading(
+      `মোট ${jsonImportPreview.totalQuestions.toLocaleString("bn-BD")}টি প্রশ্ন সার্ভারে সংরক্ষণ করা হচ্ছে...`,
+    );
+
+    try {
+      const batchData: Record<string, RawQuestion[]> = {};
+      jsonImportPreview.subjects.forEach((s) => {
+        batchData[s.name] = s.questions;
+      });
+
+      const res = await fetch("/api/quiz/questions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          classGrade: importTargetClass,
+          batch: batchData,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(
+          data.message ||
+            (importScope === "single"
+              ? `"${importTargetSubject}" বিষয়ের প্রশ্ন সফলভাবে সংরক্ষণ করা হয়েছে!`
+              : "সকল বিষয়ের প্রশ্ন সার্ভারে সফলভাবে সংরক্ষণ ও আপডেট করা হয়েছে!"),
+          { id: saveToastId, duration: 5000 },
+        );
+        setMsg({
+          text:
+            importScope === "single"
+              ? `🎉 অভিনন্দন! ${toBengaliClass(importTargetClass)} শ্রেণির "${importTargetSubject}" বিষয়ে মোট ${jsonImportPreview.totalQuestions.toLocaleString("bn-BD")}টি প্রশ্ন সফলভাবে সেভ করা হয়েছে!`
+              : `🎉 অভিনন্দন! ${toBengaliClass(importTargetClass)} শ্রেণির মোট ${jsonImportPreview.totalQuestions.toLocaleString("bn-BD")}টি প্রশ্ন স্বয়ংক্রিয়ভাবে বিষয়ভিত্তিক সেভ করা হয়েছে!`,
+          type: "success",
+        });
+        setSelectedClass(importTargetClass);
+        if (importScope === "single") {
+          setSelectedSubject(importTargetSubject);
+          setCategory("subject");
+        }
+        loadCurrentQuestions();
+        setActiveTab("list");
+      } else {
+        toast.error(data.error || "সংরক্ষণ ব্যর্থ হয়েছে।", { id: saveToastId });
+      }
+    } catch (err: any) {
+      toast.error(err.message || "নেটওয়ার্কে সমস্যা হয়েছে।", {
+        id: saveToastId,
+      });
+    } finally {
+      setIsImportingJson(false);
+    }
+  };
+
+  // One-click Auto Import from Server File data/mcq_questions.json
+  const handleImportServerFileDirect = async () => {
+    if (
+      !confirm(
+        `আপনি কি সার্ভারে বিদ্যমান data/mcq_questions.json ফাইল থেকে ${toBengaliClass(importTargetClass)} শ্রেণির সকল বিষয়ে প্রশ্নগুলো অটো-ইমপোর্ট করতে চান?`,
+      )
+    ) {
+      return;
+    }
+
+    setIsImportingJson(true);
+    const importToastId = toast.loading(
+      "সার্ভারের mcq_questions.json থেকে প্রশ্ন প্রসেস ও ইমপোর্ট করা হচ্ছে...",
+    );
+
+    try {
+      const res = await fetch("/api/quiz/questions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "import_server_file",
+          classGrade: importTargetClass,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(
+          data.message || "সার্ভার ফাইল থেকে সকল প্রশ্ন সফলভাবে ইমপোর্ট হয়েছে!",
+          { id: importToastId, duration: 5000 },
+        );
+        setMsg({
+          text: `🎉 ${toBengaliClass(importTargetClass)} শ্রেণির সকল বিষয়ের প্রশ্ন সফলভাবে ইমপোর্ট সম্পন্ন হয়েছে! (মোট: ${data.totalImported?.toLocaleString("bn-BD")}টি প্রশ্ন)`,
+          type: "success",
+        });
+        loadCurrentQuestions();
+        setActiveTab("list");
+      } else {
+        toast.error(data.error || "সার্ভার ফাইল ইমপোর্ট ব্যর্থ হয়েছে।", {
+          id: importToastId,
+        });
+      }
+    } catch (err: any) {
+      toast.error(err.message || "নেটওয়ার্কে সমস্যা হয়েছে।", {
+        id: importToastId,
+      });
+    } finally {
+      setIsImportingJson(false);
+    }
   };
 
   return (
@@ -1119,7 +1647,25 @@ export default function AdminQuizManager() {
           }`}
         >
           <FaBookOpen className="w-3.5 h-3.5" />
-          <span>বাল্ক আপলোড (Bulk Import)</span>
+          <span>বাল্ক আপলোড</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("import-json")}
+          className={`px-4 py-2 rounded-2xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${
+            activeTab === "import-json"
+              ? "bg-gradient-to-r from-teal-700 to-emerald-800 text-white shadow-sm"
+              : "bg-teal-50 hover:bg-teal-100 text-teal-900 border border-teal-200"
+          }`}
+        >
+          <FaCloudArrowUp
+            className={`w-3.5 h-3.5 ${activeTab === "import-json" ? "text-amber-300" : "text-teal-600"}`}
+          />
+          <span>JSON ফাইল অটো-ইমপোর্ট</span>
+          <span className="px-1.5 py-0.2 bg-teal-200/80 text-teal-950 text-[10px] rounded-full font-black">
+            নতুন
+          </span>
         </button>
 
         <button
@@ -1132,7 +1678,7 @@ export default function AdminQuizManager() {
           }`}
         >
           <FaCoins className="w-3.5 h-3.5 text-amber-400" />
-          <span>কুইজ ফি ও মূল্য নিয়ন্ত্রণ (Pricing)</span>
+          <span>কুইজ ফি ও মূল্য নিয়ন্ত্রণ</span>
         </button>
 
         <button
@@ -1145,7 +1691,7 @@ export default function AdminQuizManager() {
           }`}
         >
           <FaImage className="w-3.5 h-3.5 text-purple-300" />
-          <span>কার্ডের কভার ইমেজ (Cover Images)</span>
+          <span>কার্ডের কভার ইমেজ</span>
         </button>
 
         <button
@@ -1466,8 +2012,8 @@ export default function AdminQuizManager() {
               className="px-6 py-3 rounded-2xl bg-[#C8102E] hover:bg-[#A50D26] text-white font-black text-xs sm:text-sm shadow-md transition active:scale-98"
             >
               {editingIndex !== null
-                ? "💾 পরিবর্তন সংরক্ষণ করুন"
-                : "➕ প্রশ্ন যুক্ত করুন"}
+                ? " পরিবর্তন সংরক্ষণ করুন"
+                : " প্রশ্ন যুক্ত করুন"}
             </button>
 
             <button
@@ -1492,7 +2038,7 @@ export default function AdminQuizManager() {
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div>
               <h3 className="text-base font-black text-slate-800">
-                📋 একসাথে অনেকগুলো MCQ আপলোড (Bulk Import)
+                একসাথে অনেকগুলো MCQ আপলোড (Bulk Import)
               </h3>
               <p className="text-xs text-slate-500 font-medium">
                 নোটপ্যাড বা ওয়ার্ড থেকে কপি করে এক ক্লিকে ডজনখানেক প্রশ্ন যুক্ত
@@ -1545,7 +2091,7 @@ export default function AdminQuizManager() {
               type="submit"
               className="px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs sm:text-sm shadow-md transition active:scale-98"
             >
-              📥 সব প্রশ্ন যোগ করুন (Import Now)
+              সব প্রশ্ন যোগ করুন (Import Now)
             </button>
 
             <button
@@ -2343,7 +2889,8 @@ export default function AdminQuizManager() {
                 কাস্টম MCQ ও মডেল টেস্ট কার্ড ম্যানেজমেন্ট
               </h3>
               <p className="text-xs text-slate-500 font-medium mt-0.5">
-                অ্যাডমিন এখানে ইচ্ছামতো নতুন নতুন মডেল টেস্ট কার্ড তৈরি করতে পারবেন এবং প্রতিটির জন্য আলাদা কভার ছবি আপলোড করতে পারবেন।
+                অ্যাডমিন এখানে ইচ্ছামতো নতুন নতুন মডেল টেস্ট কার্ড তৈরি করতে
+                পারবেন এবং প্রতিটির জন্য আলাদা কভার ছবি আপলোড করতে পারবেন।
               </p>
             </div>
 
@@ -2364,7 +2911,9 @@ export default function AdminQuizManager() {
                 className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:opacity-95 text-white font-black text-xs shadow-md transition flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
               >
                 <FaFloppyDisk className="w-3.5 h-3.5" />
-                <span>{isSavingCards ? "সংরক্ষণ হচ্ছে..." : "সব কার্ড সেভ করুন"}</span>
+                <span>
+                  {isSavingCards ? "সংরক্ষণ হচ্ছে..." : "সব কার্ড সেভ করুন"}
+                </span>
               </button>
             </div>
           </div>
@@ -2396,7 +2945,7 @@ export default function AdminQuizManager() {
                           const val = e.target.checked;
                           handleUpdateCard(card.id, { isActive: val });
                           const next = customCards.map((c) =>
-                            c.id === card.id ? { ...c, isActive: val } : c
+                            c.id === card.id ? { ...c, isActive: val } : c,
                           );
                           handleSaveCardsToApi(next);
                         }}
@@ -2436,7 +2985,7 @@ export default function AdminQuizManager() {
                                 if (e.target.files?.[0]) {
                                   handleCardCoverUpload(
                                     card.id,
-                                    e.target.files[0]
+                                    e.target.files[0],
                                   );
                                 }
                               }}
@@ -2448,7 +2997,7 @@ export default function AdminQuizManager() {
                             onClick={() => {
                               handleUpdateCard(card.id, { coverImage: "" });
                               const next = customCards.map((c) =>
-                                c.id === card.id ? { ...c, coverImage: "" } : c
+                                c.id === card.id ? { ...c, coverImage: "" } : c,
                               );
                               handleSaveCardsToApi(next);
                             }}
@@ -2470,7 +3019,7 @@ export default function AdminQuizManager() {
                               if (e.target.files?.[0]) {
                                 handleCardCoverUpload(
                                   card.id,
-                                  e.target.files[0]
+                                  e.target.files[0],
                                 );
                               }
                             }}
@@ -2493,7 +3042,7 @@ export default function AdminQuizManager() {
                     onBlur={(e) => {
                       const val = e.target.value.trim();
                       const next = customCards.map((c) =>
-                        c.id === card.id ? { ...c, coverImage: val } : c
+                        c.id === card.id ? { ...c, coverImage: val } : c,
                       );
                       handleSaveCardsToApi(next);
                     }}
@@ -2547,7 +3096,7 @@ export default function AdminQuizManager() {
                           const val = Number(e.target.value);
                           handleUpdateCard(card.id, { classGrade: val });
                           const next = customCards.map((c) =>
-                            c.id === card.id ? { ...c, classGrade: val } : c
+                            c.id === card.id ? { ...c, classGrade: val } : c,
                           );
                           handleSaveCardsToApi(next);
                         }}
@@ -2606,7 +3155,7 @@ export default function AdminQuizManager() {
                             const price = isPaid ? card.price || 50 : 0;
                             handleUpdateCard(card.id, { isPaid, price });
                             const next = customCards.map((c) =>
-                              c.id === card.id ? { ...c, isPaid, price } : c
+                              c.id === card.id ? { ...c, isPaid, price } : c,
                             );
                             handleSaveCardsToApi(next);
                           }}
@@ -2644,6 +3193,563 @@ export default function AdminQuizManager() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────
+          TAB 7:  JSON AUTO-IMPORT MANAGER (SUBJECT-WISE & ALL-SUBJECTS)
+      ───────────────────────────────────────────────────────────── */}
+      {activeTab === "import-json" && (
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+          {/* Header */}
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-slate-100">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase text-teal-800 bg-teal-50 px-3 py-0.5 rounded-full border border-teal-200">
+                <FaCloudArrowUp /> স্মার্ট JSON ফাইল অটো-ইমপোর্টার
+              </div>
+              <h3 className="text-lg sm:text-xl font-black text-slate-800">
+                JSON ফাইল থেকে বিষয়ভিত্তিক ও সকল বিষয়ের MCQ ইমপোর্ট
+              </h3>
+              <p className="text-xs text-slate-500 max-w-2xl font-medium">
+                এক ক্লিকে সকল বিষয়ের প্রশ্ন একসাথে অথবা পছন্দের নির্দিষ্ট একটি বিষয় সিলেক্ট করে JSON ফাইল আপলোড করুন। স্বয়ংক্রিয়ভাবে সংশ্লিষ্ট বিষয়ের অধীনে সাজিয়ে সার্ভারে সেভ হয়ে যাবে।
+              </p>
+            </div>
+
+            {/* Scope / Mode Selector */}
+            <div className="flex items-center gap-2 p-1.5 bg-slate-100 rounded-2xl border border-slate-200 shrink-0">
+              <button
+                type="button"
+                onClick={() => setImportScope("all")}
+                className={`px-3 py-2 rounded-xl text-xs font-black transition flex items-center gap-1.5 cursor-pointer ${
+                  importScope === "all"
+                    ? "bg-[#0A1E3C] text-white shadow-xs"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                <span>🌐</span>
+                <span>সকল বিষয় একসাথে</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setImportScope("single")}
+                className={`px-3 py-2 rounded-xl text-xs font-black transition flex items-center gap-1.5 cursor-pointer ${
+                  importScope === "single"
+                    ? "bg-[#C8102E] text-white shadow-xs"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                <span>🎯</span>
+                <span>নির্দিষ্ট বিষয়ভিত্তিক</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Configuration Bar: Class Selector & (if single mode) Subject Selector */}
+          <div className="bg-gradient-to-r from-slate-50 to-teal-50/30 p-4 rounded-2xl border border-slate-200 flex flex-wrap items-center justify-between gap-4">
+            {/* Target Class Selector */}
+            <div className="flex items-center gap-2.5">
+              <span className="text-xs font-black text-slate-700">
+                টার্গেট শ্রেণি:
+              </span>
+              <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-xs">
+                {[5, 6, 7, 8, 9, 10].map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setImportTargetClass(c)}
+                    className={`w-8 h-8 rounded-lg text-xs font-black transition cursor-pointer ${
+                      importTargetClass === c
+                        ? "bg-[#C8102E] text-white shadow-xs"
+                        : "bg-transparent text-slate-700 hover:bg-slate-100"
+                    }`}
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
+              <span className="text-xs font-bold text-slate-500">
+                ({toBengaliClass(importTargetClass)} শ্রেণি)
+              </span>
+            </div>
+
+            {/* Target Subject Selector (Visible when Single Subject mode is active) */}
+            {importScope === "single" ? (
+              <div className="flex items-center gap-2.5 bg-white px-3 py-1.5 rounded-xl border border-red-200 shadow-xs">
+                <span className="text-xs font-black text-red-950 flex items-center gap-1">
+                  <span>🎯</span>
+                  <span>বিষয় নির্বাচন করুন:</span>
+                </span>
+                <select
+                  value={importTargetSubject}
+                  onChange={(e) => setImportTargetSubject(e.target.value)}
+                  className="bg-red-50/50 hover:bg-red-50 text-slate-800 text-xs font-black py-1.5 px-3 rounded-lg border border-red-200 outline-none cursor-pointer"
+                >
+                  {importAvailableSubjects.map((sub) => (
+                    <option key={sub.name} value={sub.name}>
+                      {sub.icon} {sub.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : (
+              <div className="text-xs font-bold text-teal-800 bg-teal-100/60 px-3 py-1.5 rounded-xl border border-teal-200">
+                ✓ সকল বিষয়ের কী (bangla, math, science ইত্যাদি) স্বয়ংক্রিয়ভাবে শনাক্ত হবে
+              </div>
+            )}
+          </div>
+
+          {/* TWO MAIN UPLOAD TILES */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* OPTION 1: ⚡ DIRECT IMPORT FROM SERVER FILE */}
+            <div className="bg-gradient-to-br from-teal-50/70 via-emerald-50/50 to-white border-2 border-teal-200 rounded-3xl p-6 space-y-4 shadow-sm hover:shadow-md transition">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-teal-600 text-white flex items-center justify-center text-xl shadow-md shrink-0">
+                  ⚡
+                </div>
+                <div>
+                  <h4 className="text-sm sm:text-base font-black text-teal-950">
+                    সার্ভারে বিদ্যমান ফাইল থেকে ১-ক্লিকে অটো ইমপোর্ট
+                  </h4>
+                  <p className="text-[11px] text-teal-700 font-medium">
+                    প্রজেক্টের{" "}
+                    <code className="bg-teal-100/70 px-1 py-0.5 rounded font-mono font-bold">
+                      data/mcq_questions.json
+                    </code>{" "}
+                    ফাইল থেকে সরাসরি সেভ করুন
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-white/80 p-3.5 rounded-2xl border border-teal-200/80 text-xs text-slate-600 space-y-1.5 leading-relaxed">
+                <div className="flex items-center gap-1.5 text-teal-800 font-bold">
+                  <span>✓</span>
+                  <span>
+                    কম্পিউটার বা ফোন থেকে আলাদা ফাইল সিলেক্ট করার প্রয়োজন নেই।
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 text-teal-800 font-bold">
+                  <span>✓</span>
+                  <span>
+                    ৭টি বিষয়ের প্রায় ৭,০০০+ প্রশ্ন সেকেন্ডের মধ্যে অটো-ম্যাপ হয়ে সার্ভারে সেভ হবে।
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 text-teal-800 font-bold">
+                  <span>✓</span>
+                  <span>
+                    টার্গেট: {toBengaliClass(importTargetClass)} শ্রেণির সকল বিষয়ের প্রশ্নব্যাংক।
+                  </span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                disabled={isImportingJson}
+                onClick={handleImportServerFileDirect}
+                className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-teal-700 via-emerald-700 to-teal-800 hover:from-teal-800 hover:to-emerald-900 text-white font-black text-xs sm:text-sm shadow-md transition active:scale-98 disabled:opacity-60 flex items-center justify-center gap-2 cursor-pointer"
+              >
+                {isImportingJson ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>প্রসেস ও ইমপোর্ট হচ্ছে...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>
+                      ⚡ সার্ভারের mcq_questions.json থেকে সব বিষয়ে অটো-ইমপোর্ট করুন
+                    </span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* OPTION 2: 📁 UPLOAD CUSTOM JSON FILE FROM DEVICE */}
+            <div className="bg-gradient-to-br from-slate-50 via-red-50/20 to-white border border-slate-200 rounded-3xl p-6 space-y-4 shadow-sm hover:shadow-md transition">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-[#0A1E3C] text-white flex items-center justify-center text-xl shadow-md shrink-0">
+                  📁
+                </div>
+                <div>
+                  <h4 className="text-sm sm:text-base font-black text-slate-800">
+                    {importScope === "single"
+                      ? `"${importTargetSubject}" বিষয়ের JSON ফাইল আপলোড`
+                      : "ডিভাইস থেকে কাস্টম JSON ফাইল আপলোড"}
+                  </h4>
+                  <p className="text-[11px] text-slate-500 font-medium">
+                    {importScope === "single"
+                      ? `এই ফাইলে থাকা সকল প্রশ্ন সরাসরি "${importTargetSubject}" বিষয়ের অধীনে যুক্ত হবে`
+                      : "আপনার কম্পিউটার বা ফোন থেকে যেকোনো .json ফাইল ড্রপ বা সিলেক্ট করুন"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="relative border-2 border-dashed border-slate-300 hover:border-[#C8102E] bg-white rounded-2xl p-6 text-center transition group cursor-pointer">
+                <input
+                  type="file"
+                  accept=".json"
+                  onChange={handleJsonFileSelect}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+                <div className="space-y-1.5 pointer-events-none">
+                  <div className="text-2xl text-slate-400 group-hover:text-[#C8102E] transition">
+                    📂
+                  </div>
+                  <p className="text-xs font-bold text-slate-700">
+                    {jsonImportFile
+                      ? `নির্বাচিত ফাইল: ${jsonImportFile.name} (${(jsonImportFile.size / 1024).toFixed(1)} KB)`
+                      : "JSON ফাইলটি এখানে ক্লিক করে নির্বাচন করুন"}
+                  </p>
+                  <p className="text-[10px] text-slate-400">
+                    সমর্থিত ফরম্যাট: .json (ম্যাক্সিমাম ২০ মেগাবাইট)
+                  </p>
+                </div>
+              </div>
+
+              {jsonImportFile && (
+                <div className="flex items-center justify-between pt-1">
+                  <span className="text-xs font-bold text-slate-500">
+                    ফাইল লোড সফল হয়েছে
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setJsonImportFile(null);
+                      setRawParsedJson(null);
+                      setJsonImportPreview(null);
+                    }}
+                    className="text-xs font-bold text-[#C8102E] hover:underline cursor-pointer"
+                  >
+                    ফাইল পরিবর্তন / বাতিল করুন
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* DETECTED PREVIEW OF UPLOADED JSON */}
+          {jsonImportPreview && (
+            <div className="mt-6 pt-6 border-t border-slate-200 space-y-4 animate-in fade-in duration-300">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900 text-white p-4 sm:p-5 rounded-2xl shadow-md">
+                <div>
+                  <div className="text-[11px] font-black uppercase text-amber-400 tracking-wider">
+                    {importScope === "single"
+                      ? "বিষয়ভিত্তিক প্রিভিউ ও সারাংশ"
+                      : "ফাইল প্রিভিউ ও সারাংশ"}
+                  </div>
+                  <h4 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
+                    {importScope === "single" ? (
+                      <>
+                        <span>{importAvailableSubjects.find(s => s.name === importTargetSubject)?.icon || "📚"}</span>
+                        <span>{importTargetSubject}</span>
+                        <span className="text-emerald-400 font-mono text-sm">
+                          ({jsonImportPreview.totalQuestions.toLocaleString("bn-BD")}টি MCQ পাওয়া গেছে)
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        মোট {jsonImportPreview.subjects.length}টি বিষয়ে{" "}
+                        {jsonImportPreview.totalQuestions.toLocaleString("bn-BD")}টি প্রশ্ন প্রস্তুত আছে
+                      </>
+                    )}
+                  </h4>
+                  <p className="text-xs text-slate-300">
+                    টার্গেট শ্রেণি:{" "}
+                    <span className="font-black text-amber-300">
+                      {toBengaliClass(importTargetClass)} শ্রেণি
+                    </span>
+                    {importScope === "single" && (
+                      <span className="ml-2 text-slate-400">
+                        • মোড: নির্দিষ্ট বিষয়ভিত্তিক
+                      </span>
+                    )}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  disabled={isImportingJson}
+                  onClick={handleSaveImportedBatch}
+                  className="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-xs sm:text-sm shadow-lg transition active:scale-95 disabled:opacity-60 flex items-center justify-center gap-2 cursor-pointer shrink-0"
+                >
+                  {isImportingJson ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>সংরক্ষণ হচ্ছে...</span>
+                    </>
+                  ) : (
+                    <>
+                      <FaCheck className="w-3.5 h-3.5" />
+                      <span>
+                        {importScope === "single"
+                          ? `"${importTargetSubject}" বিষয়ের প্রশ্ন সেভ করুন`
+                          : "সবগুলো বিষয়ের প্রশ্ন সার্ভারে সেভ করুন"}
+                      </span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* In Single Subject Mode: Display sample preview of first 3 questions */}
+              {importScope === "single" && jsonImportPreview.subjects[0]?.questions?.length > 0 && (
+                <div className="bg-slate-50 rounded-2xl p-4 sm:p-5 border border-slate-200 space-y-3">
+                  <div className="flex items-center justify-between text-xs font-black text-slate-700 border-b border-slate-200 pb-2">
+                    <span className="flex items-center gap-1.5">
+                      <span>👁️</span>
+                      <span>শনাক্তকৃত প্রশ্নের নমুনা প্রিভিউ (প্রথম ৩টি প্রশ্ন):</span>
+                    </span>
+                    <span className="text-teal-700">
+                      মোট: {jsonImportPreview.totalQuestions.toLocaleString("bn-BD")}টি প্রশ্ন
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    {jsonImportPreview.subjects[0].questions.slice(0, 3).map((q, idx) => (
+                      <div
+                        key={idx}
+                        className="bg-white p-3.5 rounded-xl border border-slate-200 text-xs space-y-2 shadow-2xs"
+                      >
+                        <p className="font-bold text-slate-800 line-clamp-2">
+                          <span className="text-red-600 font-mono mr-1">#{idx + 1}.</span>
+                          {q.q}
+                        </p>
+                        <div className="space-y-1">
+                          {q.options.map((opt, oIdx) => (
+                            <div
+                              key={oIdx}
+                              className={`px-2 py-1 rounded text-[11px] font-medium flex items-center justify-between ${
+                                oIdx === q.ans
+                                  ? "bg-emerald-50 text-emerald-800 font-bold border border-emerald-300"
+                                  : "bg-slate-50 text-slate-600"
+                              }`}
+                            >
+                              <span>{["ক", "খ", "গ", "ঘ"][oIdx]}. {opt}</span>
+                              {oIdx === q.ans && (
+                                <span className="text-[10px] text-emerald-700 font-bold">✓ সঠিক</span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                        {q.explanation && (
+                          <p className="text-[10px] text-slate-500 italic bg-amber-50/60 p-1.5 rounded border border-amber-200/50 line-clamp-2">
+                            💡 {q.explanation}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* In All Subjects Mode: Grid of detected subjects */}
+              {importScope === "all" && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
+                  {jsonImportPreview.subjects.map((subj) => (
+                    <div
+                      key={subj.key}
+                      className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs hover:border-teal-400 transition space-y-2 flex flex-col justify-between"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{subj.icon}</span>
+                        <div className="space-y-0.5">
+                          <h5 className="text-xs sm:text-sm font-black text-slate-800 line-clamp-1">
+                            {subj.name}
+                          </h5>
+                          <span className="text-[10px] text-slate-400 font-mono">
+                            কী (Key): "{subj.key}"
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+                        <span className="text-slate-500 font-medium">
+                          প্রশ্ন সংখ্যা:
+                        </span>
+                        <span className="px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 font-black">
+                          {subj.count.toLocaleString("bn-BD")}টি MCQ
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* COMPREHENSIVE HELP, RULES & FORMAT GUIDE */}
+          <div className="bg-slate-50 rounded-3xl p-6 border border-slate-200 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
+              <div className="space-y-0.5">
+                <h4 className="text-sm sm:text-base font-black text-slate-900 flex items-center gap-2">
+                  <span>💡</span>
+                  <span>JSON ফাইল তৈরির নিয়মাবলী ও ফরম্যাট নির্দেশিকা</span>
+                </h4>
+                <p className="text-xs text-slate-500 font-medium">
+                  যেকোনো একটি সমর্থিত ফরম্যাটে আপনার প্রশ্নের .json ফাইল তৈরি করুন।
+                </p>
+              </div>
+
+              {/* Sample Download Buttons */}
+              <div className="flex flex-wrap items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => handleDownloadSampleJson("single")}
+                  className="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 text-xs font-black shadow-2xs flex items-center gap-1.5 transition active:scale-95 cursor-pointer"
+                >
+                  <FaDownload className="text-[#C8102E]" />
+                  <span>একক বিষয়ের স্যাম্পল JSON</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDownloadSampleJson("multi")}
+                  className="px-3.5 py-2 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-900 border border-teal-200 text-xs font-black shadow-2xs flex items-center gap-1.5 transition active:scale-95 cursor-pointer"
+                >
+                  <FaDownload className="text-teal-700" />
+                  <span>সকল বিষয়ের স্যাম্পল JSON</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Visual Format Tabs / Cards */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {/* FORMAT 1: Flat Array (Recommended for single subject) */}
+              <div className="bg-white rounded-2xl p-4 border border-slate-200 space-y-2.5 shadow-2xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                    <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-[11px] font-black">১</span>
+                    <span>সরাসরি প্রশ্নের অ্যারে (সবচেয়ে সহজ)</span>
+                  </span>
+                  <span className="text-[10px] px-2 py-0.5 bg-emerald-50 text-emerald-700 font-black rounded-full border border-emerald-200">
+                    রেকমেন্ডেড
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-500 leading-relaxed">
+                  একটি সাধারণ অ্যারে যাতে প্রতিটি প্রশ্নের জন্য অবজেক্ট থাকবে:
+                </p>
+                <pre className="bg-slate-900 text-emerald-300 p-3 rounded-xl text-[11px] font-mono overflow-x-auto leading-relaxed">
+{`[
+  {
+    "q": "বাংলাদেশের রাজধানী কোনটি?",
+    "o": ["ঢাকা", "চট্টগ্রাম", "খুলনা", "রাজশাহী"],
+    "a": 0,
+    "e": "১৯৭১ সালে ঢাকা বাংলাদেশের রাজধানী হয়।"
+  },
+  {
+    "q": "বৃত্তের বৃহত্তম জ্যা কোনটি?",
+    "o": ["ব্যাসার্ধ", "পরিধি", "ব্যাস", "চাপ"],
+    "a": 2
+  }
+]`}
+                </pre>
+              </div>
+
+              {/* FORMAT 2: Tests & Questions structure (mcq_questions.json style) */}
+              <div className="bg-white rounded-2xl p-4 border border-slate-200 space-y-2.5 shadow-2xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                    <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center text-[11px] font-black">২</span>
+                    <span>অধ্যায়/টেস্ট ভিত্তিক ফরম্যাট</span>
+                  </span>
+                  <span className="text-[10px] px-2 py-0.5 bg-blue-50 text-blue-700 font-black rounded-full border border-blue-200">
+                    tests[].qs[]
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-500 leading-relaxed">
+                  টেস্ট বা অধ্যায় ভিত্তিক সেটের ভেতরে প্রশ্নের লিস্ট:
+                </p>
+                <pre className="bg-slate-900 text-sky-300 p-3 rounded-xl text-[11px] font-mono overflow-x-auto leading-relaxed">
+{`{
+  "tests": [
+    {
+      "qs": [
+        {
+          "q": "পানির রাসায়নিক সংকেত কোনটি?",
+          "o": ["CO2", "H2O", "NaCl", "O2"],
+          "a": 1,
+          "e": "পানি হলো H2O"
+        }
+      ]
+    }
+  ]
+}`}
+                </pre>
+              </div>
+
+              {/* FORMAT 3: Multi-Subject Object */}
+              <div className="bg-white rounded-2xl p-4 border border-slate-200 space-y-2.5 shadow-2xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                    <span className="w-5 h-5 rounded-full bg-purple-100 text-purple-800 flex items-center justify-center text-[11px] font-black">৩</span>
+                    <span>একাধিক বিষয় একসাথে</span>
+                  </span>
+                  <span className="text-[10px] px-2 py-0.5 bg-purple-50 text-purple-700 font-black rounded-full border border-purple-200">
+                    Multi-Subject
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-500 leading-relaxed">
+                  প্রতিটি বিষয়ের নাম বা কী দিয়ে আলাদা করা:
+                </p>
+                <pre className="bg-slate-900 text-purple-300 p-3 rounded-xl text-[11px] font-mono overflow-x-auto leading-relaxed">
+{`{
+  "bangla": {
+    "tests": [{ "qs": [...] }]
+  },
+  "math": [
+    { "q": "...", "o": [...], "a": 0 }
+  ],
+  "science": { ... }
+}`}
+                </pre>
+              </div>
+            </div>
+
+            {/* FIELD DICTIONARY / RULES TABLE */}
+            <div className="bg-white rounded-2xl p-4 border border-slate-200 space-y-3">
+              <h5 className="text-xs font-black text-slate-800 uppercase tracking-wider text-slate-500">
+                📋 ফিল্ডগুলোর বিবরণ ও প্রয়োজনীয় শর্তাবলী:
+              </h5>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <code className="text-red-600 font-bold font-mono">q / question</code>
+                    <span className="text-[10px] bg-red-100 text-red-800 font-black px-1.5 py-0.5 rounded">আবশ্যক</span>
+                  </div>
+                  <p className="text-slate-600 text-[11px] leading-relaxed">
+                    প্রশ্নের মূল টেক্সট বা বাক্য। যেমন: <span className="font-medium text-slate-800">"বাংলাদেশের জাতীয় ফুল কোনটি?"</span>
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <code className="text-red-600 font-bold font-mono">o / options</code>
+                    <span className="text-[10px] bg-red-100 text-red-800 font-black px-1.5 py-0.5 rounded">আবশ্যক</span>
+                  </div>
+                  <p className="text-slate-600 text-[11px] leading-relaxed">
+                    ৪টি উত্তরের অপশনযুক্ত অ্যারে। যেমন: <span className="font-mono text-slate-700 font-medium">["গোলাপ", "শাপলা", "বেলি", "জবা"]</span>
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <code className="text-red-600 font-bold font-mono">a / ans</code>
+                    <span className="text-[10px] bg-red-100 text-red-800 font-black px-1.5 py-0.5 rounded">আবশ্যক</span>
+                  </div>
+                  <p className="text-slate-600 text-[11px] leading-relaxed">
+                    সঠিক উত্তরের ক্রমিক সংখ্যা (০ থেকে ৩):
+                    <br />
+                    <span className="font-mono text-emerald-700 font-bold">0</span> = ১ম অপশন (ক), <span className="font-mono text-emerald-700 font-bold">1</span> = ২য় (খ), <span className="font-mono text-emerald-700 font-bold">2</span> = ৩য় (গ), <span className="font-mono text-emerald-700 font-bold">3</span> = ৪র্থ (ঘ)।
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <code className="text-slate-700 font-bold font-mono">e / explanation</code>
+                    <span className="text-[10px] bg-slate-200 text-slate-700 font-black px-1.5 py-0.5 rounded">ঐচ্ছিক</span>
+                  </div>
+                  <p className="text-slate-600 text-[11px] leading-relaxed">
+                    সঠিক উত্তরের পেছনে তথ্যমূলক ব্যাখ্যা। শিক্ষার্থী পরীক্ষা শেষে এই ব্যাখ্যা দেখতে পাবে।
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

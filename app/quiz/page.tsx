@@ -47,6 +47,9 @@ import {
   FaGear,
   FaLayerGroup,
   FaStar,
+  FaClock,
+  FaFilter,
+  FaBookOpen,
 } from 'react-icons/fa6';
 import { HiSparkles } from 'react-icons/hi2';
 
@@ -86,14 +89,26 @@ export default function QuizPage() {
     return [];
   }, [selectedClass, selectedGroup]);
 
+  // Subject Question Summary State (Fetched from API for live badges)
+  const [subjectCounts, setSubjectCounts] = useState<Record<string, number>>({});
+  const [isLoadingCounts, setIsLoadingCounts] = useState<boolean>(false);
+
   // Active Quiz State
   const [isTestActive, setIsTestActive] = useState<boolean>(false);
   const [activeTestTitle, setActiveTestTitle] = useState<string>('');
+  const [activeTestSubtitle, setActiveTestSubtitle] = useState<string>('');
   const [activeTestBadge, setActiveTestBadge] = useState<string>('');
   const [activeQuestions, setActiveQuestions] = useState<RawQuestion[]>([]);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [quizScore, setQuizScore] = useState<number>(0);
+
+  // Live Timer State (in seconds)
+  const [timeLeft, setTimeLeft] = useState<number>(0);
+  const [totalTime, setTotalTime] = useState<number>(0);
+
+  // Review Filter after submission: "all" | "wrong" | "correct" | "unanswered"
+  const [reviewFilter, setReviewFilter] = useState<'all' | 'wrong' | 'correct' | 'unanswered'>('all');
 
   // Student Identity
   const [studentNameInput, setStudentNameInput] = useState<string>('');
@@ -234,18 +249,42 @@ export default function QuizPage() {
   };
 
   // Start Free Test for a specific class (5-10) — Strictly Requires Login
-  const handleStartFreeClassTest = (classGrade: number) => {
+  const handleStartFreeClassTest = async (classGrade: number) => {
     if (!session?.user) {
       requireLoginForQuiz();
       return;
     }
     setSelectedClass(classGrade);
-    const questions = getStoredFreeQuestions(classGrade);
-    setActiveQuestions(questions);
+    let questions = getStoredFreeQuestions(classGrade);
+
+    try {
+      const res = await fetch(
+        `/api/quiz/questions?classGrade=${classGrade}&category=free`,
+        { cache: 'no-store' }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data?.questions) && data.questions.length > 0) {
+          questions = data.questions;
+        }
+      }
+    } catch {}
+
+    let displayQuestions = questions;
+    if (questions.length > 25) {
+      const shuffled = [...questions].sort(() => 0.5 - Math.random());
+      displayQuestions = shuffled.slice(0, 25);
+    }
+
+    setActiveQuestions(displayQuestions);
     setSelectedAnswers({});
     setIsSubmitted(false);
     setIsTestActive(true);
-    setActiveTestTitle(`${toBengaliClass(classGrade)} শ্রেণি — ফ্রি মডেল টেস্ট`);
+    setActiveTestTitle(
+      `${toBengaliClass(classGrade)} শ্রেণি — ফ্রি মডেল টেস্ট${
+        questions.length > 25 ? ' (২৫টি প্রশ্নের সেট)' : ''
+      }`
+    );
     setActiveTestBadge('🎁 Free Model Test');
     scrollTo(testAreaRef);
   };
@@ -260,15 +299,7 @@ export default function QuizPage() {
     const isUnlocked = unlockedClasses.includes(classGrade) || session?.user?.role === 'ADMIN';
 
     if (isUnlocked) {
-      // Already unlocked by this user, start the test directly!
-      const questions = getStoredPaidQuestions(classGrade);
-      setActiveQuestions(questions);
-      setSelectedAnswers({});
-      setIsSubmitted(false);
-      setIsTestActive(true);
-      setActiveTestTitle(`${toBengaliClass(classGrade)} শ্রেণি — প্রিমিয়াম মডেল টেস্ট`);
-      setActiveTestBadge('💎 Premium Test');
-      scrollTo(testAreaRef);
+      handleStartPaidAfterUnlock(classGrade);
     } else {
       // Open Payment & Access Code Modal
       setPaymentTargetClass(classGrade);
@@ -280,19 +311,44 @@ export default function QuizPage() {
   };
 
   // Start Subject Test — Strictly Requires Login
-  const handleStartSubjectTest = (subjectName: string) => {
+  const handleStartSubjectTest = async (subjectName: string) => {
     if (!session?.user) {
       requireLoginForQuiz();
       return;
     }
     setSelectedSubject(subjectName);
-    const questions = getStoredSubjectQuestions(selectedClass, subjectName);
+    let questions = getStoredSubjectQuestions(selectedClass, subjectName);
 
-    setActiveQuestions(questions);
+    try {
+      const res = await fetch(
+        `/api/quiz/questions?classGrade=${selectedClass}&subject=${encodeURIComponent(
+          subjectName
+        )}&category=subject`,
+        { cache: 'no-store' }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data?.questions) && data.questions.length > 0) {
+          questions = data.questions;
+        }
+      }
+    } catch {}
+
+    let displayQuestions = questions;
+    if (questions.length > 30) {
+      const shuffled = [...questions].sort(() => 0.5 - Math.random());
+      displayQuestions = shuffled.slice(0, 30);
+    }
+
+    setActiveQuestions(displayQuestions);
     setSelectedAnswers({});
     setIsSubmitted(false);
     setIsTestActive(true);
-    setActiveTestTitle(`${toBengaliClass(selectedClass)} শ্রেণি — ${subjectName} বিষয়ভিত্তিক টেস্ট`);
+    setActiveTestTitle(
+      `${toBengaliClass(selectedClass)} শ্রেণি — ${subjectName} বিষয়ভিত্তিক টেস্ট${
+        questions.length > 30 ? ' (৩০টি প্রশ্নের মডেল টেস্ট)' : ''
+      }`
+    );
     setActiveTestBadge(`📖 ${subjectName}`);
     scrollTo(testAreaRef);
   };
@@ -428,13 +484,37 @@ export default function QuizPage() {
     }
   };
 
-  const handleStartPaidAfterUnlock = (classGrade: number) => {
-    const questions = getStoredPaidQuestions(classGrade);
-    setActiveQuestions(questions);
+  const handleStartPaidAfterUnlock = async (classGrade: number) => {
+    let questions = getStoredPaidQuestions(classGrade);
+
+    try {
+      const res = await fetch(
+        `/api/quiz/questions?classGrade=${classGrade}&category=paid`,
+        { cache: 'no-store' }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data?.questions) && data.questions.length > 0) {
+          questions = data.questions;
+        }
+      }
+    } catch {}
+
+    let displayQuestions = questions;
+    if (questions.length > 30) {
+      const shuffled = [...questions].sort(() => 0.5 - Math.random());
+      displayQuestions = shuffled.slice(0, 30);
+    }
+
+    setActiveQuestions(displayQuestions);
     setSelectedAnswers({});
     setIsSubmitted(false);
     setIsTestActive(true);
-    setActiveTestTitle(`${toBengaliClass(classGrade)} শ্রেণি — প্রিমিয়াম মডেল টেস্ট`);
+    setActiveTestTitle(
+      `${toBengaliClass(classGrade)} শ্রেণি — প্রিমিয়াম মডেল টেস্ট${
+        questions.length > 30 ? ' (৩০টি প্রশ্নের মডেল টেস্ট)' : ''
+      }`
+    );
     setActiveTestBadge('💎 Premium Test');
     scrollTo(testAreaRef);
   };
