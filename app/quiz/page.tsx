@@ -1433,36 +1433,50 @@ export default function QuizPage() {
 
         {/* Subjects Cards Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5">
-          {currentSubjects.map((sub) => (
-            <div
-              key={sub.name}
-              className="bg-white rounded-2xl p-4 border border-slate-200/90 hover:border-[#C8102E]/40 shadow-xs hover:shadow-md transition text-center space-y-2.5 group flex flex-col justify-between"
-            >
-              {/* Optional Subject Cover Image or Icon */}
-              {quizCovers.subjects[sub.name] ? (
-                <div className="w-full aspect-video rounded-xl overflow-hidden bg-slate-100 border border-slate-200/80 mb-1 relative">
-                  <img
-                    src={quizCovers.subjects[sub.name]}
-                    alt={sub.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-              ) : (
-                <div className="text-3xl transition-transform group-hover:scale-110">{sub.icon}</div>
-              )}
-              <div>
-                <h4 className="text-xs sm:text-sm font-black text-slate-800 line-clamp-1">{sub.name}</h4>
-                <p className="text-[11px] font-black text-[#C8102E] mt-0.5">৳{quizPrices.subjectPrice || 50}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleStartSubjectTest(sub.name)}
-                className="w-full py-1.5 rounded-xl bg-slate-100 hover:bg-[#C8102E] text-slate-700 hover:text-white font-bold text-xs transition active:scale-95"
+          {currentSubjects.map((sub) => {
+            const count = subjectCounts[sub.name] || 0;
+            return (
+              <div
+                key={sub.name}
+                className="bg-white rounded-2xl p-4 border border-slate-200/90 hover:border-[#C8102E]/40 shadow-xs hover:shadow-md transition text-center space-y-2.5 group flex flex-col justify-between"
               >
-                টেস্ট দিন
-              </button>
-            </div>
-          ))}
+                {/* Optional Subject Cover Image or Icon */}
+                {quizCovers.subjects[sub.name] ? (
+                  <div className="w-full aspect-video rounded-xl overflow-hidden bg-slate-100 border border-slate-200/80 mb-1 relative">
+                    <img
+                      src={quizCovers.subjects[sub.name]}
+                      alt={sub.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                ) : (
+                  <div className="text-3xl transition-transform group-hover:scale-110">{sub.icon}</div>
+                )}
+                <div className="space-y-1">
+                  <h4 className="text-xs sm:text-sm font-black text-slate-800 line-clamp-1">{sub.name}</h4>
+                  <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                    {count > 0 ? (
+                      <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200">
+                        {count.toLocaleString('bn-BD')}টি MCQ
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">
+                        মডেল টেস্ট প্রস্তুত
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleStartSubjectTest(sub.name)}
+                  className="w-full py-2 rounded-xl bg-slate-100 hover:bg-[#C8102E] text-slate-700 hover:text-white font-bold text-xs transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  <FaBookOpen className="w-3 h-3" />
+                  <span>টেস্ট দিন</span>
+                </button>
+              </div>
+            );
+          })}
         </div>
       </section>
 
