@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 export type FeePaymentStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
-export type FeePaymentMethod = 'BKASH' | 'NAGAD' | 'ROCKET';
+export type FeePaymentMethod = 'BKASH' | 'NAGAD' | 'ROCKET' | 'UPAY';
 
 export interface CoachingFeeRecord {
   id: string;
