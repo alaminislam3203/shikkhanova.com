@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import Link from "next/link";
+import toast from "react-hot-toast";
 import Logo from "@/components/common/Logo";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
@@ -427,7 +428,12 @@ export default function Navbar() {
             <span className="hidden md:inline text-slate-500">|</span>
             <a
               href="tel:01712592519"
-              className="inline-flex items-center gap-1.5 text-white hover:text-red-300 transition font-bn-normal font-bold"
+              onClick={() => {
+                navigator.clipboard?.writeText("01712592519");
+                toast.success("হেল্পলাইন নম্বর (01712592519) কপি হয়েছে!");
+              }}
+              className="inline-flex items-center gap-1.5 text-white hover:text-red-300 transition font-bn-normal font-bold cursor-pointer"
+              title="কল করতে ও নম্বর কপি করতে ক্লিক করুন"
             >
               <FaPhone className="text-emerald-400" />
               <span>হেল্পলাইন: ০১৭১২৫৯২৫১৯</span>

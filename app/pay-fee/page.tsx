@@ -786,10 +786,13 @@ export default function PayFeePage() {
                 </span>
                 <a
                   href="tel:01712592519"
-                  className="font-mono text-sm font-black text-emerald-400 hover:text-emerald-300 flex items-center gap-1.5"
+                  onClick={() => handleCopyNumber("01712592519", "পরিচালক হেল্পলাইন")}
+                  className="font-mono text-sm font-black text-emerald-400 hover:text-emerald-300 flex items-center gap-1.5 cursor-pointer group/call"
+                  title="কল করতে ও নম্বর কপি করতে ক্লিক করুন"
                 >
-                  <FaPhone className="w-3 h-3" />
+                  <FaPhone className="w-3 h-3 text-emerald-400" />
                   <span>০১৭১২৫৯২৫১৯</span>
+                  <FaCopy className="w-2.5 h-2.5 opacity-60 group-hover/call:opacity-100 transition-opacity" />
                 </a>
               </div>
             </div>
@@ -892,13 +895,19 @@ export default function PayFeePage() {
                       <span>{submittedReceipt.paymentMethod}</span>
                     </div>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <span className="text-slate-500 font-semibold">
                       প্রেরকের নম্বর:
                     </span>
-                    <span className="font-mono font-bold text-slate-800">
-                      {submittedReceipt.senderPhone}
-                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleCopyNumber(submittedReceipt.senderPhone, "প্রেরকের নম্বর")}
+                      className="font-mono font-bold text-slate-800 hover:text-[#C8102E] flex items-center gap-1 cursor-pointer"
+                      title="ক্লিক করে নম্বর কপি করুন"
+                    >
+                      <span>{submittedReceipt.senderPhone}</span>
+                      <FaCopy className="w-2.5 h-2.5 text-slate-400" />
+                    </button>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500 font-semibold">
