@@ -14,7 +14,7 @@ import {
   FaMagnifyingGlass,
   FaFilter,
   FaUserGraduate,
-  FaCheckCircle,
+  FaCircleCheck,
   FaCircleXmark,
   FaCalendarDays,
 } from "react-icons/fa6";
@@ -440,7 +440,7 @@ export default function AdminQuizResultsTab({ initialExamId }: AdminQuizResultsT
                             {sub.percentage}%
                           </span>
                           {isPassed ? (
-                            <FaCheckCircle className="w-3 h-3 text-emerald-500" />
+                            <FaCircleCheck className="w-3 h-3 text-emerald-500" />
                           ) : (
                             <FaCircleXmark className="w-3 h-3 text-rose-500" />
                           )}
