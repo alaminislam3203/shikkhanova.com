@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import toast from 'react-hot-toast';
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import toast from "react-hot-toast";
 import {
   RawQuestion,
   SUBJECT_LIST,
@@ -33,7 +33,7 @@ import {
   DEFAULT_CUSTOM_QUIZ_CARDS,
   getStoredCustomQuizCards,
   saveStoredCustomQuizCards,
-} from '@/lib/defaultQuizData';
+} from "@/lib/defaultQuizData";
 import {
   FaAward,
   FaCircleCheck,
@@ -50,8 +50,8 @@ import {
   FaClock,
   FaFilter,
   FaBookOpen,
-} from 'react-icons/fa6';
-import { HiSparkles } from 'react-icons/hi2';
+} from "react-icons/fa6";
+import { HiSparkles } from "react-icons/hi2";
 
 interface QuizResultItem {
   id: string;
@@ -70,18 +70,21 @@ export default function QuizPage() {
   const router = useRouter();
 
   const requireLoginForQuiz = () => {
-    toast.error('কুইজ টেস্ট দিতে অনুগ্রহ করে আগে লগইন করুন (ফ্রি ও পেইড উভয় টেস্টের জন্যই লগইন আবশ্যক)');
-    router.push('/login?callbackUrl=/quiz');
+    toast.error(
+      "কুইজ টেস্ট দিতে অনুগ্রহ করে আগে লগইন করুন (ফ্রি ও পেইড উভয় টেস্টের জন্যই লগইন আবশ্যক)",
+    );
+    router.push("/login?callbackUrl=/quiz");
   };
 
   // Navigation / Filter States
   const [selectedClass, setSelectedClass] = useState<number>(6);
-  const [selectedGroup, setSelectedGroup] = useState<AcademicGroup>('science');
-  const [selectedSubject, setSelectedSubject] = useState<string>('বাংলা ১ম পত্র');
+  const [selectedGroup, setSelectedGroup] = useState<AcademicGroup>("science");
+  const [selectedSubject, setSelectedSubject] =
+    useState<string>("বাংলা ১ম পত্র");
 
   const currentSubjects = useMemo(() => {
     try {
-      if (typeof getSubjectsForClassAndGroup === 'function') {
+      if (typeof getSubjectsForClassAndGroup === "function") {
         const list = getSubjectsForClassAndGroup(selectedClass, selectedGroup);
         if (Array.isArray(list) && list.length > 0) return list;
       }
@@ -90,16 +93,20 @@ export default function QuizPage() {
   }, [selectedClass, selectedGroup]);
 
   // Subject Question Summary State (Fetched from API for live badges)
-  const [subjectCounts, setSubjectCounts] = useState<Record<string, number>>({});
+  const [subjectCounts, setSubjectCounts] = useState<Record<string, number>>(
+    {},
+  );
   const [isLoadingCounts, setIsLoadingCounts] = useState<boolean>(false);
 
   // Active Quiz State
   const [isTestActive, setIsTestActive] = useState<boolean>(false);
-  const [activeTestTitle, setActiveTestTitle] = useState<string>('');
-  const [activeTestSubtitle, setActiveTestSubtitle] = useState<string>('');
-  const [activeTestBadge, setActiveTestBadge] = useState<string>('');
+  const [activeTestTitle, setActiveTestTitle] = useState<string>("");
+  const [activeTestSubtitle, setActiveTestSubtitle] = useState<string>("");
+  const [activeTestBadge, setActiveTestBadge] = useState<string>("");
   const [activeQuestions, setActiveQuestions] = useState<RawQuestion[]>([]);
-  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
+  const [selectedAnswers, setSelectedAnswers] = useState<
+    Record<number, number>
+  >({});
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [quizScore, setQuizScore] = useState<number>(0);
 
@@ -108,10 +115,12 @@ export default function QuizPage() {
   const [totalTime, setTotalTime] = useState<number>(0);
 
   // Review Filter after submission: "all" | "wrong" | "correct" | "unanswered"
-  const [reviewFilter, setReviewFilter] = useState<'all' | 'wrong' | 'correct' | 'unanswered'>('all');
+  const [reviewFilter, setReviewFilter] = useState<
+    "all" | "wrong" | "correct" | "unanswered"
+  >("all");
 
   // Student Identity
-  const [studentNameInput, setStudentNameInput] = useState<string>('');
+  const [studentNameInput, setStudentNameInput] = useState<string>("");
 
   // Leaderboard / Result Board State
   const [resultsList, setResultsList] = useState<QuizResultItem[]>([]);
@@ -121,18 +130,24 @@ export default function QuizPage() {
 
   // Dynamic Quiz Pricing State (SSR safe: defaults match between server and client initially)
   const [quizPrices, setQuizPrices] = useState<QuizPrices>(DEFAULT_QUIZ_PRICES);
-  const [quizPackages, setQuizPackages] = useState<QuizPackageItem[]>(DEFAULT_QUIZ_PACKAGES);
+  const [quizPackages, setQuizPackages] = useState<QuizPackageItem[]>(
+    DEFAULT_QUIZ_PACKAGES,
+  );
   const [quizCovers, setQuizCovers] = useState<QuizCovers>(DEFAULT_QUIZ_COVERS);
-  const [customCards, setCustomCards] = useState<CustomQuizCard[]>(DEFAULT_CUSTOM_QUIZ_CARDS);
+  const [customCards, setCustomCards] = useState<CustomQuizCard[]>(
+    DEFAULT_CUSTOM_QUIZ_CARDS,
+  );
 
   // Payment / Unlock Modal
   const [paymentModalOpen, setPaymentModalOpen] = useState<boolean>(false);
   const [paymentTargetClass, setPaymentTargetClass] = useState<number>(6);
-  const [paymentPackageName, setPaymentPackageName] = useState<string>('Paid Model Test');
+  const [paymentPackageName, setPaymentPackageName] =
+    useState<string>("Paid Model Test");
   const [paymentAmount, setPaymentAmount] = useState<number>(50);
-  const [selectedPackageScope, setSelectedPackageScope] = useState<PackageUnlockScope>('single_class');
-  const [accessCodeInput, setAccessCodeInput] = useState<string>('');
-  const [unlockSuccessMsg, setUnlockSuccessMsg] = useState<string>('');
+  const [selectedPackageScope, setSelectedPackageScope] =
+    useState<PackageUnlockScope>("single_class");
+  const [accessCodeInput, setAccessCodeInput] = useState<string>("");
+  const [unlockSuccessMsg, setUnlockSuccessMsg] = useState<string>("");
 
   // Refs for scrolling
   const testAreaRef = useRef<HTMLDivElement>(null);
@@ -154,7 +169,7 @@ export default function QuizPage() {
       }
     } catch {}
 
-    fetch('/api/quiz/prices')
+    fetch("/api/quiz/prices")
       .then((res) => res.json())
       .then((data) => {
         if (data?.prices) {
@@ -164,7 +179,7 @@ export default function QuizPage() {
       })
       .catch(() => {});
 
-    fetch('/api/quiz/packages')
+    fetch("/api/quiz/packages")
       .then((res) => res.json())
       .then((data) => {
         if (data?.packages && Array.isArray(data.packages)) {
@@ -181,10 +196,10 @@ export default function QuizPage() {
       }
     } catch {}
 
-    fetch('/api/quiz/covers', { cache: 'no-store' })
+    fetch("/api/quiz/covers", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
-        if (data?.covers && typeof data.covers === 'object') {
+        if (data?.covers && typeof data.covers === "object") {
           setQuizCovers(data.covers);
           saveStoredQuizCovers(data.covers);
         }
@@ -198,7 +213,7 @@ export default function QuizPage() {
       }
     } catch {}
 
-    fetch('/api/quiz/cards', { cache: 'no-store' })
+    fetch("/api/quiz/cards", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
         if (data?.cards && Array.isArray(data.cards)) {
@@ -213,11 +228,11 @@ export default function QuizPage() {
   useEffect(() => {
     setIsLoadingCounts(true);
     fetch(`/api/quiz/questions?classGrade=${selectedClass}&action=summary`, {
-      cache: 'no-store',
+      cache: "no-store",
     })
       .then((res) => res.json())
       .then((data) => {
-        if (data?.summary && typeof data.summary === 'object') {
+        if (data?.summary && typeof data.summary === "object") {
           setSubjectCounts(data.summary);
         }
       })
@@ -228,7 +243,7 @@ export default function QuizPage() {
   // Load persisted results and user-specific unlocked classes on mount
   useEffect(() => {
     try {
-      const storedResults = localStorage.getItem('sn_quiz_results');
+      const storedResults = localStorage.getItem("sn_quiz_results");
       if (storedResults) {
         setResultsList(JSON.parse(storedResults));
       }
@@ -250,9 +265,15 @@ export default function QuizPage() {
       }
 
       // Check if URL has #leaderboard and scroll smoothly
-      if (typeof window !== 'undefined' && window.location.hash === '#leaderboard') {
+      if (
+        typeof window !== "undefined" &&
+        window.location.hash === "#leaderboard"
+      ) {
         setTimeout(() => {
-          resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          resultsRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
         }, 300);
       }
     } catch {}
@@ -267,10 +288,13 @@ export default function QuizPage() {
         if (prev <= 1) {
           clearInterval(timer);
           handleSubmitTest(true);
-          toast('⏰ সময় সমাপ্ত! আপনার পরীক্ষা স্বয়ংক্রিয়ভাবে জমা নেওয়া হয়েছে।', {
-            icon: '⏱️',
-            duration: 5000,
-          });
+          toast(
+            "⏰ সময় সমাপ্ত! আপনার পরীক্ষা স্বয়ংক্রিয়ভাবে জমা নেওয়া হয়েছে।",
+            {
+              icon: "⏱️",
+              duration: 5000,
+            },
+          );
           return 0;
         }
         return prev - 1;
@@ -283,12 +307,12 @@ export default function QuizPage() {
   const formatTime = (secs: number) => {
     const mins = Math.floor(secs / 60);
     const remainderSecs = secs % 60;
-    return `${mins.toString().padStart(2, '0')}:${remainderSecs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, "0")}:${remainderSecs.toString().padStart(2, "0")}`;
   };
 
   const scrollTo = (ref: React.RefObject<HTMLDivElement>) => {
     setTimeout(() => {
-      ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 100);
   };
 
@@ -304,7 +328,7 @@ export default function QuizPage() {
     try {
       const res = await fetch(
         `/api/quiz/questions?classGrade=${classGrade}&category=free`,
-        { cache: 'no-store' }
+        { cache: "no-store" },
       );
       if (res.ok) {
         const data = await res.json();
@@ -324,12 +348,14 @@ export default function QuizPage() {
     setSelectedAnswers({});
     setIsSubmitted(false);
     setIsTestActive(true);
-    setReviewFilter('all');
+    setReviewFilter("all");
     setActiveTestTitle(
-      `${toBengaliClass(classGrade)} শ্রেণি — অল-ইন-ওয়ান ফ্রি মডেল টেস্ট`
+      `${toBengaliClass(classGrade)} শ্রেণি — অল-ইন-ওয়ান ফ্রি মডেল টেস্ট`,
     );
-    setActiveTestSubtitle('বোর্ড স্ট্যান্ডার্ড সকল বিষয়ের সমন্বয়ে ২৫টি গুরুত্বপূর্ণ MCQ');
-    setActiveTestBadge('🎁 Free Board Model Test');
+    setActiveTestSubtitle(
+      "বোর্ড স্ট্যান্ডার্ড সকল বিষয়ের সমন্বয়ে ২৫টি গুরুত্বপূর্ণ MCQ",
+    );
+    setActiveTestBadge("🎁 Free Board Model Test");
 
     const secs = Math.max(10, Math.min(25, displayQuestions.length)) * 60;
     setTimeLeft(secs);
@@ -345,16 +371,19 @@ export default function QuizPage() {
       return;
     }
     setSelectedClass(classGrade);
-    const isUnlocked = unlockedClasses.includes(classGrade) || session?.user?.role === 'ADMIN';
+    const isUnlocked =
+      unlockedClasses.includes(classGrade) || session?.user?.role === "ADMIN";
 
     if (isUnlocked) {
       handleStartPaidAfterUnlock(classGrade);
     } else {
       // Open Payment & Access Code Modal
       setPaymentTargetClass(classGrade);
-      setPaymentPackageName(`${toBengaliClass(classGrade)} শ্রেণির প্রিমিয়াম মডেল টেস্ট`);
+      setPaymentPackageName(
+        `${toBengaliClass(classGrade)} শ্রেণির প্রিমিয়াম মডেল টেস্ট`,
+      );
       setPaymentAmount(quizPrices.classPrices[classGrade] || 50);
-      setUnlockSuccessMsg('');
+      setUnlockSuccessMsg("");
       setPaymentModalOpen(true);
     }
   };
@@ -371,9 +400,9 @@ export default function QuizPage() {
     try {
       const res = await fetch(
         `/api/quiz/questions?classGrade=${selectedClass}&subject=${encodeURIComponent(
-          subjectName
+          subjectName,
         )}&category=subject`,
-        { cache: 'no-store' }
+        { cache: "no-store" },
       );
       if (res.ok) {
         const data = await res.json();
@@ -394,14 +423,14 @@ export default function QuizPage() {
     setSelectedAnswers({});
     setIsSubmitted(false);
     setIsTestActive(true);
-    setReviewFilter('all');
+    setReviewFilter("all");
     setActiveTestTitle(
-      `${toBengaliClass(selectedClass)} শ্রেণি — ${subjectName} বিষয়ভিত্তিক টেস্ট`
+      `${toBengaliClass(selectedClass)} শ্রেণি — ${subjectName} বিষয়ভিত্তিক টেস্ট`,
     );
     setActiveTestSubtitle(
       totalBankCount > 30
-        ? `মোট ${totalBankCount.toLocaleString('bn-BD')}টি প্রশ্নের ব্যাংক থেকে ৩০টি বাছাইকৃত প্রশ্ন`
-        : `মোট ${totalBankCount}টি প্রশ্নের মডেল টেস্ট`
+        ? `মোট ${totalBankCount.toLocaleString("bn-BD")}টি প্রশ্নের ব্যাংক থেকে ৩০টি বাছাইকৃত প্রশ্ন`
+        : `মোট ${totalBankCount}টি প্রশ্নের মডেল টেস্ট`,
     );
     setActiveTestBadge(`📖 ${subjectName}`);
 
@@ -423,7 +452,7 @@ export default function QuizPage() {
     const isUnlocked =
       !card.isPaid ||
       unlockedClasses.includes(card.classGrade) ||
-      session?.user?.role === 'ADMIN';
+      session?.user?.role === "ADMIN";
 
     if (isUnlocked) {
       let questions = getStoredSubjectQuestions(card.classGrade, card.subject);
@@ -436,11 +465,13 @@ export default function QuizPage() {
       setSelectedAnswers({});
       setIsSubmitted(false);
       setIsTestActive(true);
-      setReviewFilter('all');
+      setReviewFilter("all");
       setActiveTestTitle(card.title);
-      setActiveTestSubtitle(card.subtitle || `${card.subject} স্পেশাল মডেল টেস্ট`);
+      setActiveTestSubtitle(
+        card.subtitle || `${card.subject} স্পেশাল মডেল টেস্ট`,
+      );
       setActiveTestBadge(
-        card.badge || (card.isPaid ? '💎 Premium Test' : '🎁 Free Test')
+        card.badge || (card.isPaid ? "💎 Premium Test" : "🎁 Free Test"),
       );
 
       const secs = Math.max(10, Math.min(30, questions.length)) * 60;
@@ -452,7 +483,7 @@ export default function QuizPage() {
       setPaymentTargetClass(card.classGrade);
       setPaymentPackageName(card.title);
       setPaymentAmount(card.price || 50);
-      setUnlockSuccessMsg('');
+      setUnlockSuccessMsg("");
       setPaymentModalOpen(true);
     }
   };
@@ -470,20 +501,22 @@ export default function QuizPage() {
     const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
     setQuizScore(score);
     setIsSubmitted(true);
-    setReviewFilter('all');
+    setReviewFilter("all");
 
     // Determine Medal
-    let medal = '⭐ Top 10';
-    if (percentage === 100) medal = '🥇 Gold';
-    else if (percentage >= 80) medal = '🥈 Silver';
-    else if (percentage >= 60) medal = '🥉 Bronze';
+    let medal = "⭐ Top 10";
+    if (percentage === 100) medal = "🥇 Gold";
+    else if (percentage >= 80) medal = "🥈 Silver";
+    else if (percentage >= 60) medal = "🥉 Bronze";
 
     const studentName =
-      studentNameInput.trim() || session?.user?.name || `শিক্ষার্থী #${Math.floor(100 + Math.random() * 900)}`;
+      studentNameInput.trim() ||
+      session?.user?.name ||
+      `শিক্ষার্থী #${Math.floor(100 + Math.random() * 900)}`;
 
     if (studentNameInput.trim()) {
       try {
-        localStorage.setItem('sn_student_quiz_name', studentNameInput.trim());
+        localStorage.setItem("sn_student_quiz_name", studentNameInput.trim());
       } catch {}
     }
 
@@ -491,18 +524,22 @@ export default function QuizPage() {
       id: String(Date.now()),
       name: studentName,
       classGrade: selectedClass,
-      subject: activeTestTitle.split('—')[1]?.trim() || 'মডেল টেস্ট',
+      subject: activeTestTitle.split("—")[1]?.trim() || "মডেল টেস্ট",
       score,
       total,
       percentage,
       medal,
-      date: new Date().toLocaleDateString('bn-BD', { day: 'numeric', month: 'short', year: 'numeric' }),
+      date: new Date().toLocaleDateString("bn-BD", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      }),
     };
 
     const updated = [newRecord, ...resultsList].slice(0, 30);
     setResultsList(updated);
     try {
-      localStorage.setItem('sn_quiz_results', JSON.stringify(updated));
+      localStorage.setItem("sn_quiz_results", JSON.stringify(updated));
     } catch {}
 
     if (!isAuto) {
@@ -512,15 +549,18 @@ export default function QuizPage() {
 
   // Filtered Questions and Stats for Review
   const filteredReviewQuestions = useMemo(() => {
-    const mapped = activeQuestions.map((q, idx) => ({ ...q, originalIndex: idx }));
-    if (!isSubmitted || reviewFilter === 'all') return mapped;
+    const mapped = activeQuestions.map((q, idx) => ({
+      ...q,
+      originalIndex: idx,
+    }));
+    if (!isSubmitted || reviewFilter === "all") return mapped;
     return mapped.filter((item) => {
       const userSelected = selectedAnswers[item.originalIndex];
       const isAnswered = userSelected !== undefined;
       const isCorrect = isAnswered && userSelected === item.ans;
-      if (reviewFilter === 'wrong') return isAnswered && !isCorrect;
-      if (reviewFilter === 'correct') return isCorrect;
-      if (reviewFilter === 'unanswered') return !isAnswered;
+      if (reviewFilter === "wrong") return isAnswered && !isCorrect;
+      if (reviewFilter === "correct") return isCorrect;
+      if (reviewFilter === "unanswered") return !isAnswered;
       return true;
     });
   }, [activeQuestions, selectedAnswers, isSubmitted, reviewFilter]);
@@ -553,35 +593,48 @@ export default function QuizPage() {
     const code = accessCodeInput.trim().toUpperCase();
 
     // Universal promo access codes or valid TrxID (>= 6 chars)
-    const validCodes = ['NOVA50', 'SHIKKHA2026', 'SHIKKHANOVA', 'ADMIN100', 'FREE2026'];
+    const validCodes = [
+      "NOVA50",
+      "SHIKKHA2026",
+      "SHIKKHANOVA",
+      "ADMIN100",
+      "FREE2026",
+    ];
     const isCodeValid = validCodes.includes(code);
     const isTrxValid = code.length >= 6;
 
     if (isCodeValid || isTrxValid) {
       const classesToUnlock =
-        selectedPackageScope === 'all_classes'
+        selectedPackageScope === "all_classes"
           ? [5, 6, 7, 8, 9, 10]
           : [paymentTargetClass];
 
-      const updated = Array.from(new Set([...unlockedClasses, ...classesToUnlock]));
+      const updated = Array.from(
+        new Set([...unlockedClasses, ...classesToUnlock]),
+      );
       setUnlockedClasses(updated);
       try {
         if (session?.user?.id) {
-          localStorage.setItem(`sn_unlocked_classes_${session.user.id}`, JSON.stringify(updated));
+          localStorage.setItem(
+            `sn_unlocked_classes_${session.user.id}`,
+            JSON.stringify(updated),
+          );
         }
       } catch {}
 
       setUnlockSuccessMsg(
-        selectedPackageScope === 'all_classes'
-          ? '🎉 অভিনন্দন! ৫ম থেকে ১০ম সকল শ্রেণির প্রিমিয়াম মডেল টেস্ট সফলভাবে আনলক হয়েছে!'
-          : `🎉 অভিনন্দন! ${toBengaliClass(paymentTargetClass)} শ্রেণির প্রিমিয়াম মডেল টেস্ট সফলভাবে আনলক হয়েছে!`
+        selectedPackageScope === "all_classes"
+          ? "🎉 অভিনন্দন! ৫ম থেকে ১০ম সকল শ্রেণির প্রিমিয়াম মডেল টেস্ট সফলভাবে আনলক হয়েছে!"
+          : `🎉 অভিনন্দন! ${toBengaliClass(paymentTargetClass)} শ্রেণির প্রিমিয়াম মডেল টেস্ট সফলভাবে আনলক হয়েছে!`,
       );
       setTimeout(() => {
         setPaymentModalOpen(false);
         handleStartPaidAfterUnlock(paymentTargetClass);
       }, 1400);
     } else {
-      toast.error('অনুগ্রহ করে সঠিক অ্যাক্সেস কোড অথবা বিকাশ/নগদ/রকেট/উপায় TrxID প্রদান করুন।');
+      toast.error(
+        "অনুগ্রহ করে সঠিক অ্যাক্সেস কোড অথবা বিকাশ/নগদ/রকেট/উপায় TrxID প্রদান করুন।",
+      );
     }
   };
 
@@ -591,7 +644,7 @@ export default function QuizPage() {
     try {
       const res = await fetch(
         `/api/quiz/questions?classGrade=${classGrade}&category=paid`,
-        { cache: 'no-store' }
+        { cache: "no-store" },
       );
       if (res.ok) {
         const data = await res.json();
@@ -611,14 +664,14 @@ export default function QuizPage() {
     setSelectedAnswers({});
     setIsSubmitted(false);
     setIsTestActive(true);
-    setReviewFilter('all');
+    setReviewFilter("all");
     setActiveTestTitle(
-      `${toBengaliClass(classGrade)} শ্রেণি — প্রিমিয়াম মডেল টেস্ট`
+      `${toBengaliClass(classGrade)} শ্রেণি — প্রিমিয়াম মডেল টেস্ট`,
     );
     setActiveTestSubtitle(
-      `বোর্ড স্ট্যান্ডার্ড সকল বিষয় থেকে বাছাইকৃত স্পেশাল ৩০টি প্রশ্ন`
+      `বোর্ড স্ট্যান্ডার্ড সকল বিষয় থেকে বাছাইকৃত স্পেশাল ৩০টি প্রশ্ন`,
     );
-    setActiveTestBadge('💎 Premium Test');
+    setActiveTestBadge("💎 Premium Test");
 
     const secs = Math.max(10, Math.min(30, displayQuestions.length)) * 60;
     setTimeLeft(secs);
@@ -629,10 +682,10 @@ export default function QuizPage() {
 
   // Clear Leaderboard
   const handleClearResults = () => {
-    if (confirm('আপনি কি রেজাল্ট বোর্ডের সকল ফলাফল পরিষ্কার করতে চান?')) {
+    if (confirm("আপনি কি রেজাল্ট বোর্ডের সকল ফলাফল পরিষ্কার করতে চান?")) {
       setResultsList([]);
       try {
-        localStorage.removeItem('sn_quiz_results');
+        localStorage.removeItem("sn_quiz_results");
       } catch {}
     }
   };
@@ -658,8 +711,9 @@ export default function QuizPage() {
           </h1>
 
           <p className="text-[11px] sm:text-sm lg:text-base text-slate-200 font-medium leading-relaxed line-clamp-2 sm:line-clamp-none">
-            ৫ম থেকে ১০ম শ্রেণির শিক্ষার্থীদের জন্য অধ্যায়ভিত্তিক ও শ্রেণিভিত্তিক অনলাইন MCQ মডেল টেস্ট প্ল্যাটফর্ম। সাথে
-            সাথে ফলাফল, সঠিক উত্তরের ব্যাখ্যা ও স্বয়ংক্রিয় লিডারবোর্ড।
+            ৫ম থেকে ১০ম শ্রেণির শিক্ষার্থীদের জন্য অধ্যায়ভিত্তিক ও শ্রেণিভিত্তিক
+            অনলাইন MCQ মডেল টেস্ট প্ল্যাটফর্ম। সাথে সাথে ফলাফল, সঠিক উত্তরের
+            ব্যাখ্যা ও স্বয়ংক্রিয় লিডারবোর্ড।
           </p>
 
           {/* Quick Buttons */}
@@ -681,7 +735,7 @@ export default function QuizPage() {
             </button>
 
             {/* Admin Management Link — Visible ONLY if Admin is logged in */}
-            {session?.user?.role === 'ADMIN' && (
+            {session?.user?.role === "ADMIN" && (
               <Link
                 href="/admin?tab=mcqQuiz"
                 className="px-3 py-2 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-900/80 hover:bg-black text-amber-300 hover:text-amber-200 font-bold text-[11px] sm:text-xs border border-amber-400/30 transition flex items-center gap-1.5"
@@ -694,7 +748,9 @@ export default function QuizPage() {
 
           {/* Student Name Input */}
           <div className="pt-1 sm:pt-2 flex flex-row items-center gap-2 text-[11px] sm:text-xs text-slate-300">
-            <span className="font-bold text-slate-200 shrink-0">আপনার নাম:</span>
+            <span className="font-bold text-slate-200 shrink-0">
+              আপনার নাম:
+            </span>
             <input
               type="text"
               value={studentNameInput}
@@ -711,9 +767,12 @@ export default function QuizPage() {
       ───────────────────────────────────────────────────────────── */}
       <section className="space-y-4">
         <div className="text-center space-y-1">
-          <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">শ্রেণি নির্বাচন করুন</h2>
+          <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">
+            শ্রেণি নির্বাচন করুন
+          </h2>
           <p className="text-xs sm:text-sm text-slate-500 font-medium">
-            প্রতিটি ক্লাসের জন্য আলাদা ফ্রি ও প্রিমিয়াম মডেল টেস্ট প্রস্তুত করা আছে
+            প্রতিটি ক্লাসের জন্য আলাদা ফ্রি ও প্রিমিয়াম মডেল টেস্ট প্রস্তুত করা
+            আছে
           </p>
         </div>
 
@@ -727,13 +786,17 @@ export default function QuizPage() {
                 onClick={() => setSelectedClass(cls)}
                 className={`p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border text-center transition-all duration-200 group relative overflow-hidden ${
                   isSelected
-                    ? 'bg-gradient-to-tr from-[#9B0D23] via-[#C8102E] to-[#E5254A] text-white border-transparent shadow-lg shadow-red-600/25 scale-102'
-                    : 'bg-white hover:bg-red-50/40 text-slate-700 border-slate-200 hover:border-red-200 shadow-xs'
+                    ? "bg-gradient-to-tr from-[#9B0D23] via-[#C8102E] to-[#E5254A] text-white border-transparent shadow-lg shadow-red-600/25 scale-102"
+                    : "bg-white hover:bg-red-50/40 text-slate-700 border-slate-200 hover:border-red-200 shadow-xs"
                 }`}
               >
                 <div className="text-xl sm:text-2xl mb-0.5 sm:mb-1">🎓</div>
-                <div className="font-black text-xs sm:text-base">{toBengaliClass(cls)} শ্রেণি</div>
-                <div className={`text-[10px] mt-0.5 ${isSelected ? 'text-red-100' : 'text-slate-400'}`}>
+                <div className="font-black text-xs sm:text-base">
+                  {toBengaliClass(cls)} শ্রেণি
+                </div>
+                <div
+                  className={`text-[10px] mt-0.5 ${isSelected ? "text-red-100" : "text-slate-400"}`}
+                >
                   Model Test
                 </div>
               </button>
@@ -761,9 +824,12 @@ export default function QuizPage() {
                     </span>
                   )}
                 </div>
-                <h3 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">{activeTestTitle}</h3>
+                <h3 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">
+                  {activeTestTitle}
+                </h3>
                 <p className="text-xs text-slate-500 font-medium">
-                  মোট প্রশ্ন: {activeQuestions.length}টি • প্রতিটি প্রশ্নের সঠিক উত্তর নির্বাচন করুন
+                  মোট প্রশ্ন: {activeQuestions.length}টি • প্রতিটি প্রশ্নের সঠিক
+                  উত্তর নির্বাচন করুন
                 </p>
               </div>
 
@@ -773,11 +839,15 @@ export default function QuizPage() {
                   <div
                     className={`flex items-center gap-2 px-3.5 py-2 rounded-2xl border font-mono font-black text-sm shadow-xs transition ${
                       timeLeft <= 180
-                        ? 'bg-rose-50 text-rose-600 border-rose-300 animate-pulse'
-                        : 'bg-teal-50 text-teal-800 border-teal-200'
+                        ? "bg-rose-50 text-rose-600 border-rose-300 animate-pulse"
+                        : "bg-teal-50 text-teal-800 border-teal-200"
                     }`}
                   >
-                    <FaClock className={timeLeft <= 180 ? 'text-rose-600' : 'text-teal-600'} />
+                    <FaClock
+                      className={
+                        timeLeft <= 180 ? "text-rose-600" : "text-teal-600"
+                      }
+                    />
                     <span>{formatTime(timeLeft)}</span>
                   </div>
                 )}
@@ -786,7 +856,7 @@ export default function QuizPage() {
                   type="button"
                   onClick={() => {
                     if (!isSubmitted) {
-                      if (!confirm('আপনি কি পরীক্ষাটি বন্ধ করতে চান?')) return;
+                      if (!confirm("আপনি কি পরীক্ষাটি বন্ধ করতে চান?")) return;
                     }
                     setIsTestActive(false);
                   }}
@@ -811,10 +881,10 @@ export default function QuizPage() {
                     </h4>
                     <p className="text-xs text-slate-300">
                       {quizScore === activeQuestions.length
-                        ? '🎉 অসাধারণ! আপনি ১০০% সঠিক উত্তর দিয়ে গোল্ড মেডেল অর্জন করেছেন!'
+                        ? "🎉 অসাধারণ! আপনি ১০০% সঠিক উত্তর দিয়ে গোল্ড মেডেল অর্জন করেছেন!"
                         : quizScore >= activeQuestions.length * 0.8
-                        ? '👏 খুব চমৎকার ফলাফল! সিলভার মেডেল নিশ্চিত হয়েছে।'
-                        : 'ভুল উত্তরগুলো ফিল্টার করে সঠিক ব্যাখ্যা পড়ে নিন। পরবর্তী টেস্টের জন্য শুভকামনা!'}
+                          ? "👏 খুব চমৎকার ফলাফল! সিলভার মেডেল নিশ্চিত হয়েছে।"
+                          : "ভুল উত্তরগুলো ফিল্টার করে সঠিক ব্যাখ্যা পড়ে নিন। পরবর্তী টেস্টের জন্য শুভকামনা!"}
                     </p>
                   </div>
 
@@ -824,13 +894,16 @@ export default function QuizPage() {
                       onClick={() => {
                         setSelectedAnswers({});
                         setIsSubmitted(false);
-                        const secs = Math.max(10, Math.min(30, activeQuestions.length)) * 60;
+                        const secs =
+                          Math.max(10, Math.min(30, activeQuestions.length)) *
+                          60;
                         setTimeLeft(secs);
                         setTotalTime(secs);
                       }}
                       className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
                     >
-                      <FaRotateRight className="w-3.5 h-3.5" /> পুনরায় পরীক্ষা দিন
+                      <FaRotateRight className="w-3.5 h-3.5" /> পুনরায় পরীক্ষা
+                      দিন
                     </button>
 
                     <button
@@ -852,22 +925,22 @@ export default function QuizPage() {
                   <div className="flex flex-wrap items-center gap-1.5">
                     <button
                       type="button"
-                      onClick={() => setReviewFilter('all')}
+                      onClick={() => setReviewFilter("all")}
                       className={`px-3 py-1 rounded-xl text-xs font-black transition cursor-pointer ${
-                        reviewFilter === 'all'
-                          ? 'bg-[#0A1E3C] text-white shadow-xs'
-                          : 'bg-white text-slate-700 hover:bg-slate-200'
+                        reviewFilter === "all"
+                          ? "bg-[#0A1E3C] text-white shadow-xs"
+                          : "bg-white text-slate-700 hover:bg-slate-200"
                       }`}
                     >
                       সকল প্রশ্ন ({reviewStats.total})
                     </button>
                     <button
                       type="button"
-                      onClick={() => setReviewFilter('wrong')}
+                      onClick={() => setReviewFilter("wrong")}
                       className={`px-3 py-1 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1 ${
-                        reviewFilter === 'wrong'
-                          ? 'bg-rose-600 text-white shadow-xs'
-                          : 'bg-rose-50 text-rose-800 hover:bg-rose-100 border border-rose-200'
+                        reviewFilter === "wrong"
+                          ? "bg-rose-600 text-white shadow-xs"
+                          : "bg-rose-50 text-rose-800 hover:bg-rose-100 border border-rose-200"
                       }`}
                     >
                       <FaCircleXmark className="w-3 h-3" />
@@ -875,11 +948,11 @@ export default function QuizPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setReviewFilter('correct')}
+                      onClick={() => setReviewFilter("correct")}
                       className={`px-3 py-1 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1 ${
-                        reviewFilter === 'correct'
-                          ? 'bg-emerald-600 text-white shadow-xs'
-                          : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200'
+                        reviewFilter === "correct"
+                          ? "bg-emerald-600 text-white shadow-xs"
+                          : "bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200"
                       }`}
                     >
                       <FaCircleCheck className="w-3 h-3" />
@@ -888,11 +961,11 @@ export default function QuizPage() {
                     {reviewStats.unanswered > 0 && (
                       <button
                         type="button"
-                        onClick={() => setReviewFilter('unanswered')}
+                        onClick={() => setReviewFilter("unanswered")}
                         className={`px-3 py-1 rounded-xl text-xs font-black transition cursor-pointer ${
-                          reviewFilter === 'unanswered'
-                            ? 'bg-amber-600 text-white shadow-xs'
-                            : 'bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200'
+                          reviewFilter === "unanswered"
+                            ? "bg-amber-600 text-white shadow-xs"
+                            : "bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200"
                         }`}
                       >
                         উত্তরহীন ({reviewStats.unanswered})
@@ -907,8 +980,8 @@ export default function QuizPage() {
             {filteredReviewQuestions.length === 0 ? (
               <div className="py-12 text-center text-slate-500 text-sm bg-slate-50 rounded-2xl border border-slate-200">
                 {isSubmitted
-                  ? 'এই ফিল্টারে কোনো প্রশ্ন নেই! 🎉'
-                  : 'এই ক্যাটাগরিতে এখনও কোনো প্রশ্ন আপলোড করা হয়নি।'}
+                  ? "এই ফিল্টারে কোনো প্রশ্ন নেই! 🎉"
+                  : "এই ক্যাটাগরিতে এখনও কোনো প্রশ্ন আপলোড করা হয়নি।"}
               </div>
             ) : (
               <div className="space-y-6">
@@ -924,13 +997,13 @@ export default function QuizPage() {
                       className={`p-5 rounded-2xl border transition-all ${
                         isSubmitted
                           ? isCorrect
-                            ? 'bg-emerald-50/60 border-emerald-300'
+                            ? "bg-emerald-50/60 border-emerald-300"
                             : isAnswered
-                            ? 'bg-rose-50/50 border-rose-300'
-                            : 'bg-amber-50/40 border-amber-200'
+                              ? "bg-rose-50/50 border-rose-300"
+                              : "bg-amber-50/40 border-amber-200"
                           : isAnswered
-                          ? 'bg-slate-50/80 border-[#C8102E]/30'
-                          : 'bg-slate-50/40 border-slate-200'
+                            ? "bg-slate-50/80 border-[#C8102E]/30"
+                            : "bg-slate-50/40 border-slate-200"
                       }`}
                     >
                       {/* Question Title */}
@@ -938,25 +1011,33 @@ export default function QuizPage() {
                         <span className="w-6 h-6 rounded-lg bg-[#0A1E3C] text-white flex items-center justify-center text-xs font-black shrink-0 mt-0.5">
                           {qIdx + 1}
                         </span>
-                        <p className="text-sm sm:text-base font-bold text-slate-900 leading-snug">{item.q}</p>
+                        <p className="text-sm sm:text-base font-bold text-slate-900 leading-snug">
+                          {item.q}
+                        </p>
                       </div>
 
                       {/* Options (A, B, C, D) */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-4 pl-0 sm:pl-8">
                         {item.options.map((optText, opIdx) => {
                           const isChosen = userSelected === opIdx;
-                          const isTheCorrectOne = isSubmitted && opIdx === item.ans;
-                          const isWrongChoice = isSubmitted && isChosen && !isTheCorrectOne;
+                          const isTheCorrectOne =
+                            isSubmitted && opIdx === item.ans;
+                          const isWrongChoice =
+                            isSubmitted && isChosen && !isTheCorrectOne;
 
-                          let optStyles = 'bg-white border-slate-200 hover:border-slate-300 text-slate-700';
+                          let optStyles =
+                            "bg-white border-slate-200 hover:border-slate-300 text-slate-700";
 
                           if (!isSubmitted && isChosen) {
-                            optStyles = 'bg-red-50 border-[#C8102E] text-[#C8102E] font-bold shadow-xs';
+                            optStyles =
+                              "bg-red-50 border-[#C8102E] text-[#C8102E] font-bold shadow-xs";
                           } else if (isSubmitted) {
                             if (isTheCorrectOne) {
-                              optStyles = 'bg-emerald-100/80 border-emerald-500 text-emerald-900 font-bold';
+                              optStyles =
+                                "bg-emerald-100/80 border-emerald-500 text-emerald-900 font-bold";
                             } else if (isWrongChoice) {
-                              optStyles = 'bg-rose-100/80 border-rose-500 text-rose-900 font-bold line-through';
+                              optStyles =
+                                "bg-rose-100/80 border-rose-500 text-rose-900 font-bold line-through";
                             }
                           }
 
@@ -972,7 +1053,10 @@ export default function QuizPage() {
                                 disabled={isSubmitted}
                                 checked={isChosen}
                                 onChange={() => {
-                                  setSelectedAnswers((prev) => ({ ...prev, [qIdx]: opIdx }));
+                                  setSelectedAnswers((prev) => ({
+                                    ...prev,
+                                    [qIdx]: opIdx,
+                                  }));
                                 }}
                                 className="text-[#C8102E] focus:ring-[#C8102E] w-4 h-4 cursor-pointer"
                               />
@@ -995,7 +1079,9 @@ export default function QuizPage() {
                       {isSubmitted && item.explanation && (
                         <div className="mt-3.5 pl-0 sm:pl-8">
                           <div className="bg-white/90 border border-slate-200 p-3 rounded-xl text-xs text-slate-600 space-y-1">
-                            <p className="font-bold text-slate-800">💡 ব্যাখ্যা ও সঠিক উত্তর:</p>
+                            <p className="font-bold text-slate-800">
+                              💡 ব্যাখ্যা ও সঠিক উত্তর:
+                            </p>
                             <p>{item.explanation}</p>
                           </div>
                         </div>
@@ -1011,14 +1097,18 @@ export default function QuizPage() {
               <div className="pt-4 border-t border-slate-200">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                   <p className="text-xs text-slate-500 font-medium">
-                    উত্তর দেওয়া হয়েছে: <span className="font-bold text-[#C8102E]">{Object.keys(selectedAnswers).length}</span> / {activeQuestions.length} টি
+                    উত্তর দেওয়া হয়েছে:{" "}
+                    <span className="font-bold text-[#C8102E]">
+                      {Object.keys(selectedAnswers).length}
+                    </span>{" "}
+                    / {activeQuestions.length} টি
                   </p>
                   <button
                     type="button"
                     onClick={() => handleSubmitTest(false)}
                     className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-black text-sm shadow-xl transition active:scale-95 cursor-pointer"
                   >
-                     পরীক্ষা জমা দিন (Submit Test)
+                    পরীক্ষা জমা দিন (Submit Test)
                   </button>
                 </div>
               </div>
@@ -1041,7 +1131,8 @@ export default function QuizPage() {
                 🌟 বিশেষ কুইজ ও মডেল টেস্ট কার্ড
               </h2>
               <p className="text-xs text-slate-500 font-medium">
-                অ্যাডমিন কর্তৃক প্রকাশিত প্রতিটি বিষয়ের আলাদা কভারযুক্ত স্পেশাল মডেল টেস্ট
+                অ্যাডমিন কর্তৃক প্রকাশিত প্রতিটি বিষয়ের আলাদা কভারযুক্ত স্পেশাল
+                মডেল টেস্ট
               </p>
             </div>
             <span className="text-xs font-bold text-slate-400">
@@ -1056,15 +1147,15 @@ export default function QuizPage() {
                 const isUnlocked =
                   !card.isPaid ||
                   unlockedClasses.includes(card.classGrade) ||
-                  session?.user?.role === 'ADMIN';
+                  session?.user?.role === "ADMIN";
 
                 return (
                   <div
                     key={card.id}
                     className={`bg-white rounded-3xl p-4 sm:p-5 border transition-all duration-300 shadow-sm hover:shadow-lg space-y-3.5 flex flex-col justify-between ${
                       card.isPaid
-                        ? 'border-t-4 border-t-[#C8102E] border-slate-200'
-                        : 'border-t-4 border-t-emerald-500 border-slate-200'
+                        ? "border-t-4 border-t-[#C8102E] border-slate-200"
+                        : "border-t-4 border-t-emerald-500 border-slate-200"
                     }`}
                   >
                     <div className="space-y-2.5">
@@ -1088,12 +1179,12 @@ export default function QuizPage() {
                           <span
                             className={`text-[10px] font-black uppercase px-2 py-0.5 rounded ${
                               card.isPaid
-                                ? 'bg-red-50 text-[#C8102E] border border-red-200'
-                                : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                ? "bg-red-50 text-[#C8102E] border border-red-200"
+                                : "bg-emerald-50 text-emerald-700 border border-emerald-200"
                             }`}
                           >
                             {card.badge ||
-                              (card.isPaid ? 'পেইড টেস্ট' : 'ফ্রি টেস্ট')}
+                              (card.isPaid ? "পেইড টেস্ট" : "ফ্রি টেস্ট")}
                           </span>
                           <span className="text-xs font-black text-slate-500">
                             {toBengaliClass(card.classGrade)} শ্রেণি
@@ -1118,11 +1209,11 @@ export default function QuizPage() {
                         <span
                           className={`font-black ${
                             card.isPaid
-                              ? 'text-[#C8102E]'
-                              : 'text-emerald-700 font-bold'
+                              ? "text-[#C8102E]"
+                              : "text-emerald-700 font-bold"
                           }`}
                         >
-                          {card.isPaid ? `৳${card.price}` : '১০০% ফ্রি'}
+                          {card.isPaid ? `৳${card.price}` : "১০০% ফ্রি"}
                         </span>
                       </div>
                     </div>
@@ -1132,8 +1223,8 @@ export default function QuizPage() {
                       onClick={() => handleStartCustomCardTest(card)}
                       className={`w-full py-2.5 rounded-xl font-bold text-xs shadow-md transition flex items-center justify-center gap-1.5 active:scale-98 cursor-pointer ${
                         !card.isPaid || isUnlocked
-                          ? 'bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white'
-                          : 'bg-gradient-to-r from-[#0A1E3C] to-[#C8102E] hover:from-[#0F284E] hover:to-[#A50D26] text-white'
+                          ? "bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white"
+                          : "bg-gradient-to-r from-[#0A1E3C] to-[#C8102E] hover:from-[#0F284E] hover:to-[#A50D26] text-white"
                       }`}
                     >
                       {!card.isPaid || isUnlocked ? (
@@ -1164,12 +1255,17 @@ export default function QuizPage() {
             <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-0.5 rounded-full border border-emerald-200 mb-1">
               <FaGift /> ১০০% ফ্রি মডেল টেস্ট
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">🎁 Class-wise Free Model Test</h2>
+            <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">
+              🎁 Class-wise Free Model Test
+            </h2>
             <p className="text-xs text-slate-500 font-medium">
-              ৫ম থেকে ১০ম শ্রেণি পর্যন্ত প্রতিটি ক্লাসের জন্য আলাদা ফ্রি মডেল টেস্ট
+              ৫ম থেকে ১০ম শ্রেণি পর্যন্ত প্রতিটি ক্লাসের জন্য আলাদা ফ্রি মডেল
+              টেস্ট
             </p>
           </div>
-          <span className="text-xs font-bold text-slate-400">ফ্রি MCQ • তাৎক্ষণিক স্কোর</span>
+          <span className="text-xs font-bold text-slate-400">
+            ফ্রি MCQ • তাৎক্ষণিক স্কোর
+          </span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
@@ -1179,15 +1275,21 @@ export default function QuizPage() {
               <div
                 key={cls}
                 className={`bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-5 border transition-all duration-200 shadow-sm hover:shadow-md space-y-2.5 sm:space-y-4 flex flex-col justify-between ${
-                  isCurrentClass ? 'border-emerald-500 ring-2 ring-emerald-500/20' : 'border-slate-200'
+                  isCurrentClass
+                    ? "border-emerald-500 ring-2 ring-emerald-500/20"
+                    : "border-slate-200"
                 }`}
               >
                 <div className="space-y-1.5 sm:space-y-2">
                   {/* Optional Cover Image */}
-                  {(quizCovers.classes[cls] || quizCovers.classes[String(cls)]) && (
+                  {(quizCovers.classes[cls] ||
+                    quizCovers.classes[String(cls)]) && (
                     <div className="w-full aspect-video rounded-xl sm:rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/80 mb-2 relative group">
                       <img
-                        src={quizCovers.classes[cls] || quizCovers.classes[String(cls)]}
+                        src={
+                          quizCovers.classes[cls] ||
+                          quizCovers.classes[String(cls)]
+                        }
                         alt={`${toBengaliClass(cls)} শ্রেণি`}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
@@ -1209,7 +1311,8 @@ export default function QuizPage() {
                   </div>
 
                   <p className="hidden sm:block text-xs text-slate-500 leading-snug">
-                    বাছাইকৃত গুরুত্বপূর্ণ MCQ • সাথে সাথে সঠিক উত্তর ও ব্যাখ্যা সহ ফলাফল।
+                    বাছাইকৃত গুরুত্বপূর্ণ MCQ • সাথে সাথে সঠিক উত্তর ও ব্যাখ্যা
+                    সহ ফলাফল।
                   </p>
                 </div>
 
@@ -1236,19 +1339,24 @@ export default function QuizPage() {
             <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#C8102E] bg-red-50 px-3 py-0.5 rounded-full border border-red-200 mb-1">
               <FaGem /> এক্সক্লুসিভ প্রিপারেশন
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">💎 Class-wise Paid Model Test</h2>
+            <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">
+              💎 Class-wise Paid Model Test
+            </h2>
             <p className="text-xs text-slate-500 font-medium">
-              ৫ম থেকে ১০ম শ্রেণির পূর্ণাঙ্গ মডেল টেস্ট। প্রতিটি ক্লাসের টেস্ট আলাদাভাবে কিনতে পারবেন।
+              ৫ম থেকে ১০ম শ্রেণির পূর্ণাঙ্গ মডেল টেস্ট। প্রতিটি ক্লাসের টেস্ট
+              আলাদাভাবে কিনতে পারবেন।
             </p>
           </div>
           <span className="text-xs font-bold text-[#C8102E]">
-            ৳{quizPrices.classPrices[selectedClass] || 50} • পূর্ণাঙ্গ মডেল টেস্ট
+            ৳{quizPrices.classPrices[selectedClass] || 50} • পূর্ণাঙ্গ মডেল
+            টেস্ট
           </span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
           {[5, 6, 7, 8, 9, 10].map((cls) => {
-            const isUnlocked = unlockedClasses.includes(cls) || session?.user?.role === 'ADMIN';
+            const isUnlocked =
+              unlockedClasses.includes(cls) || session?.user?.role === "ADMIN";
 
             return (
               <div
@@ -1257,10 +1365,14 @@ export default function QuizPage() {
               >
                 <div className="space-y-1.5 sm:space-y-2">
                   {/* Optional Cover Image */}
-                  {(quizCovers.classes[cls] || quizCovers.classes[String(cls)]) && (
+                  {(quizCovers.classes[cls] ||
+                    quizCovers.classes[String(cls)]) && (
                     <div className="w-full aspect-video rounded-xl sm:rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/80 mb-2 relative group">
                       <img
-                        src={quizCovers.classes[cls] || quizCovers.classes[String(cls)]}
+                        src={
+                          quizCovers.classes[cls] ||
+                          quizCovers.classes[String(cls)]
+                        }
                         alt={`${toBengaliClass(cls)} শ্রেণি`}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
@@ -1272,11 +1384,11 @@ export default function QuizPage() {
                       <span
                         className={`text-[9px] sm:text-[10px] font-black uppercase px-1.5 sm:px-2 py-0.5 rounded inline-block ${
                           isUnlocked
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                            : 'bg-red-50 text-[#C8102E] border border-red-200'
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                            : "bg-red-50 text-[#C8102E] border border-red-200"
                         }`}
                       >
-                        {isUnlocked ? 'আনলকড' : 'প্রিমিয়াম'}
+                        {isUnlocked ? "আনলকড" : "প্রিমিয়াম"}
                       </span>
                       <h3 className="text-xs sm:text-base font-black text-slate-800 truncate sm:line-clamp-none">
                         💎 {toBengaliClass(cls)} শ্রেণি
@@ -1286,12 +1398,15 @@ export default function QuizPage() {
                       <div className="text-sm sm:text-xl font-black text-[#C8102E]">
                         ৳{quizPrices.classPrices[cls] || 50}
                       </div>
-                      <div className="hidden sm:block text-[10px] text-slate-400 font-semibold">এককালীন ফি</div>
+                      <div className="hidden sm:block text-[10px] text-slate-400 font-semibold">
+                        এককালীন ফি
+                      </div>
                     </div>
                   </div>
 
                   <p className="hidden sm:block text-xs text-slate-500 leading-snug">
-                    পূর্ণাঙ্গ মডেল টেস্ট • অধ্যায়ভিত্তিক স্পেশাল MCQ • বিস্তারিত ফলাফল, র‍্যাংক ও সমাধান।
+                    পূর্ণাঙ্গ মডেল টেস্ট • অধ্যায়ভিত্তিক স্পেশাল MCQ • বিস্তারিত
+                    ফলাফল, র‍্যাংক ও সমাধান।
                   </p>
                 </div>
 
@@ -1300,8 +1415,8 @@ export default function QuizPage() {
                   onClick={() => handleOpenPaidClassTest(cls)}
                   className={`w-full py-2 sm:py-2.5 rounded-xl font-bold text-[11px] sm:text-xs shadow-sm sm:shadow-md transition flex items-center justify-center gap-1.5 active:scale-98 ${
                     isUnlocked
-                      ? 'bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white'
-                      : 'bg-gradient-to-r from-[#0A1E3C] to-[#C8102E] hover:from-[#0F284E] hover:to-[#A50D26] text-white'
+                      ? "bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white"
+                      : "bg-gradient-to-r from-[#0A1E3C] to-[#C8102E] hover:from-[#0F284E] hover:to-[#A50D26] text-white"
                   }`}
                 >
                   {isUnlocked ? (
@@ -1333,8 +1448,8 @@ export default function QuizPage() {
             </h2>
             <p className="text-xs text-slate-500 font-medium">
               {selectedClass >= 9
-                ? 'বিজ্ঞান, মানবিক, ব্যবসায় শিক্ষা ও আবশ্যিক বিষয়ের ওপর মডেল টেস্ট'
-                : 'যেকোনো বিষয়ের ওপর মডেল টেস্ট অনুশীলন করুন'}
+                ? "বিজ্ঞান, মানবিক, ব্যবসায় শিক্ষা ও আবশ্যিক বিষয়ের ওপর মডেল টেস্ট"
+                : "যেকোনো বিষয়ের ওপর মডেল টেস্ট অনুশীলন করুন"}
             </p>
           </div>
 
@@ -1347,8 +1462,8 @@ export default function QuizPage() {
                 onClick={() => setSelectedClass(cls)}
                 className={`px-2.5 py-1 rounded-lg text-xs font-black transition ${
                   selectedClass === cls
-                    ? 'bg-[#C8102E] text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? "bg-[#C8102E] text-white shadow-xs"
+                    : "text-slate-600 hover:text-slate-900"
                 }`}
               >
                 {toBengaliClass(cls)}
@@ -1375,11 +1490,11 @@ export default function QuizPage() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
               <button
                 type="button"
-                onClick={() => setSelectedGroup('science')}
+                onClick={() => setSelectedGroup("science")}
                 className={`py-2 px-3 rounded-xl text-xs font-black transition border flex items-center justify-center gap-2 ${
-                  selectedGroup === 'science'
-                    ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
-                    : 'bg-slate-50 text-slate-700 hover:bg-blue-50 hover:border-blue-200 border-slate-200'
+                  selectedGroup === "science"
+                    ? "bg-blue-600 text-white border-blue-600 shadow-sm"
+                    : "bg-slate-50 text-slate-700 hover:bg-blue-50 hover:border-blue-200 border-slate-200"
                 }`}
               >
                 <span>⚛️</span>
@@ -1388,11 +1503,11 @@ export default function QuizPage() {
 
               <button
                 type="button"
-                onClick={() => setSelectedGroup('humanities')}
+                onClick={() => setSelectedGroup("humanities")}
                 className={`py-2 px-3 rounded-xl text-xs font-black transition border flex items-center justify-center gap-2 ${
-                  selectedGroup === 'humanities'
-                    ? 'bg-amber-600 text-white border-amber-600 shadow-sm'
-                    : 'bg-slate-50 text-slate-700 hover:bg-amber-50 hover:border-amber-200 border-slate-200'
+                  selectedGroup === "humanities"
+                    ? "bg-amber-600 text-white border-amber-600 shadow-sm"
+                    : "bg-slate-50 text-slate-700 hover:bg-amber-50 hover:border-amber-200 border-slate-200"
                 }`}
               >
                 <span>📜</span>
@@ -1401,11 +1516,11 @@ export default function QuizPage() {
 
               <button
                 type="button"
-                onClick={() => setSelectedGroup('commerce')}
+                onClick={() => setSelectedGroup("commerce")}
                 className={`py-2 px-3 rounded-xl text-xs font-black transition border flex items-center justify-center gap-2 ${
-                  selectedGroup === 'commerce'
-                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
-                    : 'bg-slate-50 text-slate-700 hover:bg-emerald-50 hover:border-emerald-200 border-slate-200'
+                  selectedGroup === "commerce"
+                    ? "bg-emerald-600 text-white border-emerald-600 shadow-sm"
+                    : "bg-slate-50 text-slate-700 hover:bg-emerald-50 hover:border-emerald-200 border-slate-200"
                 }`}
               >
                 <span>💼</span>
@@ -1414,11 +1529,11 @@ export default function QuizPage() {
 
               <button
                 type="button"
-                onClick={() => setSelectedGroup('compulsory')}
+                onClick={() => setSelectedGroup("compulsory")}
                 className={`py-2 px-3 rounded-xl text-xs font-black transition border flex items-center justify-center gap-2 ${
-                  selectedGroup === 'compulsory'
-                    ? 'bg-[#0A1E3C] text-white border-[#0A1E3C] shadow-sm'
-                    : 'bg-slate-50 text-slate-700 hover:bg-slate-100 hover:border-slate-300 border-slate-200'
+                  selectedGroup === "compulsory"
+                    ? "bg-[#0A1E3C] text-white border-[#0A1E3C] shadow-sm"
+                    : "bg-slate-50 text-slate-700 hover:bg-slate-100 hover:border-slate-300 border-slate-200"
                 }`}
               >
                 <span>🌐</span>
@@ -1447,14 +1562,18 @@ export default function QuizPage() {
                     />
                   </div>
                 ) : (
-                  <div className="text-3xl transition-transform group-hover:scale-110">{sub.icon}</div>
+                  <div className="text-3xl transition-transform group-hover:scale-110">
+                    {sub.icon}
+                  </div>
                 )}
                 <div className="space-y-1">
-                  <h4 className="text-xs sm:text-sm font-black text-slate-800 line-clamp-1">{sub.name}</h4>
+                  <h4 className="text-xs sm:text-sm font-black text-slate-800 line-clamp-1">
+                    {sub.name}
+                  </h4>
                   <div className="flex items-center justify-center gap-1.5 flex-wrap">
                     {count > 0 ? (
                       <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200">
-                        {count.toLocaleString('bn-BD')}টি MCQ
+                        {count.toLocaleString("bn-BD")}টি MCQ
                       </span>
                     ) : (
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">
@@ -1485,9 +1604,12 @@ export default function QuizPage() {
           <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#C8102E] bg-red-50 px-3 py-0.5 rounded-full border border-red-200 mb-1">
             <FaGem /> বিশেষ অফার ও প্যাকেজ
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">স্পেশাল মডেল টেস্ট প্যাকেজ</h2>
+          <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">
+            স্পেশাল মডেল টেস্ট প্যাকেজ
+          </h2>
           <p className="text-xs sm:text-sm text-slate-500 font-medium">
-            বিকাশ, নগদ, রকেট বা উপায় পেমেন্ট করে যেকোনো আকর্ষণীয় প্যাকেজ আনলক করুন
+            বিকাশ, নগদ, রকেট বা উপায় পেমেন্ট করে যেকোনো আকর্ষণীয় প্যাকেজ আনলক
+            করুন
           </p>
         </div>
 
@@ -1498,7 +1620,10 @@ export default function QuizPage() {
               const isPopular = pkg.isPopular;
               const discountPct =
                 pkg.originalPrice && pkg.originalPrice > pkg.price
-                  ? Math.round(((pkg.originalPrice - pkg.price) / pkg.originalPrice) * 100)
+                  ? Math.round(
+                      ((pkg.originalPrice - pkg.price) / pkg.originalPrice) *
+                        100,
+                    )
                   : null;
 
               return (
@@ -1506,13 +1631,13 @@ export default function QuizPage() {
                   key={pkg.id}
                   className={`bg-white rounded-3xl p-6 transition-all duration-300 space-y-4 relative flex flex-col justify-between ${
                     isPopular
-                      ? 'border-2 border-[#C8102E] shadow-xl md:-translate-y-1.5'
-                      : 'border border-slate-200 shadow-md hover:shadow-xl hover:border-slate-300'
+                      ? "border-2 border-[#C8102E] shadow-xl md:-translate-y-1.5"
+                      : "border border-slate-200 shadow-md hover:shadow-xl hover:border-slate-300"
                   }`}
                 >
                   {isPopular && (
                     <div className="absolute top-0 right-0 bg-gradient-to-r from-[#9B0D23] to-[#C8102E] text-white text-[10px] font-black uppercase px-4 py-1 rounded-bl-2xl shadow-xs">
-                      {pkg.badge || 'জনপ্রিয় অফার'}
+                      {pkg.badge || "জনপ্রিয় অফার"}
                     </div>
                   )}
 
@@ -1523,11 +1648,15 @@ export default function QuizPage() {
                           {pkg.badge}
                         </span>
                       )}
-                      <h3 className="text-lg font-black text-slate-900">{pkg.title}</h3>
+                      <h3 className="text-lg font-black text-slate-900">
+                        {pkg.title}
+                      </h3>
                     </div>
 
                     <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-black text-[#C8102E]">৳{pkg.price}</span>
+                      <span className="text-3xl font-black text-[#C8102E]">
+                        ৳{pkg.price}
+                      </span>
                       {pkg.originalPrice && pkg.originalPrice > pkg.price && (
                         <span className="text-sm font-bold text-slate-400 line-through">
                           ৳{pkg.originalPrice}
@@ -1540,12 +1669,16 @@ export default function QuizPage() {
                       )}
                     </div>
 
-                    <p className="text-xs text-slate-500 leading-relaxed">{pkg.tagline}</p>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      {pkg.tagline}
+                    </p>
 
                     <ul className="text-xs text-slate-600 space-y-2 pt-3 border-t border-slate-100">
                       {pkg.features.map((feat, fIdx) => (
                         <li key={fIdx} className="flex items-start gap-2">
-                          <span className="text-emerald-600 font-black shrink-0 mt-0.5">✓</span>
+                          <span className="text-emerald-600 font-black shrink-0 mt-0.5">
+                            ✓
+                          </span>
                           <span className="leading-snug">{feat}</span>
                         </li>
                       ))}
@@ -1560,16 +1693,16 @@ export default function QuizPage() {
                         setPaymentAmount(pkg.price);
                         setSelectedPackageScope(pkg.unlockScope);
                         setPaymentTargetClass(selectedClass);
-                        setUnlockSuccessMsg('');
+                        setUnlockSuccessMsg("");
                         setPaymentModalOpen(true);
                       }}
                       className={`w-full py-3 rounded-2xl font-black text-xs transition active:scale-98 cursor-pointer ${
                         isPopular
-                          ? 'bg-gradient-to-r from-[#9B0D23] via-[#C8102E] to-[#E5254A] text-white shadow-lg shadow-red-600/30 hover:opacity-95'
-                          : 'bg-slate-900 hover:bg-black text-white'
+                          ? "bg-gradient-to-r from-[#9B0D23] via-[#C8102E] to-[#E5254A] text-white shadow-lg shadow-red-600/30 hover:opacity-95"
+                          : "bg-slate-900 hover:bg-black text-white"
                       }`}
                     >
-                      প্যাকেজ কিনুন (৳{pkg.price})
+                      প্যাকেজ কিনুন
                     </button>
                   </div>
                 </div>
@@ -1581,13 +1714,19 @@ export default function QuizPage() {
       {/* ─────────────────────────────────────────────────────────────
           8. 🏆 RESULT BOARD / LEADERBOARD SECTION
       ───────────────────────────────────────────────────────────── */}
-      <section ref={resultsRef} id="leaderboard" className="space-y-5 scroll-mt-24">
+      <section
+        ref={resultsRef}
+        id="leaderboard"
+        className="space-y-5 scroll-mt-24"
+      >
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-200 pb-3">
           <div>
             <div className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 bg-amber-50 px-3 py-0.5 rounded-full border border-amber-200 mb-1">
               <FaAward /> মেধা তালিকা ও র‍্যাঙ্কিং
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">🏆 Result Board (লিডারবোর্ড)</h2>
+            <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">
+              🏆 Result Board (লিডারবোর্ড)
+            </h2>
             <p className="text-xs text-slate-500 font-medium">
               সাম্প্রতিক পরীক্ষার ফলাফল ও সেরা শিক্ষার্থীদের মেডেল তালিকা
             </p>
@@ -1608,22 +1747,30 @@ export default function QuizPage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs text-center space-y-1">
             <div className="text-2xl">🥇</div>
-            <h4 className="text-xs sm:text-sm font-black text-slate-800">Gold Rank</h4>
+            <h4 className="text-xs sm:text-sm font-black text-slate-800">
+              Gold Rank
+            </h4>
             <p className="text-[10px] text-slate-500">১ম স্থান (১০০% স্কোর)</p>
           </div>
           <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs text-center space-y-1">
             <div className="text-2xl">🥈</div>
-            <h4 className="text-xs sm:text-sm font-black text-slate-800">Silver Rank</h4>
+            <h4 className="text-xs sm:text-sm font-black text-slate-800">
+              Silver Rank
+            </h4>
             <p className="text-[10px] text-slate-500">২য় স্থান (৮০%+ স্কোর)</p>
           </div>
           <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs text-center space-y-1">
             <div className="text-2xl">🥉</div>
-            <h4 className="text-xs sm:text-sm font-black text-slate-800">Bronze Rank</h4>
+            <h4 className="text-xs sm:text-sm font-black text-slate-800">
+              Bronze Rank
+            </h4>
             <p className="text-[10px] text-slate-500">৩য় স্থান (৬০%+ স্কোর)</p>
           </div>
           <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs text-center space-y-1">
             <div className="text-2xl">⭐</div>
-            <h4 className="text-xs sm:text-sm font-black text-slate-800">Top 10</h4>
+            <h4 className="text-xs sm:text-sm font-black text-slate-800">
+              Top 10
+            </h4>
             <p className="text-[10px] text-slate-500">সেরা অংশগ্রহণকারী</p>
           </div>
         </div>
@@ -1647,29 +1794,52 @@ export default function QuizPage() {
               <tbody className="divide-y divide-slate-100">
                 {resultsList.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="py-8 text-center text-slate-400 font-medium">
-                      এখনও কোনো ফলাফল জমা পড়েনি। উপরে টেস্ট দিয়ে সবার আগে লিডারবোর্ডে যুক্ত হোন!
+                    <td
+                      colSpan={8}
+                      className="py-8 text-center text-slate-400 font-medium"
+                    >
+                      এখনও কোনো ফলাফল জমা পড়েনি। উপরে টেস্ট দিয়ে সবার আগে
+                      লিডারবোর্ডে যুক্ত হোন!
                     </td>
                   </tr>
                 ) : (
                   resultsList.map((res, i) => (
-                    <tr key={res.id || i} className="hover:bg-slate-50/60 transition">
+                    <tr
+                      key={res.id || i}
+                      className="hover:bg-slate-50/60 transition"
+                    >
                       <td className="py-3 px-4 font-black text-slate-800">
-                        {i === 0 ? '👑 ১' : i === 1 ? '🥈 ২' : i === 2 ? '🥉 ৩' : i + 1}
+                        {i === 0
+                          ? "👑 ১"
+                          : i === 1
+                            ? "🥈 ২"
+                            : i === 2
+                              ? "🥉 ৩"
+                              : i + 1}
                       </td>
-                      <td className="py-3 px-4 font-bold text-slate-900">{res.name}</td>
-                      <td className="py-3 px-4 text-slate-600">{toBengaliClass(res.classGrade)} শ্রেণি</td>
-                      <td className="py-3 px-4 font-semibold text-slate-700">{res.subject}</td>
+                      <td className="py-3 px-4 font-bold text-slate-900">
+                        {res.name}
+                      </td>
+                      <td className="py-3 px-4 text-slate-600">
+                        {toBengaliClass(res.classGrade)} শ্রেণি
+                      </td>
+                      <td className="py-3 px-4 font-semibold text-slate-700">
+                        {res.subject}
+                      </td>
                       <td className="py-3 px-4 text-center font-black text-[#C8102E]">
                         {res.score}/{res.total}
                       </td>
-                      <td className="py-3 px-4 text-center font-bold text-emerald-700">{res.percentage}%</td>
+                      <td className="py-3 px-4 text-center font-bold text-emerald-700">
+                        {res.percentage}%
+                      </td>
                       <td className="py-3 px-4">
                         <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
                           {res.medal}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-slate-500 text-[11px]">{res.date}</td>
+                      <td className="py-3 px-4 text-slate-500 text-[11px]">
+                        {res.date}
+                      </td>
                     </tr>
                   ))
                 )}
@@ -1690,7 +1860,9 @@ export default function QuizPage() {
                 <span className="text-[10px] font-black uppercase text-[#C8102E] bg-red-50 px-2 py-0.5 rounded border border-red-200">
                   পেমেন্ট ও আনলক
                 </span>
-                <h3 className="text-base font-black text-slate-800">{paymentPackageName}</h3>
+                <h3 className="text-base font-black text-slate-800">
+                  {paymentPackageName}
+                </h3>
               </div>
               <button
                 type="button"
@@ -1704,45 +1876,73 @@ export default function QuizPage() {
             {/* MFS Direct Send Money Card */}
             <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-2.5">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-bold text-slate-700">বিকাশ / নগদ / রকেট / উপায় পার্সোনাল নম্বর:</p>
+                <p className="text-xs font-bold text-slate-700">
+                  বিকাশ / নগদ / রকেট / উপায় পার্সোনাল নম্বর:
+                </p>
                 <div className="flex items-center gap-1.5">
                   <div className="bg-white px-1 py-0.5 rounded border border-slate-200 shadow-xs flex items-center">
-                    <img src="/assets/images/bkash.png" alt="bKash" className="h-3.5 w-auto object-contain" />
+                    <img
+                      src="/assets/images/bkash.png"
+                      alt="bKash"
+                      className="h-3.5 w-auto object-contain"
+                    />
                   </div>
                   <div className="bg-white px-1 py-0.5 rounded border border-slate-200 shadow-xs flex items-center">
-                    <img src="/assets/images/nagad.png" alt="Nagad" className="h-3.5 w-auto object-contain" />
+                    <img
+                      src="/assets/images/nagad.png"
+                      alt="Nagad"
+                      className="h-3.5 w-auto object-contain"
+                    />
                   </div>
                   <div className="bg-white px-1 py-0.5 rounded border border-slate-200 shadow-xs flex items-center">
-                    <img src="/assets/images/rocket.png" alt="Rocket" className="h-3.5 w-auto object-contain" />
+                    <img
+                      src="/assets/images/rocket.png"
+                      alt="Rocket"
+                      className="h-3.5 w-auto object-contain"
+                    />
                   </div>
                   <div className="bg-white px-1 py-0.5 rounded border border-slate-200 shadow-xs flex items-center">
-                    <img src="/assets/images/upay.png" alt="Upay" className="h-3.5 w-auto object-contain" />
+                    <img
+                      src="/assets/images/upay.png"
+                      alt="Upay"
+                      className="h-3.5 w-auto object-contain"
+                    />
                   </div>
                 </div>
               </div>
 
               <div className="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-200 shadow-xs">
-                <span className="font-mono font-black text-base text-[#0F2C59] tracking-wider">01712592519</span>
+                <span className="font-mono font-black text-base text-[#0F2C59] tracking-wider">
+                  01712592519
+                </span>
                 <span className="text-xs font-black text-[#C8102E] bg-red-50 px-2 py-0.5 rounded border border-red-100">
                   নির্ধারিত ফি: ৳{paymentAmount}
                 </span>
               </div>
               <p className="text-[11px] text-slate-500">
-                যেকোনো মাধ্যম থেকে Send Money করে পাওয়া TrxID অথবা অ্যাডমিন অ্যাক্সেস কোড নিচে লিখুন।
+                যেকোনো মাধ্যম থেকে Send Money করে পাওয়া TrxID অথবা অ্যাডমিন
+                অ্যাক্সেস কোড নিচে লিখুন।
               </p>
             </div>
 
             {/* Scope / Class Target Selection */}
-            {selectedPackageScope === 'all_classes' ? (
+            {selectedPackageScope === "all_classes" ? (
               <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 p-3 rounded-xl text-xs text-purple-900 font-bold flex items-center gap-2">
                 <span className="text-base">🌟</span>
-                <span>এই অল-ইন-ওয়ান প্যাকেজটি কিনলে ৫ম থেকে ১০ম সকল শ্রেণির সব মডেল টেস্ট সম্পূর্ণ আনলক হবে!</span>
+                <span>
+                  এই অল-ইন-ওয়ান প্যাকেজটি কিনলে ৫ম থেকে ১০ম সকল শ্রেণির সব মডেল
+                  টেস্ট সম্পূর্ণ আনলক হবে!
+                </span>
               </div>
             ) : (
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between text-xs">
-                  <label className="font-bold text-slate-700">কোন শ্রেণির জন্য আনলক করতে চান?</label>
-                  <span className="font-black text-[#C8102E]">{toBengaliClass(paymentTargetClass)} শ্রেণি</span>
+                  <label className="font-bold text-slate-700">
+                    কোন শ্রেণির জন্য আনলক করতে চান?
+                  </label>
+                  <span className="font-black text-[#C8102E]">
+                    {toBengaliClass(paymentTargetClass)} শ্রেণি
+                  </span>
                 </div>
                 <div className="grid grid-cols-6 gap-1.5">
                   {[5, 6, 7, 8, 9, 10].map((cls) => (
@@ -1752,8 +1952,8 @@ export default function QuizPage() {
                       onClick={() => setPaymentTargetClass(cls)}
                       className={`py-1.5 rounded-xl text-xs font-black transition border ${
                         paymentTargetClass === cls
-                          ? 'bg-[#C8102E] text-white border-[#C8102E] shadow-xs'
-                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                          ? "bg-[#C8102E] text-white border-[#C8102E] shadow-xs"
+                          : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
                       }`}
                     >
                       {toBengaliClass(cls)}
@@ -1781,7 +1981,8 @@ export default function QuizPage() {
                   <FaKey className="absolute right-3.5 top-3 text-slate-400 w-3.5 h-3.5" />
                 </div>
                 <p className="text-[10px] text-slate-400 mt-1">
-                  💡 ডেমো অ্যাক্সেস কোড: <code className="font-bold text-[#C8102E]">NOVA50</code> বা{' '}
+                  💡 ডেমো অ্যাক্সেস কোড:{" "}
+                  <code className="font-bold text-[#C8102E]">NOVA50</code> বা{" "}
                   <code className="font-bold text-[#C8102E]">SHIKKHA2026</code>
                 </p>
               </div>
@@ -1803,7 +2004,10 @@ export default function QuizPage() {
             {/* Helpline Link */}
             <div className="pt-2 text-center text-xs text-slate-500 border-t border-slate-100 flex items-center justify-center gap-1.5">
               <span>যেকোনো প্রয়োজনে কল করুন:</span>
-              <a href="tel:01712592519" className="font-bold text-[#C8102E] hover:underline">
+              <a
+                href="tel:01712592519"
+                className="font-bold text-[#C8102E] hover:underline"
+              >
                 ০১৭১২৫৯২৫১৯
               </a>
             </div>

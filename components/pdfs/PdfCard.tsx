@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import React, { useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import {
   FaFilePdf,
   FaDownload,
@@ -10,11 +10,11 @@ import {
   FaCheck,
   FaLayerGroup,
   FaArrowUpRightFromSquare,
-} from 'react-icons/fa6';
-import { HiSparkles } from 'react-icons/hi2';
-import { PdfItem } from '@/types';
-import toast from 'react-hot-toast';
-import { toBengaliClass } from '@/lib/defaultQuizData';
+} from "react-icons/fa6";
+import { HiSparkles } from "react-icons/hi2";
+import { PdfItem } from "@/types";
+import toast from "react-hot-toast";
+import { toBengaliClass } from "@/lib/defaultQuizData";
 
 interface PdfCardProps {
   pdf: PdfItem;
@@ -22,14 +22,18 @@ interface PdfCardProps {
   onRefreshStatus?: () => void;
 }
 
-export default function PdfCard({ pdf, onBuyClick, onRefreshStatus }: PdfCardProps) {
+export default function PdfCard({
+  pdf,
+  onBuyClick,
+  onRefreshStatus,
+}: PdfCardProps) {
   const { data: session } = useSession();
   const router = useRouter();
   const [downloading, setDownloading] = useState(false);
 
   const requireLogin = () => {
-    toast.error('পিডিএফ শিট পেতে অনুগ্রহ করে আগে লগইন করুন');
-    router.push('/login?callbackUrl=/pdfs');
+    toast.error("পিডিএফ শিট পেতে অনুগ্রহ করে আগে লগইন করুন");
+    router.push("/login?callbackUrl=/pdfs");
   };
 
   const handleDynamicDownload = async () => {
@@ -43,14 +47,14 @@ export default function PdfCard({ pdf, onBuyClick, onRefreshStatus }: PdfCardPro
 
     try {
       toast.success(`"${pdf.title}" ডাউনলোড শুরু হচ্ছে...`);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = downloadUrl;
-      link.setAttribute('download', `${pdf.title}.pdf`);
+      link.setAttribute("download", `${pdf.title}.pdf`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } catch {
-      window.open(pdf.fileUrl, '_blank', 'noopener,noreferrer');
+      window.open(pdf.fileUrl, "_blank", "noopener,noreferrer");
     } finally {
       setTimeout(() => setDownloading(false), 1200);
     }
@@ -61,7 +65,7 @@ export default function PdfCard({ pdf, onBuyClick, onRefreshStatus }: PdfCardPro
       requireLogin();
       return;
     }
-    window.open(pdf.fileUrl, '_blank', 'noopener,noreferrer');
+    window.open(pdf.fileUrl, "_blank", "noopener,noreferrer");
   };
 
   const handlePurchaseClick = () => {
@@ -73,27 +77,35 @@ export default function PdfCard({ pdf, onBuyClick, onRefreshStatus }: PdfCardPro
   };
   // Theme colors depending on subject
   const getSubjectTheme = (subj: string) => {
-    if (subj.includes('গণিত') || subj.includes('Math')) {
+    if (subj.includes("গণিত") || subj.includes("Math")) {
       return {
-        gradient: 'linear-gradient(135deg, #1D63D8 0%, #003893 50%, #041A42 100%)',
-        textColor: 'text-blue-100',
+        gradient:
+          "linear-gradient(135deg, #1D63D8 0%, #003893 50%, #041A42 100%)",
+        textColor: "text-blue-100",
       };
     }
-    if (subj.includes('বিজ্ঞান') || subj.includes('Science') || subj.includes('পদার্থ')) {
+    if (
+      subj.includes("বিজ্ঞান") ||
+      subj.includes("Science") ||
+      subj.includes("পদার্থ")
+    ) {
       return {
-        gradient: 'linear-gradient(135deg, #059669 0%, #047857 50%, #022c22 100%)',
-        textColor: 'text-emerald-100',
+        gradient:
+          "linear-gradient(135deg, #059669 0%, #047857 50%, #022c22 100%)",
+        textColor: "text-emerald-100",
       };
     }
-    if (subj.includes('ইংরেজি') || subj.includes('English')) {
+    if (subj.includes("ইংরেজি") || subj.includes("English")) {
       return {
-        gradient: 'linear-gradient(135deg, #E11D48 0%, #BE123C 50%, #4C0519 100%)',
-        textColor: 'text-rose-100',
+        gradient:
+          "linear-gradient(135deg, #E11D48 0%, #BE123C 50%, #4C0519 100%)",
+        textColor: "text-rose-100",
       };
     }
     return {
-      gradient: 'linear-gradient(135deg, #0C4CB8 0%, #003893 50%, #020D24 100%)',
-      textColor: 'text-blue-100',
+      gradient:
+        "linear-gradient(135deg, #0C4CB8 0%, #003893 50%, #020D24 100%)",
+      textColor: "text-blue-100",
     };
   };
 
@@ -103,7 +115,6 @@ export default function PdfCard({ pdf, onBuyClick, onRefreshStatus }: PdfCardPro
 
   return (
     <div className="group bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-xs hover:shadow-2xl hover:border-brand-500/50 transition-all duration-300 flex flex-col justify-between overflow-hidden relative transform hover:-translate-y-1">
-      
       {/* Top Banner & Visual Cover */}
       <div>
         <div
@@ -132,7 +143,9 @@ export default function PdfCard({ pdf, onBuyClick, onRefreshStatus }: PdfCardPro
               <FaFilePdf className="w-4 h-4 sm:w-6 sm:h-6 text-rose-300 drop-shadow" />
             </div>
             <div className="min-w-0">
-              <span className={`text-[10px] sm:text-xs font-semibold ${theme.textColor} uppercase tracking-wide block truncate`}>
+              <span
+                className={`text-[10px] sm:text-xs font-semibold ${theme.textColor} uppercase tracking-wide block truncate`}
+              >
                 {pdf.subject}
               </span>
               <span className="text-white font-black text-xs sm:text-base leading-tight block truncate">
@@ -173,17 +186,27 @@ export default function PdfCard({ pdf, onBuyClick, onRefreshStatus }: PdfCardPro
           {/* Price & Discount Tag */}
           <div className="bg-slate-50 rounded-xl sm:rounded-2xl p-2 sm:p-3 border border-slate-100 flex items-center justify-between">
             <div>
-              <span className="text-[9px] sm:text-[10px] text-slate-400 font-semibold block uppercase">নির্ধারিত ফি</span>
+              <span className="text-[9px] sm:text-[10px] text-slate-400 font-semibold block uppercase">
+                নির্ধারিত ফি
+              </span>
               <div className="flex items-baseline gap-1.5 sm:gap-2">
                 {isFreePdf ? (
                   <>
-                    <span className="text-sm sm:text-xl font-black text-emerald-600">ফ্রি (৳০)</span>
-                    <span className="text-[10px] sm:text-xs text-slate-400 line-through font-semibold">৳{regularPrice}</span>
+                    <span className="text-sm sm:text-xl font-black text-emerald-600">
+                      ফ্রি (৳০)
+                    </span>
+                    <span className="text-[10px] sm:text-xs text-slate-400 line-through font-semibold">
+                      ৳{regularPrice}
+                    </span>
                   </>
                 ) : (
                   <>
-                    <span className="text-base sm:text-2xl font-black text-brand-800">৳{pdf.price}</span>
-                    <span className="text-[10px] sm:text-xs text-slate-400 line-through font-semibold">৳{regularPrice}</span>
+                    <span className="text-base sm:text-2xl font-black text-brand-800">
+                      ৳{pdf.price}
+                    </span>
+                    <span className="text-[10px] sm:text-xs text-slate-400 line-through font-semibold">
+                      ৳{regularPrice}
+                    </span>
                   </>
                 )}
               </div>
@@ -193,24 +216,52 @@ export default function PdfCard({ pdf, onBuyClick, onRefreshStatus }: PdfCardPro
               <span
                 className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full inline-block mb-1 ${
                   isFreePdf
-                    ? 'bg-emerald-100 text-emerald-700'
-                    : 'bg-rose-100 text-rose-700'
+                    ? "bg-emerald-100 text-emerald-700"
+                    : "bg-rose-100 text-rose-700"
                 }`}
               >
-                {isFreePdf ? 'সবার জন্য উন্মুক্ত' : 'বিশেষ ছাড়'}
+                {isFreePdf ? "সবার জন্য উন্মুক্ত" : "বিশেষ ছাড়"}
               </span>
               <div className="flex items-center justify-end gap-1">
-                <div className="bg-white px-1 py-0.5 rounded border border-slate-200/80 shadow-xs flex items-center" title="bKash">
-                  <img src="/assets/images/bkash.png" alt="bKash" className="h-3 sm:h-3.5 w-auto object-contain" />
+                <div
+                  className="bg-white px-1 py-0.5 rounded border border-slate-200/80 shadow-xs flex items-center"
+                  title="bKash"
+                >
+                  <img
+                    src="/assets/images/bkash.png"
+                    alt="bKash"
+                    className="h-3 sm:h-3.5 w-auto object-contain"
+                  />
                 </div>
-                <div className="bg-white px-1 py-0.5 rounded border border-slate-200/80 shadow-xs flex items-center" title="Nagad">
-                  <img src="/assets/images/nagad.png" alt="Nagad" className="h-3 sm:h-3.5 w-auto object-contain" />
+                <div
+                  className="bg-white px-1 py-0.5 rounded border border-slate-200/80 shadow-xs flex items-center"
+                  title="Nagad"
+                >
+                  <img
+                    src="/assets/images/nagad.png"
+                    alt="Nagad"
+                    className="h-3 sm:h-3.5 w-auto object-contain"
+                  />
                 </div>
-                <div className="bg-white px-1 py-0.5 rounded border border-slate-200/80 shadow-xs flex items-center" title="Rocket">
-                  <img src="/assets/images/rocket.png" alt="Rocket" className="h-3 sm:h-3.5 w-auto object-contain" />
+                <div
+                  className="bg-white px-1 py-0.5 rounded border border-slate-200/80 shadow-xs flex items-center"
+                  title="Rocket"
+                >
+                  <img
+                    src="/assets/images/rocket.png"
+                    alt="Rocket"
+                    className="h-3 sm:h-3.5 w-auto object-contain"
+                  />
                 </div>
-                <div className="bg-white px-1 py-0.5 rounded border border-slate-200/80 shadow-xs flex items-center" title="Upay">
-                  <img src="/assets/images/upay.png" alt="Upay" className="h-3 sm:h-3.5 w-auto object-contain" />
+                <div
+                  className="bg-white px-1 py-0.5 rounded border border-slate-200/80 shadow-xs flex items-center"
+                  title="Upay"
+                >
+                  <img
+                    src="/assets/images/upay.png"
+                    alt="Upay"
+                    className="h-3 sm:h-3.5 w-auto object-contain"
+                  />
                 </div>
               </div>
             </div>
@@ -228,8 +279,10 @@ export default function PdfCard({ pdf, onBuyClick, onRefreshStatus }: PdfCardPro
               disabled={downloading}
               className="flex-1 inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 sm:py-3 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm shadow-md transition transform active:scale-95 disabled:opacity-75"
             >
-              <FaDownload className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${downloading ? 'animate-bounce' : ''}`} />
-              <span>{downloading ? '...' : 'ফ্রি ডাউনলোড'}</span>
+              <FaDownload
+                className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${downloading ? "animate-bounce" : ""}`}
+              />
+              <span>{downloading ? "..." : "ফ্রি ডাউনলোড"}</span>
             </button>
             <button
               type="button"
@@ -240,7 +293,7 @@ export default function PdfCard({ pdf, onBuyClick, onRefreshStatus }: PdfCardPro
               <FaArrowUpRightFromSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
           </div>
-        ) : pdf.purchaseStatus === 'APPROVED' ? (
+        ) : pdf.purchaseStatus === "APPROVED" ? (
           <div className="space-y-1.5 sm:space-y-2">
             <div className="flex items-center gap-1.5 sm:gap-2">
               <button
@@ -249,10 +302,10 @@ export default function PdfCard({ pdf, onBuyClick, onRefreshStatus }: PdfCardPro
                 disabled={downloading}
                 className="flex-1 inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 sm:py-3 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm shadow-md transition transform active:scale-95 disabled:opacity-75"
               >
-                <FaDownload className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${downloading ? 'animate-bounce' : ''}`} />
-                <span>
-                  {downloading ? '...' : 'ডাউনলোড'}
-                </span>
+                <FaDownload
+                  className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${downloading ? "animate-bounce" : ""}`}
+                />
+                <span>{downloading ? "..." : "ডাউনলোড"}</span>
               </button>
               <button
                 type="button"
@@ -264,7 +317,7 @@ export default function PdfCard({ pdf, onBuyClick, onRefreshStatus }: PdfCardPro
               </button>
             </div>
           </div>
-        ) : pdf.purchaseStatus === 'PENDING' ? (
+        ) : pdf.purchaseStatus === "PENDING" ? (
           <div className="space-y-1.5 sm:space-y-2">
             <div className="w-full text-center py-2 sm:py-3 px-2 sm:px-3 bg-amber-50 border border-amber-200 rounded-xl sm:rounded-2xl text-[10px] sm:text-xs font-bold text-amber-800 flex items-center justify-center gap-1 sm:gap-2">
               <FaClock className="w-3 h-3 sm:w-4 sm:h-4 text-amber-600 animate-spin shrink-0" />
@@ -287,11 +340,10 @@ export default function PdfCard({ pdf, onBuyClick, onRefreshStatus }: PdfCardPro
             className="w-full inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-gradient-to-r from-brand-700 via-brand-800 to-indigo-900 hover:from-brand-800 hover:to-indigo-950 text-white font-bold py-2 sm:py-3 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm shadow-brand hover:shadow-xl transition-all duration-300 transform active:scale-95 group-hover:from-nova-600 group-hover:to-brand-800 cursor-pointer"
           >
             <FaFilePdf className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-nova-300" />
-            <span>সংগ্রহ করুন (৳{pdf.price})</span>
+            <span>সংগ্রহ করুন</span>
           </button>
         )}
       </div>
-
     </div>
   );
 }
