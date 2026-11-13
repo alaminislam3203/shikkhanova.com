@@ -235,3 +235,4 @@ export function clearQuizSubmissions(examId?: string): boolean {
   }
   return false;
 }
+

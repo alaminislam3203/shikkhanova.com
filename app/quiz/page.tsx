@@ -1312,6 +1312,107 @@ export default function QuizPage() {
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
+          3.5 🎯 LIVE CLASS TESTS & CUSTOM EXAMS (Created by Teacher/Admin)
+      ───────────────────────────────────────────────────────────── */}
+      <section className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-200 pb-3">
+          <div>
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-red-700 bg-red-50 px-3 py-0.5 rounded-full border border-red-200 mb-1">
+              <FaClipboardList /> শিক্ষক কর্তৃক নির্ধারিত ক্লাস টেস্ট
+            </div>
+            <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">
+              🎯 {toBengaliClass(selectedClass)} শ্রেণির লাইভ কাস্টম এক্সাম
+            </h2>
+            <p className="text-xs text-slate-500 font-medium">
+              আপনার ব্যাচ বা শ্রেণির জন্য নির্ধারিত সাপ্তাহিক ও মাসিক মূল্যায়ন পরীক্ষা
+            </p>
+          </div>
+          {customExams.length > 0 && (
+            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+              🟢 {customExams.length}টি লাইভ এক্সাম চলমান
+            </span>
+          )}
+        </div>
+
+        {loadingCustomExams ? (
+          <div className="py-8 text-center text-slate-400 font-bold text-xs">
+            লাইভ পরীক্ষার তথ্য লোড হচ্ছে...
+          </div>
+        ) : customExams.length === 0 ? (
+          <div className="bg-slate-50/80 rounded-2xl p-5 border border-dashed border-slate-300 text-center space-y-1.5">
+            <div className="text-2xl">📋</div>
+            <p className="text-xs font-bold text-slate-600">
+              বর্তমানে {toBengaliClass(selectedClass)} শ্রেণির জন্য কোনো কাস্টম এক্সাম শিডিউল করা নেই।
+            </p>
+            <p className="text-[11px] text-slate-400">
+              আপনি নিচের বিষয়ভিত্তিক মডেল টেস্ট বা ফ্রি টেস্টে অংশ নিয়ে প্রস্তুতি নিতে পারেন।
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {customExams.map((exam) => {
+              const hasCode = !!(exam.examCode && exam.examCode.trim());
+              return (
+                <div
+                  key={exam.id}
+                  className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 space-y-4 flex flex-col justify-between group relative overflow-hidden"
+                >
+                  <div className="space-y-2.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 font-black text-[11px] border border-blue-200">
+                        {exam.subject}
+                      </span>
+                      {hasCode ? (
+                        <span className="px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 font-bold text-[10px] border border-purple-200 flex items-center gap-1">
+                          <FaLock className="w-2.5 h-2.5" />
+                          <span>কোড প্রয়োজন</span>
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[10px] border border-emerald-200 flex items-center gap-1">
+                          <FaLockOpen className="w-2.5 h-2.5" />
+                          <span>সবার জন্য উন্মুক্ত</span>
+                        </span>
+                      )}
+                    </div>
+
+                    <h3 className="text-base font-black text-slate-800 leading-snug group-hover:text-[#C8102E] transition">
+                      {exam.title}
+                    </h3>
+
+                    {exam.subtitle && (
+                      <p className="text-xs text-slate-500 leading-relaxed font-medium line-clamp-2">
+                        {exam.subtitle}
+                      </p>
+                    )}
+
+                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-xs">
+                      <div className="p-2 rounded-xl bg-slate-50 flex items-center gap-1.5 text-slate-700 font-bold">
+                        <FaClock className="w-3 h-3 text-slate-400" />
+                        <span>সময়: {exam.durationMinutes} মিনিট</span>
+                      </div>
+                      <div className="p-2 rounded-xl bg-slate-50 flex items-center gap-1.5 text-slate-700 font-bold">
+                        <FaBookOpen className="w-3 h-3 text-slate-400" />
+                        <span>প্রশ্ন: {exam.questionCount}টি</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleStartCustomExam(exam)}
+                    className="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#0A1E3C] to-[#C8102E] hover:from-[#122A54] hover:to-[#A50D26] text-white font-black text-xs shadow-md transition transform active:scale-98 flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <span>টেস্টে অংশ নিন</span>
+                    {hasCode ? <FaLock className="w-3 h-3" /> : <span>➔</span>}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
           3.9 🌟 DYNAMIC CUSTOM MCQ & MODEL TEST CARDS (Added by Admin)
       ───────────────────────────────────────────────────────────── */}
       {customCards.filter((c) => c.isActive).length > 0 && (
@@ -2205,6 +2306,58 @@ export default function QuizPage() {
                 ০১৭১২৫৯২৫১৯
               </a>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Exam Code Access Modal */}
+      {examCodeModalOpen && targetExamForCode && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-sm w-full p-6 space-y-4 shadow-2xl border border-slate-200 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+              <h4 className="text-sm font-black text-slate-800">
+                🔒 অ্যাক্সেস কোড প্রয়োজন
+              </h4>
+              <button
+                type="button"
+                onClick={() => setExamCodeModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 font-bold text-xs"
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-600 leading-relaxed">
+              <span className="font-bold text-slate-800">"{targetExamForCode.title}"</span> পরীক্ষায় অংশগ্রহণের জন্য আপনার শিক্ষকের দেওয়া এক্সাম কোডটি লিখুন:
+            </p>
+
+            <form onSubmit={handleVerifyExamCodeAndStart} className="space-y-3">
+              <input
+                type="text"
+                value={inputExamCode}
+                onChange={(e) => setInputExamCode(e.target.value.toUpperCase())}
+                placeholder="যেমন: MATH26"
+                className="w-full bg-slate-50 border border-slate-300 focus:border-[#C8102E] rounded-xl px-3.5 py-2.5 text-center font-mono font-black text-sm tracking-wider uppercase text-slate-800 outline-none"
+                autoFocus
+                required
+              />
+
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setExamCodeModalOpen(false)}
+                  className="w-1/2 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition"
+                >
+                  বাতিল
+                </button>
+                <button
+                  type="submit"
+                  className="w-1/2 py-2.5 rounded-xl bg-[#C8102E] hover:bg-[#A50D26] text-white font-black text-xs shadow-md transition"
+                >
+                  শুরু করুন ➔
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

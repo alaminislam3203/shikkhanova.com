@@ -483,3 +483,4 @@ export default function AdminQuizResultsTab({ initialExamId }: AdminQuizResultsT
     </div>
   );
 }
+
