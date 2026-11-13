@@ -207,22 +207,37 @@ export default function AdminCustomExamsTab({ onNavigateToResults }: AdminCustom
     });
   };
 
-  const handleToggleActive = async (exam: CustomExam) => {
+  const handleToggleActive = (exam: CustomExam) => {
+    if (exam.isActive) {
+      showConfirmToast({
+        title: "পরীক্ষা বন্ধ করবেন?",
+        message: `আপনি কি "${exam.title}" পরীক্ষাটি বন্ধ করতে চান? বন্ধ রাখলে শিক্ষার্থীরা আর এই পরীক্ষায় অংশ নিতে পারবে না।`,
+        confirmText: "হ্যাঁ, বন্ধ করুন",
+        cancelText: "বাতিল",
+        onConfirm: async () => {
+          await toggleExamStatus(exam, false);
+        },
+      });
+    } else {
+      toggleExamStatus(exam, true);
+    }
+  };
+
+  const toggleExamStatus = async (exam: CustomExam, nextStatus: boolean) => {
     try {
-      const updated = !exam.isActive;
       const res = await fetch("/api/quiz/custom-exams", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...exam,
-          isActive: updated,
+          isActive: nextStatus,
         }),
       });
       if (res.ok) {
         toast.success(
-          updated
-            ? `"${exam.title}" পরীক্ষাটি শিক্ষার্থীদের জন্য চালু করা হয়েছে।`
-            : `"${exam.title}" পরীক্ষাটি স্থগিত রাখা হয়েছে।`
+          nextStatus
+            ? `"${exam.title}" পরীক্ষাটি চালু করা হয়েছে।`
+            : `"${exam.title}" পরীক্ষাটি বন্ধ করা হয়েছে।`
         );
         loadData();
       }
