@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
   FaFilePdf,
+  FaFileWord,
   FaDownload,
   FaClock,
   FaCheck,
@@ -47,9 +48,16 @@ export default function PdfCard({
 
     try {
       toast.success(`"${pdf.title}" ডাউনলোড শুরু হচ্ছে...`);
+      const isWord = Boolean(
+        pdf.fileUrl?.toLowerCase().includes('.docx') ||
+        pdf.fileUrl?.toLowerCase().includes('.doc') ||
+        pdf.title?.toLowerCase().includes('.doc')
+      );
+      const ext = isWord ? (pdf.fileUrl?.toLowerCase().includes('.docx') ? '.docx' : '.doc') : '.pdf';
+
       const link = document.createElement("a");
       link.href = downloadUrl;
-      link.setAttribute("download", `${pdf.title}.pdf`);
+      link.setAttribute("download", `${pdf.title}${ext}`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

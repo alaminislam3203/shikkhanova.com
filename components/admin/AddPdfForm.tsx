@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   FaFilePdf,
+  FaFileWord,
   FaCloudArrowUp,
   FaCircleCheck,
   FaClock,
@@ -125,19 +126,26 @@ export default function AddPdfForm({
     }
   };
 
-  // Handle Direct PDF File Upload to Cloudinary
+  // Handle Direct PDF / Word File Upload to Google Drive
   const handlePdfFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
-    if (!isPdf) {
-      notify('দয়া করে একটি সঠিক PDF ফাইল (.pdf) নির্বাচন করুন', 'error');
+    const lowerName = file.name.toLowerCase();
+    const isDoc =
+      lowerName.endsWith('.docx') ||
+      lowerName.endsWith('.doc') ||
+      file.type === 'application/msword' ||
+      file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    const isPdf = file.type === 'application/pdf' || lowerName.endsWith('.pdf');
+
+    if (!isPdf && !isDoc) {
+      notify('দয়া করে একটি সঠিক PDF বা Word ডকুমেন্ট (.pdf, .doc, .docx) নির্বাচন করুন', 'error');
       return;
     }
 
-    if (file.size > 15 * 1024 * 1024) {
-      notify('পিডিএফ ফাইলের সাইজ সর্বোচ্চ ১৫ মেগাবাইট হতে পারবে', 'error');
+    if (file.size > 25 * 1024 * 1024) {
+      notify('ফাইলের সাইজ সর্বোচ্চ ২৫ মেগাবাইট হতে পারবে', 'error');
       return;
     }
 
@@ -156,14 +164,14 @@ export default function AddPdfForm({
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || 'পিডিএফ ফাইল আপলোড ব্যর্থ হয়েছে');
+        throw new Error(data.error || 'ফাইল আপলোড ব্যর্থ হয়েছে');
       }
 
       setUploadedFileName(file.name);
       onChange({
         ...formData,
         fileUrl: data.url,
-        title: formData.title || file.name.replace(/\.pdf$/i, ''),
+        title: formData.title || file.name.replace(/\.(pdf|docx|doc)$/i, ''),
       });
 
       notify(
@@ -173,7 +181,7 @@ export default function AddPdfForm({
         'success'
       );
     } catch (err: any) {
-      notify(err.message || 'পিডিএফ আপলোডে সমস্যা হয়েছে', 'error');
+      notify(err.message || 'ফাইল আপলোডে সমস্যা হয়েছে', 'error');
     } finally {
       setUploadingFile(false);
       if (fileInputRef.current) {
@@ -187,11 +195,11 @@ export default function AddPdfForm({
     e.preventDefault();
 
     if (!formData.title.trim()) {
-      notify('পিডিএফ কার্ডের টাইটেল দিন', 'error');
+      notify('শিট/ডকুমেন্টের টাইটেল দিন', 'error');
       return;
     }
     if (!formData.fileUrl.trim()) {
-      notify('দয়া করে একটি PDF ফাইল আপলোড করুন অথবা ফাইল লিংক দিন', 'error');
+      notify('দয়া করে একটি PDF বা Word (DOC/DOCX) ফাইল আপলোড করুন অথবা ফাইল লিংক দিন', 'error');
       return;
     }
 
@@ -369,16 +377,19 @@ export default function AddPdfForm({
 
           <form onSubmit={handleSaveCard} className="space-y-4 text-xs sm:text-sm">
             
-            {/* 1. Direct PDF File Upload Box (Google Drive) */}
+            {/* 1. Direct PDF/DOC File Upload Box (Google Drive) */}
             <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-blue-50/70 via-indigo-50/40 to-slate-50 border-2 border-dashed border-brand-300 space-y-3">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="space-y-0.5">
                   <label className="font-black text-slate-800 flex items-center gap-2 text-sm">
-                    <FaFilePdf className="text-rose-600 w-4 h-4" />
-                    ১. পিডিএফ ফাইল আপলোড করুন (সরাসরি Google Drive-এ)
+                    <span className="flex items-center gap-1">
+                      <FaFilePdf className="text-rose-600 w-4 h-4" />
+                      <FaFileWord className="text-blue-600 w-4 h-4" />
+                    </span>
+                    ১. ফাইল আপলোড করুন (PDF / DOC / DOCX - সরাসরি Google Drive-এ)
                   </label>
                   <p className="text-[11px] text-slate-500">
-                    কম্পিউটার বা মোবাইল থেকে PDF সিলেক্ট করলে সরাসরি আপনার Google Drive ফোল্ডারে আপলোড হবে (সর্বোচ্চ ২৫MB)
+                    কম্পিউটার বা মোবাইল থেকে PDF অথবা Word (.doc / .docx) ফাইল সিলেক্ট করলে সরাসরি আপনার Google Drive ফোল্ডারে আপলোড হবে (সর্বোচ্চ ২৫MB)
                   </p>
                 </div>
 
@@ -396,7 +407,7 @@ export default function AddPdfForm({
                   ) : (
                     <>
                       <FaCloudArrowUp className="w-4 h-4" />
-                      <span>PDF ফাইল সিলেক্ট করুন</span>
+                      <span>PDF বা Word ফাইল সিলেক্ট করুন</span>
                     </>
                   )}
                 </button>
@@ -405,14 +416,21 @@ export default function AddPdfForm({
                   type="file"
                   ref={fileInputRef}
                   onChange={handlePdfFileUpload}
-                  accept="application/pdf,.pdf"
+                  accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                   className="hidden"
                 />
               </div>
 
               {uploadedFileName && (
                 <div className="flex items-center justify-between bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-xl text-xs font-bold text-emerald-800">
-                  <span className="truncate">✓ আপলোডকৃত ফাইল: {uploadedFileName}</span>
+                  <span className="truncate flex items-center gap-1.5">
+                    {/\.(docx|doc)$/i.test(uploadedFileName) ? (
+                      <FaFileWord className="text-blue-600 shrink-0" />
+                    ) : (
+                      <FaFilePdf className="text-rose-600 shrink-0" />
+                    )}
+                    ✓ আপলোডকৃত ফাইল: {uploadedFileName}
+                  </span>
                   {formData.fileUrl && (
                     <a
                       href={formData.fileUrl}

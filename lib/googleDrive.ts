@@ -189,20 +189,36 @@ async function getGoogleDriveAccessToken(): Promise<string> {
 }
 
 /**
- * Uploads a PDF Buffer directly to Google Drive Folder & makes it publicly downloadable via link
+ * Uploads a PDF or Document (DOC / DOCX) Buffer directly to Google Drive Folder & makes it publicly downloadable via link
  */
 export async function uploadPdfToGoogleDrive(
   buffer: Buffer,
-  fileName: string
+  fileName: string,
+  customMimeType?: string
 ): Promise<{ fileId: string; downloadUrl: string; viewUrl: string }> {
   const accessToken = await getGoogleDriveAccessToken();
   const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID?.trim();
-  const cleanName = fileName.endsWith('.pdf') ? fileName : `${fileName}.pdf`;
+  const lowerName = fileName.toLowerCase();
+
+  let mimeType = 'application/pdf';
+  if (customMimeType) {
+    mimeType = customMimeType;
+  } else if (lowerName.endsWith('.docx')) {
+    mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+  } else if (lowerName.endsWith('.doc')) {
+    mimeType = 'application/msword';
+  }
+
+  // Preserve original file name with appropriate extension
+  let cleanName = fileName;
+  if (!lowerName.endsWith('.pdf') && !lowerName.endsWith('.docx') && !lowerName.endsWith('.doc')) {
+    cleanName = `${fileName}.pdf`;
+  }
 
   const tryMultipartUpload = async (targetFolderId?: string) => {
     const metadata: Record<string, any> = {
       name: cleanName,
-      mimeType: 'application/pdf',
+      mimeType: mimeType,
     };
     if (targetFolderId) {
       metadata.parents = [targetFolderId];
@@ -212,7 +228,7 @@ export async function uploadPdfToGoogleDrive(
     const metaPart = Buffer.from(
       `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(
         metadata
-      )}\r\n--${boundary}\r\nContent-Type: application/pdf\r\n\r\n`,
+      )}\r\n--${boundary}\r\nContent-Type: ${mimeType}\r\n\r\n`,
       'utf-8'
     );
     const endPart = Buffer.from(`\r\n--${boundary}--`, 'utf-8');
@@ -241,7 +257,7 @@ export async function uploadPdfToGoogleDrive(
 
   if (!result.ok || !result.data?.id) {
     throw new Error(
-      result.data?.error?.message || 'Google Drive-এ পিডিএফ আপলোড ব্যর্থ হয়েছে'
+      result.data?.error?.message || 'Google Drive-এ ফাইল আপলোড ব্যর্থ হয়েছে'
     );
   }
 

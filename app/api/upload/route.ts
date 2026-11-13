@@ -27,16 +27,23 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'কোনো ফাইল পাওয়া যায়নি' }, { status: 400 });
     }
 
+    const lowerName = file.name.toLowerCase();
+    const isDocx =
+      lowerName.endsWith('.docx') ||
+      file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    const isDoc =
+      lowerName.endsWith('.doc') || file.type === 'application/msword';
     const isPdf =
-      file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+      lowerName.endsWith('.pdf') || file.type === 'application/pdf';
+    const isDocument = isPdf || isDocx || isDoc;
 
-    // Max 25MB for PDFs, 5MB for images
-    const maxSize = isPdf ? 25 * 1024 * 1024 : 5 * 1024 * 1024;
+    // Max 25MB for Documents (PDF, DOC, DOCX), 5MB for images
+    const maxSize = isDocument ? 25 * 1024 * 1024 : 5 * 1024 * 1024;
     if (file.size > maxSize) {
       return NextResponse.json(
         {
-          error: isPdf
-            ? 'পিডিএফ ফাইলের সাইজ সর্বোচ্চ ২৫ মেগাবাইট হতে পারবে'
+          error: isDocument
+            ? 'ডকুমেন্ট ফাইলের সাইজ সর্বোচ্চ ২৫ মেগাবাইট হতে পারবে'
             : 'ছবির সাইজ সর্বোচ্চ ৫ মেগাবাইট হতে পারবে',
         },
         { status: 400 }
@@ -46,16 +53,23 @@ export async function POST(req: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // 1. PDF files ALWAYS upload ONLY to Google Drive (never to Cloudinary)
-    if (isPdf) {
+    // 1. Document files (PDF, DOC, DOCX) ALWAYS upload ONLY to Google Drive (never to Cloudinary)
+    if (isDocument) {
       if (!isGoogleDriveConfigured()) {
         return NextResponse.json(
-          { error: 'পিডিএফ আপলোডের জন্য .env ফাইলে Google Drive ক্রেডেনশিয়াল সেটআপ করা নেই।' },
+          { error: 'ডকুমেন্ট আপলোডের জন্য .env ফাইলে Google Drive ক্রেডেনশিয়াল সেটআপ করা নেই।' },
           { status: 500 }
         );
       }
 
-      const driveResult = await uploadPdfToGoogleDrive(buffer, file.name);
+      let mimeType = 'application/pdf';
+      if (isDocx) {
+        mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+      } else if (isDoc) {
+        mimeType = 'application/msword';
+      }
+
+      const driveResult = await uploadPdfToGoogleDrive(buffer, file.name, mimeType);
       return NextResponse.json({
         success: true,
         url: driveResult.viewUrl,
@@ -63,12 +77,14 @@ export async function POST(req: Request) {
         driveFileId: driveResult.fileId,
         fileName: file.name,
         fileSize: file.size,
-        isPdf: true,
+        isPdf: isPdf,
+        isDoc: isDoc || isDocx,
+        isDocument: true,
         isGoogleDrive: true,
       });
     }
 
-    // 2. Non-PDF files (Images) upload to Cloudinary
+    // 2. Non-Document files (Images) upload to Cloudinary
     if (!isCloudinaryConfigured()) {
       return NextResponse.json(
         { error: 'ছবি আপলোডের জন্য Cloudinary ক্রেডেনশিয়াল (.env) সেটআপ করা নেই।' },
