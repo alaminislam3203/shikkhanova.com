@@ -412,9 +412,19 @@ export default function AboutPage() {
               <span className="inline-flex items-center gap-1.5">
                 <FaLocationDot className="text-[#C8102E]" /> জুম্মাপাড়া, নীলফামারী সদর
               </span>
-              <span className="inline-flex items-center gap-1.5">
-                <FaPhone className="text-emerald-400" /> হেল্পলাইন: ০১৭১২৫৯২৫১৯
-              </span>
+              <a
+                href="tel:01712592519"
+                onClick={() => {
+                  navigator.clipboard?.writeText("01712592519");
+                  toast.success("হেল্পলাইন নম্বর (01712592519) কপি হয়েছে!");
+                }}
+                className="inline-flex items-center gap-1.5 hover:text-white transition cursor-pointer"
+                title="কল ও কপি করুন"
+              >
+                <FaPhone className="text-emerald-400" />
+                <span>হেল্পলাইন: ০১৭১২৫৯২৫১৯</span>
+                <FaCopy className="w-2.5 h-2.5 opacity-60 hover:opacity-100" />
+              </a>
             </div>
           </div>
 

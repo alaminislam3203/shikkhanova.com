@@ -5,6 +5,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { confirmSignOut } from '@/lib/logout';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 import {
   FaUser,
   FaCamera,
@@ -28,6 +29,7 @@ import {
   FaChevronRight,
   FaGear,
   FaTrophy,
+  FaCopy,
 } from 'react-icons/fa6';
 import { TbCashBanknote } from 'react-icons/tb';
 import { HiSparkles } from 'react-icons/hi2';
