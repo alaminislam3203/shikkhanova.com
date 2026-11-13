@@ -120,6 +120,11 @@ export default function PdfCard({
   const theme = getSubjectTheme(pdf.subject);
   const isFreePdf = Boolean(pdf.isFree) || Number(pdf.price) <= 0;
   const regularPrice = isFreePdf ? 50 : Math.round(pdf.price * 1.5);
+  const isWordDoc = Boolean(
+    pdf.fileUrl?.toLowerCase().includes('.docx') ||
+    pdf.fileUrl?.toLowerCase().includes('.doc') ||
+    pdf.title?.toLowerCase().includes('.doc')
+  );
 
   return (
     <div className="group bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-xs hover:shadow-2xl hover:border-brand-500/50 transition-all duration-300 flex flex-col justify-between overflow-hidden relative transform hover:-translate-y-1">
@@ -148,7 +153,11 @@ export default function PdfCard({
           {/* Book Icon & Subject Header */}
           <div className="relative z-10 mt-2 sm:mt-4 flex items-center gap-2 sm:gap-3">
             <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 shadow-inner group-hover:scale-105 transition-transform shrink-0">
-              <FaFilePdf className="w-4 h-4 sm:w-6 sm:h-6 text-rose-300 drop-shadow" />
+              {isWordDoc ? (
+                <FaFileWord className="w-4 h-4 sm:w-6 sm:h-6 text-sky-200 drop-shadow" />
+              ) : (
+                <FaFilePdf className="w-4 h-4 sm:w-6 sm:h-6 text-rose-300 drop-shadow" />
+              )}
             </div>
             <div className="min-w-0">
               <span
@@ -157,7 +166,7 @@ export default function PdfCard({
                 {pdf.subject}
               </span>
               <span className="text-white font-black text-xs sm:text-base leading-tight block truncate">
-                প্রিমিয়াম হ্যান্ডনোট
+                {isWordDoc ? "প্রিমিয়াম ডকুমেন্ট" : "প্রিমিয়াম হ্যান্ডনোট"}
               </span>
             </div>
           </div>
@@ -347,7 +356,11 @@ export default function PdfCard({
             onClick={handlePurchaseClick}
             className="w-full inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-gradient-to-r from-brand-700 via-brand-800 to-indigo-900 hover:from-brand-800 hover:to-indigo-950 text-white font-bold py-2 sm:py-3 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm shadow-brand hover:shadow-xl transition-all duration-300 transform active:scale-95 group-hover:from-nova-600 group-hover:to-brand-800 cursor-pointer"
           >
-            <FaFilePdf className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-nova-300" />
+            {isWordDoc ? (
+              <FaFileWord className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-200" />
+            ) : (
+              <FaFilePdf className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-nova-300" />
+            )}
             <span>সংগ্রহ করুন</span>
           </button>
         )}

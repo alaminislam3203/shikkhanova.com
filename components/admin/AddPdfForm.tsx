@@ -637,7 +637,7 @@ export default function AddPdfForm({
                 ) : (
                   <>
                     <FaPlus className="w-4 h-4" />
-                    <span>পিডিএফ কার্ড পাবলিশ করুন</span>
+                    <span>পিডিএফ / ডকুমেন্ট কার্ড পাবলিশ করুন</span>
                   </>
                 )}
               </button>
