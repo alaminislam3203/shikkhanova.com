@@ -1,0 +1,715 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import toast from "react-hot-toast";
+import { toBengaliClass } from "@/lib/defaultQuizData";
+import { CoachingFeeRecord, FeePaymentMethod } from "@/lib/coachingFeeStorage";
+import {
+  FaCopy,
+  FaCheck,
+  FaCircleCheck,
+  FaClock,
+  FaPrint,
+  FaPhone,
+  FaArrowLeft,
+  FaMoneyBillWave,
+  FaMagnifyingGlass,
+  FaFileInvoiceDollar,
+  FaUserGraduate,
+  FaCalendarDays,
+  FaBuildingColumns,
+} from "react-icons/fa6";
+import { TbCashBanknote } from "react-icons/tb";
+
+const BKASH_NUMBER = "01712592519";
+const NAGAD_NUMBER = "01712592519";
+const ROCKET_NUMBER = "01712592519-7";
+const DEFAULT_FEE_AMOUNT = 1200;
+
+const MONTH_OPTIONS = [
+  "জানুয়ারি ২০২৬",
+  "ফেব্রুয়ারি ২০২৬",
+  "মার্চ ২০২৬",
+  "এপ্রিল ২০২৬",
+  "মে ২০২৬",
+  "জুন ২০২৬",
+  "জুলাই ২০২৬",
+  "আগস্ট ২০২৬",
+  "সেপ্টেম্বর ২০২৬",
+  "অক্টোবর ২০২৬",
+  "নভেম্বর ২০২৬",
+  "ডিসেম্বর ২০২৬",
+];
+
+export default function PayFeePage() {
+  const { data: session } = useSession();
+
+  // Form State
+  const [studentName, setStudentName] = useState<string>("");
+  const [classGrade, setClassGrade] = useState<number>(6);
+  const [rollNumber, setRollNumber] = useState<string>("");
+  const [month, setMonth] = useState<string>("মার্চ ২০২৬");
+  const [amount, setAmount] = useState<number>(DEFAULT_FEE_AMOUNT);
+  const [paymentMethod, setPaymentMethod] = useState<FeePaymentMethod>("BKASH");
+  const [senderPhone, setSenderPhone] = useState<string>("");
+  const [studentPhone, setStudentPhone] = useState<string>("");
+  const [trxId, setTrxId] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  // Success Receipt State
+  const [submittedReceipt, setSubmittedReceipt] = useState<CoachingFeeRecord | null>(null);
+
+  // Track Payment State
+  const [trackQuery, setTrackQuery] = useState<string>("");
+  const [trackedRecord, setTrackedRecord] = useState<CoachingFeeRecord | null>(null);
+  const [isTracking, setIsTracking] = useState<boolean>(false);
+  const [trackSearched, setTrackSearched] = useState<boolean>(false);
+
+  // Autofill logged in user details if available
+  useEffect(() => {
+    if (session?.user?.name && !studentName) {
+      setStudentName(session.user.name);
+    }
+    const userAny = session?.user as any;
+    if (userAny?.classGrade) {
+      setClassGrade(Number(userAny.classGrade));
+    }
+    if (userAny?.rollNumber && !rollNumber) {
+      setRollNumber(String(userAny.rollNumber));
+    }
+    if (userAny?.phone && !studentPhone) {
+      setStudentPhone(userAny.phone);
+    }
+  }, [session?.user]);
+
+  const handleCopyNumber = (num: string, label: string) => {
+    navigator.clipboard.writeText(num);
+    toast.success(`${label} নম্বর (${num}) কপি হয়েছে!`);
+  };
+
+  const handleSubmitFee = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!studentName.trim()) {
+      toast.error("শিক্ষার্থীর নাম লিখুন।");
+      return;
+    }
+    if (!senderPhone.trim()) {
+      toast.error("যে নম্বর থেকে টাকা পাঠিয়েছেন তা লিখুন।");
+      return;
+    }
+    if (!trxId.trim() || trxId.trim().length < 6) {
+      toast.error("সঠিক Transaction ID (কমপক্ষে ৬ অক্ষর) লিখুন।");
+      return;
+    }
+
+    setIsSubmitting(true);
+    const loadingToastId = toast.loading("ফি সাবমিট করা হচ্ছে...");
+
+    try {
+      const res = await fetch("/api/coaching-fees", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          studentName: studentName.trim(),
+          classGrade,
+          rollNumber: rollNumber.trim() || undefined,
+          month,
+          amount,
+          paymentMethod,
+          senderPhone: senderPhone.trim(),
+          studentPhone: studentPhone.trim() || undefined,
+          trxId: trxId.trim().toUpperCase(),
+        }),
+      });
+
+      const data = await res.json();
+      toast.dismiss(loadingToastId);
+
+      if (res.ok) {
+        toast.success("🎉 কোচিং ফি সফলভাবে জমা দেওয়া হয়েছে!");
+        setSubmittedReceipt(data.record);
+        setTrxId("");
+      } else {
+        toast.error(data.error || "ফি সাবমিট ব্যর্থ হয়েছে।");
+      }
+    } catch {
+      toast.dismiss(loadingToastId);
+      toast.error("নেটওয়ার্ক সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleTrackPayment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!trackQuery.trim()) {
+      toast.error("TrxID, রোল বা মোবাইল নম্বর লিখুন।");
+      return;
+    }
+
+    setIsTracking(true);
+    setTrackSearched(true);
+    try {
+      const res = await fetch(`/api/coaching-fees?search=${encodeURIComponent(trackQuery.trim())}`, {
+        cache: "no-store",
+      });
+      const data = await res.json();
+      if (Array.isArray(data?.fees) && data.fees.length > 0) {
+        setTrackedRecord(data.fees[0]);
+      } else {
+        setTrackedRecord(null);
+      }
+    } catch {
+      toast.error("অনুসন্ধান ব্যর্থ হয়েছে।");
+    } finally {
+      setIsTracking(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50/50 py-8 sm:py-12 px-4 sm:px-6">
+      <div className="max-w-4xl mx-auto space-y-8">
+        {/* Navigation & Header */}
+        <div className="flex items-center justify-between">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-xs font-bold text-slate-600 hover:text-slate-900 transition"
+          >
+            <FaArrowLeft className="w-3 h-3" />
+            <span>হোমে ফিরে যান</span>
+          </Link>
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
+            <span>হেল্পলাইন:</span>
+            <a href="tel:01712592519" className="text-[#C8102E] font-black hover:underline">
+              ০১৭১২৫৯২৫১৯
+            </a>
+          </div>
+        </div>
+
+        {/* Hero Section */}
+        <div className="relative rounded-3xl bg-gradient-to-r from-[#0A1E3C] via-[#0F2C59] to-[#200A18] text-white p-6 sm:p-10 shadow-2xl overflow-hidden space-y-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500 text-slate-950 text-xs font-black">
+            <TbCashBanknote className="w-4 h-4" />
+            <span>অনলাইন ফি পরিশোধ পোর্টাল</span>
+          </div>
+
+          <h1 className="text-2xl sm:text-4xl font-black tracking-tight leading-snug">
+            শিক্ষানোভা একাডেমি — মাসিক কোচিং ফি
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-200 font-medium max-w-2xl leading-relaxed">
+            ৫ম থেকে ১০ম শ্রেণির শিক্ষার্থীদের মাসিক কোচিং ফি বিকাশ বা নগদে পাঠিয়ে TrxID দিয়ে নিশ্চিত করুন। পেমেন্ট অনুমোদন শেষে ডিজিটাল মানি রসিদ ডাউনলোড ও প্রিন্ট করতে পারবেন।
+          </p>
+
+          <div className="pt-2 flex flex-wrap items-center gap-3">
+            <div className="px-4 py-2 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-baseline gap-2">
+              <span className="text-xs text-slate-300 font-bold">নির্ধারিত মাসিক ফি:</span>
+              <span className="text-xl sm:text-2xl font-black text-amber-300">৳১,২০০</span>
+            </div>
+            <div className="px-3.5 py-2 rounded-2xl bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-bold flex items-center gap-1.5">
+              <FaCircleCheck className="w-3.5 h-3.5" />
+              <span>নিরাপদ বিকাশ ও নগদ পেমেন্ট</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Payment Numbers & Instruction Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* bKash Card */}
+          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3 relative overflow-hidden">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-black text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200">
+                বিকাশ পার্সোনাল
+              </span>
+              <span className="text-[10px] text-slate-400 font-bold">Send Money</span>
+            </div>
+            <div>
+              <div className="text-lg font-black font-mono text-slate-900 tracking-wide">
+                {BKASH_NUMBER}
+              </div>
+              <div className="text-[11px] text-slate-500 font-medium">শিক্ষা নোভা একাডেমি</div>
+            </div>
+            <button
+              type="button"
+              onClick={() => handleCopyNumber(BKASH_NUMBER, "বিকাশ")}
+              className="w-full py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-98"
+            >
+              <FaCopy className="w-3 h-3" />
+              <span>নম্বর কপি করুন</span>
+            </button>
+          </div>
+
+          {/* Nagad Card */}
+          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3 relative overflow-hidden">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-black text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
+                নগদ পার্সোনাল
+              </span>
+              <span className="text-[10px] text-slate-400 font-bold">Send Money</span>
+            </div>
+            <div>
+              <div className="text-lg font-black font-mono text-slate-900 tracking-wide">
+                {NAGAD_NUMBER}
+              </div>
+              <div className="text-[11px] text-slate-500 font-medium">শিক্ষা নোভা একাডেমি</div>
+            </div>
+            <button
+              type="button"
+              onClick={() => handleCopyNumber(NAGAD_NUMBER, "নগদ")}
+              className="w-full py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-98"
+            >
+              <FaCopy className="w-3 h-3" />
+              <span>নম্বর কপি করুন</span>
+            </button>
+          </div>
+
+          {/* Rocket Card */}
+          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3 relative overflow-hidden">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-black text-purple-800 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200">
+                রকেট পার্সোনাল
+              </span>
+              <span className="text-[10px] text-slate-400 font-bold">Send Money</span>
+            </div>
+            <div>
+              <div className="text-lg font-black font-mono text-slate-900 tracking-wide">
+                {ROCKET_NUMBER}
+              </div>
+              <div className="text-[11px] text-slate-500 font-medium">শিক্ষা নোভা একাডেমি</div>
+            </div>
+            <button
+              type="button"
+              onClick={() => handleCopyNumber(ROCKET_NUMBER, "রকেট")}
+              className="w-full py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-800 font-bold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-98"
+            >
+              <FaCopy className="w-3 h-3" />
+              <span>নম্বর কপি করুন</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Step-by-Step Instructions */}
+        <div className="bg-blue-50/80 border border-blue-200 rounded-3xl p-5 sm:p-6 space-y-2.5">
+          <h3 className="text-xs sm:text-sm font-black text-blue-950 flex items-center gap-2">
+            <span>📌 ফি পরিশোধের সহজ ৪টি ধাপ:</span>
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs text-blue-900/90 font-medium">
+            <div className="bg-white p-3 rounded-2xl border border-blue-100 space-y-1">
+              <div className="font-black text-blue-700">১. Send Money করুন</div>
+              <p className="text-[11px] text-slate-600">
+                বিকাশ বা নগদ অ্যাপে গিয়ে উপরের নম্বরে <strong>১২০০ টাকা</strong> Send Money করুন।
+              </p>
+            </div>
+            <div className="bg-white p-3 rounded-2xl border border-blue-100 space-y-1">
+              <div className="font-black text-blue-700">২. রেফারেন্স দিন</div>
+              <p className="text-[11px] text-slate-600">
+                রেফারেন্স বক্সে শিক্ষার্থীর নাম বা রোল নম্বর লিখে পেমেন্ট নিশ্চিত করুন।
+              </p>
+            </div>
+            <div className="bg-white p-3 rounded-2xl border border-blue-100 space-y-1">
+              <div className="font-black text-blue-700">৩. TrxID সংগ্রহ করুন</div>
+              <p className="text-[11px] text-slate-600">
+                লেনদেন সফল হওয়ার পর এসএমএস বা অ্যাপ থেকে প্রাপ্ত <strong>Transaction ID</strong> কপি করুন।
+              </p>
+            </div>
+            <div className="bg-white p-3 rounded-2xl border border-blue-100 space-y-1">
+              <div className="font-black text-blue-700">৪. ফর্মে সাবমিট করুন</div>
+              <p className="text-[11px] text-slate-600">
+                নিচের ফর্মে TrxID ও তথ্য পূরণ করে সাবমিট করুন ও রসিদ সংগ্রহ করুন।
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Fee Payment Form */}
+        <div className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-xl space-y-6">
+          <div className="space-y-1 pb-4 border-b border-slate-200">
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900">
+              কোচিং ফি সাবমিশন ফর্ম
+            </h2>
+            <p className="text-xs text-slate-500 font-medium">
+              টাকা পাঠানোর পর নিচের তথ্যগুলো সতর্কতার সাথে পূরণ করুন
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmitFee} className="space-y-5">
+            {/* Student Name & Class */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1.5">
+                  শিক্ষার্থীর নাম *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={studentName}
+                  onChange={(e) => setStudentName(e.target.value)}
+                  placeholder="যেমন: সাকিব আল হাসান"
+                  className="w-full bg-slate-50 border border-slate-300 focus:border-[#C8102E] rounded-2xl px-4 py-3 text-xs sm:text-sm text-slate-900 font-bold outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1.5">
+                  শ্রেণি নির্বাচন করুন *
+                </label>
+                <select
+                  value={classGrade}
+                  onChange={(e) => setClassGrade(Number(e.target.value))}
+                  className="w-full bg-slate-50 border border-slate-300 focus:border-[#C8102E] rounded-2xl px-4 py-3 text-xs sm:text-sm text-slate-900 font-bold outline-none cursor-pointer"
+                >
+                  {[5, 6, 7, 8, 9, 10].map((cls) => (
+                    <option key={cls} value={cls}>
+                      {toBengaliClass(cls)} শ্রেণি
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Roll Number & Month */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1.5">
+                  রোল নম্বর (ঐচ্ছিক)
+                </label>
+                <input
+                  type="text"
+                  value={rollNumber}
+                  onChange={(e) => setRollNumber(e.target.value)}
+                  placeholder="যেমন: ০৫"
+                  className="w-full bg-slate-50 border border-slate-300 focus:border-[#C8102E] rounded-2xl px-4 py-3 text-xs sm:text-sm text-slate-900 font-mono outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1.5">
+                  কোন মাসের ফি? *
+                </label>
+                <select
+                  value={month}
+                  onChange={(e) => setMonth(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-300 focus:border-[#C8102E] rounded-2xl px-4 py-3 text-xs sm:text-sm text-slate-900 font-bold outline-none cursor-pointer"
+                >
+                  {MONTH_OPTIONS.map((m) => (
+                    <option key={m} value={m}>
+                      {m}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Payment Method Selector & Amount */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1.5">
+                  পেমেন্ট মাধ্যম *
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: "BKASH", label: "বিকাশ", color: "rose" },
+                    { id: "NAGAD", label: "নগদ", color: "amber" },
+                    { id: "ROCKET", label: "রকেট", color: "purple" },
+                  ].map((method) => (
+                    <button
+                      key={method.id}
+                      type="button"
+                      onClick={() => setPaymentMethod(method.id as FeePaymentMethod)}
+                      className={`py-2.5 rounded-xl text-xs font-bold transition border cursor-pointer ${
+                        paymentMethod === method.id
+                          ? "bg-slate-900 text-white border-slate-900 shadow-sm"
+                          : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                      }`}
+                    >
+                      {method.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1.5">
+                  টাকার পরিমাণ
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    value={amount}
+                    onChange={(e) => setAmount(Number(e.target.value) || DEFAULT_FEE_AMOUNT)}
+                    className="w-full bg-slate-100 border border-slate-300 rounded-2xl pl-8 pr-4 py-3 text-xs sm:text-sm text-[#C8102E] font-black outline-none"
+                    readOnly
+                  />
+                  <span className="absolute left-3.5 top-3.5 text-xs font-black text-slate-500">৳</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Sender Phone & Transaction ID */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1.5">
+                  যে নম্বর থেকে টাকা পাঠিয়েছেন (Sender Phone) *
+                </label>
+                <input
+                  type="tel"
+                  required
+                  value={senderPhone}
+                  onChange={(e) => setSenderPhone(e.target.value)}
+                  placeholder="যেমন: 017xxxxxxxx"
+                  className="w-full bg-slate-50 border border-slate-300 focus:border-[#C8102E] rounded-2xl px-4 py-3 text-xs sm:text-sm text-slate-900 font-mono outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1.5">
+                  Transaction ID (TrxID) *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={trxId}
+                  onChange={(e) => setTrxId(e.target.value.toUpperCase())}
+                  placeholder="যেমন: BL8A92K9XQ"
+                  className="w-full bg-slate-50 border border-slate-300 focus:border-[#C8102E] rounded-2xl px-4 py-3 text-xs sm:text-sm text-slate-900 font-mono font-black tracking-wider uppercase outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Contact Phone (Optional) */}
+            <div>
+              <label className="text-xs font-bold text-slate-700 block mb-1.5">
+                অভিভাবকের যোগাযোগের মোবাইল নম্বর (ঐচ্ছিক)
+              </label>
+              <input
+                type="tel"
+                value={studentPhone}
+                onChange={(e) => setStudentPhone(e.target.value)}
+                placeholder="প্রয়োজনে মেসেজ বা কলের জন্য মোবাইল নম্বর"
+                className="w-full bg-slate-50 border border-slate-300 focus:border-[#C8102E] rounded-2xl px-4 py-3 text-xs text-slate-900 font-mono outline-none"
+              />
+            </div>
+
+            {/* Submit Button */}
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#9B0D23] via-[#C8102E] to-[#E5254A] hover:opacity-95 text-white font-black text-sm shadow-xl transition transform active:scale-98 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+              >
+                <TbCashBanknote className="w-5 h-5" />
+                <span>{isSubmitting ? "ফি জমা হচ্ছে..." : "৳১,২০০ কোচিং ফি সাবমিট করুন"}</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* Track Payment Status Section */}
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+            <div>
+              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <FaFileInvoiceDollar className="text-blue-600" />
+                <span>পূর্ববর্তী ফি জমার স্ট্যাটাস জানুন</span>
+              </h3>
+              <p className="text-xs text-slate-500 font-medium">
+                আপনার ফি অনুমোদন হয়েছে কি না তা TrxID, রোল বা মোবাইল নম্বর দিয়ে যাচাই করুন
+              </p>
+            </div>
+          </div>
+
+          <form onSubmit={handleTrackPayment} className="flex gap-2">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                value={trackQuery}
+                onChange={(e) => setTrackQuery(e.target.value)}
+                placeholder="TrxID, রোল নম্বর বা প্রেরকের মোবাইল নম্বর লিখুন..."
+                className="w-full bg-slate-50 border border-slate-300 focus:border-[#C8102E] rounded-2xl pl-10 pr-4 py-3 text-xs sm:text-sm text-slate-900 outline-none"
+              />
+              <FaMagnifyingGlass className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+            </div>
+            <button
+              type="submit"
+              disabled={isTracking}
+              className="px-6 py-3 rounded-2xl bg-[#0A1E3C] hover:bg-black text-white font-bold text-xs sm:text-sm transition cursor-pointer shrink-0"
+            >
+              {isTracking ? "খোঁজা হচ্ছে..." : "যাচাই করুন"}
+            </button>
+          </form>
+
+          {/* Track Result Card */}
+          {trackSearched && (
+            <div className="pt-2">
+              {trackedRecord ? (
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 animate-in fade-in">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-slate-800 text-sm">
+                      {trackedRecord.studentName} ({toBengaliClass(trackedRecord.classGrade)} শ্রেণি)
+                    </span>
+                    <span
+                      className={`text-xs font-black px-3 py-1 rounded-full ${
+                        trackedRecord.status === "APPROVED"
+                          ? "bg-emerald-100 text-emerald-800"
+                          : trackedRecord.status === "PENDING"
+                          ? "bg-amber-100 text-amber-800"
+                          : "bg-rose-100 text-rose-800"
+                      }`}
+                    >
+                      {trackedRecord.status === "APPROVED"
+                        ? "✅ অনুমোদিত (PAID)"
+                        : trackedRecord.status === "PENDING"
+                        ? "🟡 অপেক্ষমান (PENDING)"
+                        : "❌ বাতিল (REJECTED)"}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs pt-1 border-t border-slate-200 text-slate-600">
+                    <div>
+                      <span className="text-slate-400 block text-[10px]">ফি এর মাস:</span>
+                      <span className="font-bold text-slate-800">{trackedRecord.month}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block text-[10px]">টাকা:</span>
+                      <span className="font-bold text-[#C8102E]">৳{trackedRecord.amount}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block text-[10px]">মাধ্যম ও প্রেরক:</span>
+                      <span className="font-mono font-bold text-slate-800">
+                        {trackedRecord.paymentMethod} ({trackedRecord.senderPhone})
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block text-[10px]">TrxID:</span>
+                      <span className="font-mono font-black text-emerald-700">{trackedRecord.trxId}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setSubmittedReceipt(trackedRecord)}
+                      className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 cursor-pointer"
+                    >
+                      <span>রসিদ দেখুন</span>
+                      <span>➔</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-center text-xs text-rose-700 font-bold">
+                  উক্ত তথ্য দিয়ে কোনো ফি রেকর্ড পাওয়া যায়নি। সঠিক TrxID বা মোবাইল নম্বর দিন।
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Digital Money Receipt Modal */}
+        {submittedReceipt && (
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 space-y-5 shadow-2xl border border-slate-200 animate-in zoom-in-95 duration-200">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-black">
+                    ৳
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-black text-slate-900">মানি রসিদ (Money Receipt)</h4>
+                    <p className="text-[10px] text-slate-400 font-mono">#{submittedReceipt.id}</p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setSubmittedReceipt(null)}
+                  className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 text-xs cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Receipt Content */}
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 text-xs">
+                <div className="text-center pb-2 border-b border-slate-200 space-y-0.5">
+                  <h3 className="font-black text-base text-slate-800">শিক্ষানোভা একাডেমি</h3>
+                  <p className="text-[10px] text-slate-500">মাসিক কোচিং ফি পরিশোধ রসিদ</p>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-slate-500 font-semibold">শিক্ষার্থীর নাম:</span>
+                    <span className="font-black text-slate-900">{submittedReceipt.studentName}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500 font-semibold">শ্রেণি ও রোল:</span>
+                    <span className="font-bold text-slate-800">
+                      {toBengaliClass(submittedReceipt.classGrade)} শ্রেণি {submittedReceipt.rollNumber ? `(রোল: ${submittedReceipt.rollNumber})` : ""}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500 font-semibold">ফি এর মাস:</span>
+                    <span className="font-black text-blue-700">{submittedReceipt.month}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500 font-semibold">টাকার পরিমাণ:</span>
+                    <span className="font-black text-base text-[#C8102E]">৳{submittedReceipt.amount}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500 font-semibold">পেমেন্ট মাধ্যম:</span>
+                    <span className="font-bold text-slate-800">{submittedReceipt.paymentMethod}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500 font-semibold">প্রেরকের নম্বর:</span>
+                    <span className="font-mono font-bold text-slate-800">{submittedReceipt.senderPhone}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500 font-semibold">Transaction ID:</span>
+                    <span className="font-mono font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                      {submittedReceipt.trxId}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center pt-2 border-t border-slate-200">
+                    <span className="text-slate-500 font-semibold">স্ট্যাটাস:</span>
+                    <span
+                      className={`font-black text-xs px-2.5 py-0.5 rounded-full ${
+                        submittedReceipt.status === "APPROVED"
+                          ? "bg-emerald-100 text-emerald-800"
+                          : submittedReceipt.status === "PENDING"
+                          ? "bg-amber-100 text-amber-800"
+                          : "bg-rose-100 text-rose-800"
+                      }`}
+                    >
+                      {submittedReceipt.status === "APPROVED" ? "✅ অনুমোদিত (APPROVED)" : submittedReceipt.status === "PENDING" ? "🟡 অপেক্ষমান (PENDING)" : "❌ বাতিল (REJECTED)"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="w-1/2 py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                >
+                  <FaPrint className="w-3.5 h-3.5" />
+                  <span>প্রিন্ট রসিদ</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSubmittedReceipt(null)}
+                  className="w-1/2 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition cursor-pointer"
+                >
+                  বন্ধ করুন
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
