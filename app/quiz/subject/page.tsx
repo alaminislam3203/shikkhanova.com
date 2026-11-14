@@ -260,6 +260,11 @@ function SubjectDetailsContent() {
     const list: SubjectExamItem[] = [];
     const totalBank = bankQuestions.length;
     const classPrice = quizPrices.classPrices[selectedClass] || 50;
+    const classCover =
+      covers.classes?.[selectedClass] ||
+      covers.classes?.[String(selectedClass)] ||
+      "";
+    const subjectCover = covers.subjects?.[selectedSubject] || "";
 
     // 1. 🎁 Class-wise Free Model Test for this subject
     list.push({
@@ -272,6 +277,7 @@ function SubjectDetailsContent() {
       questionCount: Math.min(25, Math.max(10, totalBank || 20)),
       isPaid: false,
       badge: "Free Model Test",
+      coverImage: subjectCover || classCover,
       sourceType: "auto_bank",
       isBuiltIn: true,
     });
@@ -288,6 +294,7 @@ function SubjectDetailsContent() {
       isPaid: true,
       price: classPrice,
       badge: "💎 Paid Model Test",
+      coverImage: classCover || subjectCover,
       sourceType: "auto_bank",
       isBuiltIn: true,
     });
@@ -308,6 +315,7 @@ function SubjectDetailsContent() {
         isPaid: Boolean(exam.isPaid),
         price: exam.price || 50,
         badge: exam.badge || (exam.isPaid ? "পেইড" : "ফ্রি"),
+        coverImage: exam.coverImage || subjectCover || classCover,
         sourceType: exam.sourceType || "auto_bank",
         examCode: exam.examCode,
         questions: exam.questions,
@@ -335,6 +343,7 @@ function SubjectDetailsContent() {
             isPaid: Boolean(card.isPaid),
             price: card.price || 50,
             badge: card.badge || (card.isPaid ? "পেইড" : "ফ্রি"),
+            coverImage: card.coverImage || subjectCover || classCover,
             sourceType: "auto_bank",
             isBuiltIn: false,
           });
@@ -353,6 +362,7 @@ function SubjectDetailsContent() {
         questionCount: 10,
         isPaid: false,
         badge: "স্পিড টেস্ট",
+        coverImage: subjectCover || classCover,
         sourceType: "auto_bank",
         isBuiltIn: true,
       });
@@ -366,6 +376,7 @@ function SubjectDetailsContent() {
     selectedClass,
     selectedSubject,
     quizPrices,
+    covers,
   ]);
 
   // Filtered Model Tests based on tab
