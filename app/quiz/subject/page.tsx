@@ -115,6 +115,16 @@ function SubjectDetailsContent() {
       selectedSubject.includes("2") ||
       selectedSubject.includes("ব্যাকরণ"));
 
+  const isBangla1st = selectedSubject.includes("বাংলা") && !isGrammarSubject;
+
+  const availableChapterTypes = useMemo(() => {
+    const set = new Set<string>();
+    chapterGroups.forEach((c) => {
+      if (c.type && c.type.trim()) set.add(c.type.trim());
+    });
+    return Array.from(set);
+  }, [chapterGroups]);
+
   // Data States
   const [customExams, setCustomExams] = useState<CustomExam[]>([]);
   const [bankQuestions, setBankQuestions] = useState<RawQuestion[]>([]);
@@ -1263,11 +1273,11 @@ function SubjectDetailsContent() {
                   <span>অধ্যায়ভিত্তিক স্পেশাল প্রস্তুতি</span>
                 </div>
                 <h3 className="text-base sm:text-lg font-black text-white">
-                  {isBdwpSubject
-                    ? `${toBengaliClass(selectedClass)} শ্রেণির ${selectedSubject} — অধ্যায়ভিত্তিক মডেল টেস্ট ও অনুশীলন`
-                    : isGrammarSubject
+                  {isGrammarSubject
                     ? `${toBengaliClass(selectedClass)} শ্রেণির ${selectedSubject} — ব্যাকরণ ও নির্মিতির অধ্যায়ভিত্তিক প্রস্তুতি`
-                    : `${toBengaliClass(selectedClass)} শ্রেণির বাংলা — কবিতা ও গদ্যের অধ্যায়ভিত্তিক পরীক্ষা`}
+                    : isBangla1st
+                    ? `${toBengaliClass(selectedClass)} শ্রেণির বাংলা — কবিতা ও গদ্যের অধ্যায়ভিত্তিক পরীক্ষা`
+                    : `${toBengaliClass(selectedClass)} শ্রেণির ${selectedSubject} — অধ্যায়ভিত্তিক মডেল টেস্ট ও অনুশীলন`}
                 </h3>
                 <p className="text-xs text-blue-200/90 leading-relaxed">
                   পাঠ্যবইয়ের প্রতিটি অধ্যায়ের ওপর আলাদা আলাদা পরীক্ষা দিন এবং অনুশীলন মোডে তাৎক্ষণিক সঠিক উত্তর ও ব্যাখ্যা জেনে নিন।
@@ -1377,42 +1387,49 @@ function SubjectDetailsContent() {
               <div className="p-4 sm:p-5 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   {/* Type Filter Buttons */}
-                  <div className="inline-flex rounded-2xl bg-slate-100 p-1 self-start flex-wrap gap-1">
-                    {(isBdwpSubject
-                      ? [
-                          { id: "all", label: "সকল অধ্যায়", icon: null },
-                          { id: "ইতিহাস ও রাষ্ট্র", label: "ইতিহাস ও রাষ্ট্র", icon: <FaLandmark className="w-3 h-3 text-amber-500" /> },
-                          { id: "ভূগোল ও পরিবেশ", label: "ভূগোল ও পরিবেশ", icon: <FaGlobe className="w-3 h-3 text-emerald-500" /> },
-                          { id: "অর্থনীতি", label: "অর্থনীতি", icon: <FaCoins className="w-3 h-3 text-cyan-500" /> },
-                          { id: "সমাজবিজ্ঞান", label: "সমাজবিজ্ঞান", icon: <FaUsers className="w-3 h-3 text-purple-500" /> },
-                        ]
-                      : isGrammarSubject
-                      ? [
-                          { id: "all", label: "সকল অধ্যায়", icon: null },
-                          { id: "ব্যাকরণ", label: "ব্যাকরণ", icon: <FaBookOpen className="w-3 h-3 text-blue-500" /> },
-                          { id: "নির্মিতি", label: "নির্মিতি", icon: <FaPenToSquare className="w-3 h-3 text-amber-500" /> },
-                        ]
-                      : [
-                          { id: "all", label: "সকল অধ্যায়", icon: null },
-                          { id: "কবিতা", label: "কবিতা", icon: <FaFeatherPointed className="w-3 h-3 text-rose-500" /> },
-                          { id: "গদ্য", label: "গদ্য", icon: <FaBookOpen className="w-3 h-3 text-blue-500" /> },
-                        ]
-                    ).map((btn) => (
+                  {availableChapterTypes.length > 1 && (
+                    <div className="inline-flex rounded-2xl bg-slate-100 p-1 self-start flex-wrap gap-1">
                       <button
-                        key={btn.id}
                         type="button"
-                        onClick={() => setChapterTypeFilter(btn.id)}
+                        onClick={() => setChapterTypeFilter("all")}
                         className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
-                          chapterTypeFilter === btn.id
+                          chapterTypeFilter === "all"
                             ? "bg-[#0A1E3C] text-white shadow-xs"
                             : "text-slate-600 hover:text-slate-900"
                         }`}
                       >
-                        {btn.icon}
-                        <span>{btn.label}</span>
+                        <span>সকল অধ্যায়</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-200/80">
+                          {toBengaliNumber(chapterGroups.length)}
+                        </span>
                       </button>
-                    ))}
-                  </div>
+                      {availableChapterTypes.map((tName) => {
+                        let icon = <FaBookOpen className="w-3 h-3 text-blue-500" />;
+                        if (tName === "কবিতা") icon = <FaFeatherPointed className="w-3 h-3 text-rose-500" />;
+                        else if (tName === "নির্মিতি") icon = <FaPenToSquare className="w-3 h-3 text-amber-500" />;
+                        else if (tName === "ইতিহাস ও রাষ্ট্র") icon = <FaLandmark className="w-3 h-3 text-amber-500" />;
+                        else if (tName === "ভূগোল ও পরিবেশ") icon = <FaGlobe className="w-3 h-3 text-emerald-500" />;
+                        else if (tName === "অর্থনীতি") icon = <FaCoins className="w-3 h-3 text-cyan-500" />;
+                        else if (tName === "সমাজবিজ্ঞান") icon = <FaUsers className="w-3 h-3 text-purple-500" />;
+
+                        return (
+                          <button
+                            key={tName}
+                            type="button"
+                            onClick={() => setChapterTypeFilter(tName)}
+                            className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
+                              chapterTypeFilter === tName
+                                ? "bg-[#0A1E3C] text-white shadow-xs"
+                                : "text-slate-600 hover:text-slate-900"
+                            }`}
+                          >
+                            {icon}
+                            <span>{tName}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
 
                   {/* Search Input with React Icon */}
                   <div className="w-full sm:w-72 relative">
@@ -1426,7 +1443,9 @@ function SubjectDetailsContent() {
                           ? "অধ্যায়ের নাম খুঁজুন (যেমন: মুক্তিযুদ্ধ, নদ-নদী, অর্থনীতি)..."
                           : isGrammarSubject
                           ? "অধ্যায়ের নাম খুঁজুন (যেমন: ধ্বনি, সমাস, কারক)..."
-                          : "অধ্যায় বা লেখকের নাম খুঁজুন..."
+                          : isBangla1st
+                          ? "অধ্যায় বা লেখকের নাম খুঁজুন..."
+                          : `${selectedSubject} বিষয়ের অধ্যায় খুঁজুন...`
                       }
                       className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-9 pr-4 py-2 text-xs font-bold text-slate-800 outline-none focus:border-indigo-600 focus:bg-white transition"
                     />

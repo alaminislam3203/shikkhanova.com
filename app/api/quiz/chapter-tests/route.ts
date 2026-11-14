@@ -1,13 +1,16 @@
 import { NextResponse } from 'next/server';
-import { getAllBanglaChapterTests } from '@/lib/banglaChapterTests';
-import { getAllBanglaGrammarChapterTests } from '@/lib/banglaGrammarChapterTests';
-import { getAllBdwpChapterTests } from '@/lib/bdwpChapterTests';
+import {
+  resolveSubjectKey,
+  getTestsBySubjectKey,
+  findChapterTestById,
+  ChapterTest,
+} from '@/lib/allChapterTestsLoader';
 import fs from 'fs';
 import path from 'path';
 
 export const dynamic = 'force-dynamic';
 
-// Cleanup legacy HTML files from disk if they exist
+// Cleanup legacy HTML files and MCQ-MODEL-TEST DATA folder if cached data exists
 try {
   const legacyHtml1 = path.join(process.cwd(), 'Bangla_Unified_Model_Test_App.html');
   if (fs.existsSync(legacyHtml1)) fs.unlinkSync(legacyHtml1);
@@ -27,6 +30,42 @@ try {
   }
 } catch {}
 
+// Cleanup MCQ-MODEL-TEST DATA directory if all JSON files exist
+try {
+  const mcqDir = path.join(process.cwd(), 'MCQ-MODEL-TEST DATA');
+  const destDir = path.join(process.cwd(), 'data', 'chapter_tests');
+  if (fs.existsSync(mcqDir) && fs.existsSync(destDir)) {
+    const requiredFiles = [
+      'chemistry.json',
+      'physics.json',
+      'geography.json',
+      'higher_math.json',
+      'hindu.json',
+      'history.json',
+      'economics.json',
+      'biology.json',
+      'islam.json',
+      'agriculture.json',
+      'ict.json',
+      'general_science.json',
+      'general_math.json',
+      'home_science.json',
+    ];
+    const allReady = requiredFiles.every((f) => fs.existsSync(path.join(destDir, f)));
+    if (allReady) {
+      const files = fs.readdirSync(mcqDir);
+      for (const file of files) {
+        try {
+          fs.unlinkSync(path.join(mcqDir, file));
+        } catch {}
+      }
+      try {
+        fs.rmdirSync(mcqDir);
+      } catch {}
+    }
+  }
+} catch {}
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -38,57 +77,33 @@ export async function GET(req: Request) {
     const subjectParam = searchParams.get('subject') || '';
     const paperParam = searchParams.get('paper');
 
-    const isBdwp =
-      subjectParam.includes('বাংলাদেশ ও বিশ্বপরিচয়') ||
-      subjectParam.includes('বাংলাদেশ ও বিশ্ব পরিচয়') ||
-      subjectParam.includes('বাবি') ||
-      subjectParam.toLowerCase().includes('bdwp');
-
-    const isGrammar =
-      !isBdwp &&
-      (paperParam === '2' ||
-        subjectParam.includes('২') ||
-        subjectParam.includes('2') ||
-        subjectParam.includes('ব্যাকরণ'));
-
     // 1. Single Test by ID (with full questions)
     if (action === 'test' && testId) {
-      // Check in 1st paper first
-      const all1st = getAllBanglaChapterTests();
-      let found: any = all1st.find((t) => t.id === testId);
-      if (!found) {
-        // Check in grammar 2nd paper
-        const allGrammar = getAllBanglaGrammarChapterTests();
-        found = allGrammar.find((t) => t.id === testId);
-      }
-      if (!found) {
-        // Check in BDWP (Bangladesh and Global Studies)
-        const allBdwp = getAllBdwpChapterTests();
-        found = allBdwp.find((t) => t.id === testId);
-      }
+      const found = findChapterTestById(testId);
       if (!found) {
         return NextResponse.json({ success: false, message: 'টেস্ট পাওয়া যায়নি' }, { status: 404 });
       }
       return NextResponse.json({ success: true, test: found });
     }
 
-    const allTests = isBdwp
-      ? getAllBdwpChapterTests()
-      : isGrammar
-      ? getAllBanglaGrammarChapterTests()
-      : getAllBanglaChapterTests();
+    // Resolve subject key
+    const subjectKey = resolveSubjectKey(subjectParam, paperParam);
+    const allTests: ChapterTest[] = getTestsBySubjectKey(subjectKey);
 
     // 2. Chapters List with Summary
     if (action === 'chapters') {
-      const chapterMap = new Map<string, {
-        name: string;
-        type: string;
-        author?: string;
-        chNum?: number;
-        testCount: number;
-        totalQuestions: number;
-        tests: { id: string; name: string; min: number; questionCount: number }[];
-      }>();
+      const chapterMap = new Map<
+        string,
+        {
+          name: string;
+          type: string;
+          author?: string;
+          chNum?: number;
+          testCount: number;
+          totalQuestions: number;
+          tests: { id: string; name: string; min: number; questionCount: number }[];
+        }
+      >();
 
       for (const t of allTests) {
         const key = `${t.type}|${t.ch}`;
@@ -102,78 +117,89 @@ export async function GET(req: Request) {
           tests: [],
         };
         existing.testCount += 1;
-        existing.totalQuestions += Array.isArray(t.questions) ? t.questions.length : 0;
+        existing.totalQuestions += (t.questions || []).length;
         existing.tests.push({
           id: t.id,
           name: t.name,
           min: t.durationMinutes,
-          questionCount: Array.isArray(t.questions) ? t.questions.length : 0,
+          questionCount: (t.questions || []).length,
         });
         chapterMap.set(key, existing);
       }
 
       let chapters = Array.from(chapterMap.values());
-      if (isGrammar || isBdwp) {
-        chapters.sort((a, b) => (a.chNum || 0) - (b.chNum || 0));
-      }
-      if (typeFilter) {
+
+      // Filter by type if provided
+      if (typeFilter && typeFilter !== 'all') {
         chapters = chapters.filter((c) => c.type === typeFilter);
       }
+
+      // Filter by search query
       if (searchQuery) {
-        chapters = chapters.filter((c) =>
-          c.name.toLowerCase().includes(searchQuery) || (c.author && c.author.toLowerCase().includes(searchQuery))
+        chapters = chapters.filter(
+          (c) =>
+            c.name.toLowerCase().includes(searchQuery) ||
+            (c.author && c.author.toLowerCase().includes(searchQuery))
         );
       }
 
+      // Sort chapters numerically if chNum is present
+      chapters.sort((a, b) => {
+        if (typeof a.chNum === 'number' && typeof b.chNum === 'number') {
+          return a.chNum - b.chNum;
+        }
+        return a.name.localeCompare(b.name, 'bn');
+      });
+
       return NextResponse.json({
         success: true,
-        isGrammar,
-        isBdwp,
+        subjectKey,
         totalChapters: chapters.length,
         totalTests: allTests.length,
-        totalQuestions: allTests.reduce((acc, t) => acc + (t.questions ? t.questions.length : 0), 0),
         chapters,
       });
     }
 
-    // 3. Tests List (Summary)
+    // 3. Tests List (optionally filtered by chapter, type, or search)
     let filtered = allTests;
-    if (typeFilter) {
-      filtered = filtered.filter((t) => t.type === typeFilter);
-    }
+
     if (chapterFilter) {
       filtered = filtered.filter((t) => t.ch === chapterFilter);
+    }
+    if (typeFilter && typeFilter !== 'all') {
+      filtered = filtered.filter((t) => t.type === typeFilter);
     }
     if (searchQuery) {
       filtered = filtered.filter(
         (t) =>
           t.name.toLowerCase().includes(searchQuery) ||
-          t.ch.toLowerCase().includes(searchQuery) ||
-          ((t as any).author && (t as any).author.toLowerCase().includes(searchQuery))
+          t.ch.toLowerCase().includes(searchQuery)
       );
     }
 
-    const testSummaries = filtered.map((t) => ({
-      id: t.id,
-      type: t.type,
-      ch: t.ch,
-      author: (t as any).author || '',
-      name: t.name,
-      min: t.durationMinutes,
-      mark: t.mark || 1,
-      neg: t.negativeMark || 0.25,
-      questionCount: Array.isArray(t.questions) ? t.questions.length : 0,
-    }));
-
+    // 4. Default: Summary stats
     return NextResponse.json({
       success: true,
-      isGrammar,
-      isBdwp,
-      count: testSummaries.length,
-      tests: testSummaries,
+      subjectKey,
+      totalTests: allTests.length,
+      filteredCount: filtered.length,
+      tests: filtered.map((t) => ({
+        id: t.id,
+        name: t.name,
+        type: t.type,
+        ch: t.ch,
+        chNum: t.chNum,
+        min: t.durationMinutes,
+        mark: t.mark,
+        negativeMark: t.negativeMark,
+        questionCount: (t.questions || []).length,
+      })),
     });
-  } catch (err: any) {
-    console.error('Error in /api/quiz/chapter-tests:', err);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  } catch (error: any) {
+    console.error('Chapter tests API error:', error);
+    return NextResponse.json(
+      { success: false, message: 'সার্ভার ত্রুটি ঘটেছে', error: error?.message },
+      { status: 500 }
+    );
   }
 }

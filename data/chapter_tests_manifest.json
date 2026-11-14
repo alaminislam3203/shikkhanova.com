@@ -1,0 +1,58 @@
+{
+  "chemistry": {
+    "tests": 70,
+    "questions": 2100
+  },
+  "physics": {
+    "tests": 94,
+    "questions": 2820
+  },
+  "geography": {
+    "tests": 74,
+    "questions": 2082
+  },
+  "higher_math": {
+    "tests": 168,
+    "questions": 5040
+  },
+  "hindu": {
+    "tests": 55,
+    "questions": 1640
+  },
+  "history": {
+    "tests": 72,
+    "questions": 2145
+  },
+  "economics": {
+    "tests": 55,
+    "questions": 1626
+  },
+  "biology": {
+    "tests": 60,
+    "questions": 1778
+  },
+  "islam": {
+    "tests": 35,
+    "questions": 1050
+  },
+  "agriculture": {
+    "tests": 38,
+    "questions": 1140
+  },
+  "ict": {
+    "tests": 41,
+    "questions": 1230
+  },
+  "general_science": {
+    "tests": 63,
+    "questions": 1890
+  },
+  "general_math": {
+    "tests": 208,
+    "questions": 6240
+  },
+  "home_science": {
+    "tests": 85,
+    "questions": 2490
+  }
+}
