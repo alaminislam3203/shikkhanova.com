@@ -470,8 +470,23 @@ function SubjectDetailsContent() {
     [allModelTests],
   );
 
+  // Require Login Helper
+  const requireLogin = () => {
+    toast.error("পরীক্ষা দিতে অনুগ্রহ করে আগে লগইন করুন!");
+    const currentUrl =
+      typeof window !== "undefined"
+        ? window.location.pathname + window.location.search
+        : `/quiz/subject?class=${selectedClass}&subject=${encodeURIComponent(selectedSubject)}`;
+    router.push(`/login?callbackUrl=${encodeURIComponent(currentUrl)}`);
+  };
+
   // Handle Starting an Exam
   const handleStartExam = (exam: SubjectExamItem) => {
+    if (!session?.user) {
+      requireLogin();
+      return;
+    }
+
     // If exam is locked with access code, prompt code
     if (exam.examCode && exam.examCode.trim()) {
       setCodePromptExam(exam);
@@ -497,6 +512,11 @@ function SubjectDetailsContent() {
   };
 
   const launchExam = (exam: SubjectExamItem, practice: boolean = false) => {
+    if (!session?.user) {
+      requireLogin();
+      return;
+    }
+
     setIsPracticeMode(practice);
     let questionsToUse: RawQuestion[] = [];
 
@@ -551,6 +571,11 @@ function SubjectDetailsContent() {
     testId: string,
     mode: "exam" | "practice" = "exam",
   ) => {
+    if (!session?.user) {
+      requireLogin();
+      return;
+    }
+
     try {
       toast.loading("টেস্ট লোড হচ্ছে...", { id: "load_ch_test" });
       const res = await fetch(
@@ -1030,22 +1055,22 @@ function SubjectDetailsContent() {
 
             {/* POST-SUBMIT SCORE CARD */}
             {isSubmitted && (
-              <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-slate-900 to-[#1e0a14] text-white space-y-5 text-center shadow-xl">
-                <div className="flex justify-center text-4xl text-amber-400">
+              <div className="p-3.5 sm:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-slate-900 to-[#1e0a14] text-white space-y-3 sm:space-y-5 text-center shadow-xl">
+                <div className="flex justify-center text-amber-400">
                   {quizScore / examQuestions.length >= 0.8 ? (
-                    <FaAward className="w-12 h-12 text-amber-400" />
+                    <FaAward className="w-8 h-8 sm:w-12 sm:h-12 text-amber-400" />
                   ) : quizScore / examQuestions.length >= 0.5 ? (
-                    <FaStar className="w-12 h-12 text-amber-400" />
+                    <FaStar className="w-8 h-8 sm:w-12 sm:h-12 text-amber-400" />
                   ) : (
-                    <FaBookOpen className="w-12 h-12 text-blue-400" />
+                    <FaBookOpen className="w-8 h-8 sm:w-12 sm:h-12 text-blue-400" />
                   )}
                 </div>
-                <div className="space-y-1">
-                  <h3 className="text-xl sm:text-2xl font-black">
+                <div className="space-y-0.5 sm:space-y-1">
+                  <h3 className="text-base sm:text-2xl font-black">
                     ফলাফল: {toBengaliNumber(quizScore)} /{" "}
                     {toBengaliNumber(examQuestions.length)}
                   </h3>
-                  <p className="text-sm text-slate-300">
+                  <p className="text-xs sm:text-sm text-slate-300">
                     সাফল্যের হার:{" "}
                     <span className="font-black text-amber-400">
                       {Math.round((quizScore / examQuestions.length) * 100)}%
@@ -1053,21 +1078,21 @@ function SubjectDetailsContent() {
                   </p>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                <div className="grid grid-cols-3 gap-1.5 sm:flex sm:items-center sm:justify-center sm:gap-2 pt-1 sm:pt-2">
                   <button
                     type="button"
                     onClick={() => launchExam(activeExam)}
-                    className="px-5 py-2.5 rounded-xl bg-[#C8102E] hover:bg-[#A50D26] text-white font-black text-xs shadow-md transition active:scale-95 flex items-center gap-2 cursor-pointer"
+                    className="px-1.5 py-2 sm:px-5 sm:py-2.5 rounded-lg sm:rounded-xl bg-[#C8102E] hover:bg-[#A50D26] text-white font-black text-[10px] sm:text-xs shadow-md transition active:scale-95 flex items-center justify-center gap-1 sm:gap-2 cursor-pointer"
                   >
-                    <FaRotateRight className="w-3.5 h-3.5" />
-                    <span>পুনরায় টেস্ট দিন</span>
+                    <FaRotateRight className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 shrink-0" />
+                    <span className="truncate">পুনরায় টেস্ট</span>
                   </button>
                   <a
                     href="#subject-leaderboard"
-                    className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs shadow-md transition active:scale-95 flex items-center gap-2 cursor-pointer"
+                    className="px-1.5 py-2 sm:px-5 sm:py-2.5 rounded-lg sm:rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-[10px] sm:text-xs shadow-md transition active:scale-95 flex items-center justify-center gap-1 sm:gap-2 cursor-pointer"
                   >
-                    <FaTrophy className="w-3.5 h-3.5 text-slate-900" />
-                    <span>মেধা তালিকায় র‍্যাঙ্ক দেখুন</span>
+                    <FaTrophy className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-slate-900 shrink-0" />
+                    <span className="truncate">মেধা তালিকা</span>
                   </a>
                   <button
                     type="button"
@@ -1075,15 +1100,15 @@ function SubjectDetailsContent() {
                       setIsTestActive(false);
                       setActiveExam(null);
                     }}
-                    className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition active:scale-95 cursor-pointer"
+                    className="px-1.5 py-2 sm:px-5 sm:py-2.5 rounded-lg sm:rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-[10px] sm:text-xs transition active:scale-95 cursor-pointer flex items-center justify-center"
                   >
-                    অন্যান্য মডেল টেস্ট দেখুন
+                    <span className="truncate">অন্যান্য টেস্ট</span>
                   </button>
                 </div>
 
                 {/* Review filter buttons */}
-                <div className="pt-4 border-t border-white/10 flex items-center justify-center gap-1.5 flex-wrap text-xs">
-                  <span className="text-slate-400 font-bold mr-1">
+                <div className="pt-2.5 sm:pt-4 border-t border-white/10 flex items-center justify-center gap-1 sm:gap-1.5 flex-nowrap sm:flex-wrap text-[10px] sm:text-xs overflow-x-auto no-scrollbar">
+                  <span className="text-slate-400 font-bold mr-0.5 sm:mr-1 text-[9px] sm:text-xs shrink-0">
                     পর্যালোচনা:
                   </span>
                   {(["all", "correct", "wrong", "unanswered"] as const).map(
@@ -1092,7 +1117,7 @@ function SubjectDetailsContent() {
                         key={rf}
                         type="button"
                         onClick={() => setReviewFilter(rf)}
-                        className={`px-3 py-1 rounded-lg font-bold transition text-[11px] cursor-pointer ${
+                        className={`px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-md sm:rounded-lg font-bold transition text-[9px] sm:text-[11px] shrink-0 cursor-pointer ${
                           reviewFilter === rf
                             ? "bg-white text-slate-900"
                             : "bg-white/10 text-slate-300 hover:bg-white/20"
@@ -1615,36 +1640,39 @@ function SubjectDetailsContent() {
 
                         {/* Expanded Tests inside this chapter */}
                         {isExpanded && (
-                          <div className="pt-3 border-t border-slate-100 space-y-2.5">
+                          <div className="pt-3 border-t border-slate-100 grid grid-cols-2 gap-2 sm:gap-2.5">
                             {ch.tests.map((t) => (
                               <div
                                 key={t.id}
-                                className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-indigo-50/40 transition"
+                                className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col justify-between gap-2 hover:bg-indigo-50/40 transition"
                               >
-                                <div className="space-y-0.5">
-                                  <div className="font-bold text-xs text-slate-800">
+                                <div className="space-y-0.5 min-w-0">
+                                  <div
+                                    className="font-bold text-[11px] sm:text-xs text-slate-800 line-clamp-2 leading-tight"
+                                    title={t.name}
+                                  >
                                     {t.name}
                                   </div>
-                                  <div className="text-[11px] text-slate-500">
+                                  <div className="text-[10px] sm:text-[11px] text-slate-500">
                                     {toBengaliNumber(t.questionCount)}টি প্রশ্ন • {toBengaliNumber(t.min)} মিনিট
                                   </div>
                                 </div>
 
-                                <div className="flex items-center gap-2">
+                                <div className="grid grid-cols-2 gap-1 sm:gap-1.5 pt-1 border-t border-slate-200/60">
                                   <button
                                     type="button"
                                     onClick={() => handleStartChapterTest(t.id, "exam")}
-                                    className="px-3.5 py-1.5 rounded-xl bg-[#0A1E3C] hover:bg-[#102A54] text-white text-xs font-black transition active:scale-95 cursor-pointer shadow-xs flex items-center gap-1.5"
+                                    className="w-full py-1 sm:py-1.5 px-1 rounded-lg sm:rounded-xl bg-[#0A1E3C] hover:bg-[#102A54] text-white text-[10px] sm:text-xs font-black transition active:scale-95 cursor-pointer shadow-xs flex items-center justify-center gap-1"
                                   >
-                                    <FaPenToSquare className="w-3 h-3 text-cyan-300" />
+                                    <FaPenToSquare className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-cyan-300" />
                                     <span>পরীক্ষা</span>
                                   </button>
                                   <button
                                     type="button"
                                     onClick={() => handleStartChapterTest(t.id, "practice")}
-                                    className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-black transition active:scale-95 cursor-pointer shadow-xs flex items-center gap-1.5"
+                                    className="w-full py-1 sm:py-1.5 px-1 rounded-lg sm:rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-[10px] sm:text-xs font-black transition active:scale-95 cursor-pointer shadow-xs flex items-center justify-center gap-1"
                                   >
-                                    <FaLightbulb className="w-3 h-3 text-amber-200" />
+                                    <FaLightbulb className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-200" />
                                     <span>অনুশীলন</span>
                                   </button>
                                 </div>
