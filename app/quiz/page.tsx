@@ -1881,10 +1881,15 @@ export default function QuizPage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5">
           {currentSubjects.map((sub) => {
             const count = subjectCounts[sub.name] || 0;
+            const subjectUrl = `/quiz/subject?class=${selectedClass}&subject=${encodeURIComponent(
+              sub.name,
+            )}${selectedGroup ? `&group=${encodeURIComponent(selectedGroup)}` : ""}`;
+
             return (
-              <div
+              <Link
                 key={sub.name}
-                className="bg-white rounded-2xl p-4 border border-slate-200/90 hover:border-[#C8102E]/40 shadow-xs hover:shadow-md transition text-center space-y-2.5 group flex flex-col justify-between"
+                href={subjectUrl}
+                className="bg-white rounded-2xl p-4 border border-slate-200/90 hover:border-[#C8102E]/40 shadow-xs hover:shadow-md transition text-center space-y-2.5 group flex flex-col justify-between cursor-pointer"
               >
                 {/* Optional Subject Cover Image or Icon */}
                 {quizCovers.subjects[sub.name] ? (
@@ -1901,7 +1906,7 @@ export default function QuizPage() {
                   </div>
                 )}
                 <div className="space-y-1">
-                  <h4 className="text-xs sm:text-sm font-black text-slate-800 line-clamp-1">
+                  <h4 className="text-xs sm:text-sm font-black text-slate-800 line-clamp-1 group-hover:text-[#C8102E] transition-colors">
                     {sub.name}
                   </h4>
                   <div className="flex items-center justify-center gap-1.5 flex-wrap">
@@ -1916,15 +1921,11 @@ export default function QuizPage() {
                     )}
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => handleStartSubjectTest(sub.name)}
-                  className="w-full py-2 rounded-xl bg-slate-100 hover:bg-[#C8102E] text-slate-700 hover:text-white font-bold text-xs transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"
-                >
+                <div className="w-full py-2 rounded-xl bg-slate-100 group-hover:bg-[#C8102E] text-slate-700 group-hover:text-white font-bold text-xs transition flex items-center justify-center gap-1.5">
                   <FaBookOpen className="w-3 h-3" />
-                  <span>টেস্ট দিন</span>
-                </button>
-              </div>
+                  <span>মডেল টেস্টসমূহ দেখুন ➔</span>
+                </div>
+              </Link>
             );
           })}
         </div>

@@ -850,6 +850,71 @@ export default function AdminCustomExamsTab({ onNavigateToResults }: AdminCustom
                 </div>
               </div>
 
+              {/* Free or Paid Test Type */}
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-700">টেস্ট টাইপ (ফ্রি / পেইড)</span>
+                  <div className="inline-flex rounded-xl p-1 bg-slate-200/70">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFormIsPaid(false);
+                        if (formBadge === "পেইড") setFormBadge("ফ্রি");
+                      }}
+                      className={`px-3 py-1 text-xs font-black rounded-lg transition ${
+                        !formIsPaid ? "bg-white text-emerald-700 shadow-xs" : "text-slate-600 hover:text-slate-900"
+                      }`}
+                    >
+                      ✨ ফ্রি টেস্ট
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFormIsPaid(true);
+                        if (formBadge === "ফ্রি") setFormBadge("পেইড");
+                      }}
+                      className={`px-3 py-1 text-xs font-black rounded-lg transition ${
+                        formIsPaid ? "bg-[#C8102E] text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+                      }`}
+                    >
+                      🔒 পেইড টেস্ট
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 pt-1">
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-600 block mb-1">
+                      ব্যাজ টেক্সট (Badge)
+                    </label>
+                    <input
+                      type="text"
+                      value={formBadge}
+                      onChange={(e) => setFormBadge(e.target.value)}
+                      placeholder="উদা: ফ্রি, স্পেশাল, মডেল ১"
+                      className="w-full bg-white border border-slate-300 focus:border-[#C8102E] rounded-xl px-3 py-2 text-xs font-bold text-slate-800 outline-none"
+                    />
+                  </div>
+
+                  {formIsPaid && (
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-600 block mb-1">
+                        মূল্য (টাকা ৳)
+                      </label>
+                      <input
+                        type="number"
+                        min={0}
+                        step={10}
+                        value={formPrice}
+                        onChange={(e) => setFormPrice(Number(e.target.value))}
+                        placeholder="50"
+                        className="w-full bg-white border border-slate-300 focus:border-[#C8102E] rounded-xl px-3 py-2 text-xs font-bold text-slate-800 outline-none"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {/* Exam Access Code (Optional) */}
               <div>
                 <label className="text-xs font-bold text-slate-700 block mb-1">
