@@ -191,6 +191,7 @@ export default function AccountPage() {
           schoolName: profile.schoolName,
           dateOfBirth: profile.dateOfBirth,
           religion: profile.religion,
+          fourthSubject: profile.fourthSubject,
         }),
       });
 
