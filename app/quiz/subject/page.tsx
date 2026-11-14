@@ -1868,6 +1868,149 @@ function SubjectDetailsContent() {
         )}
 
         {/* ─────────────────────────────────────────────────────────────
+            5. 🏆 SUBJECT LEADERBOARD / মেধা তালিকা
+        ───────────────────────────────────────────────────────────── */}
+        <section id="subject-leaderboard" className="space-y-4 pt-6 border-t border-slate-200 scroll-mt-24">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-800 text-[11px] font-bold border border-amber-200 mb-1">
+                <FaTrophy className="w-3 h-3 text-amber-600" />
+                <span>মেধা তালিকা ও র‍্যাঙ্কিং</span>
+              </div>
+              <h3 className="text-lg sm:text-xl font-black text-slate-900 flex items-center gap-2">
+                <span>{selectedSubject} — সেরা শিক্ষার্থীদের মেধা তালিকা</span>
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 font-bold">
+                  {toBengaliNumber(subjectLeaderboard.length)} জন
+                </span>
+              </h3>
+              <p className="text-xs text-slate-500 font-medium">
+                {toBengaliClass(selectedClass)} শ্রেণির {selectedSubject} বিষয়ে মডেল টেস্ট সম্পন্নকারী সেরা শিক্ষার্থীদের র‍্যাঙ্কিং
+              </p>
+            </div>
+
+            <Link
+              href={`/quiz?class=${selectedClass}#leaderboard`}
+              className="px-4 py-2 rounded-xl bg-white border border-slate-200 hover:border-slate-300 text-xs font-bold text-slate-700 hover:text-slate-900 shadow-2xs transition flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+            >
+              <FaAward className="w-3.5 h-3.5 text-amber-500" />
+              <span>সকল বিষয়ের মূল লিডারবোর্ড ➔</span>
+            </Link>
+          </div>
+
+          {/* Leaderboard Table / Cards */}
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
+            {loadingLeaderboard ? (
+              <div className="p-8 text-center text-xs text-slate-400 font-bold">
+                মেধা তালিকা লোড হচ্ছে...
+              </div>
+            ) : subjectLeaderboard.length === 0 ? (
+              <div className="p-8 text-center space-y-2">
+                <FaTrophy className="w-10 h-10 text-slate-300 mx-auto" />
+                <h4 className="text-xs sm:text-sm font-bold text-slate-700">
+                  এখনও এই বিষয়ে কোনো ফলাফল জমা পড়েনি
+                </h4>
+                <p className="text-[11px] text-slate-400">
+                  উপরের যেকোনো অধ্যায়ের পরীক্ষা সম্পন্ন করে সবার আগে লিডারবোর্ডে নিজের নাম যুক্ত করুন!
+                </p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 uppercase text-[11px]">
+                      <th className="py-3 px-4 w-16">র‍্যাঙ্ক</th>
+                      <th className="py-3 px-4">শিক্ষার্থী</th>
+                      <th className="py-3 px-4">মডেল টেস্ট / অধ্যায়</th>
+                      <th className="py-3 px-4 text-center">স্কোর</th>
+                      <th className="py-3 px-4 text-center">সাফল্য</th>
+                      <th className="py-3 px-4 text-center">সময়</th>
+                      <th className="py-3 px-4 text-center">মেডেল</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {subjectLeaderboard.map((item, idx) => (
+                      <tr key={item.id || idx} className="hover:bg-slate-50/70 transition">
+                        <td className="py-3 px-4 font-black">
+                          {idx === 0 ? (
+                            <span className="inline-flex items-center gap-1 text-amber-600">
+                              <FaTrophy className="w-3.5 h-3.5 text-amber-500" /> ১
+                            </span>
+                          ) : idx === 1 ? (
+                            <span className="inline-flex items-center gap-1 text-slate-500">
+                              <FaAward className="w-3.5 h-3.5 text-slate-400" /> ২
+                            </span>
+                          ) : idx === 2 ? (
+                            <span className="inline-flex items-center gap-1 text-amber-700">
+                              <FaMedal className="w-3.5 h-3.5 text-amber-700" /> ৩
+                            </span>
+                          ) : (
+                            <span className="text-slate-600 pl-1">{toBengaliNumber(idx + 1)}</span>
+                          )}
+                        </td>
+                        <td className="py-3 px-4">
+                          <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                            <FaUserGraduate className="w-3 h-3 text-slate-400" />
+                            <span>{item.studentName}</span>
+                          </div>
+                          {item.rollNumber && (
+                            <div className="text-[10px] text-slate-500">
+                              রোল: {toBengaliNumber(item.rollNumber)}
+                            </div>
+                          )}
+                        </td>
+                        <td className="py-3 px-4 font-semibold text-slate-700 max-w-xs truncate">
+                          {item.examTitle || selectedSubject}
+                        </td>
+                        <td className="py-3 px-4 text-center font-black text-[#C8102E]">
+                          {toBengaliNumber(item.score)}/{toBengaliNumber(item.total)}
+                        </td>
+                        <td className="py-3 px-4 text-center font-bold text-emerald-700">
+                          {toBengaliNumber(item.percentage)}%
+                        </td>
+                        <td className="py-3 px-4 text-center text-slate-500 text-[11px]">
+                          {item.timeTakenSeconds ? (
+                            <span className="inline-flex items-center gap-1">
+                              <FaClock className="w-2.5 h-2.5 text-slate-400" />
+                              <span>{formatTime(item.timeTakenSeconds)}</span>
+                            </span>
+                          ) : (
+                            "—"
+                          )}
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          <span
+                            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
+                              item.percentage === 100
+                                ? "bg-amber-50 text-amber-800 border-amber-300"
+                                : item.percentage >= 80
+                                ? "bg-slate-100 text-slate-800 border-slate-300"
+                                : item.percentage >= 60
+                                ? "bg-orange-50 text-orange-800 border-orange-200"
+                                : "bg-blue-50 text-blue-800 border-blue-200"
+                            }`}
+                          >
+                            <FaAward className="w-2.5 h-2.5" />
+                            <span>
+                              {item.percentage === 100
+                                ? "গোল্ড"
+                                : item.percentage >= 80
+                                ? "সিলভার"
+                                : item.percentage >= 60
+                                ? "ব্রোঞ্জ"
+                                : "শীর্ষ ১০"}
+                            </span>
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* ─────────────────────────────────────────────────────────────
             6. PAYMENT & ACCESS CODE UNLOCK MODAL
         ───────────────────────────────────────────────────────────── */}
         {paymentModalOpen && (
