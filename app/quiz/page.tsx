@@ -171,6 +171,19 @@ export default function QuizPage() {
   // Hydrate and fetch latest prices and packages safely after mount
   useEffect(() => {
     try {
+      if (typeof window !== "undefined") {
+        const params = new URLSearchParams(window.location.search);
+        const cls = params.get("class");
+        if (cls) {
+          const parsed = parseInt(cls, 10);
+          if (parsed >= 5 && parsed <= 10) {
+            setSelectedClass(parsed);
+          }
+        }
+      }
+    } catch {}
+
+    try {
       const stored = getStoredQuizPrices();
       if (stored) {
         setQuizPrices(stored);
@@ -1883,7 +1896,7 @@ export default function QuizPage() {
             const count = subjectCounts[sub.name] || 0;
             const subjectUrl = `/quiz/subject?class=${selectedClass}&subject=${encodeURIComponent(
               sub.name,
-            )}${selectedGroup ? `&group=${encodeURIComponent(selectedGroup)}` : ""}`;
+            )}`;
 
             return (
               <Link

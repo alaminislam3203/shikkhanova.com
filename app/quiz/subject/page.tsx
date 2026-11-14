@@ -66,7 +66,6 @@ function SubjectDetailsContent() {
 
   const classParam = searchParams.get("class");
   const subjectParam = searchParams.get("subject") || "বাংলা";
-  const groupParam = searchParams.get("group") || "all";
 
   const selectedClass = classParam ? parseInt(classParam, 10) || 5 : 5;
   const selectedSubject = subjectParam;
@@ -515,7 +514,7 @@ function SubjectDetailsContent() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-500 overflow-hidden">
             <Link
-              href="/quiz"
+              href={`/quiz?class=${selectedClass}`}
               className="inline-flex items-center gap-1.5 text-slate-700 hover:text-[#C8102E] transition shrink-0"
             >
               <FaArrowLeft className="w-3.5 h-3.5" />
@@ -530,7 +529,7 @@ function SubjectDetailsContent() {
           </div>
 
           <Link
-            href="/quiz"
+            href={`/quiz?class=${selectedClass}`}
             className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5 shrink-0"
           >
             <span>শ্রেণি/বিষয় বদলান</span>
