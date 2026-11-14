@@ -37,10 +37,6 @@ import {
   DEFAULT_QUIZ_COVERS,
   getStoredQuizCovers,
   saveStoredQuizCovers,
-  CustomQuizCard,
-  DEFAULT_CUSTOM_QUIZ_CARDS,
-  getStoredCustomQuizCards,
-  saveStoredCustomQuizCards,
 } from "@/lib/defaultQuizData";
 import {
   FaPlus,
@@ -211,12 +207,8 @@ export default function AdminQuizManager() {
     DEFAULT_QUIZ_PACKAGES,
   );
   const [covers, setCovers] = useState<QuizCovers>(DEFAULT_QUIZ_COVERS);
-  const [customCards, setCustomCards] = useState<CustomQuizCard[]>(
-    DEFAULT_CUSTOM_QUIZ_CARDS,
-  );
   const [isSavingPrices, setIsSavingPrices] = useState<boolean>(false);
   const [isSavingCovers, setIsSavingCovers] = useState<boolean>(false);
-  const [isSavingCards, setIsSavingCards] = useState<boolean>(false);
   const [uploadingTarget, setUploadingTarget] = useState<string | null>(null);
 
   // Add / Edit Form State
@@ -298,33 +290,6 @@ export default function AdminQuizManager() {
           };
           setCovers(mergedCovers);
           saveStoredQuizCovers(mergedCovers);
-        }
-      })
-      .catch(() => {});
-
-    try {
-      const storedCards = getStoredCustomQuizCards();
-      if (storedCards && storedCards.length > 0) {
-        setCustomCards(storedCards);
-      }
-    } catch {}
-
-    fetch("/api/quiz/cards", { cache: "no-store" })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data?.cards && Array.isArray(data.cards) && data.cards.length > 0) {
-          const localCards = getStoredCustomQuizCards();
-          const merged = data.cards.map((sCard: CustomQuizCard) => {
-            if (!sCard.coverImage) {
-              const matched = localCards.find((lc) => lc.id === sCard.id);
-              if (matched?.coverImage) {
-                return { ...sCard, coverImage: matched.coverImage };
-              }
-            }
-            return sCard;
-          });
-          setCustomCards(merged);
-          saveStoredCustomQuizCards(merged);
         }
       })
       .catch(() => {});
@@ -633,141 +598,6 @@ export default function AdminQuizManager() {
       });
     } finally {
       setIsSavingCovers(false);
-    }
-  };
-
-  // 🃏 Dynamic Custom MCQ Card Handlers (PostgreSQL Database Persistence)
-  const handleSaveCardsToApi = async (cardsToSave: CustomQuizCard[]) => {
-    setIsSavingCards(true);
-    saveStoredCustomQuizCards(cardsToSave);
-    try {
-      const res = await fetch("/api/quiz/cards", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cards: cardsToSave }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        if (data.cards) {
-          setCustomCards(data.cards);
-          saveStoredCustomQuizCards(data.cards);
-        }
-        toast.success(
-          data.message || "MCQ কার্ডসমূহ ডেটাবেজে সফলভাবে সংরক্ষণ করা হয়েছে!",
-        );
-        setMsg({
-          text: "সকল কাস্টম MCQ কার্ড ডেটাবেজে সফলভাবে আপডেট ও সংরক্ষিত হয়েছে!",
-          type: "success",
-        });
-      } else {
-        toast.error(data.error || "কার্ড ডেটাবেজে সংরক্ষণ ব্যর্থ হয়েছে।");
-      }
-    } catch {
-      toast.error("সার্ভারের সাথে সংযোগে সমস্যা হয়েছে।");
-    } finally {
-      setIsSavingCards(false);
-    }
-  };
-
-  const handleAddNewCard = () => {
-    const newCard: CustomQuizCard = {
-      id: `card_${Date.now()}`,
-      title: `${toBengaliClass(selectedClass)} শ্রেণি স্পেশাল মডেল টেস্ট`,
-      subtitle: "পূর্ণাঙ্গ অধ্যায়ভিত্তিক ও বোর্ড স্ট্যান্ডার্ড প্রস্তুতি টেস্ট",
-      classGrade: selectedClass,
-      subject: selectedSubject || "সাধারণ গণিত",
-      group: selectedClass >= 9 ? selectedGroup : undefined,
-      isPaid: false,
-      price: 0,
-      badge: "নতুন টেস্ট",
-      coverImage: "",
-      questionCount: 20,
-      durationMinutes: 20,
-      isActive: true,
-      createdAt: new Date().toISOString(),
-    };
-    const nextCards = [newCard, ...customCards];
-    setCustomCards(nextCards);
-    handleSaveCardsToApi(nextCards);
-    toast.success("নতুন MCQ কার্ড তৈরি হয়েছে! তথ্য ও কভার ছবি যুক্ত করুন।");
-  };
-
-  const handleUpdateCard = (id: string, updates: Partial<CustomQuizCard>) => {
-    const nextCards = customCards.map((c) =>
-      c.id === id ? { ...c, ...updates } : c,
-    );
-    setCustomCards(nextCards);
-    saveStoredCustomQuizCards(nextCards);
-  };
-
-  const handleDeleteCard = (id: string) => {
-    if (!confirm("আপনি কি নিশ্চিত যে এই MCQ কার্ডটি মুছে ফেলতে চান?")) return;
-    const nextCards = customCards.filter((c) => c.id !== id);
-    setCustomCards(nextCards);
-    handleSaveCardsToApi(nextCards);
-    toast.success("কার্ডটি মুছে ফেলা হয়েছে।");
-  };
-
-  const handleCardCoverUpload = async (cardId: string, file: File) => {
-    if (!file) return;
-    setUploadingTarget(`card_${cardId}`);
-    const uploadToastId = toast.loading(
-      "কার্ডের আলাদা কভার ছবি আপলোড হচ্ছে...",
-    );
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("folder", "shikkha_nova/quiz_cards");
-
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      if (res.ok && data.url) {
-        let updatedCards: CustomQuizCard[] = [];
-        setCustomCards((prev) => {
-          updatedCards = prev.map((c) =>
-            c.id === cardId ? { ...c, coverImage: data.url } : c,
-          );
-          saveStoredCustomQuizCards(updatedCards);
-          return updatedCards;
-        });
-
-        // Save immediately to PostgreSQL Database
-        try {
-          const cardSaveRes = await fetch("/api/quiz/cards", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ cards: updatedCards }),
-          });
-          const cardSaveData = await cardSaveRes.json();
-          if (cardSaveRes.ok) {
-            toast.success(
-              "কার্ডের কভার ছবি ক্লাউডে আপলোড ও ডেটাবেজে স্থায়ীভাবে সংরক্ষণ করা হয়েছে!",
-              {
-                id: uploadToastId,
-                duration: 4000,
-              },
-            );
-          } else {
-            toast.error(
-              cardSaveData.error || "ছবি আপলোড হয়েছে তবে ডেটাবেজে সেভ হয়নি।",
-              { id: uploadToastId },
-            );
-          }
-        } catch {
-          toast.error("ছবি আপলোড হয়েছে তবে সার্ভারে সংযোগে সমস্যা হয়েছে।", {
-            id: uploadToastId,
-          });
-        }
-      } else {
-        toast.error(data.error || "আপলোড ব্যর্থ হয়েছে।", { id: uploadToastId });
-      }
-    } catch (err: any) {
-      toast.error(err.message || "আপলোডে সমস্যা হয়েছে।", { id: uploadToastId });
-    } finally {
-      setUploadingTarget(null);
     }
   };
 
@@ -2979,100 +2809,7 @@ export default function AdminQuizManager() {
         </div>
       )}
 
-      {/* ─────────────────────────────────────────────────────────────
-          TAB 6: DYNAMIC CUSTOM MCQ / MODEL TEST CARDS MANAGER
-      ───────────────────────────────────────────────────────────── */}
-      {activeTab === "cards" && (
-        <div className="space-y-6 animate-in fade-in duration-200">
-          {/* Header */}
-          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <div className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full mb-1">
-                <FaLayerGroup /> আনলিমিটেড MCQ টেস্ট কার্ড তৈরি
-              </div>
-              <h3 className="text-base sm:text-lg font-black text-slate-800">
-                কাস্টম MCQ ও মডেল টেস্ট কার্ড ম্যানেজমেন্ট
-              </h3>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">
-                অ্যাডমিন এখানে ইচ্ছামতো নতুন নতুন মডেল টেস্ট কার্ড তৈরি করতে
-                পারবেন এবং প্রতিটির জন্য আলাদা কভার ছবি আপলোড করতে পারবেন।
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleAddNewCard}
-                className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-700 hover:opacity-95 text-white font-black text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer"
-              >
-                <FaPlus className="w-3.5 h-3.5" />
-                <span>নতুন কার্ড যোগ করুন</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleSaveCardsToApi(customCards)}
-                disabled={isSavingCards}
-                className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:opacity-95 text-white font-black text-xs shadow-md transition flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
-              >
-                <FaFloppyDisk className="w-3.5 h-3.5" />
-                <span>
-                  {isSavingCards ? "সংরক্ষণ হচ্ছে..." : "সব কার্ড সেভ করুন"}
-                </span>
-              </button>
-            </div>
-          </div>
-
-          {/* Cards List / Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {customCards.map((card, cIdx) => (
-              <div
-                key={card.id || cIdx}
-                className={`bg-white rounded-3xl border-2 p-5 space-y-4 shadow-sm hover:shadow-md transition relative flex flex-col justify-between ${
-                  card.isActive
-                    ? card.isPaid
-                      ? "border-red-200"
-                      : "border-emerald-200"
-                    : "border-dashed border-slate-300 opacity-70"
-                }`}
-              >
-                {/* Top Bar: Card index, Active toggle, Delete */}
-                <div className="flex items-center justify-between gap-2 pb-2 border-b border-slate-100">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-700">
-                      কার্ড #{cIdx + 1}
-                    </span>
-                    <label className="inline-flex items-center gap-1.5 cursor-pointer text-xs font-bold">
-                      <input
-                        type="checkbox"
-                        checked={card.isActive}
-                        onChange={(e) => {
-                          const val = e.target.checked;
-                          handleUpdateCard(card.id, { isActive: val });
-                          const next = customCards.map((c) =>
-                            c.id === card.id ? { ...c, isActive: val } : c,
-                          );
-                          handleSaveCardsToApi(next);
-                        }}
-                        className="rounded text-emerald-600 focus:ring-emerald-500 w-3.5 h-3.5 cursor-pointer"
-                      />
-                      <span>{card.isActive ? "সক্রিয়" : "লুকানো"}</span>
-                    </label>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteCard(card.id)}
-                    className="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg transition cursor-pointer"
-                    title="কার্ডটি মুছে ফেলুন"
-                  >
-                    <FaTrash className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-
-                {/* Individual Cover Image Container */}
-                <div className="space-y-2">
-                  <div className="w-full aspect-video rounded-2xl bg-slate-100 border border-slate-200/80 overflow-hidden relative group flex items-center justify-center">
+      {/* REMOVE_CARDS_PART2 */}
                     {card.coverImage ? (
                       <>
                         <img
