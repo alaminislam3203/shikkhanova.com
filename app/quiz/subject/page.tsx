@@ -14,7 +14,6 @@ import {
   getStoredQuizCovers,
   QuizCovers,
   DEFAULT_QUIZ_COVERS,
-  CustomQuizCard,
   QuizPrices,
   DEFAULT_QUIZ_PRICES,
   getStoredQuizPrices,

@@ -157,7 +157,6 @@ export default function AdminQuizManager() {
     | "bulk"
     | "prices"
     | "covers"
-    | "cards"
     | "import-json"
     | "custom-exams"
     | "results"
@@ -1778,19 +1777,6 @@ export default function AdminQuizManager() {
         >
           <FaImage className="w-3.5 h-3.5 text-purple-300" />
           <span>কার্ডের কভার ইমেজ</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab("cards")}
-          className={`px-4 py-2 rounded-2xl text-xs font-bold transition flex items-center gap-2 ${
-            activeTab === "cards"
-              ? "bg-gradient-to-r from-blue-700 to-indigo-800 text-white shadow-sm"
-              : "bg-white hover:bg-slate-100 text-slate-700 border border-slate-200"
-          }`}
-        >
-          <FaLayerGroup className="w-3.5 h-3.5 text-blue-300" />
-          <span>MCQ কার্ড ({customCards.length})</span>
         </button>
 
         <button
