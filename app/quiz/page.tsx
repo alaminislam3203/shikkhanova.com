@@ -527,53 +527,6 @@ export default function QuizPage() {
     scrollTo(testAreaRef);
   };
 
-  // Start Custom Quiz Card Test (Created by Admin)
-  const handleStartCustomCardTest = (card: CustomQuizCard) => {
-    if (!session?.user) {
-      requireLoginForQuiz();
-      return;
-    }
-    setSelectedClass(card.classGrade);
-    setSelectedSubject(card.subject);
-    const isUnlocked =
-      !card.isPaid ||
-      unlockedClasses.includes(card.classGrade) ||
-      session?.user?.role === "ADMIN";
-
-    if (isUnlocked) {
-      let questions = getStoredSubjectQuestions(card.classGrade, card.subject);
-      if (questions.length === 0) {
-        questions = card.isPaid
-          ? getStoredPaidQuestions(card.classGrade)
-          : getStoredFreeQuestions(card.classGrade);
-      }
-      setActiveQuestions(questions);
-      setSelectedAnswers({});
-      setIsSubmitted(false);
-      setIsTestActive(true);
-      setReviewFilter("all");
-      setActiveTestTitle(card.title);
-      setActiveTestSubtitle(
-        card.subtitle || `${card.subject} স্পেশাল মডেল টেস্ট`,
-      );
-      setActiveTestBadge(
-        card.badge || (card.isPaid ? "💎 Premium Test" : "Free Test"),
-      );
-
-      const secs = Math.max(10, Math.min(30, questions.length)) * 60;
-      setTimeLeft(secs);
-      setTotalTime(secs);
-
-      scrollTo(testAreaRef);
-    } else {
-      setPaymentTargetClass(card.classGrade);
-      setPaymentPackageName(card.title);
-      setPaymentAmount(card.price || 50);
-      setUnlockSuccessMsg("");
-      setPaymentModalOpen(true);
-    }
-  };
-
   // Submit Active Test
   const handleSubmitTest = (isAuto = false) => {
     let score = 0;
