@@ -461,7 +461,8 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
               });
 
               return (
-                <table className="w-full text-left border-collapse border border-slate-300">
+                <>
+                  <table className="w-full text-left border-collapse border border-slate-300">
                   <thead>
                     {isClass5 ? (
                       <tr className="text-slate-800 text-[11px] font-bold uppercase bg-slate-100">
@@ -617,8 +618,14 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
                     </tr>
                   </tfoot>
                 </table>
-              );
-            })()}
+                {result.classGrade >= 9 && result.subjects.some((s) => s.isFourthSubject) && (
+                  <p className="text-[10px] text-slate-500 font-medium mt-1.5 italic">
+                    * বি:দ্র: জাতীয় শিক্ষাক্রম ও পাঠ্যপুস্তক বোর্ড (NCTB) নীতি অনুযায়ী ৪র্থ বিষয়ের ২.০০ গ্রেড পয়েন্টের অতিরিক্ত পয়েন্ট মোট জিপিএ মূল্যায়নে যোগ করা হয়েছে।
+                  </p>
+                )}
+              </>
+            );
+          })()}
           </div>
 
           {/* ============================================================ */}
