@@ -685,68 +685,57 @@ function SubjectDetailsContent() {
         {/* ─────────────────────────────────────────────────────────────
             2. SUBJECT HERO BANNER
         ───────────────────────────────────────────────────────────── */}
-        <div className="relative rounded-3xl overflow-hidden shadow-xl bg-gradient-to-r from-[#0A1E3C] via-[#0F2C59] to-[#200A18] text-white p-6 sm:p-10 border border-slate-800">
-          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="space-y-3 max-w-2xl">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="px-3 py-1 rounded-full bg-[#C8102E] text-white text-xs font-black shadow-xs">
+        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg sm:shadow-xl bg-gradient-to-r from-[#0A1E3C] via-[#0F2C59] to-[#200A18] text-white p-4 sm:p-8 md:p-10 border border-slate-800">
+          <div className="relative z-10 flex items-center justify-between gap-3 sm:gap-6">
+            <div className="space-y-2 sm:space-y-3 max-w-2xl min-w-0">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <span className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-[#C8102E] text-white text-[10px] sm:text-xs font-black shadow-xs">
                   {toBengaliClass(selectedClass)} শ্রেণি
                 </span>
-                <span className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-xs text-white text-xs font-bold border border-white/20">
+                <span className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-white/10 backdrop-blur-xs text-white text-[10px] sm:text-xs font-bold border border-white/20">
                   📖 বিষয়ভিত্তিক মডেল টেস্ট হাব
                 </span>
               </div>
 
-              <h1 className="text-2xl sm:text-4xl font-black tracking-tight leading-tight">
+              <h1 className="text-base sm:text-2xl md:text-4xl font-black tracking-tight leading-snug sm:leading-tight">
                 {selectedSubject} — সকল মডেল টেস্ট ও কুইজ
               </h1>
 
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              <p className="text-[11px] sm:text-sm text-slate-300 leading-normal sm:leading-relaxed line-clamp-2 sm:line-clamp-none">
                 {toBengaliClass(selectedClass)} শ্রেণির {selectedSubject} বিষয়ের
                 সিলেবাস অনুযায়ী সাজানো ফ্রি ও পেইড মডেল টেস্ট। সময়ভিত্তিক
                 পরীক্ষার মাধ্যমে আপনার পূর্ণাঙ্গ প্রস্তুতি যাচাই করুন।
               </p>
 
-              <div className="flex items-center gap-4 pt-2 text-xs font-bold text-slate-300 flex-wrap">
-                <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-xl border border-white/10">
-                  <FaLayerGroup className="text-amber-400" />
+              <div className="flex items-center gap-1.5 sm:gap-3 pt-1 text-[10px] sm:text-xs font-bold text-slate-300 flex-wrap">
+                <div className="flex items-center gap-1 sm:gap-1.5 bg-white/10 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl border border-white/10">
+                  <FaLayerGroup className="text-amber-400 text-xs sm:text-sm" />
                   <span>
-                    মোট মডেল টেস্ট: {toBengaliNumber(allModelTests.length)}টি
+                    মোট: {toBengaliNumber(allModelTests.length)}টি
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-xl border border-white/10">
-                  <FaGift className="text-emerald-400" />
-                  <span>ফ্রি টেস্ট: {toBengaliNumber(freeTestsCount)}টি</span>
+                <div className="flex items-center gap-1 sm:gap-1.5 bg-white/10 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl border border-white/10">
+                  <FaGift className="text-emerald-400 text-xs sm:text-sm" />
+                  <span>ফ্রি: {toBengaliNumber(freeTestsCount)}টি</span>
                 </div>
-                <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-xl border border-white/10">
-                  <FaGem className="text-rose-400" />
-                  <span>পেইড টেস্ট: {toBengaliNumber(paidTestsCount)}টি</span>
+                <div className="flex items-center gap-1 sm:gap-1.5 bg-white/10 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl border border-white/10">
+                  <FaGem className="text-rose-400 text-xs sm:text-sm" />
+                  <span>পেইড: {toBengaliNumber(paidTestsCount)}টি</span>
                 </div>
               </div>
             </div>
 
-            {/* Optional Cover Image / Visual Icon */}
+            {/* Visual Icon / Cover Image */}
             {subjectCoverImage ? (
-              <div className="w-full md:w-56 aspect-video md:aspect-square rounded-2xl overflow-hidden border border-white/20 shadow-2xl bg-slate-900/60 shrink-0">
+              <div className="w-16 h-16 sm:w-28 sm:h-28 md:w-40 md:h-40 rounded-xl sm:rounded-2xl overflow-hidden border border-white/20 shadow-xl bg-slate-900/60 shrink-0">
                 <img
                   src={subjectCoverImage}
                   alt={selectedSubject}
                   className="w-full h-full object-cover"
                 />
               </div>
-            ) : covers.classes?.[selectedClass] || covers.classes?.[String(selectedClass)] ? (
-              <div className="w-full md:w-56 aspect-video md:aspect-square rounded-2xl overflow-hidden border border-white/20 shadow-2xl bg-slate-900/60 shrink-0">
-                <img
-                  src={
-                    covers.classes[selectedClass] ||
-                    covers.classes[String(selectedClass)]
-                  }
-                  alt={`${toBengaliClass(selectedClass)} শ্রেণি`}
-                  className="w-full h-full object-cover"
-                />
-              </div>
             ) : (
-              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-5xl sm:text-6xl shrink-0 shadow-2xl">
+              <div className="w-14 h-14 sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-2xl sm:rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-2xl sm:text-5xl md:text-6xl shrink-0 shadow-xl">
                 📚
               </div>
             )}
