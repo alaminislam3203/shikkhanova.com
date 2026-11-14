@@ -31,6 +31,7 @@ export default function ProfilePage() {
     schoolName?: string;
     dateOfBirth?: string;
     religion?: string;
+    fourthSubject?: string;
   }>({});
 
   useEffect(() => {
@@ -51,6 +52,7 @@ export default function ProfilePage() {
               schoolName: d.user.schoolName,
               dateOfBirth: d.user.dateOfBirth,
               religion: d.user.religion,
+              fourthSubject: d.user.fourthSubject,
             });
           }
         })
@@ -211,6 +213,13 @@ export default function ProfilePage() {
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">ধর্ম (Religion)</span>
             <p className="font-bold text-slate-800 text-xs sm:text-sm">{extraProfile.religion || 'ইসলাম'}</p>
           </div>
+
+          {((session.user.classGrade && session.user.classGrade >= 9) || extraProfile.fourthSubject) && (
+            <div className="bg-purple-50/70 p-3.5 rounded-2xl border border-purple-200/80 space-y-1">
+              <span className="text-[11px] font-bold text-purple-700 uppercase tracking-wide">৪র্থ বিষয় (Optional Subject)</span>
+              <p className="font-black text-purple-900 text-xs sm:text-sm">{extraProfile.fourthSubject || 'উচ্চতর গণিত'}</p>
+            </div>
+          )}
 
           <div className="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/80 space-y-1">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">কোচিং প্রতিষ্ঠান</span>
