@@ -56,6 +56,7 @@ export default function AccountPage() {
     schoolName: '',
     dateOfBirth: '',
     religion: 'ইসলাম',
+    fourthSubject: 'উচ্চতর গণিত',
     image: '',
     role: 'STUDENT',
   });
@@ -91,6 +92,7 @@ export default function AccountPage() {
           schoolName: data.user.schoolName || '',
           dateOfBirth: data.user.dateOfBirth || '',
           religion: data.user.religion || 'ইসলাম',
+          fourthSubject: data.user.fourthSubject || 'উচ্চতর গণিত',
           image: data.user.image || session?.user?.image || '',
           role: data.user.role || 'STUDENT',
         });
