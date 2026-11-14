@@ -1062,6 +1062,13 @@ function SubjectDetailsContent() {
                     <FaRotateRight className="w-3.5 h-3.5" />
                     <span>পুনরায় টেস্ট দিন</span>
                   </button>
+                  <a
+                    href="#subject-leaderboard"
+                    className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs shadow-md transition active:scale-95 flex items-center gap-2 cursor-pointer"
+                  >
+                    <FaTrophy className="w-3.5 h-3.5 text-slate-900" />
+                    <span>মেধা তালিকায় র‍্যাঙ্ক দেখুন</span>
+                  </a>
                   <button
                     type="button"
                     onClick={() => {
