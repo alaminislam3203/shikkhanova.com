@@ -1162,7 +1162,7 @@ function SubjectDetailsContent() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
               {displayedModelTests.map((exam) => {
                 const isUnlocked =
                   !exam.isPaid ||
@@ -1178,16 +1178,16 @@ function SubjectDetailsContent() {
                 return (
                   <div
                     key={exam.id}
-                    className={`bg-white rounded-3xl p-4 sm:p-5 border transition flex flex-col justify-between space-y-3 group relative shadow-xs hover:shadow-lg ${
+                    className={`bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-5 border transition flex flex-col justify-between space-y-2.5 sm:space-y-3 group relative shadow-xs hover:shadow-lg ${
                       exam.isPaid
                         ? "border-t-4 border-t-[#C8102E] border-slate-200"
                         : "border-t-4 border-t-emerald-600 border-slate-200"
                     }`}
                   >
-                    <div className="space-y-2.5">
+                    <div className="space-y-2 sm:space-y-2.5">
                       {/* Optional Cover Image */}
                       {cardImage && (
-                        <div className="w-full aspect-video rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/80 mb-2 relative group shadow-2xs">
+                        <div className="w-full aspect-video rounded-xl sm:rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/80 mb-1.5 sm:mb-2 relative group shadow-2xs">
                           <img
                             src={cardImage}
                             alt={exam.title}
@@ -1197,14 +1197,14 @@ function SubjectDetailsContent() {
                       )}
 
                       {/* Badge row */}
-                      <div className="flex items-center justify-between gap-2 flex-wrap">
-                        <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 font-black text-[11px] border border-blue-200">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2">
+                        <span className="px-2 sm:px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 font-black text-[10px] sm:text-[11px] border border-blue-200 w-fit">
                           {toBengaliClass(exam.classGrade)} শ্রেণি
                         </span>
 
                         {exam.isPaid ? (
                           <span
-                            className={`px-2.5 py-0.5 rounded-full font-black text-[11px] border flex items-center gap-1 ${
+                            className={`px-2 sm:px-2.5 py-0.5 rounded-full font-black text-[9px] sm:text-[11px] border flex items-center gap-1 w-fit ${
                               isUnlocked
                                 ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                                 : "bg-rose-50 text-rose-700 border-rose-200"
@@ -1218,41 +1218,41 @@ function SubjectDetailsContent() {
                             ) : (
                               <>
                                 <FaLock className="w-2.5 h-2.5" />
-                                <span>পেইড (৳{exam.price || 50})</span>
+                                <span>৳{exam.price || 50}</span>
                               </>
                             )}
                           </span>
                         ) : (
-                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 font-black text-[11px] border border-emerald-200 flex items-center gap-1">
+                          <span className="px-2 sm:px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 font-black text-[9px] sm:text-[11px] border border-emerald-200 flex items-center gap-1 w-fit">
                             <FaGift className="w-2.5 h-2.5" />
-                            <span>{exam.badge || "১০০% ফ্রি"}</span>
+                            <span>{exam.badge || "ফ্রি"}</span>
                           </span>
                         )}
                       </div>
 
                       {/* Title & Subtitle */}
                       <div className="space-y-1">
-                        <h3 className="text-base font-black text-slate-900 group-hover:text-[#C8102E] transition-colors leading-snug">
+                        <h3 className="text-xs sm:text-base font-black text-slate-900 group-hover:text-[#C8102E] transition-colors leading-snug line-clamp-2">
                           {exam.title}
                         </h3>
                         {exam.subtitle && (
-                          <p className="text-xs text-slate-500 font-medium line-clamp-2">
+                          <p className="text-[10px] sm:text-xs text-slate-500 font-medium line-clamp-1 sm:line-clamp-2">
                             {exam.subtitle}
                           </p>
                         )}
                       </div>
 
                       {/* Meta Information */}
-                      <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-xs text-slate-600">
-                        <div className="flex items-center gap-1.5 p-2 rounded-xl bg-slate-50">
-                          <FaClock className="w-3 h-3 text-slate-400" />
-                          <span className="font-bold">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2 pt-2 border-t border-slate-100 text-[10px] sm:text-xs text-slate-600">
+                        <div className="flex items-center gap-1 sm:gap-1.5 p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-slate-50">
+                          <FaClock className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-slate-400 shrink-0" />
+                          <span className="font-bold truncate">
                             {toBengaliNumber(exam.durationMinutes)} মিনিট
                           </span>
                         </div>
-                        <div className="flex items-center gap-1.5 p-2 rounded-xl bg-slate-50">
-                          <FaBookOpen className="w-3 h-3 text-slate-400" />
-                          <span className="font-bold">
+                        <div className="flex items-center gap-1 sm:gap-1.5 p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-slate-50">
+                          <FaBookOpen className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-slate-400 shrink-0" />
+                          <span className="font-bold truncate">
                             {toBengaliNumber(exam.questionCount)}টি MCQ
                           </span>
                         </div>
@@ -1260,32 +1260,32 @@ function SubjectDetailsContent() {
                     </div>
 
                     {/* Action Button */}
-                    <div className="pt-2">
+                    <div className="pt-1.5 sm:pt-2">
                       {isUnlocked ? (
                         <button
                           type="button"
                           onClick={() => handleStartExam(exam)}
-                          className={`w-full py-2.5 rounded-xl text-white font-black text-xs transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer shadow-xs ${
+                          className={`w-full py-2 sm:py-2.5 rounded-xl text-white font-black text-[11px] sm:text-xs transition active:scale-95 flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer shadow-xs ${
                             exam.isPaid
                               ? "bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800"
                               : "bg-[#0A1E3C] group-hover:bg-[#C8102E]"
                           }`}
                         >
-                          <FaPlay className="w-3 h-3" />
+                          <FaPlay className="w-2.5 sm:w-3 h-2.5 sm:h-3" />
                           <span>
                             {exam.isPaid
-                              ? "প্রিমিয়াম টেস্ট দিন"
-                              : "ফ্রি টেস্ট দিন"}
+                              ? "প্রিমিয়াম টেস্ট"
+                              : "ফ্রি টেস্ট"}
                           </span>
                         </button>
                       ) : (
                         <button
                           type="button"
                           onClick={() => handleStartExam(exam)}
-                          className="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#0A1E3C] to-[#C8102E] hover:from-[#0F284E] hover:to-[#A50D26] text-white font-black text-xs transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                          className="w-full py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-[#0A1E3C] to-[#C8102E] hover:from-[#0F284E] hover:to-[#A50D26] text-white font-black text-[11px] sm:text-xs transition active:scale-95 flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer shadow-md"
                         >
-                          <FaLock className="w-3 h-3" />
-                          <span>Paid Test কিনুন (৳{exam.price || 50})</span>
+                          <FaLock className="w-2.5 sm:w-3 h-2.5 sm:h-3" />
+                          <span>কিনুন (৳{exam.price || 50})</span>
                         </button>
                       )}
                     </div>

@@ -1415,50 +1415,50 @@ export default function QuizPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {customExams.map((exam) => {
               const hasCode = !!(exam.examCode && exam.examCode.trim());
               return (
                 <div
                   key={exam.id}
-                  className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 space-y-4 flex flex-col justify-between group relative overflow-hidden"
+                  className="bg-white rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 border border-slate-200 shadow-xs hover:shadow-lg transition-all duration-300 space-y-3 sm:space-y-4 flex flex-col justify-between group relative overflow-hidden"
                 >
-                  <div className="space-y-2.5">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 font-black text-[11px] border border-blue-200">
+                  <div className="space-y-2 sm:space-y-2.5">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2">
+                      <span className="px-2 sm:px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 font-black text-[10px] sm:text-[11px] border border-blue-200 w-fit">
                         {exam.subject}
                       </span>
                       {hasCode ? (
-                        <span className="px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 font-bold text-[10px] border border-purple-200 flex items-center gap-1">
-                          <FaLock className="w-2.5 h-2.5" />
+                        <span className="px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 font-bold text-[9px] sm:text-[10px] border border-purple-200 flex items-center gap-1 w-fit">
+                          <FaLock className="w-2 sm:w-2.5 h-2 sm:h-2.5" />
                           <span>কোড প্রয়োজন</span>
                         </span>
                       ) : (
-                        <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[10px] border border-emerald-200 flex items-center gap-1">
-                          <FaLockOpen className="w-2.5 h-2.5" />
-                          <span>সবার জন্য উন্মুক্ত</span>
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[9px] sm:text-[10px] border border-emerald-200 flex items-center gap-1 w-fit">
+                          <FaLockOpen className="w-2 sm:w-2.5 h-2 sm:h-2.5" />
+                          <span>উন্মুক্ত</span>
                         </span>
                       )}
                     </div>
 
-                    <h3 className="text-base font-black text-slate-800 leading-snug group-hover:text-[#C8102E] transition">
+                    <h3 className="text-xs sm:text-base font-black text-slate-800 leading-snug group-hover:text-[#C8102E] transition line-clamp-2">
                       {exam.title}
                     </h3>
 
                     {exam.subtitle && (
-                      <p className="text-xs text-slate-500 leading-relaxed font-medium line-clamp-2">
+                      <p className="text-[10px] sm:text-xs text-slate-500 leading-relaxed font-medium line-clamp-1 sm:line-clamp-2">
                         {exam.subtitle}
                       </p>
                     )}
 
-                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-xs">
-                      <div className="p-2 rounded-xl bg-slate-50 flex items-center gap-1.5 text-slate-700 font-bold">
-                        <FaClock className="w-3 h-3 text-slate-400" />
-                        <span>সময়: {exam.durationMinutes} মিনিট</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2 pt-2 border-t border-slate-100 text-[10px] sm:text-xs">
+                      <div className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-slate-50 flex items-center gap-1 sm:gap-1.5 text-slate-700 font-bold">
+                        <FaClock className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-slate-400 shrink-0" />
+                        <span className="truncate">{exam.durationMinutes} মিনিট</span>
                       </div>
-                      <div className="p-2 rounded-xl bg-slate-50 flex items-center gap-1.5 text-slate-700 font-bold">
-                        <FaBookOpen className="w-3 h-3 text-slate-400" />
-                        <span>প্রশ্ন: {exam.questionCount}টি</span>
+                      <div className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-slate-50 flex items-center gap-1 sm:gap-1.5 text-slate-700 font-bold">
+                        <FaBookOpen className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-slate-400 shrink-0" />
+                        <span className="truncate">{exam.questionCount}টি প্রশ্ন</span>
                       </div>
                     </div>
                   </div>
@@ -1466,10 +1466,10 @@ export default function QuizPage() {
                   <button
                     type="button"
                     onClick={() => handleStartCustomExam(exam)}
-                    className="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#0A1E3C] to-[#C8102E] hover:from-[#122A54] hover:to-[#A50D26] text-white font-black text-xs shadow-md transition transform active:scale-98 flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="w-full py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-[#0A1E3C] to-[#C8102E] hover:from-[#122A54] hover:to-[#A50D26] text-white font-black text-[11px] sm:text-xs shadow-xs transition transform active:scale-98 flex items-center justify-center gap-1.5 cursor-pointer"
                   >
-                    <span>টেস্টে অংশ নিন</span>
-                    {hasCode ? <FaLock className="w-3 h-3" /> : <span>➔</span>}
+                    <span>টেস্ট দিন</span>
+                    {hasCode ? <FaLock className="w-2.5 sm:w-3 h-2.5 sm:h-3" /> : <span>➔</span>}
                   </button>
                 </div>
               );
