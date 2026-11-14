@@ -1406,7 +1406,9 @@ export default function QuizPage() {
               <FaClipboardList /> শিক্ষক কর্তৃক নির্ধারিত ক্লাস টেস্ট
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">
-              {toBengaliClass(selectedClass)} শ্রেণির লাইভ কাস্টম এক্সাম
+              {selectedClass
+                ? `${toBengaliClass(selectedClass)} শ্রেণির লাইভ কাস্টম এক্সাম`
+                : "লাইভ কাস্টম এক্সাম"}
             </h2>
             <p className="text-xs text-slate-500 font-medium">
               আপনার ব্যাচ বা শ্রেণির জন্য নির্ধারিত সাপ্তাহিক ও মাসিক মূল্যায়ন
@@ -1420,7 +1422,14 @@ export default function QuizPage() {
           )}
         </div>
 
-        {loadingCustomExams ? (
+        {!selectedClass ? (
+          <div className="bg-slate-50/80 rounded-2xl p-5 border border-dashed border-slate-300 text-center space-y-1.5">
+            <div className="text-2xl">📋</div>
+            <p className="text-xs font-bold text-slate-600">
+              লাইভ কাস্টম এক্সাম দেখতে ওপরে আপনার শ্রেণি নির্বাচন করুন।
+            </p>
+          </div>
+        ) : loadingCustomExams ? (
           <div className="py-8 text-center text-slate-400 font-bold text-xs">
             লাইভ পরীক্ষার তথ্য লোড হচ্ছে...
           </div>
@@ -1507,12 +1516,16 @@ export default function QuizPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-3">
           <div>
             <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">
-              {toBengaliClass(selectedClass)} শ্রেণির বিষয় নির্বাচন করুন
+              {selectedClass
+                ? `${toBengaliClass(selectedClass)} শ্রেণির বিষয় নির্বাচন করুন`
+                : "বিষয়ভিত্তিক মডেল টেস্ট"}
             </h2>
             <p className="text-xs text-slate-500 font-medium">
-              {selectedClass >= 9
-                ? "বিজ্ঞান, মানবিক, ব্যবসায় শিক্ষা ও আবশ্যিক বিষয়ের ওপর মডেল টেস্ট"
-                : "যেকোনো বিষয়ের ওপর মডেল টেস্ট অনুশীলন করুন"}
+              {selectedClass
+                ? selectedClass >= 9
+                  ? "বিজ্ঞান, মানবিক, ব্যবসায় শিক্ষা ও আবশ্যিক বিষয়ের ওপর মডেল টেস্ট"
+                  : "যেকোনো বিষয়ের ওপর মডেল টেস্ট অনুশীলন করুন"
+                : "মডেল টেস্ট দেখতে ওপরে আপনার শ্রেণি নির্বাচন করুন"}
             </p>
           </div>
 
@@ -1536,7 +1549,7 @@ export default function QuizPage() {
         </div>
 
         {/* Academic Group Selector for Class 9-10 */}
-        {(selectedClass === 9 || selectedClass === 10) && (
+        {selectedClass && (selectedClass === 9 || selectedClass === 10) && (
           <div className="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs space-y-2">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs">
               <span className="font-black text-slate-800 flex items-center gap-1.5">
@@ -1607,57 +1620,69 @@ export default function QuizPage() {
         )}
 
         {/* Subjects Cards Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5">
-          {currentSubjects.map((sub) => {
-            const count = subjectCounts[sub.name] || 0;
-            const subjectUrl = `/quiz/subject?class=${selectedClass}&subject=${encodeURIComponent(
-              sub.name,
-            )}`;
+        {!selectedClass ? (
+          <div className="bg-slate-50/80 rounded-3xl p-8 sm:p-12 border border-dashed border-slate-300 text-center space-y-3">
+            <div className="text-4xl">🎓</div>
+            <h3 className="text-base sm:text-lg font-black text-slate-800">
+              মডেল টেস্ট দেখতে প্রথমে আপনার শ্রেণি নির্বাচন করুন
+            </h3>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              ওপরের যেকোনো শ্রেণি (৫ম, ৬ষ্ঠ, ৭ম, ৮ম, ৯ম বা ১০ম) নির্বাচন করলে সংশ্লিষ্ট বিষয়ের তালিকা ও সকল মডেল টেস্ট এখানে দেখা যাবে।
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5">
+            {currentSubjects.map((sub) => {
+              const count = subjectCounts[sub.name] || 0;
+              const subjectUrl = `/quiz/subject?class=${selectedClass}&subject=${encodeURIComponent(
+                sub.name,
+              )}`;
 
-            return (
-              <Link
-                key={sub.name}
-                href={subjectUrl}
-                className="bg-white rounded-2xl p-4 border border-slate-200/90 hover:border-[#C8102E]/40 shadow-xs hover:shadow-md transition text-center space-y-2.5 group flex flex-col justify-between cursor-pointer"
-              >
-                {/* Optional Subject Cover Image or Icon */}
-                {quizCovers.subjects[sub.name] ? (
-                  <div className="w-full aspect-video rounded-xl overflow-hidden bg-slate-100 border border-slate-200/80 mb-1 relative">
-                    <img
-                      src={quizCovers.subjects[sub.name]}
-                      alt={sub.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
+              return (
+                <Link
+                  key={sub.name}
+                  href={subjectUrl}
+                  className="bg-white rounded-2xl p-4 border border-slate-200/90 hover:border-[#C8102E]/40 shadow-xs hover:shadow-md transition text-center space-y-2.5 group flex flex-col justify-between cursor-pointer"
+                >
+                  {/* Optional Subject Cover Image or Icon */}
+                  {quizCovers.subjects[sub.name] ? (
+                    <div className="w-full aspect-video rounded-xl overflow-hidden bg-slate-100 border border-slate-200/80 mb-1 relative">
+                      <img
+                        src={quizCovers.subjects[sub.name]}
+                        alt={sub.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  ) : (
+                    <div className="text-3xl transition-transform group-hover:scale-110">
+                      {sub.icon}
+                    </div>
+                  )}
+                  <div className="space-y-1">
+                    <h4 className="text-xs sm:text-sm font-black text-slate-800 line-clamp-1 group-hover:text-[#C8102E] transition-colors">
+                      {sub.name}
+                    </h4>
+                    <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                      {count > 0 ? (
+                        <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200">
+                          {count.toLocaleString("bn-BD")}টি MCQ
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">
+                          মডেল টেস্ট প্রস্তুত
+                        </span>
+                      )}
+                    </div>
                   </div>
-                ) : (
-                  <div className="text-3xl transition-transform group-hover:scale-110">
-                    {sub.icon}
+                  <div className="w-full py-2 rounded-xl bg-slate-100 group-hover:bg-[#C8102E] text-slate-700 group-hover:text-white font-bold text-xs transition flex items-center justify-center gap-1.5">
+                    <FaBookOpen className="w-3 h-3" />
+                    <span>মডেল টেস্টসমূহ দেখুন ➔</span>
                   </div>
-                )}
-                <div className="space-y-1">
-                  <h4 className="text-xs sm:text-sm font-black text-slate-800 line-clamp-1 group-hover:text-[#C8102E] transition-colors">
-                    {sub.name}
-                  </h4>
-                  <div className="flex items-center justify-center gap-1.5 flex-wrap">
-                    {count > 0 ? (
-                      <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200">
-                        {count.toLocaleString("bn-BD")}টি MCQ
-                      </span>
-                    ) : (
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">
-                        মডেল টেস্ট প্রস্তুত
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div className="w-full py-2 rounded-xl bg-slate-100 group-hover:bg-[#C8102E] text-slate-700 group-hover:text-white font-bold text-xs transition flex items-center justify-center gap-1.5">
-                  <FaBookOpen className="w-3 h-3" />
-                  <span>মডেল টেস্টসমূহ দেখুন ➔</span>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
