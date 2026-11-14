@@ -36,6 +36,7 @@ export default function RegisterPage() {
     classGrade: '7',
     rollNumber: '',
     religion: 'ইসলাম',
+    fourthSubject: 'উচ্চতর গণিত',
     schoolName: '',
     fatherName: '',
     motherName: '',
@@ -155,6 +156,16 @@ export default function RegisterPage() {
     if (!formData.dateOfBirth) {
       setError('শিক্ষার্থীর জন্ম তারিখ আবশ্যক');
       toast.error('জন্ম তারিখ আবশ্যক');
+      setLoading(false);
+      return;
+    }
+
+    if (
+      (formData.classGrade === '9' || formData.classGrade === '10') &&
+      !formData.fourthSubject
+    ) {
+      setError('৯ম ও ১০ম শ্রেণির জন্য ৪র্থ বিষয় নির্বাচন আবশ্যক');
+      toast.error('৪র্থ বিষয় নির্বাচন আবশ্যক');
       setLoading(false);
       return;
     }
@@ -351,6 +362,37 @@ export default function RegisterPage() {
                     </select>
                   </div>
                 </div>
+
+                {/* 4th Subject (ঐচ্ছিক বিষয়) Selector for Class 9 & 10 */}
+                {(formData.classGrade === '9' || formData.classGrade === '10') && (
+                  <div className="p-3 bg-gradient-to-r from-purple-50/90 to-indigo-50/60 rounded-xl border border-purple-200/90 shadow-xs space-y-1.5 transition-all">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-black text-purple-950 flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-purple-600 animate-pulse" />
+                        <span>৪র্থ বিষয় / ঐচ্ছিক বিষয় নির্বাচন করুন *</span>
+                      </label>
+                      <span className="text-[10px] font-black text-purple-700 bg-purple-100/80 px-2 py-0.5 rounded-full border border-purple-200">
+                        ঐচ্ছিক বিষয়
+                      </span>
+                    </div>
+                    <div className="relative">
+                      <select
+                        name="fourthSubject"
+                        required
+                        value={formData.fourthSubject}
+                        onChange={handleChange}
+                        className="w-full border border-purple-300 rounded-[5px] p-[10px] text-sm bg-white focus:outline-none focus:border-purple-600 transition font-bold text-slate-800 cursor-pointer shadow-xs"
+                      >
+                        <option value="উচ্চতর গণিত">উচ্চতর গণিত (Higher Mathematics) — কোড: ১২৬</option>
+                        <option value="কৃষিশিক্ষা">কৃষিশিক্ষা (Agricultural Studies) — কোড: ১৩৪</option>
+                        <option value="গার্হস্থ্য বিজ্ঞান">গার্হস্থ্য বিজ্ঞান (Home Science) — কোড: ১৫১</option>
+                      </select>
+                    </div>
+                    <p className="text-[11px] text-purple-700 font-medium">
+                      এসএসসি পরীক্ষার রেজিস্ট্রেশন অনুযায়ী আপনার নির্বাচিত ৪র্থ বিষয়টি বেছে নিন।
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Section 2: Guardian & School Info (Mandatory) */}

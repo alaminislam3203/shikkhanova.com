@@ -30,6 +30,7 @@ function enrichResultWithProfile(res: any) {
     schoolName: res.schoolName || prof.schoolName,
     dateOfBirth: res.dateOfBirth || prof.dateOfBirth,
     religion: res.religion || prof.religion || 'ইসলাম',
+    fourthSubject: res.fourthSubject || prof.fourthSubject,
   };
 }
 

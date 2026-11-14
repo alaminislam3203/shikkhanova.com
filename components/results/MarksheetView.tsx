@@ -381,6 +381,17 @@ export default function MarksheetView({ result }: MarksheetViewProps) {
                   </span>
                 </div>
               )}
+
+              {result.classGrade >= 9 && (result.fourthSubject || result.subjects.find((s) => s.isFourthSubject)?.subject) && (
+                <div className="flex items-start">
+                  <span className="w-32 shrink-0 text-slate-600 font-bold text-xs">
+                    ৪র্থ বিষয় (4th Sub):
+                  </span>
+                  <span className="text-purple-900 text-xs font-black bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
+                    {result.fourthSubject || result.subjects.find((s) => s.isFourthSubject)?.subject}
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Bottom Section: বিদ্যালয়ের নামের নিচে ৪টি কলামে (শ্রেণি, রোল নম্বর, জন্ম তারিখ, ফলাফল স্ট্যাটাস) */}

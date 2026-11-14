@@ -7,6 +7,7 @@ export interface StudentProfileExtra {
   schoolName?: string;
   dateOfBirth?: string;
   religion?: 'ইসলাম' | 'হিন্দু' | string;
+  fourthSubject?: 'উচ্চতর গণিত' | 'কৃষিশিক্ষা' | 'গার্হস্থ্য বিজ্ঞান' | string;
 }
 
 const PROFILES_PATH = path.join(process.cwd(), 'data', 'student_profiles.json');
@@ -95,6 +96,7 @@ export function getStudentProfile(
   const defaultFather = BENGALI_FATHERS[(rollNumber - 1) % BENGALI_FATHERS.length];
   const defaultMother = BENGALI_MOTHERS[(rollNumber - 1) % BENGALI_MOTHERS.length];
   const defaultSchool = DEFAULT_SCHOOLS[(rollNumber + classGrade) % DEFAULT_SCHOOLS.length];
+  const defaultFourthSubject = classGrade >= 9 ? 'উচ্চতর গণিত' : '';
 
   return {
     fatherName: matched.fatherName?.trim() || defaultFather,
@@ -102,6 +104,7 @@ export function getStudentProfile(
     schoolName: matched.schoolName?.trim() || defaultSchool,
     dateOfBirth: matched.dateOfBirth?.trim() || defaultDob,
     religion: matched.religion?.trim() || 'ইসলাম',
+    fourthSubject: matched.fourthSubject?.trim() || defaultFourthSubject,
   };
 }
 
@@ -122,6 +125,7 @@ export function saveStudentProfile(
     schoolName: extra.schoolName !== undefined ? extra.schoolName : existing.schoolName,
     dateOfBirth: extra.dateOfBirth !== undefined ? extra.dateOfBirth : existing.dateOfBirth,
     religion: extra.religion !== undefined ? extra.religion : existing.religion || 'ইসলাম',
+    fourthSubject: extra.fourthSubject !== undefined ? extra.fourthSubject : existing.fourthSubject,
   };
 
   all[key] = updated;

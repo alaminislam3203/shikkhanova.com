@@ -29,6 +29,7 @@ export interface MarksheetData {
   schoolName?: string;
   dateOfBirth?: string;
   religion?: string;
+  fourthSubject?: string;
   classGrade: number;
   rollNumber: number;
   examTitle: string;

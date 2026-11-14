@@ -19,6 +19,7 @@ export async function POST(req: Request) {
       schoolName,
       dateOfBirth,
       religion,
+      fourthSubject,
     } = body;
 
     if (!name || !email || !password) {
@@ -58,11 +59,18 @@ export async function POST(req: Request) {
       },
     });
 
-    // Save extra profile details (Father, Mother, School, DOB, Religion)
+    // Save extra profile details (Father, Mother, School, DOB, Religion, Fourth Subject)
     saveStudentProfile(
       numClass,
       numRoll,
-      { fatherName, motherName, schoolName, dateOfBirth, religion: religion || 'ইসলাম' },
+      {
+        fatherName,
+        motherName,
+        schoolName,
+        dateOfBirth,
+        religion: religion || 'ইসলাম',
+        fourthSubject: numClass >= 9 ? (fourthSubject || 'উচ্চতর গণিত') : undefined,
+      },
       cleanEmail
     );
 
