@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { RawQuestion } from './defaultQuizData';
 import { readSubjectQuestions } from './quizStorage';
+import { getDbSetting, setDbSetting } from './dbSettings';
 
 export interface CustomExam {
   id: string;
@@ -16,6 +17,10 @@ export interface CustomExam {
   questions?: RawQuestion[];
   isActive: boolean;
   createdAt: string;
+  isPaid?: boolean;
+  price?: number;
+  badge?: string;
+  coverImage?: string;
 }
 
 export interface QuizSubmission {
@@ -90,6 +95,26 @@ export function getCustomExams(): CustomExam[] {
 
   saveCustomExams(defaults);
   return defaults;
+}
+
+export async function getCustomExamsFromDb(): Promise<CustomExam[]> {
+  try {
+    const dbData = await getDbSetting<CustomExam[] | null>('custom_exams', null);
+    if (Array.isArray(dbData) && dbData.length > 0) {
+      return dbData;
+    }
+  } catch {}
+
+  // Fallback to initial seed
+  const fallback = getCustomExams();
+  try {
+    await setDbSetting('custom_exams', fallback);
+  } catch {}
+  return fallback;
+}
+
+export async function saveCustomExamsToDb(exams: CustomExam[]): Promise<void> {
+  await setDbSetting('custom_exams', exams);
 }
 
 export function saveCustomExams(exams: CustomExam[]) {

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
-  getCustomExams,
-  saveCustomExams,
+  getCustomExamsFromDb,
+  saveCustomExamsToDb,
   getExamQuestions,
   CustomExam,
 } from '@/lib/quizExamStorage';
@@ -13,9 +13,10 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
     const classGrade = searchParams.get('classGrade');
+    const subject = searchParams.get('subject');
     const activeOnly = searchParams.get('activeOnly') !== 'false';
 
-    let exams = getCustomExams();
+    let exams = await getCustomExamsFromDb();
 
     if (id) {
       const exam = exams.find((e) => e.id === id);
@@ -29,6 +30,12 @@ export async function GET(req: NextRequest) {
     if (classGrade) {
       const grade = parseInt(classGrade, 10);
       exams = exams.filter((e) => e.classGrade === grade);
+    }
+
+    if (subject) {
+      exams = exams.filter(
+        (e) => e.subject.toLowerCase().trim() === subject.toLowerCase().trim()
+      );
     }
 
     if (activeOnly) {
@@ -59,6 +66,10 @@ export async function POST(req: NextRequest) {
       sourceType,
       questions,
       isActive,
+      isPaid,
+      price,
+      badge,
+      coverImage,
     } = body;
 
     if (!title || !classGrade || !subject) {
@@ -68,7 +79,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    let exams = getCustomExams();
+    let exams = await getCustomExamsFromDb();
     const examId = id || `exam_${Date.now()}`;
     const existingIndex = exams.findIndex((e) => e.id === examId);
     const existing = existingIndex >= 0 ? exams[existingIndex] : null;
@@ -89,6 +100,10 @@ export async function POST(req: NextRequest) {
       sourceType: sourceType === 'custom' ? 'custom' : 'auto_bank',
       questions: finalQuestions,
       isActive: isActive !== false,
+      isPaid: Boolean(isPaid),
+      price: isPaid ? Math.max(0, Number(price) || 50) : 0,
+      badge: badge ? String(badge).trim() : (isPaid ? 'পেইড টেস্ট' : 'ফ্রি টেস্ট'),
+      coverImage: coverImage ? String(coverImage).trim() : '',
       createdAt: existing?.createdAt || new Date().toISOString(),
     };
 
@@ -98,11 +113,11 @@ export async function POST(req: NextRequest) {
       exams.unshift(newExam);
     }
 
-    saveCustomExams(exams);
+    await saveCustomExamsToDb(exams);
 
     return NextResponse.json({
       success: true,
-      message: 'কাস্টম পরীক্ষা সফলভাবে সংরক্ষণ করা হয়েছে!',
+      message: 'কাস্টম পরীক্ষা সফলভাবে ডেটাবেজে সংরক্ষণ করা হয়েছে!',
       exam: newExam,
     });
   } catch (err: any) {
@@ -122,9 +137,9 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Exam ID is required' }, { status: 400 });
     }
 
-    let exams = getCustomExams();
+    let exams = await getCustomExamsFromDb();
     exams = exams.filter((e) => e.id !== id);
-    saveCustomExams(exams);
+    await saveCustomExamsToDb(exams);
 
     return NextResponse.json({
       success: true,
@@ -137,4 +152,3 @@ export async function DELETE(req: NextRequest) {
     );
   }
 }
-

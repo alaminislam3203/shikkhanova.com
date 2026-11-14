@@ -20,14 +20,6 @@ const CARDS_FILE_PATH = path.join(DATA_DIR, 'quiz-cards.json');
 const PRICES_FILE_PATH = path.join(DATA_DIR, 'quiz-prices.json');
 const PACKAGES_FILE_PATH = path.join(DATA_DIR, 'quiz-packages.json');
 
-function ensureDataDir(): void {
-  try {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
-    }
-  } catch {}
-}
-
 /**
  * Ensures that the SystemSetting table exists in the PostgreSQL database
  */
@@ -71,7 +63,7 @@ export async function getDbSetting<T>(key: string, defaultValue: T): Promise<T> 
 }
 
 /**
- * Upserts a generic setting into the PostgreSQL database
+ * Upserts a generic setting into the PostgreSQL database (Production safe - NO disk writes)
  */
 export async function setDbSetting<T>(key: string, value: T): Promise<boolean> {
   try {
@@ -96,7 +88,7 @@ export async function setDbSetting<T>(key: string, value: T): Promise<boolean> {
 // 🖼️ QUIZ COVERS (Classes & Subjects)
 // ─────────────────────────────────────────────────────────────
 
-function readFileCovers(): QuizCovers {
+function readInitialSeedCovers(): QuizCovers {
   try {
     if (fs.existsSync(COVERS_FILE_PATH)) {
       const raw = fs.readFileSync(COVERS_FILE_PATH, 'utf-8');
@@ -112,23 +104,14 @@ function readFileCovers(): QuizCovers {
   return DEFAULT_QUIZ_COVERS;
 }
 
-function writeFileCovers(covers: QuizCovers): void {
-  try {
-    ensureDataDir();
-    fs.writeFileSync(COVERS_FILE_PATH, JSON.stringify(covers, null, 2), 'utf-8');
-  } catch {}
-}
-
 export async function getQuizCoversFromDb(): Promise<QuizCovers> {
-  // 1. Try reading from Database first
+  // 1. Always read from Database first
   const dbData = await getDbSetting<QuizCovers | null>('quiz_covers', null);
   if (dbData && typeof dbData === 'object') {
     const hasCovers =
       (dbData.classes && Object.keys(dbData.classes).length > 0) ||
       (dbData.subjects && Object.keys(dbData.subjects).length > 0);
     if (hasCovers) {
-      // Sync to file as backup
-      writeFileCovers(dbData);
       return {
         classes: dbData.classes || {},
         subjects: dbData.subjects || {},
@@ -136,32 +119,30 @@ export async function getQuizCoversFromDb(): Promise<QuizCovers> {
     }
   }
 
-  // 2. Fallback to file and seed database if file has data
-  const fileData = readFileCovers();
-  const fileHasCovers =
-    (fileData.classes && Object.keys(fileData.classes).length > 0) ||
-    (fileData.subjects && Object.keys(fileData.subjects).length > 0);
+  // 2. Fallback to read-only seed file ONLY on first fresh deployment
+  const seedData = readInitialSeedCovers();
+  const seedHasCovers =
+    (seedData.classes && Object.keys(seedData.classes).length > 0) ||
+    (seedData.subjects && Object.keys(seedData.subjects).length > 0);
 
-  if (fileHasCovers) {
-    await setDbSetting('quiz_covers', fileData);
-    return fileData;
+  if (seedHasCovers) {
+    await setDbSetting('quiz_covers', seedData);
+    return seedData;
   }
 
   return dbData || DEFAULT_QUIZ_COVERS;
 }
 
 export async function saveQuizCoversToDb(covers: QuizCovers): Promise<void> {
-  // 1. Save to Database (Permanent PostgreSQL storage)
+  // Production ready: Pure PostgreSQL Database storage (NEVER write to local file)
   await setDbSetting('quiz_covers', covers);
-  // 2. Write to local file as secondary backup
-  writeFileCovers(covers);
 }
 
 // ─────────────────────────────────────────────────────────────
 // 🃏 CUSTOM QUIZ CARDS (With Individual Cover Images)
 // ─────────────────────────────────────────────────────────────
 
-function readFileCards(): CustomQuizCard[] {
+function readInitialSeedCards(): CustomQuizCard[] {
   try {
     if (fs.existsSync(CARDS_FILE_PATH)) {
       const raw = fs.readFileSync(CARDS_FILE_PATH, 'utf-8');
@@ -174,36 +155,26 @@ function readFileCards(): CustomQuizCard[] {
   return DEFAULT_CUSTOM_QUIZ_CARDS;
 }
 
-function writeFileCards(cards: CustomQuizCard[]): void {
-  try {
-    ensureDataDir();
-    fs.writeFileSync(CARDS_FILE_PATH, JSON.stringify(cards, null, 2), 'utf-8');
-  } catch {}
-}
-
 export async function getQuizCardsFromDb(): Promise<CustomQuizCard[]> {
-  // 1. Try reading from Database
+  // 1. Always read from Database first
   const dbCards = await getDbSetting<CustomQuizCard[] | null>('quiz_cards', null);
   if (Array.isArray(dbCards) && dbCards.length > 0) {
-    writeFileCards(dbCards);
     return dbCards;
   }
 
-  // 2. Fallback to file and seed database
-  const fileCards = readFileCards();
-  if (Array.isArray(fileCards) && fileCards.length > 0) {
-    await setDbSetting('quiz_cards', fileCards);
-    return fileCards;
+  // 2. Fallback to read-only seed file ONLY on first fresh deployment
+  const seedCards = readInitialSeedCards();
+  if (Array.isArray(seedCards) && seedCards.length > 0) {
+    await setDbSetting('quiz_cards', seedCards);
+    return seedCards;
   }
 
   return DEFAULT_CUSTOM_QUIZ_CARDS;
 }
 
 export async function saveQuizCardsToDb(cards: CustomQuizCard[]): Promise<void> {
-  // 1. Save to Database
+  // Production ready: Pure PostgreSQL Database storage (NEVER write to local file)
   await setDbSetting('quiz_cards', cards);
-  // 2. Write to file backup
-  writeFileCards(cards);
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -227,7 +198,7 @@ export async function getQuizPricesFromDb(): Promise<QuizPrices> {
     };
   }
 
-  // Fallback to file
+  // Fallback to read-only seed file
   try {
     if (fs.existsSync(PRICES_FILE_PATH)) {
       const raw = fs.readFileSync(PRICES_FILE_PATH, 'utf-8');
@@ -243,11 +214,8 @@ export async function getQuizPricesFromDb(): Promise<QuizPrices> {
 }
 
 export async function saveQuizPricesToDb(prices: QuizPrices): Promise<void> {
+  // Pure PostgreSQL Database storage
   await setDbSetting('quiz_prices', prices);
-  try {
-    ensureDataDir();
-    fs.writeFileSync(PRICES_FILE_PATH, JSON.stringify(prices, null, 2), 'utf-8');
-  } catch {}
 }
 
 export async function getQuizPackagesFromDb(): Promise<QuizPackageItem[]> {
@@ -256,6 +224,7 @@ export async function getQuizPackagesFromDb(): Promise<QuizPackageItem[]> {
     return dbPkgs;
   }
 
+  // Fallback to read-only seed file
   try {
     if (fs.existsSync(PACKAGES_FILE_PATH)) {
       const raw = fs.readFileSync(PACKAGES_FILE_PATH, 'utf-8');
@@ -271,10 +240,6 @@ export async function getQuizPackagesFromDb(): Promise<QuizPackageItem[]> {
 }
 
 export async function saveQuizPackagesToDb(packages: QuizPackageItem[]): Promise<void> {
+  // Pure PostgreSQL Database storage
   await setDbSetting('quiz_packages', packages);
-  try {
-    ensureDataDir();
-    fs.writeFileSync(PACKAGES_FILE_PATH, JSON.stringify(packages, null, 2), 'utf-8');
-  } catch {}
 }
-
