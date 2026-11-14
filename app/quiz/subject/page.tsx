@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo, Suspense } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -135,6 +135,35 @@ function SubjectDetailsContent() {
   const [quizPrices, setQuizPrices] = useState<QuizPrices>(DEFAULT_QUIZ_PRICES);
   const [loading, setLoading] = useState<boolean>(true);
   const [unlockedClasses, setUnlockedClasses] = useState<number[]>([]);
+  const [subjectLeaderboard, setSubjectLeaderboard] = useState<any[]>([]);
+  const [loadingLeaderboard, setLoadingLeaderboard] = useState<boolean>(false);
+
+  const loadSubjectLeaderboard = useCallback(() => {
+    if (!selectedSubject) return;
+    setLoadingLeaderboard(true);
+    const query = new URLSearchParams({
+      subject: selectedSubject,
+      sortBy: "rank",
+      limit: "15",
+    });
+    if (selectedClass) {
+      query.set("classGrade", String(selectedClass));
+    }
+
+    fetch(`/api/quiz/submissions?${query.toString()}`, { cache: "no-store" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data?.submissions)) {
+          setSubjectLeaderboard(data.submissions);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoadingLeaderboard(false));
+  }, [selectedClass, selectedSubject]);
+
+  useEffect(() => {
+    loadSubjectLeaderboard();
+  }, [loadSubjectLeaderboard]);
 
   // Student Identity inputs
   const [studentName, setStudentName] = useState<string>("");
