@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { FaBookOpen, FaArrowRight } from 'react-icons/fa6';
+import React from "react";
+import Link from "next/link";
+import { FaBookOpen, FaArrowRight } from "react-icons/fa6";
 
 export default function ClassSelector() {
   const classes = [
-    { grade: 5, bn: '৫ম শ্রেণি', name: 'Class 5', rolls: 'রোল ১-৫০' },
-    { grade: 6, bn: '৬ষ্ঠ শ্রেণি', name: 'Class 6', rolls: 'রোল ১-৫০' },
-    { grade: 7, bn: '৭ম শ্রেণি', name: 'Class 7', rolls: 'রোল ১-৫০' },
-    { grade: 8, bn: '৮ম শ্রেণি', name: 'Class 8', rolls: 'রোল ১-৫০' },
-    { grade: 9, bn: '৯ম শ্রেণি', name: 'Class 9', rolls: 'রোল ১-৫০' },
-    { grade: 10, bn: '১০ম শ্রেণি', name: 'Class 10', rolls: 'রোল ১-৫০' },
+    { grade: 5, bn: "৫ম শ্রেণি", name: "Class 5", rolls: "রোল ১-৫০" },
+    { grade: 6, bn: "৬ষ্ঠ শ্রেণি", name: "Class 6", rolls: "রোল ১-৫০" },
+    { grade: 7, bn: "৭ম শ্রেণি", name: "Class 7", rolls: "রোল ১-৫০" },
+    { grade: 8, bn: "৮ম শ্রেণি", name: "Class 8", rolls: "রোল ১-৫০" },
+    { grade: 9, bn: "৯ম শ্রেণি", name: "Class 9", rolls: "রোল ১-৫০" },
+    { grade: 10, bn: "১০ম শ্রেণি", name: "Class 10", rolls: "রোল ১-৫০" },
   ];
 
   return (
@@ -19,14 +19,15 @@ export default function ClassSelector() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
         <div>
           <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-            <FaBookOpen className="text-[#C8102E]" /> শ্রেণি নির্বাচন (৫ম - ১০ম শ্রেণি)
+            <FaBookOpen className="text-[#C8102E]" /> শ্রেণি নির্বাচন (৫ম - ১০ম
+            শ্রেণি)
           </h2>
           <p className="text-xs sm:text-sm text-slate-500">
-            আপনার শ্রেণি নির্বাচন করে সরাসরি রোল উপস্থিতি, ফলাফল বা ভিডিও ক্লাস দেখুন
+            আপনার শ্রেণি নির্বাচন করে সরাসরি শিট ও নোট বা ভিডিও ক্লাস দেখুন
           </p>
         </div>
         <span className="text-xs font-bold text-brand-700 bg-brand-50 px-3 py-1 rounded-full border border-brand-200">
-          রোল নম্বর অনুযায়ী সাজানো
+          শ্রেণি অনুযায়ী সাজানো
         </span>
       </div>
 
@@ -39,10 +40,12 @@ export default function ClassSelector() {
           >
             <div className="space-y-1">
               <span className="text-3xl font-black text-brand-700 group-hover:text-nova-600 transition-colors inline-block">
-                {c.bn.split(' ')[0]}
+                {c.bn.split(" ")[0]}
               </span>
               <h3 className="text-sm font-bold text-slate-800">{c.bn}</h3>
-              <p className="text-[11px] font-medium text-slate-400">{c.rolls}</p>
+              <p className="text-[11px] font-medium text-slate-400">
+                {c.rolls}
+              </p>
             </div>
             <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-center gap-1 text-[11px] font-bold text-brand-700 group-hover:text-nova-600">
               <span>শিট ও নোট</span>
@@ -54,4 +57,3 @@ export default function ClassSelector() {
     </section>
   );
 }
-
