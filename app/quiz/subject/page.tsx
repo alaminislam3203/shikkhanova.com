@@ -46,6 +46,12 @@ import {
   FaKey,
   FaCopy,
   FaPhone,
+  FaLightbulb,
+  FaPenToSquare,
+  FaFeatherPointed,
+  FaMagnifyingGlass,
+  FaChevronUp,
+  FaChevronDown,
 } from "react-icons/fa6";
 
 interface SubjectExamItem {
@@ -77,8 +83,22 @@ function SubjectDetailsContent() {
   const selectedClass = classParam ? parseInt(classParam, 10) || 5 : 5;
   const selectedSubject = subjectParam;
 
-  // Active Tab Filter: 'all' | 'free' | 'paid'
-  const [filterType, setFilterType] = useState<"all" | "free" | "paid">("all");
+  // Active Tab Filter: 'all' | 'free' | 'paid' | 'chapters'
+  const [filterType, setFilterType] = useState<"all" | "free" | "paid" | "chapters">("all");
+
+  // Chapter-wise data states
+  const [chapterGroups, setChapterGroups] = useState<{
+    name: string;
+    type: string;
+    author?: string;
+    testCount: number;
+    totalQuestions: number;
+    tests: { id: string; name: string; min: number; questionCount: number }[];
+  }[]>([]);
+  const [chapterTypeFilter, setChapterTypeFilter] = useState<"all" | "কবিতা" | "গদ্য">("all");
+  const [chapterSearch, setChapterSearch] = useState<string>("");
+  const [expandedChapter, setExpandedChapter] = useState<string | null>(null);
+  const [isPracticeMode, setIsPracticeMode] = useState<boolean>(false);
 
   // Data States
   const [customExams, setCustomExams] = useState<CustomExam[]>([]);
@@ -203,16 +223,26 @@ function SubjectDetailsContent() {
           .then((r) => r.json())
           .catch(() => ({ covers: DEFAULT_QUIZ_COVERS }));
 
-        const [examsRes, qsRes, coversRes] = await Promise.all([
+        // 4. Fetch Chapter Tests (from Bangla Model Test database)
+        const chaptersPromise = fetch("/api/quiz/chapter-tests?action=chapters", { cache: "no-store" })
+          .then((r) => r.json())
+          .catch(() => ({ success: false, chapters: [] }));
+
+        const [examsRes, qsRes, coversRes, chaptersRes] = await Promise.all([
           examsPromise,
           questionsPromise,
           coversPromise,
+          chaptersPromise,
         ]);
 
         if (!isMounted) return;
 
         if (Array.isArray(examsRes?.exams)) {
           setCustomExams(examsRes.exams);
+        }
+
+        if (chaptersRes?.success && Array.isArray(chaptersRes.chapters)) {
+          setChapterGroups(chaptersRes.chapters);
         }
 
         if (Array.isArray(qsRes?.questions) && qsRes.questions.length > 0) {
@@ -271,10 +301,10 @@ function SubjectDetailsContent() {
       isBuiltIn: true,
     });
 
-    // 2. 💎 Class-wise Paid Model Test for this subject
+    // 2. Class-wise Paid Model Test for this subject
     list.push({
       id: `classwise_paid_${selectedClass}_${selectedSubject}`,
-      title: `💎 ${toBengaliClass(selectedClass)} শ্রেণি — ${selectedSubject} পেইড মডেল টেস্ট`,
+      title: `${toBengaliClass(selectedClass)} শ্রেণি — ${selectedSubject} পেইড মডেল টেস্ট`,
       subtitle: `পূর্ণাঙ্গ স্পেশাল মডেল টেস্ট • অধ্যায়ভিত্তিক স্পেশাল MCQ • বিস্তারিত ফলাফল, র‍্যাংক ও সমাধান`,
       classGrade: selectedClass,
       subject: selectedSubject,
@@ -282,7 +312,7 @@ function SubjectDetailsContent() {
       questionCount: Math.min(30, Math.max(15, totalBank || 25)),
       isPaid: true,
       price: classPrice,
-      badge: "💎 Paid Model Test",
+      badge: "Paid Model Test",
       coverImage: classCover || subjectCover,
       sourceType: "auto_bank",
       isBuiltIn: true,
@@ -316,7 +346,7 @@ function SubjectDetailsContent() {
     if (totalBank >= 15) {
       list.push({
         id: "builtin_speed_test",
-        title: `⚡ ${selectedSubject} কুইক স্পিড টেস্ট (১০ প্রশ্ন)`,
+        title: `${selectedSubject} কুইক স্পিড টেস্ট (১০ প্রশ্ন)`,
         subtitle: `কম সময়ে দ্রুত যাচাই করুন বিষয়টির উপর আপনার প্রস্তুতি`,
         classGrade: selectedClass,
         subject: selectedSubject,
@@ -350,6 +380,23 @@ function SubjectDetailsContent() {
     }
     return allModelTests;
   }, [allModelTests, filterType]);
+
+  // Filtered Chapters based on type and search query
+  const filteredChapters = useMemo(() => {
+    let list = chapterGroups;
+    if (chapterTypeFilter !== "all") {
+      list = list.filter((c) => c.type === chapterTypeFilter);
+    }
+    if (chapterSearch.trim()) {
+      const q = chapterSearch.trim().toLowerCase();
+      list = list.filter(
+        (c) =>
+          c.name.toLowerCase().includes(q) ||
+          (c.author && c.author.toLowerCase().includes(q)),
+      );
+    }
+    return list;
+  }, [chapterGroups, chapterTypeFilter, chapterSearch]);
 
   // Counts
   const freeTestsCount = useMemo(
@@ -387,7 +434,8 @@ function SubjectDetailsContent() {
     launchExam(exam);
   };
 
-  const launchExam = (exam: SubjectExamItem) => {
+  const launchExam = (exam: SubjectExamItem, practice: boolean = false) => {
+    setIsPracticeMode(practice);
     let questionsToUse: RawQuestion[] = [];
 
     if (Array.isArray(exam.questions) && exam.questions.length > 0) {
@@ -434,6 +482,60 @@ function SubjectDetailsContent() {
         block: "start",
       });
     }, 100);
+  };
+
+  // Launch Chapter Test (from Bangla Unified Database)
+  const handleStartChapterTest = async (
+    testId: string,
+    mode: "exam" | "practice" = "exam",
+  ) => {
+    try {
+      toast.loading("টেস্ট লোড হচ্ছে...", { id: "load_ch_test" });
+      const res = await fetch(
+        `/api/quiz/chapter-tests?action=test&id=${encodeURIComponent(testId)}`,
+      );
+      const data = await res.json();
+      toast.dismiss("load_ch_test");
+
+      if (data?.success && data.test) {
+        const t = data.test;
+        const examItem: SubjectExamItem = {
+          id: t.id,
+          title: `${t.ch} — ${t.name}`,
+          subtitle: `${t.type} • ${t.author ? t.author + " • " : ""}${
+            mode === "practice"
+              ? "💡 অনুশীলন মোড (তাৎক্ষণিক সঠিক উত্তর ও ব্যাখ্যা)"
+              : "⏱️ পূর্ণাঙ্গ পরীক্ষা মোড"
+          }`,
+          classGrade: selectedClass,
+          subject: selectedSubject,
+          durationMinutes: t.durationMinutes || 20,
+          questionCount: Array.isArray(t.questions) ? t.questions.length : 20,
+          isPaid: false,
+          badge: mode === "practice" ? "💡 অনুশীলন" : "📝 অধ্যায় পরীক্ষা",
+          sourceType: "custom",
+          questions: (t.questions || []).map((q: any) => ({
+            q: q.q,
+            options: q.options,
+            ans: q.ans,
+            explanation: q.explanation,
+            stem: q.stem,
+            stemLabel: q.stemLabel,
+            items: q.items,
+            tail: q.tail,
+            page: q.page,
+            chapter: t.ch,
+            category: t.type,
+          })),
+        };
+        launchExam(examItem, mode === "practice");
+      } else {
+        toast.error("টেস্টের প্রশ্নাবলী পাওয়া যায়নি।");
+      }
+    } catch {
+      toast.dismiss("load_ch_test");
+      toast.error("টেস্ট লোড করতে সমস্যা হয়েছে।");
+    }
   };
 
   // Confirm Access Code
@@ -508,7 +610,7 @@ function SubjectDetailsContent() {
 
   // Timer Countdown Effect
   useEffect(() => {
-    if (isTestActive && !isSubmitted && timeLeft > 0) {
+    if (isTestActive && !isSubmitted && !isPracticeMode && timeLeft > 0) {
       timerRef.current = setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
@@ -524,11 +626,12 @@ function SubjectDetailsContent() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isTestActive, isSubmitted, timeLeft]);
+  }, [isTestActive, isSubmitted, isPracticeMode, timeLeft]);
 
   // Select Option
   const handleSelectOption = (qIdx: number, optIdx: number) => {
     if (isSubmitted) return;
+    if (isPracticeMode && selectedAnswers[qIdx] !== undefined) return;
     setSelectedAnswers((prev) => ({ ...prev, [qIdx]: optIdx }));
   };
 
@@ -758,12 +861,14 @@ function SubjectDetailsContent() {
                     {selectedSubject}
                   </span>
                   {activeExam.isPaid ? (
-                    <span className="px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 font-black text-xs border border-rose-200">
-                      🔒 পেইড টেস্ট
+                    <span className="px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 font-black text-xs border border-rose-200 flex items-center gap-1">
+                      <FaLock className="w-2.5 h-2.5" />
+                      <span>পেইড টেস্ট</span>
                     </span>
                   ) : (
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 font-black text-xs border border-emerald-200">
-                      ✨ ফ্রি টেস্ট
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 font-black text-xs border border-emerald-200 flex items-center gap-1">
+                      <FaGift className="w-2.5 h-2.5" />
+                      <span>ফ্রি টেস্ট</span>
                     </span>
                   )}
                 </div>
@@ -791,8 +896,9 @@ function SubjectDetailsContent() {
                     <span>{formatTime(timeLeft)}</span>
                   </div>
                 ) : (
-                  <div className="px-4 py-2 rounded-2xl bg-emerald-50 text-emerald-800 font-black text-xs border border-emerald-200">
-                    পরীক্ষা সমাপ্ত ✅
+                  <div className="px-4 py-2 rounded-2xl bg-emerald-50 text-emerald-800 font-black text-xs border border-emerald-200 flex items-center gap-1.5">
+                    <span>পরীক্ষা সমাপ্ত</span>
+                    <FaCircleCheck className="w-3.5 h-3.5 text-emerald-600" />
                   </div>
                 )}
 
@@ -858,12 +964,14 @@ function SubjectDetailsContent() {
             {/* POST-SUBMIT SCORE CARD */}
             {isSubmitted && (
               <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-slate-900 to-[#1e0a14] text-white space-y-5 text-center shadow-xl">
-                <div className="text-4xl">
-                  {quizScore / examQuestions.length >= 0.8
-                    ? "🏆"
-                    : quizScore / examQuestions.length >= 0.5
-                      ? "🎯"
-                      : "💪"}
+                <div className="flex justify-center text-4xl text-amber-400">
+                  {quizScore / examQuestions.length >= 0.8 ? (
+                    <FaAward className="w-12 h-12 text-amber-400" />
+                  ) : quizScore / examQuestions.length >= 0.5 ? (
+                    <FaStar className="w-12 h-12 text-amber-400" />
+                  ) : (
+                    <FaBookOpen className="w-12 h-12 text-blue-400" />
+                  )}
                 </div>
                 <div className="space-y-1">
                   <h3 className="text-xl sm:text-2xl font-black">
@@ -927,6 +1035,17 @@ function SubjectDetailsContent() {
               </div>
             )}
 
+            {/* Practice mode hint banner */}
+            {isPracticeMode && (
+              <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold flex items-center justify-between gap-2">
+                <span className="flex items-center gap-1.5">
+                  <FaLightbulb className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                  <span>অনুশীলন মোড: প্রতিটি প্রশ্নে ক্লিক করলেই সঙ্গে সঙ্গে সঠিক উত্তর ও পাঠ্যবইয়ের ব্যাখ্যা দেখতে পাবেন।</span>
+                </span>
+                <span className="px-2.5 py-0.5 rounded-full bg-amber-200 text-amber-900 text-[10px] shrink-0 font-bold">তাৎক্ষণিক উত্তর</span>
+              </div>
+            )}
+
             {/* QUESTIONS LIST */}
             <div className="space-y-4">
               {examQuestions.map((q, idx) => {
@@ -934,6 +1053,8 @@ function SubjectDetailsContent() {
                 const isAnswered = selectedOpt !== undefined;
                 const isCorrect = isAnswered && selectedOpt === q.ans;
                 const isWrong = isAnswered && selectedOpt !== q.ans;
+                const showInstant = isPracticeMode && isAnswered;
+                const showFeedback = isSubmitted || showInstant;
 
                 // Apply Review Filter
                 if (isSubmitted) {
@@ -946,7 +1067,7 @@ function SubjectDetailsContent() {
                   <div
                     key={idx}
                     className={`p-4 sm:p-5 rounded-2xl border transition-all ${
-                      isSubmitted
+                      showFeedback
                         ? isCorrect
                           ? "bg-emerald-50/50 border-emerald-200"
                           : isWrong
@@ -955,7 +1076,19 @@ function SubjectDetailsContent() {
                         : "bg-slate-50/70 border-slate-200 hover:border-slate-300"
                     }`}
                   >
-                    <div className="flex items-start justify-between gap-3 mb-3">
+                    {/* Optional Stem / Uddipok */}
+                    {q.stem && (
+                      <div className="mb-3 ml-8 p-3 bg-blue-50/80 border-l-4 border-blue-600 rounded-r-xl text-xs text-slate-800">
+                        <b className="text-blue-900 block mb-0.5">
+                          {q.stemLabel || "উদ্দীপক"}:
+                        </b>
+                        <p className="whitespace-pre-line leading-relaxed">
+                          {q.stem}
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="flex items-start justify-between gap-3 mb-2">
                       <div className="flex items-start gap-2.5">
                         <span className="w-6 h-6 rounded-full bg-slate-200 text-slate-700 font-black text-xs flex items-center justify-center shrink-0 mt-0.5">
                           {toBengaliNumber(idx + 1)}
@@ -965,8 +1098,8 @@ function SubjectDetailsContent() {
                         </h4>
                       </div>
 
-                      {isSubmitted && (
-                        <div>
+                      {showFeedback && (
+                        <div className="shrink-0">
                           {isCorrect && (
                             <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black flex items-center gap-1">
                               <FaCircleCheck /> সঠিক
@@ -986,19 +1119,37 @@ function SubjectDetailsContent() {
                       )}
                     </div>
 
+                    {/* Optional Roman items i, ii, iii */}
+                    {q.items && q.items.length > 0 && (
+                      <div className="my-2 ml-8 p-2.5 bg-slate-100/90 rounded-xl text-xs text-slate-700 space-y-1">
+                        {q.items.map((it, iIdx) => (
+                          <div key={iIdx} className="font-medium">
+                            {it}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Optional tail question */}
+                    {q.tail && (
+                      <p className="text-xs font-bold text-slate-800 ml-8 mb-2.5">
+                        {q.tail}
+                      </p>
+                    )}
+
                     {/* Options Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-8">
                       {q.options.map((opt, optIdx) => {
                         let btnStyle =
                           "bg-white border-slate-200 text-slate-700 hover:bg-slate-100";
 
-                        if (!isSubmitted) {
+                        if (!showFeedback) {
                           if (selectedOpt === optIdx) {
                             btnStyle =
                               "bg-[#0A1E3C] text-white border-[#0A1E3C] shadow-xs";
                           }
                         } else {
-                          // Submitted View
+                          // Feedback View (Submitted or Practice)
                           if (optIdx === q.ans) {
                             btnStyle =
                               "bg-emerald-600 text-white border-emerald-600 font-bold shadow-xs";
@@ -1018,7 +1169,7 @@ function SubjectDetailsContent() {
                           <button
                             key={optIdx}
                             type="button"
-                            disabled={isSubmitted}
+                            disabled={isSubmitted || (isPracticeMode && isAnswered)}
                             onClick={() => handleSelectOption(idx, optIdx)}
                             className={`p-2.5 rounded-xl border text-xs text-left transition flex items-center gap-2 cursor-pointer disabled:cursor-default ${btnStyle}`}
                           >
@@ -1031,13 +1182,23 @@ function SubjectDetailsContent() {
                       })}
                     </div>
 
-                    {/* Explanation */}
-                    {isSubmitted && q.explanation && (
-                      <div className="mt-3 pl-8 text-xs text-slate-600 bg-white/70 p-3 rounded-xl border border-slate-200">
-                        <span className="font-bold text-[#C8102E]">
-                          💡 ব্যাখ্যা:{" "}
-                        </span>
-                        {q.explanation}
+                    {/* Explanation and Page number */}
+                    {showFeedback && (q.explanation || q.page) && (
+                      <div className="mt-3 ml-8 text-xs text-slate-700 bg-blue-50/80 p-3 rounded-xl border border-blue-200 space-y-1">
+                        <div className="flex items-center gap-1.5 font-bold text-blue-900">
+                          <FaLightbulb className="w-3.5 h-3.5 text-blue-700 shrink-0" />
+                          <span>সঠিক উত্তর: {["ক", "খ", "গ", "ঘ"][q.ans]}</span>
+                          {q.page && (
+                            <span className="text-slate-500 font-normal">
+                              (পাঠ্যবইয়ের পৃষ্ঠা: {toBengaliNumber(q.page)})
+                            </span>
+                          )}
+                        </div>
+                        {q.explanation && (
+                          <p className="text-slate-600 leading-relaxed">
+                            {q.explanation}
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>
@@ -1073,26 +1234,55 @@ function SubjectDetailsContent() {
             4. MODEL TESTS SECTION & FILTER TABS
         ───────────────────────────────────────────────────────────── */}
         <div className="space-y-6">
+          {/* Chapter-wise Promotion Banner */}
+          {chapterGroups.length > 0 && filterType !== "chapters" && (
+            <div className="p-4 sm:p-6 rounded-3xl bg-gradient-to-r from-[#0A1E3C] via-[#102A54] to-indigo-950 text-white shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-blue-400/20">
+              <div className="space-y-1.5">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 text-blue-200 text-[11px] font-bold border border-blue-400/30">
+                  <FaBookOpen className="w-3 h-3 text-cyan-300" />
+                  <span>অধ্যায়ভিত্তিক স্পেশাল প্রস্তুতি</span>
+                </div>
+                <h3 className="text-base sm:text-lg font-black text-white">
+                  ৯ম ও ১০ম শ্রেণির বাংলা — কবিতা ও গদ্যের অধ্যায়ভিত্তিক পরীক্ষা
+                </h3>
+                <p className="text-xs text-blue-200/90 leading-relaxed">
+                  পাঠ্যবইয়ের প্রতিটি অধ্যায়ের ওপর আলাদা আলাদা পরীক্ষা দিন এবং অনুশীলন মোডে তাৎক্ষণিক সঠিক উত্তর ও ব্যাখ্যা জেনে নিন।
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setFilterType("chapters")}
+                className="px-5 py-3 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-black text-xs transition active:scale-95 shadow-md flex items-center gap-2 self-start sm:self-auto shrink-0 cursor-pointer"
+              >
+                <span>অধ্যায়সমূহ দেখুন ({toBengaliNumber(chapterGroups.length)}টি অধ্যায়)</span>
+                <FaChevronRight className="w-3 h-3" />
+              </button>
+            </div>
+          )}
+
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
-                <span>মডেল টেস্টসমূহ</span>
+                <span>{filterType === "chapters" ? "অধ্যায়ভিত্তিক মডেল টেস্ট" : "মডেল টেস্টসমূহ"}</span>
                 <span className="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 font-bold">
-                  {toBengaliNumber(displayedModelTests.length)}টি টেস্ট
+                  {filterType === "chapters"
+                    ? `${toBengaliNumber(filteredChapters.length)}টি অধ্যায়`
+                    : `${toBengaliNumber(displayedModelTests.length)}টি টেস্ট`}
                 </span>
               </h2>
               <p className="text-xs text-slate-500 font-medium">
-                {toBengaliClass(selectedClass)} শ্রেণির {selectedSubject} বিষয়ের
-                ফ্রি ও পেইড মডেল টেস্ট বেছে নিন।
+                {filterType === "chapters"
+                  ? `${toBengaliClass(selectedClass)} শ্রেণির পাঠ্যবইয়ের অধ্যায় নির্বাচন করে পরীক্ষা বা অনুশীলন শুরু করুন।`
+                  : `${toBengaliClass(selectedClass)} শ্রেণির ${selectedSubject} বিষয়ের ফ্রি ও পেইড মডেল টেস্ট বেছে নিন।`}
               </p>
             </div>
 
-            {/* Filter Tabs: All, Free, Paid */}
-            <div className="inline-flex rounded-2xl bg-white p-1 border border-slate-200 shadow-2xs self-start sm:self-auto">
+            {/* Filter Tabs: All, Free, Paid, Chapters */}
+            <div className="inline-flex rounded-2xl bg-white p-1 border border-slate-200 shadow-2xs self-start sm:self-auto flex-wrap gap-1">
               <button
                 type="button"
                 onClick={() => setFilterType("all")}
-                className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
+                className={`px-3.5 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
                   filterType === "all"
                     ? "bg-[#0A1E3C] text-white shadow-xs"
                     : "text-slate-600 hover:text-slate-900"
@@ -1107,7 +1297,7 @@ function SubjectDetailsContent() {
               <button
                 type="button"
                 onClick={() => setFilterType("free")}
-                className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
+                className={`px-3.5 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
                   filterType === "free"
                     ? "bg-emerald-600 text-white shadow-xs"
                     : "text-slate-600 hover:text-slate-900"
@@ -1123,7 +1313,7 @@ function SubjectDetailsContent() {
               <button
                 type="button"
                 onClick={() => setFilterType("paid")}
-                className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
+                className={`px-3.5 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
                   filterType === "paid"
                     ? "bg-[#C8102E] text-white shadow-xs"
                     : "text-slate-600 hover:text-slate-900"
@@ -1135,17 +1325,212 @@ function SubjectDetailsContent() {
                   {toBengaliNumber(paidTestsCount)}
                 </span>
               </button>
+
+              {chapterGroups.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setFilterType("chapters")}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
+                    filterType === "chapters"
+                      ? "bg-indigo-600 text-white shadow-xs"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  <FaBookOpen className="w-3 h-3 text-indigo-300" />
+                  <span>অধ্যায়ভিত্তিক</span>
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/20">
+                    {toBengaliNumber(chapterGroups.length)}
+                  </span>
+                </button>
+              )}
             </div>
           </div>
 
-          {/* Model Tests Cards Grid */}
-          {loading ? (
+          {/* VIEW 1: CHAPTER-WISE EXAMS VIEW */}
+          {filterType === "chapters" ? (
+            <div className="space-y-5">
+              {/* Category Filter & Search Bar */}
+              <div className="p-4 sm:p-5 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  {/* Type Filter Buttons */}
+                  <div className="inline-flex rounded-2xl bg-slate-100 p-1 self-start">
+                    {(["all", "কবিতা", "গদ্য"] as const).map((t) => (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => setChapterTypeFilter(t)}
+                        className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
+                          chapterTypeFilter === t
+                            ? "bg-[#0A1E3C] text-white shadow-xs"
+                            : "text-slate-600 hover:text-slate-900"
+                        }`}
+                      >
+                        {t === "all" && "সকল অধ্যায়"}
+                        {t === "কবিতা" && (
+                          <span className="flex items-center gap-1.5">
+                            <FaFeatherPointed className="w-3 h-3 text-rose-500" />
+                            <span>কবিতা</span>
+                          </span>
+                        )}
+                        {t === "গদ্য" && (
+                          <span className="flex items-center gap-1.5">
+                            <FaBookOpen className="w-3 h-3 text-blue-500" />
+                            <span>গদ্য</span>
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Search Input with React Icon */}
+                  <div className="w-full sm:w-72 relative">
+                    <FaMagnifyingGlass className="w-3.5 h-3.5 text-slate-400 absolute left-3.5 top-3 pointer-events-none" />
+                    <input
+                      type="text"
+                      value={chapterSearch}
+                      onChange={(e) => setChapterSearch(e.target.value)}
+                      placeholder="অধ্যায় বা লেখকের নাম খুঁজুন..."
+                      className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-9 pr-4 py-2 text-xs font-bold text-slate-800 outline-none focus:border-indigo-600 focus:bg-white transition"
+                    />
+                  </div>
+                </div>
+
+                <div className="text-xs text-slate-500 font-medium flex items-center gap-2">
+                  <FaLightbulb className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                  <span>টিপস: <b>"পরীক্ষা"</b> মোডে টাইমারসহ টেস্ট দিন অথবা <b>"অনুশীলন"</b> মোডে তাৎক্ষণিক সঠিক উত্তর ও পৃষ্ঠা নম্বরসহ ব্যাখ্যা জানুন।</span>
+                </div>
+              </div>
+
+              {/* Chapters List Grid */}
+              {filteredChapters.length === 0 ? (
+                <div className="bg-white rounded-3xl p-12 text-center border border-dashed border-slate-300 space-y-2">
+                  <FaBookOpen className="w-10 h-10 text-indigo-300 mx-auto" />
+                  <h4 className="text-sm font-bold text-slate-700">কোনো অধ্যায় পাওয়া যায়নি</h4>
+                  <p className="text-xs text-slate-500">অনুসন্ধান বা ফিল্টার পরিবর্তন করে পুনরায় চেষ্টা করুন।</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {filteredChapters.map((ch) => {
+                    const isExpanded = expandedChapter === ch.name;
+                    return (
+                      <div
+                        key={ch.name}
+                        className={`bg-white rounded-2xl sm:rounded-3xl border transition-all space-y-3 p-4 sm:p-5 shadow-xs hover:shadow-md ${
+                          isExpanded
+                            ? "border-indigo-300 ring-2 ring-indigo-50"
+                            : "border-slate-200"
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <span
+                                className={`px-2.5 py-0.5 rounded-full text-[10px] font-black border flex items-center gap-1 ${
+                                  ch.type === "কবিতা"
+                                    ? "bg-rose-50 text-rose-700 border-rose-200"
+                                    : "bg-blue-50 text-blue-700 border-blue-200"
+                                }`}
+                              >
+                                {ch.type === "কবিতা" ? (
+                                  <>
+                                    <FaFeatherPointed className="w-2.5 h-2.5 text-rose-600" />
+                                    <span>কবিতা</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <FaBookOpen className="w-2.5 h-2.5 text-blue-600" />
+                                    <span>গদ্য</span>
+                                  </>
+                                )}
+                              </span>
+                              {ch.author && (
+                                <span className="text-xs text-slate-500 font-medium truncate max-w-[180px]">
+                                  {ch.author}
+                                </span>
+                              )}
+                            </div>
+                            <h3 className="text-base sm:text-lg font-black text-slate-900">
+                              {ch.name}
+                            </h3>
+                            <p className="text-xs text-slate-500">
+                              {toBengaliNumber(ch.testCount)}টি মডেল টেস্ট • {toBengaliNumber(ch.totalQuestions)}টি বহুনির্বাচনী প্রশ্ন
+                            </p>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setExpandedChapter(isExpanded ? null : ch.name)
+                            }
+                            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 cursor-pointer flex items-center gap-1 ${
+                              isExpanded
+                                ? "bg-indigo-600 text-white"
+                                : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                            }`}
+                          >
+                            <span>{isExpanded ? "লুকান" : "টেস্টসমূহ"}</span>
+                            {isExpanded ? (
+                              <FaChevronUp className="w-2.5 h-2.5" />
+                            ) : (
+                              <FaChevronDown className="w-2.5 h-2.5" />
+                            )}
+                          </button>
+                        </div>
+
+                        {/* Expanded Tests inside this chapter */}
+                        {isExpanded && (
+                          <div className="pt-3 border-t border-slate-100 space-y-2.5">
+                            {ch.tests.map((t) => (
+                              <div
+                                key={t.id}
+                                className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-indigo-50/40 transition"
+                              >
+                                <div className="space-y-0.5">
+                                  <div className="font-bold text-xs text-slate-800">
+                                    {t.name}
+                                  </div>
+                                  <div className="text-[11px] text-slate-500">
+                                    {toBengaliNumber(t.questionCount)}টি প্রশ্ন • {toBengaliNumber(t.min)} মিনিট
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleStartChapterTest(t.id, "exam")}
+                                    className="px-3.5 py-1.5 rounded-xl bg-[#0A1E3C] hover:bg-[#102A54] text-white text-xs font-black transition active:scale-95 cursor-pointer shadow-xs flex items-center gap-1.5"
+                                  >
+                                    <FaPenToSquare className="w-3 h-3 text-cyan-300" />
+                                    <span>পরীক্ষা</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleStartChapterTest(t.id, "practice")}
+                                    className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-black transition active:scale-95 cursor-pointer shadow-xs flex items-center gap-1.5"
+                                  >
+                                    <FaLightbulb className="w-3 h-3 text-amber-200" />
+                                    <span>অনুশীলন</span>
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          ) : (
+            /* Model Tests Cards Grid */
+            loading ? (
             <div className="py-16 text-center text-slate-400 font-bold text-sm">
               মডেল টেস্টসমূহ লোড হচ্ছে...
             </div>
           ) : displayedModelTests.length === 0 ? (
             <div className="bg-white rounded-3xl p-12 text-center border border-dashed border-slate-300 space-y-3">
-              <div className="text-4xl">📝</div>
+              <FaClipboardList className="w-10 h-10 text-slate-300 mx-auto" />
               <h3 className="text-base font-black text-slate-800">
                 এই ফিল্টারে কোনো মডেল টেস্ট পাওয়া যায়নি
               </h3>
@@ -1293,7 +1678,7 @@ function SubjectDetailsContent() {
                 );
               })}
             </div>
-          )}
+          ))}
         </div>
 
         {/* ─────────────────────────────────────────────────────────────

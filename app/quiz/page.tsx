@@ -50,6 +50,11 @@ import {
   FaClipboardList,
   FaUserGraduate,
   FaLockOpen,
+  FaAtom,
+  FaScroll,
+  FaBriefcase,
+  FaGlobe,
+  FaGraduationCap,
 } from "react-icons/fa6";
 import { HiSparkles } from "react-icons/hi2";
 import { CustomExam } from "@/lib/quizExamStorage";
@@ -1416,15 +1421,16 @@ export default function QuizPage() {
             </p>
           </div>
           {customExams.length > 0 && (
-            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-              🟢 {customExams.length}টি লাইভ এক্সাম চলমান
+            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>{customExams.length}টি লাইভ এক্সাম চলমান</span>
             </span>
           )}
         </div>
 
         {!selectedClass ? (
           <div className="bg-slate-50/80 rounded-2xl p-5 border border-dashed border-slate-300 text-center space-y-1.5">
-            <div className="text-2xl">📋</div>
+            <FaClipboardList className="w-6 h-6 text-slate-400 mx-auto" />
             <p className="text-xs font-bold text-slate-600">
               লাইভ কাস্টম এক্সাম দেখতে ওপরে আপনার শ্রেণি নির্বাচন করুন।
             </p>
@@ -1435,7 +1441,7 @@ export default function QuizPage() {
           </div>
         ) : customExams.length === 0 ? (
           <div className="bg-slate-50/80 rounded-2xl p-5 border border-dashed border-slate-300 text-center space-y-1.5">
-            <div className="text-2xl">📋</div>
+            <FaClipboardList className="w-6 h-6 text-slate-400 mx-auto" />
             <p className="text-xs font-bold text-slate-600">
               বর্তমানে {toBengaliClass(selectedClass)} শ্রেণির জন্য কোনো কাস্টম
               এক্সাম শিডিউল করা নেই।
@@ -1573,7 +1579,7 @@ export default function QuizPage() {
                     : "bg-slate-50 text-slate-700 hover:bg-blue-50 hover:border-blue-200 border-slate-200"
                 }`}
               >
-                <span>⚛️</span>
+                <FaAtom className="w-3.5 h-3.5" />
                 <span>বিজ্ঞান বিভাগ</span>
               </button>
 
@@ -1586,7 +1592,7 @@ export default function QuizPage() {
                     : "bg-slate-50 text-slate-700 hover:bg-amber-50 hover:border-amber-200 border-slate-200"
                 }`}
               >
-                <span>📜</span>
+                <FaScroll className="w-3.5 h-3.5" />
                 <span>মানবিক বিভাগ</span>
               </button>
 
@@ -1599,7 +1605,7 @@ export default function QuizPage() {
                     : "bg-slate-50 text-slate-700 hover:bg-emerald-50 hover:border-emerald-200 border-slate-200"
                 }`}
               >
-                <span>💼</span>
+                <FaBriefcase className="w-3.5 h-3.5" />
                 <span>ব্যবসায় শিক্ষা</span>
               </button>
 
@@ -1612,7 +1618,7 @@ export default function QuizPage() {
                     : "bg-slate-50 text-slate-700 hover:bg-slate-100 hover:border-slate-300 border-slate-200"
                 }`}
               >
-                <span>🌐</span>
+                <FaGlobe className="w-3.5 h-3.5" />
                 <span>আবশ্যিক বিষয়</span>
               </button>
             </div>
@@ -1622,7 +1628,7 @@ export default function QuizPage() {
         {/* Subjects Cards Grid */}
         {!selectedClass ? (
           <div className="bg-slate-50/80 rounded-3xl p-8 sm:p-12 border border-dashed border-slate-300 text-center space-y-3">
-            <div className="text-4xl">🎓</div>
+            <FaGraduationCap className="w-12 h-12 text-slate-400 mx-auto" />
             <h3 className="text-base sm:text-lg font-black text-slate-800">
               মডেল টেস্ট দেখতে প্রথমে আপনার শ্রেণি নির্বাচন করুন
             </h3>

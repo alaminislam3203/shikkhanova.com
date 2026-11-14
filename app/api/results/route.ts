@@ -55,49 +55,66 @@ function writeLocalResults(results: any[]) {
   }
 }
 
-// Auto-seed results into PostgreSQL if DB table is empty or has fewer than seed records or needs update
+let isSeedSynced = false;
+
+// Auto-seed results into PostgreSQL safely (runs once on cold start, not on every request)
 async function ensureSeedResults() {
+  if (isSeedSynced) return;
+  isSeedSynced = true;
+
   try {
     const local = readLocalResults();
-    if (local.length > 0) {
-      const sample = await prisma.examResult.findFirst();
-      const needsSync =
-        !sample ||
-        !sample.subjectMarks?.includes('হিন্দুধর্ম ও নৈতিক শিক্ষা') ||
-        !sample.subjectMarks?.includes('কৃষিশিক্ষা') ||
-        !sample.subjectMarks?.includes('গার্হস্থ্য বিজ্ঞান');
-      if (needsSync) {
-        for (const r of local) {
-          try {
-            await prisma.examResult.upsert({
-              where: { id: r.id },
-              update: {
-                examTitle: r.examTitle,
-                classGrade: r.classGrade,
-                rollNumber: r.rollNumber,
-                studentName: r.studentName,
-                totalMarks: r.totalMarks,
-                obtainedMarks: r.obtainedMarks,
-                grade: r.grade,
-                gpa: r.gpa,
-                subjectMarks: typeof r.subjectMarks === 'object' ? JSON.stringify(r.subjectMarks) : r.subjectMarks,
-              },
-              create: {
-                id: r.id,
-                examTitle: r.examTitle,
-                classGrade: r.classGrade,
-                rollNumber: r.rollNumber,
-                studentName: r.studentName,
-                totalMarks: r.totalMarks,
-                obtainedMarks: r.obtainedMarks,
-                grade: r.grade,
-                gpa: r.gpa,
-                subjectMarks: typeof r.subjectMarks === 'object' ? JSON.stringify(r.subjectMarks) : r.subjectMarks,
-              },
-            });
-          } catch {}
-        }
-      }
+    if (local.length === 0) return;
+
+    // Check if new 4th subjects exist in DB
+    const has4thSub = await prisma.examResult.findFirst({
+      where: {
+        subjectMarks: {
+          contains: 'কৃষিশিক্ষা',
+        },
+      },
+    });
+
+    // If already has updated records, no sync needed
+    if (has4thSub) return;
+
+    // Only update/upsert the specific Class 9 and 10 records that have 4th subjects
+    const updatedIds = [
+      'res-c9-r2-t1',
+      'res-c9-r3-t1',
+      'res-c9-r4-t1',
+      'res-c10-r2-t1',
+      'res-c10-r3-t1',
+      'res-c10-r4-t1',
+    ];
+
+    const recordsToSync = local.filter((r) => updatedIds.includes(r.id));
+
+    for (const r of recordsToSync) {
+      try {
+        await prisma.examResult.upsert({
+          where: { id: r.id },
+          update: {
+            subjectMarks: typeof r.subjectMarks === 'object' ? JSON.stringify(r.subjectMarks) : r.subjectMarks,
+            totalMarks: r.totalMarks,
+            obtainedMarks: r.obtainedMarks,
+            grade: r.grade,
+            gpa: r.gpa,
+          },
+          create: {
+            id: r.id,
+            examTitle: r.examTitle,
+            classGrade: r.classGrade,
+            rollNumber: r.rollNumber,
+            studentName: r.studentName,
+            totalMarks: r.totalMarks,
+            obtainedMarks: r.obtainedMarks,
+            grade: r.grade,
+            gpa: r.gpa,
+            subjectMarks: typeof r.subjectMarks === 'object' ? JSON.stringify(r.subjectMarks) : r.subjectMarks,
+          },
+        });
+      } catch {}
     }
   } catch (err) {
     console.warn('ensureSeedResults DB sync check:', err);

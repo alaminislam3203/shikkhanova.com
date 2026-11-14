@@ -4,6 +4,13 @@ export interface RawQuestion {
   ans: number; // 0, 1, 2, 3
   explanation?: string;
   isPremium?: boolean;
+  stem?: string;
+  stemLabel?: string;
+  items?: string[];
+  tail?: string;
+  page?: string;
+  chapter?: string;
+  category?: string;
 }
 
 // 🎁 Class-wise Free Model Test Questions (5 per class, directly matching & enhancing user's code)
