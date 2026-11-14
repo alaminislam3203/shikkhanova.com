@@ -734,6 +734,17 @@ function SubjectDetailsContent() {
                   className="w-full h-full object-cover"
                 />
               </div>
+            ) : covers.classes?.[selectedClass] || covers.classes?.[String(selectedClass)] ? (
+              <div className="w-full md:w-56 aspect-video md:aspect-square rounded-2xl overflow-hidden border border-white/20 shadow-2xl bg-slate-900/60 shrink-0">
+                <img
+                  src={
+                    covers.classes[selectedClass] ||
+                    covers.classes[String(selectedClass)]
+                  }
+                  alt={`${toBengaliClass(selectedClass)} শ্রেণি`}
+                  className="w-full h-full object-cover"
+                />
+              </div>
             ) : (
               <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-5xl sm:text-6xl shrink-0 shadow-2xl">
                 📚
@@ -1163,16 +1174,33 @@ function SubjectDetailsContent() {
                   unlockedClasses.includes(exam.classGrade) ||
                   session?.user?.role === "ADMIN";
 
+                const cardImage =
+                  exam.coverImage ||
+                  subjectCoverImage ||
+                  covers.classes?.[selectedClass] ||
+                  covers.classes?.[String(selectedClass)];
+
                 return (
                   <div
                     key={exam.id}
-                    className={`bg-white rounded-3xl p-5 border transition flex flex-col justify-between space-y-4 group relative shadow-xs hover:shadow-lg ${
+                    className={`bg-white rounded-3xl p-4 sm:p-5 border transition flex flex-col justify-between space-y-3 group relative shadow-xs hover:shadow-lg ${
                       exam.isPaid
                         ? "border-t-4 border-t-[#C8102E] border-slate-200"
                         : "border-t-4 border-t-emerald-600 border-slate-200"
                     }`}
                   >
                     <div className="space-y-2.5">
+                      {/* Optional Cover Image */}
+                      {cardImage && (
+                        <div className="w-full aspect-video rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/80 mb-2 relative group shadow-2xs">
+                          <img
+                            src={cardImage}
+                            alt={exam.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                      )}
+
                       {/* Badge row */}
                       <div className="flex items-center justify-between gap-2 flex-wrap">
                         <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 font-black text-[11px] border border-blue-200">
