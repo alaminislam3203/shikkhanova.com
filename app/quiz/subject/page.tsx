@@ -198,8 +198,23 @@ function SubjectDetailsContent() {
   const [accessCodeInput, setAccessCodeInput] = useState<string>("");
   const [unlockSuccessMsg, setUnlockSuccessMsg] = useState<string>("");
 
+  // Auto-submit Timeout Modal State
+  const [timeOutResultModal, setTimeOutResultModal] = useState<{
+    isOpen: boolean;
+    score: number;
+    total: number;
+    percentage: number;
+    examTitle: string;
+    savedExam: SubjectExamItem | null;
+  } | null>(null);
+
   const testRunnerRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const selectedAnswersRef = useRef(selectedAnswers);
+
+  useEffect(() => {
+    selectedAnswersRef.current = selectedAnswers;
+  }, [selectedAnswers]);
 
   // Initialize student name & roll
   useEffect(() => {
@@ -697,22 +712,18 @@ function SubjectDetailsContent() {
 
   // Timer Countdown Effect
   useEffect(() => {
-    if (isTestActive && !isSubmitted && !isPracticeMode && timeLeft > 0) {
-      timerRef.current = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            clearInterval(timerRef.current as NodeJS.Timeout);
-            handleSubmitQuiz(true);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+    if (!isTestActive || isSubmitted || isPracticeMode) return;
+
+    if (timeLeft <= 0) {
+      handleSubmitQuiz(true);
+      return;
     }
 
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => Math.max(0, prev - 1));
+    }, 1000);
+
+    return () => clearInterval(timer);
   }, [isTestActive, isSubmitted, isPracticeMode, timeLeft]);
 
   // Select Option
@@ -728,9 +739,10 @@ function SubjectDetailsContent() {
 
     if (timerRef.current) clearInterval(timerRef.current);
 
+    const answers = selectedAnswersRef.current || selectedAnswers;
     let score = 0;
     examQuestions.forEach((q, idx) => {
-      if (selectedAnswers[idx] === q.ans) {
+      if (answers[idx] === q.ans) {
         score++;
       }
     });
@@ -742,9 +754,25 @@ function SubjectDetailsContent() {
     setIsSubmitted(true);
     setReviewFilter("all");
 
+    const currentExam = activeExam;
+
     if (isTimeOut) {
-      toast("⏰ সময় শেষ! আপনার উত্তরপত্র স্বয়ংক্রিয়ভাবে জমা হয়েছে।", {
+      // Automatic time-out: close exam runner and show completion modal
+      setIsTestActive(false);
+      setActiveExam(null);
+
+      setTimeOutResultModal({
+        isOpen: true,
+        score,
+        total,
+        percentage,
+        examTitle: currentExam?.title || `${selectedSubject} পরীক্ষা`,
+        savedExam: currentExam,
+      });
+
+      toast("⏰ সময় সমাপ্ত! আপনার উত্তরপত্র স্বয়ংক্রিয়ভাবে জমা নিয়ে পরীক্ষা ক্লোজ করা হয়েছে।", {
         icon: "⏳",
+        duration: 5000,
       });
     } else {
       toast.success("🎉 আপনার মডেল টেস্ট সফলভাবে সাবমিট হয়েছে!");
@@ -774,8 +802,8 @@ function SubjectDetailsContent() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        examId: activeExam?.id || "subject_model_test",
-        examTitle: activeExam?.title || `${selectedSubject} মডেল টেস্ট`,
+        examId: currentExam?.id || "subject_model_test",
+        examTitle: currentExam?.title || `${selectedSubject} মডেল টেস্ট`,
         classGrade: selectedClass,
         subject: selectedSubject,
         studentName: finalStudentName,
@@ -2191,9 +2219,10 @@ function SubjectDetailsContent() {
 
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-2xl bg-[#C8102E] hover:bg-[#A50D26] text-white font-black text-xs shadow-lg transition active:scale-95 cursor-pointer"
+                  className="w-full py-3 rounded-2xl bg-[#C8102E] hover:bg-[#A50D26] text-white font-black text-xs shadow-lg transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  🔓 টেস্ট আনলক করুন
+                  <FaLockOpen className="w-3.5 h-3.5" />
+                  <span>টেস্ট আনলক করুন</span>
                 </button>
               </form>
 
@@ -2219,6 +2248,85 @@ function SubjectDetailsContent() {
                   <FaPhone className="w-2.5 h-2.5" />
                   <span>০১৭১২৫৯২৫১৯</span>
                 </a>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Automatic Time-out Submission Modal */}
+        {timeOutResultModal?.isOpen && (
+          <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl text-center space-y-5 animate-in zoom-in-95 duration-200">
+              <div className="w-16 h-16 rounded-full bg-amber-100 text-amber-600 mx-auto flex items-center justify-center">
+                <FaClock className="w-8 h-8" />
+              </div>
+              <div className="space-y-1">
+                <span className="px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-black inline-flex items-center gap-1">
+                  <FaClock className="w-3 h-3" />
+                  <span>পরীক্ষার সময় সমাপ্ত!</span>
+                </span>
+                <h3 className="text-lg sm:text-xl font-black text-slate-900 pt-1">
+                  উত্তরপত্র স্বয়ংক্রিয়ভাবে জমা হয়েছে
+                </h3>
+                <p className="text-xs text-slate-500 font-medium">
+                  {timeOutResultModal.examTitle}
+                </p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-900 to-[#1e0a14] text-white space-y-1">
+                <div className="text-xs text-slate-300">আপনার অর্জিত ফলাফল</div>
+                <div className="text-2xl font-black text-amber-400">
+                  ফলাফল: {toBengaliNumber(timeOutResultModal.score)} /{" "}
+                  {toBengaliNumber(timeOutResultModal.total)}
+                </div>
+                <div className="text-xs text-slate-300">
+                  সাফল্যের হার:{" "}
+                  <span className="font-bold text-white">
+                    {toBengaliNumber(timeOutResultModal.percentage)}%
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2 pt-2">
+                <a
+                  href="#subject-leaderboard"
+                  onClick={() => setTimeOutResultModal(null)}
+                  className="w-full py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs transition flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-95"
+                >
+                  <FaTrophy className="w-3.5 h-3.5 text-slate-900" />
+                  <span>মেধা তালিকায় অবস্থান দেখুন</span>
+                </a>
+                {timeOutResultModal.savedExam && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const exam = timeOutResultModal.savedExam;
+                      setTimeOutResultModal(null);
+                      if (exam) {
+                        setActiveExam(exam);
+                        setIsTestActive(true);
+                        setIsSubmitted(true);
+                        setTimeout(() => {
+                          testRunnerRef.current?.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start",
+                          });
+                        }, 100);
+                      }
+                    }}
+                    className="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <FaBookOpen className="w-3.5 h-3.5 text-slate-600" />
+                    <span>ফলাফল ও ব্যাখ্যা পর্যালোচনা দেখুন</span>
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setTimeOutResultModal(null)}
+                  className="w-full py-2 px-4 rounded-xl text-slate-500 hover:text-slate-700 font-bold text-xs transition cursor-pointer"
+                >
+                  বন্ধ করুন
+                </button>
               </div>
             </div>
           </div>

@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
-  getQuizSubmissions,
-  saveQuizSubmission,
-  deleteQuizSubmission,
-  clearQuizSubmissions,
+  getQuizSubmissionsFromDb,
+  saveQuizSubmissionToDb,
+  deleteQuizSubmissionFromDb,
+  clearQuizSubmissionsFromDb,
   QuizSubmission,
 } from '@/lib/quizExamStorage';
 
@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
 
     const classGrade = classGradeParam ? parseInt(classGradeParam, 10) : undefined;
 
-    let submissions = getQuizSubmissions({
+    let submissions = await getQuizSubmissionsFromDb({
       classGrade,
       subject,
       examId,
@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
       medal,
     };
 
-    saveQuizSubmission(submission);
+    await saveQuizSubmissionToDb(submission);
 
     return NextResponse.json({
       success: true,
@@ -134,12 +134,12 @@ export async function DELETE(req: NextRequest) {
     const clearAll = searchParams.get('clearAll') === 'true';
 
     if (id) {
-      deleteQuizSubmission(id);
+      await deleteQuizSubmissionFromDb(id);
       return NextResponse.json({ success: true, message: 'রেজাল্ট রেকর্ড মুছে ফেলা হয়েছে।' });
     }
 
     if (clearAll) {
-      clearQuizSubmissions(examId || undefined);
+      await clearQuizSubmissionsFromDb(examId || undefined);
       return NextResponse.json({
         success: true,
         message: examId ? 'এই পরীক্ষার সকল ফলাফল পরিষ্কার করা হয়েছে।' : 'সকল ফলাফল পরিষ্কার করা হয়েছে।',

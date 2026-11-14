@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { RawQuestion } from './defaultQuizData';
+import { getDbSetting, setDbSetting } from './dbSettings';
 
 export const QUESTIONS_DIR = path.join(process.cwd(), 'data', 'quiz-questions');
 export const SERVER_MCQ_JSON_PATH = path.join(process.cwd(), 'data', 'mcq_questions.json');
@@ -197,5 +198,75 @@ export function readQuestionsFromFile(
 export function writeQuestionsToFile(filePath: string, data: any): void {
   ensureDirExists();
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+}
+
+/**
+ * Returns unique database key for a question bank
+ */
+export function getQuizQuestionsDbKey(classGrade: number, category: string, subject?: string): string {
+  const safeSub = subject ? getSubjectSlug(subject) : 'default';
+  return `quiz_qs_${classGrade}_${category}_${safeSub}`;
+}
+
+/**
+ * Retrieves questions with Database-first strategy, falling back to local seed file.
+ */
+export async function getQuestionsFromDb(
+  classGrade: number,
+  category: string,
+  subject?: string
+): Promise<RawQuestion[]> {
+  const dbKey = getQuizQuestionsDbKey(classGrade, category, subject);
+  try {
+    const dbData = await getDbSetting<any>(dbKey, null);
+    if (dbData) {
+      if (Array.isArray(dbData) && dbData.length > 0) return dbData;
+      if (Array.isArray(dbData.questions) && dbData.questions.length > 0) {
+        return dbData.questions;
+      }
+    }
+  } catch (err) {
+    console.error(`Failed to read questions from DB for ${dbKey}:`, err);
+  }
+
+  // Fallback to reading from local file
+  const fileName = getFileName(classGrade, category, subject);
+  const filePath = path.join(QUESTIONS_DIR, fileName);
+  const fileQuestions = readQuestionsFromFile(filePath, classGrade, category, subject);
+
+  // If local questions found and not yet in DB, asynchronously seed them to DB
+  if (fileQuestions.length > 0) {
+    setDbSetting(dbKey, {
+      classGrade,
+      category,
+      subject: subject || null,
+      updatedAt: new Date().toISOString(),
+      questions: fileQuestions,
+    }).catch(() => {});
+  }
+
+  return fileQuestions;
+}
+
+/**
+ * Persists questions to PostgreSQL Database (and secondary file backup).
+ */
+export async function saveQuestionsToDb(
+  classGrade: number,
+  category: string,
+  subject: string | undefined,
+  payload: { questions: RawQuestion[]; [key: string]: any }
+): Promise<void> {
+  const dbKey = getQuizQuestionsDbKey(classGrade, category, subject);
+
+  // 1. Primary Save to PostgreSQL Database
+  await setDbSetting(dbKey, payload);
+
+  // 2. Secondary local file fallback
+  try {
+    const fileName = getFileName(classGrade, category, subject);
+    const filePath = path.join(QUESTIONS_DIR, fileName);
+    writeQuestionsToFile(filePath, payload);
+  } catch {}
 }
 

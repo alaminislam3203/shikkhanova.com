@@ -46,6 +46,35 @@ next-env.d.ts
 # uploads
 /public/uploads/
 
+# runtime dynamic data files (persisted in PostgreSQL Database)
+data/quiz_submissions.json
+/data/quiz_submissions.json
+data/coaching_fees.json
+/data/coaching_fees.json
+data/student_profiles.json
+/data/student_profiles.json
+data/results.json
+/data/results.json
+data/custom_exams.json
+/data/custom_exams.json
+data/notices.json
+/data/notices.json
+data/gallery.json
+/data/gallery.json
+data/achievers.json
+/data/achievers.json
+data/banners.json
+/data/banners.json
+data/students.json
+/data/students.json
+data/subjects.json
+/data/subjects.json
+data/landing-content.json
+/data/landing-content.json
+data/quiz-questions/
+/data/quiz-questions/
+data/quiz-questions/*
+/data/quiz-questions/*
 
 .vercel
 .env*

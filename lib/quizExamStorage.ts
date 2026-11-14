@@ -212,6 +212,133 @@ export function getQuizSubmissions(filters?: {
   return [];
 }
 
+export async function getQuizSubmissionsFromDb(filter?: {
+  classGrade?: number;
+  subject?: string;
+  examId?: string;
+  search?: string;
+  sortBy?: 'recent' | 'rank';
+}): Promise<QuizSubmission[]> {
+  let list: QuizSubmission[] = [];
+  try {
+    const dbData = await getDbSetting<QuizSubmission[] | null>('quiz_submissions', null);
+    if (Array.isArray(dbData) && dbData.length > 0) {
+      list = dbData;
+    } else {
+      // Fallback to local JSON file if DB has not been seeded yet
+      list = getQuizSubmissions();
+      if (list.length > 0) {
+        await setDbSetting('quiz_submissions', list);
+      }
+    }
+  } catch (err) {
+    console.error('Error fetching submissions from DB:', err);
+    list = getQuizSubmissions();
+  }
+
+  // Filter
+  if (filter?.classGrade) {
+    list = list.filter((s) => s.classGrade === filter.classGrade);
+  }
+  if (filter?.subject) {
+    list = list.filter((s) => s.subject === filter.subject);
+  }
+  if (filter?.examId) {
+    list = list.filter((s) => s.examId === filter.examId);
+  }
+  if (filter?.search) {
+    const q = filter.search.toLowerCase();
+    list = list.filter(
+      (s) =>
+        s.studentName.toLowerCase().includes(q) ||
+        (s.rollNumber && String(s.rollNumber).toLowerCase().includes(q))
+    );
+  }
+
+  // Sort
+  if (filter?.sortBy === 'rank') {
+    list.sort((a, b) => {
+      const pctA = typeof a.percentage === 'number' ? a.percentage : 0;
+      const pctB = typeof b.percentage === 'number' ? b.percentage : 0;
+      if (pctB !== pctA) return pctB - pctA;
+
+      const scA = typeof a.score === 'number' ? a.score : 0;
+      const scB = typeof b.score === 'number' ? b.score : 0;
+      if (scB !== scA) return scB - scA;
+
+      const timeA = typeof a.timeTakenSeconds === 'number' && a.timeTakenSeconds > 0 ? a.timeTakenSeconds : 999999;
+      const timeB = typeof b.timeTakenSeconds === 'number' && b.timeTakenSeconds > 0 ? b.timeTakenSeconds : 999999;
+      if (timeA !== timeB) return timeA - timeB;
+
+      return new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime();
+    });
+  } else {
+    list.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
+  }
+
+  return list;
+}
+
+export async function saveQuizSubmissionToDb(sub: QuizSubmission): Promise<QuizSubmission> {
+  try {
+    let list = await getDbSetting<QuizSubmission[] | null>('quiz_submissions', null);
+    if (!Array.isArray(list)) {
+      list = getQuizSubmissions();
+    }
+
+    // Prepend new submission
+    list.unshift(sub);
+
+    // Keep last 1500 submissions in DB to prevent overflow
+    if (list.length > 1500) {
+      list = list.slice(0, 1500);
+    }
+
+    await setDbSetting('quiz_submissions', list);
+  } catch (err) {
+    console.error('Error saving submission to DB:', err);
+  }
+
+  // In local dev, also backup to disk safely
+  try {
+    saveQuizSubmission(sub);
+  } catch {}
+
+  return sub;
+}
+
+export async function deleteQuizSubmissionFromDb(id: string): Promise<boolean> {
+  try {
+    let list = await getDbSetting<QuizSubmission[] | null>('quiz_submissions', null);
+    if (Array.isArray(list)) {
+      list = list.filter((s) => s.id !== id);
+      await setDbSetting('quiz_submissions', list);
+    }
+  } catch (err) {
+    console.error('Error deleting submission from DB:', err);
+  }
+  deleteQuizSubmission(id);
+  return true;
+}
+
+export async function clearQuizSubmissionsFromDb(examId?: string): Promise<boolean> {
+  try {
+    if (examId) {
+      let list = await getDbSetting<QuizSubmission[] | null>('quiz_submissions', null);
+      if (Array.isArray(list)) {
+        list = list.filter((s) => s.examId !== examId);
+        await setDbSetting('quiz_submissions', list);
+      }
+    } else {
+      await setDbSetting('quiz_submissions', []);
+    }
+  } catch (err) {
+    console.error('Error clearing submissions from DB:', err);
+  }
+  clearQuizSubmissions(examId);
+  return true;
+}
+
 export function saveQuizSubmission(sub: QuizSubmission): QuizSubmission {
   ensureDataDir();
   let list: QuizSubmission[] = [];

@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { getDbSetting, setDbSetting } from './dbSettings';
 
 export interface StudentProfileExtra {
   fatherName?: string;
@@ -11,6 +12,42 @@ export interface StudentProfileExtra {
 }
 
 const PROFILES_PATH = path.join(process.cwd(), 'data', 'student_profiles.json');
+
+// In-memory cache for ultra-fast sync access across requests
+let cachedProfiles: Record<string, StudentProfileExtra> | null = null;
+
+export async function getStudentProfilesFromDb(): Promise<Record<string, StudentProfileExtra>> {
+  if (cachedProfiles && Object.keys(cachedProfiles).length > 0) {
+    return cachedProfiles;
+  }
+
+  try {
+    const dbData = await getDbSetting<Record<string, StudentProfileExtra> | null>('student_profiles', null);
+    if (dbData && typeof dbData === 'object' && Object.keys(dbData).length > 0) {
+      cachedProfiles = dbData;
+      return dbData;
+    }
+
+    // Seed from local file
+    const seed = readProfilesFile();
+    if (Object.keys(seed).length > 0) {
+      await setDbSetting('student_profiles', seed);
+      cachedProfiles = seed;
+      return seed;
+    }
+  } catch (err) {
+    console.error('Error fetching student profiles from DB:', err);
+  }
+
+  const fallback = readProfilesFile();
+  cachedProfiles = fallback;
+  return fallback;
+}
+
+// Preload from DB on module initialization
+try {
+  getStudentProfilesFromDb().catch(() => {});
+} catch {}
 
 // Ensure nctb-mark-grading.png exists in public folder
 try {
@@ -80,7 +117,7 @@ export function getStudentProfile(
   rollNumber: number,
   email?: string
 ): Required<StudentProfileExtra> {
-  const all = readProfilesFile();
+  const all = cachedProfiles || readProfilesFile();
   const key = `${classGrade}_${rollNumber}`;
   const emailKey = email ? email.toLowerCase().trim() : '';
 
@@ -114,7 +151,7 @@ export function saveStudentProfile(
   extra: StudentProfileExtra,
   email?: string
 ) {
-  const all = readProfilesFile();
+  const all = { ...(cachedProfiles || readProfilesFile()) };
   const key = `${classGrade}_${rollNumber}`;
   const existing = all[key] || {};
 
@@ -132,8 +169,18 @@ export function saveStudentProfile(
   if (email) {
     all[email.toLowerCase().trim()] = updated;
   }
+  cachedProfiles = all;
 
-  writeProfilesFile(all);
+  // Save to PostgreSQL Database
+  setDbSetting('student_profiles', all).catch((err) => {
+    console.error('Error saving student profile to DB:', err);
+  });
+
+  // Local file backup in dev
+  try {
+    writeProfilesFile(all);
+  } catch {}
+
   return updated;
 }
 

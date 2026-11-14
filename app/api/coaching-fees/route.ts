@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
-  getCoachingFees,
-  saveCoachingFee,
-  updateCoachingFeeStatus,
-  deleteCoachingFee,
+  getCoachingFeesFromDb,
+  saveCoachingFeeToDb,
+  updateCoachingFeeStatusInDb,
+  deleteCoachingFeeFromDb,
   FeePaymentStatus,
   FeePaymentMethod,
 } from '@/lib/coachingFeeStorage';
@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
 
     const classGrade = classGradeParam ? parseInt(classGradeParam, 10) : undefined;
 
-    const fees = getCoachingFees({
+    const fees = await getCoachingFeesFromDb({
       status,
       classGrade,
       month,
@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
     });
 
     // Summary calculations
-    const allFees = getCoachingFees(); // total unfiltered stats
+    const allFees = await getCoachingFeesFromDb(); // total unfiltered stats
     const pendingCount = allFees.filter((f) => f.status === 'PENDING').length;
     const approvedCount = allFees.filter((f) => f.status === 'APPROVED').length;
     const rejectedCount = allFees.filter((f) => f.status === 'REJECTED').length;
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const saved = saveCoachingFee({
+    const saved = await saveCoachingFeeToDb({
       studentName: studentName.trim(),
       classGrade: Number(classGrade),
       rollNumber: rollNumber !== undefined && rollNumber !== '' ? String(rollNumber).trim() : undefined,
@@ -122,7 +122,7 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    const updated = updateCoachingFeeStatus(id, status as FeePaymentStatus, note);
+    const updated = await updateCoachingFeeStatusInDb(id, status as FeePaymentStatus, note);
     if (!updated) {
       return NextResponse.json({ error: 'রেকর্ড পাওয়া যায়নি।' }, { status: 404 });
     }
@@ -152,7 +152,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'ID আবশ্যক।' }, { status: 400 });
     }
 
-    deleteCoachingFee(id);
+    await deleteCoachingFeeFromDb(id);
     return NextResponse.json({
       success: true,
       message: 'ফি রেকর্ডটি সফলভাবে মুছে ফেলা হয়েছে।',

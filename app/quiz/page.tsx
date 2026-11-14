@@ -397,24 +397,15 @@ export default function QuizPage() {
 
   // Countdown Timer Effect
   useEffect(() => {
-    if (!isTestActive || isSubmitted || timeLeft <= 0) return;
+    if (!isTestActive || isSubmitted) return;
+
+    if (timeLeft <= 0) {
+      handleSubmitTest(true);
+      return;
+    }
 
     const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          handleSubmitTest(true);
-          toast(
-            "⏰ সময় সমাপ্ত! আপনার পরীক্ষা স্বয়ংক্রিয়ভাবে জমা নেওয়া হয়েছে।",
-            {
-              icon: "⏱️",
-              duration: 5000,
-            },
-          );
-          return 0;
-        }
-        return prev - 1;
-      });
+      setTimeLeft((prev) => Math.max(0, prev - 1));
     }, 1000);
 
     return () => clearInterval(timer);
@@ -644,6 +635,12 @@ export default function QuizPage() {
 
     if (!isAuto) {
       toast.success(`পরীক্ষা জমা দেওয়া হয়েছে! আপনার স্কোর: ${score}/${total}`);
+    } else {
+      setIsTestActive(false);
+      toast("⏰ সময় সমাপ্ত! আপনার উত্তরপত্র স্বয়ংক্রিয়ভাবে জমা নিয়ে পরীক্ষা ক্লোজ করা হয়েছে।", {
+        icon: "⏳",
+        duration: 5000,
+      });
     }
   };
 

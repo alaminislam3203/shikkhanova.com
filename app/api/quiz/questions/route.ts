@@ -16,6 +16,8 @@ import {
   migrateExistingQuestionsDir,
   readQuestionsFromFile,
   writeQuestionsToFile,
+  getQuestionsFromDb,
+  saveQuestionsToDb,
 } from '@/lib/quizStorage';
 
 // Auto-run migration whenever this module is loaded
@@ -140,7 +142,7 @@ export async function GET(req: Request) {
     // Single subject/category questions retrieval
     const fileName = getFileName(classGrade, category, subject);
     const filePath = path.join(QUESTIONS_DIR, fileName);
-    let questions = readQuestionsFromFile(filePath, classGrade, category, subject);
+    let questions = await getQuestionsFromDb(classGrade, category, subject);
 
     // If category is 'free' or 'paid' and file has fewer than 20 questions,
     // construct a balanced board model test from across all available subjects of that class!
@@ -234,10 +236,7 @@ export async function POST(req: Request) {
         const subQuestions = parseMcqJsonSubject(val);
 
         if (subQuestions.length > 0) {
-          const fileName = getFileName(targetClass, 'subject', platformSubject);
-          const filePath = path.join(QUESTIONS_DIR, fileName);
-
-          writeQuestionsToFile(filePath, {
+          await saveQuestionsToDb(targetClass, 'subject', platformSubject, {
             classGrade: targetClass,
             category: 'subject',
             subject: platformSubject,
@@ -280,10 +279,7 @@ export async function POST(req: Request) {
         }
 
         if (subQuestions.length > 0) {
-          const fileName = getFileName(targetClass, 'subject', platformSubject);
-          const filePath = path.join(QUESTIONS_DIR, fileName);
-
-          writeQuestionsToFile(filePath, {
+          await saveQuestionsToDb(targetClass, 'subject', platformSubject, {
             classGrade: targetClass,
             category: 'subject',
             subject: platformSubject,
@@ -314,10 +310,8 @@ export async function POST(req: Request) {
     }
 
     const targetClass = Number(classGrade) || 6;
-    const fileName = getFileName(targetClass, category, subject);
-    const filePath = path.join(QUESTIONS_DIR, fileName);
 
-    writeQuestionsToFile(filePath, {
+    await saveQuestionsToDb(targetClass, category, subject, {
       classGrade: targetClass,
       category,
       subject: subject || null,
