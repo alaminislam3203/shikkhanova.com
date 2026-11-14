@@ -52,6 +52,9 @@ export default function AdminCustomExamsTab({ onNavigateToResults }: AdminCustom
   const [formQuestionCount, setFormQuestionCount] = useState<number>(20);
   const [formSourceType, setFormSourceType] = useState<"auto_bank" | "custom">("auto_bank");
   const [formIsActive, setFormIsActive] = useState<boolean>(true);
+  const [formIsPaid, setFormIsPaid] = useState<boolean>(false);
+  const [formPrice, setFormPrice] = useState<number>(50);
+  const [formBadge, setFormBadge] = useState<string>("ফ্রি");
 
   // Question Management Modal State for a Specific Exam
   const [questionModalExam, setQuestionModalExam] = useState<CustomExam | null>(null);
@@ -128,6 +131,9 @@ export default function AdminCustomExamsTab({ onNavigateToResults }: AdminCustom
     setFormQuestionCount(20);
     setFormSourceType("auto_bank");
     setFormIsActive(true);
+    setFormIsPaid(false);
+    setFormPrice(50);
+    setFormBadge("ফ্রি");
     setIsModalOpen(true);
   };
 
@@ -142,6 +148,9 @@ export default function AdminCustomExamsTab({ onNavigateToResults }: AdminCustom
     setFormQuestionCount(exam.questionCount || 20);
     setFormSourceType(exam.sourceType || "auto_bank");
     setFormIsActive(exam.isActive !== false);
+    setFormIsPaid(exam.isPaid ?? false);
+    setFormPrice(exam.price ?? 50);
+    setFormBadge(exam.badge ?? (exam.isPaid ? "পেইড" : "ফ্রি"));
     setIsModalOpen(true);
   };
 
@@ -168,6 +177,9 @@ export default function AdminCustomExamsTab({ onNavigateToResults }: AdminCustom
           questionCount: formQuestionCount,
           sourceType: formSourceType,
           isActive: formIsActive,
+          isPaid: formIsPaid,
+          price: formPrice,
+          badge: formBadge,
         }),
       });
 
@@ -577,6 +589,16 @@ export default function AdminCustomExamsTab({ onNavigateToResults }: AdminCustom
                         <span className="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 font-bold text-[11px] border border-amber-200">
                           {exam.subject}
                         </span>
+                        {exam.isPaid ? (
+                          <span className="px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 font-black text-[11px] border border-rose-200 flex items-center gap-1">
+                            <span>🔒 পেইড</span>
+                            {exam.price ? <span>(৳{exam.price})</span> : null}
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-black text-[11px] border border-emerald-200">
+                            ✨ {exam.badge || "ফ্রি"}
+                          </span>
+                        )}
                         {exam.examCode ? (
                           <span className="px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 font-mono font-black text-[10px] border border-purple-200 flex items-center gap-1">
                             <FaLock className="w-2.5 h-2.5" />
