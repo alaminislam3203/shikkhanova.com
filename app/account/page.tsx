@@ -666,6 +666,29 @@ export default function AccountPage() {
                 </div>
               </div>
 
+              {/* 4th Subject (ঐচ্ছিক বিষয়) for Class 9 & 10 */}
+              {(profile.classGrade === '9' || profile.classGrade === '10') && (
+                <div className="p-3.5 bg-gradient-to-r from-purple-50 to-indigo-50/60 rounded-2xl border border-purple-200/90 shadow-xs space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="block font-black text-purple-900 text-xs sm:text-sm">
+                      ৪র্থ বিষয় / ঐচ্ছিক বিষয় (Optional Subject)
+                    </label>
+                    <span className="text-[10px] font-black text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full border border-purple-200">
+                      এসএসসি কারিকুলাম
+                    </span>
+                  </div>
+                  <select
+                    value={profile.fourthSubject || 'উচ্চতর গণিত'}
+                    onChange={(e) => setProfile({ ...profile, fourthSubject: e.target.value })}
+                    className="w-full bg-white border border-purple-300 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-none focus:border-purple-600 transition text-xs sm:text-sm cursor-pointer shadow-xs"
+                  >
+                    <option value="উচ্চতর গণিত">উচ্চতর গণিত (Higher Mathematics) — কোড: ১২৬</option>
+                    <option value="কৃষিশিক্ষা">কৃষিশিক্ষা (Agricultural Studies) — কোড: ১৩৪</option>
+                    <option value="গার্হস্থ্য বিজ্ঞান">গার্হস্থ্য বিজ্ঞান (Home Science) — কোড: ১৫১</option>
+                  </select>
+                </div>
+              )}
+
               {/* Parents Names */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
