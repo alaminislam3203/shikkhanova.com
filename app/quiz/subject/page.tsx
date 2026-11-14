@@ -95,10 +95,15 @@ function SubjectDetailsContent() {
     totalQuestions: number;
     tests: { id: string; name: string; min: number; questionCount: number }[];
   }[]>([]);
-  const [chapterTypeFilter, setChapterTypeFilter] = useState<"all" | "কবিতা" | "গদ্য">("all");
+  const [chapterTypeFilter, setChapterTypeFilter] = useState<string>("all");
   const [chapterSearch, setChapterSearch] = useState<string>("");
   const [expandedChapter, setExpandedChapter] = useState<string | null>(null);
   const [isPracticeMode, setIsPracticeMode] = useState<boolean>(false);
+
+  const isGrammarSubject =
+    selectedSubject.includes("২") ||
+    selectedSubject.includes("2") ||
+    selectedSubject.includes("ব্যাকরণ");
 
   // Data States
   const [customExams, setCustomExams] = useState<CustomExam[]>([]);
@@ -223,8 +228,11 @@ function SubjectDetailsContent() {
           .then((r) => r.json())
           .catch(() => ({ covers: DEFAULT_QUIZ_COVERS }));
 
-        // 4. Fetch Chapter Tests (from Bangla Model Test database)
-        const chaptersPromise = fetch("/api/quiz/chapter-tests?action=chapters", { cache: "no-store" })
+        // 4. Fetch Chapter Tests (from Bangla 1st & 2nd Paper Unified Database)
+        const chaptersPromise = fetch(
+          `/api/quiz/chapter-tests?action=chapters&subject=${encodeURIComponent(selectedSubject)}`,
+          { cache: "no-store" }
+        )
           .then((r) => r.json())
           .catch(() => ({ success: false, chapters: [] }));
 
@@ -243,6 +251,8 @@ function SubjectDetailsContent() {
 
         if (chaptersRes?.success && Array.isArray(chaptersRes.chapters)) {
           setChapterGroups(chaptersRes.chapters);
+        } else {
+          setChapterGroups([]);
         }
 
         if (Array.isArray(qsRes?.questions) && qsRes.questions.length > 0) {
@@ -502,17 +512,17 @@ function SubjectDetailsContent() {
         const examItem: SubjectExamItem = {
           id: t.id,
           title: `${t.ch} — ${t.name}`,
-          subtitle: `${t.type} • ${t.author ? t.author + " • " : ""}${
+          subtitle: `${t.type}${t.author ? ' • ' + t.author : ''} • ${
             mode === "practice"
-              ? "💡 অনুশীলন মোড (তাৎক্ষণিক সঠিক উত্তর ও ব্যাখ্যা)"
-              : "⏱️ পূর্ণাঙ্গ পরীক্ষা মোড"
+              ? "অনুশীলন মোড (তাৎক্ষণিক সঠিক উত্তর ও ব্যাখ্যা)"
+              : "পূর্ণাঙ্গ পরীক্ষা মোড"
           }`,
           classGrade: selectedClass,
           subject: selectedSubject,
           durationMinutes: t.durationMinutes || 20,
           questionCount: Array.isArray(t.questions) ? t.questions.length : 20,
           isPaid: false,
-          badge: mode === "practice" ? "💡 অনুশীলন" : "📝 অধ্যায় পরীক্ষা",
+          badge: mode === "practice" ? "অনুশীলন" : "অধ্যায় পরীক্ষা",
           sourceType: "custom",
           questions: (t.questions || []).map((q: any) => ({
             q: q.q,
@@ -835,8 +845,8 @@ function SubjectDetailsContent() {
                 />
               </div>
             ) : (
-              <div className="w-14 h-14 sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-2xl sm:rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-2xl sm:text-5xl md:text-6xl shrink-0 shadow-xl">
-                📚
+              <div className="w-14 h-14 sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-2xl sm:rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shrink-0 shadow-xl">
+                <FaBookOpen className="text-white/80 w-7 h-7 sm:w-12 sm:h-12 md:w-16 md:h-16" />
               </div>
             )}
           </div>
@@ -1243,7 +1253,9 @@ function SubjectDetailsContent() {
                   <span>অধ্যায়ভিত্তিক স্পেশাল প্রস্তুতি</span>
                 </div>
                 <h3 className="text-base sm:text-lg font-black text-white">
-                  ৯ম ও ১০ম শ্রেণির বাংলা — কবিতা ও গদ্যের অধ্যায়ভিত্তিক পরীক্ষা
+                  {isGrammarSubject
+                    ? `${toBengaliClass(selectedClass)} শ্রেণির ${selectedSubject} — ব্যাকরণ ও নির্মিতির অধ্যায়ভিত্তিক প্রস্তুতি`
+                    : `${toBengaliClass(selectedClass)} শ্রেণির বাংলা — কবিতা ও গদ্যের অধ্যায়ভিত্তিক পরীক্ষা`}
                 </h3>
                 <p className="text-xs text-blue-200/90 leading-relaxed">
                   পাঠ্যবইয়ের প্রতিটি অধ্যায়ের ওপর আলাদা আলাদা পরীক্ষা দিন এবং অনুশীলন মোডে তাৎক্ষণিক সঠিক উত্তর ও ব্যাখ্যা জেনে নিন।
@@ -1353,31 +1365,31 @@ function SubjectDetailsContent() {
               <div className="p-4 sm:p-5 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   {/* Type Filter Buttons */}
-                  <div className="inline-flex rounded-2xl bg-slate-100 p-1 self-start">
-                    {(["all", "কবিতা", "গদ্য"] as const).map((t) => (
+                  <div className="inline-flex rounded-2xl bg-slate-100 p-1 self-start flex-wrap gap-1">
+                    {(isGrammarSubject
+                      ? [
+                          { id: "all", label: "সকল অধ্যায়", icon: null },
+                          { id: "ব্যাকরণ", label: "ব্যাকরণ", icon: <FaBookOpen className="w-3 h-3 text-blue-500" /> },
+                          { id: "নির্মিতি", label: "নির্মিতি", icon: <FaPenToSquare className="w-3 h-3 text-amber-500" /> },
+                        ]
+                      : [
+                          { id: "all", label: "সকল অধ্যায়", icon: null },
+                          { id: "কবিতা", label: "কবিতা", icon: <FaFeatherPointed className="w-3 h-3 text-rose-500" /> },
+                          { id: "গদ্য", label: "গদ্য", icon: <FaBookOpen className="w-3 h-3 text-blue-500" /> },
+                        ]
+                    ).map((btn) => (
                       <button
-                        key={t}
+                        key={btn.id}
                         type="button"
-                        onClick={() => setChapterTypeFilter(t)}
+                        onClick={() => setChapterTypeFilter(btn.id)}
                         className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
-                          chapterTypeFilter === t
+                          chapterTypeFilter === btn.id
                             ? "bg-[#0A1E3C] text-white shadow-xs"
                             : "text-slate-600 hover:text-slate-900"
                         }`}
                       >
-                        {t === "all" && "সকল অধ্যায়"}
-                        {t === "কবিতা" && (
-                          <span className="flex items-center gap-1.5">
-                            <FaFeatherPointed className="w-3 h-3 text-rose-500" />
-                            <span>কবিতা</span>
-                          </span>
-                        )}
-                        {t === "গদ্য" && (
-                          <span className="flex items-center gap-1.5">
-                            <FaBookOpen className="w-3 h-3 text-blue-500" />
-                            <span>গদ্য</span>
-                          </span>
-                        )}
+                        {btn.icon}
+                        <span>{btn.label}</span>
                       </button>
                     ))}
                   </div>
@@ -1389,7 +1401,11 @@ function SubjectDetailsContent() {
                       type="text"
                       value={chapterSearch}
                       onChange={(e) => setChapterSearch(e.target.value)}
-                      placeholder="অধ্যায় বা লেখকের নাম খুঁজুন..."
+                      placeholder={
+                        isGrammarSubject
+                          ? "অধ্যায়ের নাম খুঁজুন (যেমন: ধ্বনি, সমাস, কারক)..."
+                          : "অধ্যায় বা লেখকের নাম খুঁজুন..."
+                      }
                       className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-9 pr-4 py-2 text-xs font-bold text-slate-800 outline-none focus:border-indigo-600 focus:bg-white transition"
                     />
                   </div>
@@ -1428,6 +1444,8 @@ function SubjectDetailsContent() {
                                 className={`px-2.5 py-0.5 rounded-full text-[10px] font-black border flex items-center gap-1 ${
                                   ch.type === "কবিতা"
                                     ? "bg-rose-50 text-rose-700 border-rose-200"
+                                    : ch.type === "নির্মিতি"
+                                    ? "bg-amber-50 text-amber-700 border-amber-200"
                                     : "bg-blue-50 text-blue-700 border-blue-200"
                                 }`}
                               >
@@ -1436,10 +1454,15 @@ function SubjectDetailsContent() {
                                     <FaFeatherPointed className="w-2.5 h-2.5 text-rose-600" />
                                     <span>কবিতা</span>
                                   </>
+                                ) : ch.type === "নির্মিতি" ? (
+                                  <>
+                                    <FaPenToSquare className="w-2.5 h-2.5 text-amber-600" />
+                                    <span>নির্মিতি</span>
+                                  </>
                                 ) : (
                                   <>
                                     <FaBookOpen className="w-2.5 h-2.5 text-blue-600" />
-                                    <span>গদ্য</span>
+                                    <span>{ch.type}</span>
                                   </>
                                 )}
                               </span>
