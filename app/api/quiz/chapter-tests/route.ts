@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getAllBanglaChapterTests } from '@/lib/banglaChapterTests';
 import { getAllBanglaGrammarChapterTests } from '@/lib/banglaGrammarChapterTests';
+import { getAllBdwpChapterTests } from '@/lib/bdwpChapterTests';
 import fs from 'fs';
 import path from 'path';
 
@@ -18,23 +19,37 @@ try {
     fs.unlinkSync(legacyHtml2);
   }
 } catch {}
+try {
+  const legacyHtml3 = path.join(process.cwd(), 'bdwp_model_test_app (2) বাবি.html');
+  const cachePath3 = path.join(process.cwd(), 'data', 'bdwp_chapter_tests.json');
+  if (fs.existsSync(legacyHtml3) && fs.existsSync(cachePath3)) {
+    fs.unlinkSync(legacyHtml3);
+  }
+} catch {}
 
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const action = searchParams.get('action') || 'summary';
-    const typeFilter = searchParams.get('type'); // 'কবিতা' | 'গদ্য' | 'ব্যাকরণ' | 'নির্মিতি'
+    const typeFilter = searchParams.get('type');
     const chapterFilter = searchParams.get('chapter');
     const testId = searchParams.get('id');
     const searchQuery = (searchParams.get('q') || '').trim().toLowerCase();
     const subjectParam = searchParams.get('subject') || '';
     const paperParam = searchParams.get('paper');
 
+    const isBdwp =
+      subjectParam.includes('বাংলাদেশ ও বিশ্বপরিচয়') ||
+      subjectParam.includes('বাংলাদেশ ও বিশ্ব পরিচয়') ||
+      subjectParam.includes('বাবি') ||
+      subjectParam.toLowerCase().includes('bdwp');
+
     const isGrammar =
-      paperParam === '2' ||
-      subjectParam.includes('২') ||
-      subjectParam.includes('2') ||
-      subjectParam.includes('ব্যাকরণ');
+      !isBdwp &&
+      (paperParam === '2' ||
+        subjectParam.includes('২') ||
+        subjectParam.includes('2') ||
+        subjectParam.includes('ব্যাকরণ'));
 
     // 1. Single Test by ID (with full questions)
     if (action === 'test' && testId) {
@@ -47,12 +62,19 @@ export async function GET(req: Request) {
         found = allGrammar.find((t) => t.id === testId);
       }
       if (!found) {
+        // Check in BDWP (Bangladesh and Global Studies)
+        const allBdwp = getAllBdwpChapterTests();
+        found = allBdwp.find((t) => t.id === testId);
+      }
+      if (!found) {
         return NextResponse.json({ success: false, message: 'টেস্ট পাওয়া যায়নি' }, { status: 404 });
       }
       return NextResponse.json({ success: true, test: found });
     }
 
-    const allTests = isGrammar
+    const allTests = isBdwp
+      ? getAllBdwpChapterTests()
+      : isGrammar
       ? getAllBanglaGrammarChapterTests()
       : getAllBanglaChapterTests();
 
@@ -91,7 +113,7 @@ export async function GET(req: Request) {
       }
 
       let chapters = Array.from(chapterMap.values());
-      if (isGrammar) {
+      if (isGrammar || isBdwp) {
         chapters.sort((a, b) => (a.chNum || 0) - (b.chNum || 0));
       }
       if (typeFilter) {
@@ -106,6 +128,7 @@ export async function GET(req: Request) {
       return NextResponse.json({
         success: true,
         isGrammar,
+        isBdwp,
         totalChapters: chapters.length,
         totalTests: allTests.length,
         totalQuestions: allTests.reduce((acc, t) => acc + (t.questions ? t.questions.length : 0), 0),
@@ -145,6 +168,7 @@ export async function GET(req: Request) {
     return NextResponse.json({
       success: true,
       isGrammar,
+      isBdwp,
       count: testSummaries.length,
       tests: testSummaries,
     });

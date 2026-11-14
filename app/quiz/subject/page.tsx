@@ -52,6 +52,9 @@ import {
   FaMagnifyingGlass,
   FaChevronUp,
   FaChevronDown,
+  FaLandmark,
+  FaGlobe,
+  FaCoins,
 } from "react-icons/fa6";
 
 interface SubjectExamItem {
@@ -100,10 +103,17 @@ function SubjectDetailsContent() {
   const [expandedChapter, setExpandedChapter] = useState<string | null>(null);
   const [isPracticeMode, setIsPracticeMode] = useState<boolean>(false);
 
+  const isBdwpSubject =
+    selectedSubject.includes("বাংলাদেশ ও বিশ্বপরিচয়") ||
+    selectedSubject.includes("বাংলাদেশ ও বিশ্ব পরিচয়") ||
+    selectedSubject.includes("বাবি") ||
+    selectedSubject.toLowerCase().includes("bdwp");
+
   const isGrammarSubject =
-    selectedSubject.includes("২") ||
-    selectedSubject.includes("2") ||
-    selectedSubject.includes("ব্যাকরণ");
+    !isBdwpSubject &&
+    (selectedSubject.includes("২") ||
+      selectedSubject.includes("2") ||
+      selectedSubject.includes("ব্যাকরণ"));
 
   // Data States
   const [customExams, setCustomExams] = useState<CustomExam[]>([]);
@@ -1253,7 +1263,9 @@ function SubjectDetailsContent() {
                   <span>অধ্যায়ভিত্তিক স্পেশাল প্রস্তুতি</span>
                 </div>
                 <h3 className="text-base sm:text-lg font-black text-white">
-                  {isGrammarSubject
+                  {isBdwpSubject
+                    ? `${toBengaliClass(selectedClass)} শ্রেণির ${selectedSubject} — অধ্যায়ভিত্তিক মডেল টেস্ট ও অনুশীলন`
+                    : isGrammarSubject
                     ? `${toBengaliClass(selectedClass)} শ্রেণির ${selectedSubject} — ব্যাকরণ ও নির্মিতির অধ্যায়ভিত্তিক প্রস্তুতি`
                     : `${toBengaliClass(selectedClass)} শ্রেণির বাংলা — কবিতা ও গদ্যের অধ্যায়ভিত্তিক পরীক্ষা`}
                 </h3>
@@ -1366,7 +1378,15 @@ function SubjectDetailsContent() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   {/* Type Filter Buttons */}
                   <div className="inline-flex rounded-2xl bg-slate-100 p-1 self-start flex-wrap gap-1">
-                    {(isGrammarSubject
+                    {(isBdwpSubject
+                      ? [
+                          { id: "all", label: "সকল অধ্যায়", icon: null },
+                          { id: "ইতিহাস ও রাষ্ট্র", label: "ইতিহাস ও রাষ্ট্র", icon: <FaLandmark className="w-3 h-3 text-amber-500" /> },
+                          { id: "ভূগোল ও পরিবেশ", label: "ভূগোল ও পরিবেশ", icon: <FaGlobe className="w-3 h-3 text-emerald-500" /> },
+                          { id: "অর্থনীতি", label: "অর্থনীতি", icon: <FaCoins className="w-3 h-3 text-cyan-500" /> },
+                          { id: "সমাজবিজ্ঞান", label: "সমাজবিজ্ঞান", icon: <FaUsers className="w-3 h-3 text-purple-500" /> },
+                        ]
+                      : isGrammarSubject
                       ? [
                           { id: "all", label: "সকল অধ্যায়", icon: null },
                           { id: "ব্যাকরণ", label: "ব্যাকরণ", icon: <FaBookOpen className="w-3 h-3 text-blue-500" /> },
@@ -1402,7 +1422,9 @@ function SubjectDetailsContent() {
                       value={chapterSearch}
                       onChange={(e) => setChapterSearch(e.target.value)}
                       placeholder={
-                        isGrammarSubject
+                        isBdwpSubject
+                          ? "অধ্যায়ের নাম খুঁজুন (যেমন: মুক্তিযুদ্ধ, নদ-নদী, অর্থনীতি)..."
+                          : isGrammarSubject
                           ? "অধ্যায়ের নাম খুঁজুন (যেমন: ধ্বনি, সমাস, কারক)..."
                           : "অধ্যায় বা লেখকের নাম খুঁজুন..."
                       }
@@ -1446,6 +1468,14 @@ function SubjectDetailsContent() {
                                     ? "bg-rose-50 text-rose-700 border-rose-200"
                                     : ch.type === "নির্মিতি"
                                     ? "bg-amber-50 text-amber-700 border-amber-200"
+                                    : ch.type === "ভূগোল ও পরিবেশ"
+                                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                    : ch.type === "অর্থনীতি"
+                                    ? "bg-cyan-50 text-cyan-700 border-cyan-200"
+                                    : ch.type === "সমাজবিজ্ঞান"
+                                    ? "bg-purple-50 text-purple-700 border-purple-200"
+                                    : ch.type === "ইতিহাস ও রাষ্ট্র"
+                                    ? "bg-amber-50 text-amber-700 border-amber-200"
                                     : "bg-blue-50 text-blue-700 border-blue-200"
                                 }`}
                               >
@@ -1458,6 +1488,26 @@ function SubjectDetailsContent() {
                                   <>
                                     <FaPenToSquare className="w-2.5 h-2.5 text-amber-600" />
                                     <span>নির্মিতি</span>
+                                  </>
+                                ) : ch.type === "ভূগোল ও পরিবেশ" ? (
+                                  <>
+                                    <FaGlobe className="w-2.5 h-2.5 text-emerald-600" />
+                                    <span>{ch.type}</span>
+                                  </>
+                                ) : ch.type === "অর্থনীতি" ? (
+                                  <>
+                                    <FaCoins className="w-2.5 h-2.5 text-cyan-600" />
+                                    <span>{ch.type}</span>
+                                  </>
+                                ) : ch.type === "সমাজবিজ্ঞান" ? (
+                                  <>
+                                    <FaUsers className="w-2.5 h-2.5 text-purple-600" />
+                                    <span>{ch.type}</span>
+                                  </>
+                                ) : ch.type === "ইতিহাস ও রাষ্ট্র" ? (
+                                  <>
+                                    <FaLandmark className="w-2.5 h-2.5 text-amber-600" />
+                                    <span>{ch.type}</span>
                                   </>
                                 ) : (
                                   <>
