@@ -55,6 +55,8 @@ import {
   FaBriefcase,
   FaGlobe,
   FaGraduationCap,
+  FaTrophy,
+  FaMedal,
 } from "react-icons/fa6";
 import { HiSparkles } from "react-icons/hi2";
 import { CustomExam } from "@/lib/quizExamStorage";
@@ -1840,29 +1842,37 @@ export default function QuizPage() {
 
         {/* 4 Medals Highlights */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs text-center space-y-1">
-            <div className="text-2xl">🥇</div>
+          <div className="bg-white p-4 rounded-2xl border border-amber-200/80 shadow-2xs text-center space-y-1.5">
+            <div className="flex justify-center text-amber-500">
+              <FaTrophy className="w-7 h-7 text-amber-500" />
+            </div>
             <h4 className="text-xs sm:text-sm font-black text-slate-800">
               Gold Rank
             </h4>
             <p className="text-[10px] text-slate-500">১ম স্থান (১০০% স্কোর)</p>
           </div>
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs text-center space-y-1">
-            <div className="text-2xl">🥈</div>
+          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs text-center space-y-1.5">
+            <div className="flex justify-center text-slate-400">
+              <FaAward className="w-7 h-7 text-slate-400" />
+            </div>
             <h4 className="text-xs sm:text-sm font-black text-slate-800">
               Silver Rank
             </h4>
             <p className="text-[10px] text-slate-500">২য় স্থান (৮০%+ স্কোর)</p>
           </div>
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs text-center space-y-1">
-            <div className="text-2xl">🥉</div>
+          <div className="bg-white p-4 rounded-2xl border border-orange-200/80 shadow-2xs text-center space-y-1.5">
+            <div className="flex justify-center text-amber-700">
+              <FaMedal className="w-7 h-7 text-amber-700" />
+            </div>
             <h4 className="text-xs sm:text-sm font-black text-slate-800">
               Bronze Rank
             </h4>
             <p className="text-[10px] text-slate-500">৩য় স্থান (৬০%+ স্কোর)</p>
           </div>
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs text-center space-y-1">
-            <div className="text-2xl">⭐</div>
+          <div className="bg-white p-4 rounded-2xl border border-blue-200/80 shadow-2xs text-center space-y-1.5">
+            <div className="flex justify-center text-yellow-500">
+              <FaStar className="w-7 h-7 text-yellow-500" />
+            </div>
             <h4 className="text-xs sm:text-sm font-black text-slate-800">
               Top 10
             </h4>
@@ -1904,13 +1914,21 @@ export default function QuizPage() {
                       className="hover:bg-slate-50/60 transition"
                     >
                       <td className="py-3 px-4 font-black text-slate-800">
-                        {i === 0
-                          ? "👑 ১"
-                          : i === 1
-                            ? "🥈 ২"
-                            : i === 2
-                              ? "🥉 ৩"
-                              : i + 1}
+                        {i === 0 ? (
+                          <span className="inline-flex items-center gap-1 text-amber-600">
+                            <FaTrophy className="w-3 h-3 text-amber-500" /> ১
+                          </span>
+                        ) : i === 1 ? (
+                          <span className="inline-flex items-center gap-1 text-slate-500">
+                            <FaAward className="w-3 h-3 text-slate-400" /> ২
+                          </span>
+                        ) : i === 2 ? (
+                          <span className="inline-flex items-center gap-1 text-amber-700">
+                            <FaMedal className="w-3 h-3 text-amber-700" /> ৩
+                          </span>
+                        ) : (
+                          toBengaliNumber(i + 1)
+                        )}
                       </td>
                       <td className="py-3 px-4 font-bold text-slate-900">
                         {res.name}
@@ -1922,14 +1940,31 @@ export default function QuizPage() {
                         {res.subject}
                       </td>
                       <td className="py-3 px-4 text-center font-black text-[#C8102E]">
-                        {res.score}/{res.total}
+                        {toBengaliNumber(res.score)}/{toBengaliNumber(res.total)}
                       </td>
                       <td className="py-3 px-4 text-center font-bold text-emerald-700">
-                        {res.percentage}%
+                        {toBengaliNumber(res.percentage)}%
                       </td>
                       <td className="py-3 px-4">
-                        <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                          {res.medal}
+                        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
+                          res.percentage === 100
+                            ? "bg-amber-50 text-amber-800 border-amber-300"
+                            : res.percentage >= 80
+                            ? "bg-slate-100 text-slate-800 border-slate-300"
+                            : res.percentage >= 60
+                            ? "bg-orange-50 text-orange-800 border-orange-200"
+                            : "bg-blue-50 text-blue-800 border-blue-200"
+                        }`}>
+                          <FaAward className="w-2.5 h-2.5" />
+                          <span>
+                            {res.percentage === 100
+                              ? "গোল্ড"
+                              : res.percentage >= 80
+                              ? "সিলভার"
+                              : res.percentage >= 60
+                              ? "ব্রোঞ্জ"
+                              : "শীর্ষ ১০"}
+                          </span>
                         </span>
                       </td>
                       <td className="py-3 px-4 text-slate-500 text-[11px]">

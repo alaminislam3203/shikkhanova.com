@@ -150,6 +150,7 @@ export function getQuizSubmissions(filters?: {
   subject?: string;
   examId?: string;
   search?: string;
+  sortBy?: 'rank' | 'recent';
 }): QuizSubmission[] {
   ensureDataDir();
   try {
@@ -158,17 +159,13 @@ export function getQuizSubmissions(filters?: {
       let list: QuizSubmission[] = JSON.parse(raw);
       if (!Array.isArray(list)) list = [];
 
-      // Sort by newest first
-      list.sort(
-        (a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
-      );
-
       if (filters) {
         if (filters.classGrade) {
           list = list.filter((s) => s.classGrade === filters.classGrade);
         }
         if (filters.subject && filters.subject !== 'all') {
-          list = list.filter((s) => s.subject === filters.subject);
+          const subLower = filters.subject.toLowerCase();
+          list = list.filter((s) => (s.subject || '').toLowerCase().includes(subLower));
         }
         if (filters.examId && filters.examId !== 'all') {
           list = list.filter((s) => s.examId === filters.examId);
@@ -182,6 +179,29 @@ export function getQuizSubmissions(filters?: {
               (s.examTitle || '').toLowerCase().includes(q)
           );
         }
+      }
+
+      // Sort: if 'recent', sort by newest; otherwise default to 'rank' (highest score/percentage, least time)
+      if (filters?.sortBy === 'recent') {
+        list.sort(
+          (a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
+        );
+      } else {
+        list.sort((a, b) => {
+          const pctA = typeof a.percentage === 'number' ? a.percentage : 0;
+          const pctB = typeof b.percentage === 'number' ? b.percentage : 0;
+          if (pctB !== pctA) return pctB - pctA;
+
+          const scA = typeof a.score === 'number' ? a.score : 0;
+          const scB = typeof b.score === 'number' ? b.score : 0;
+          if (scB !== scA) return scB - scA;
+
+          const timeA = typeof a.timeTakenSeconds === 'number' && a.timeTakenSeconds > 0 ? a.timeTakenSeconds : 999999;
+          const timeB = typeof b.timeTakenSeconds === 'number' && b.timeTakenSeconds > 0 ? b.timeTakenSeconds : 999999;
+          if (timeA !== timeB) return timeA - timeB;
+
+          return new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime();
+        });
       }
 
       return list;

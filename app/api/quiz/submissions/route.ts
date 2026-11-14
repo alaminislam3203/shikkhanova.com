@@ -16,15 +16,23 @@ export async function GET(req: NextRequest) {
     const subject = searchParams.get('subject') || undefined;
     const examId = searchParams.get('examId') || undefined;
     const search = searchParams.get('search') || undefined;
+    const sortByParam = searchParams.get('sortBy');
+    const sortBy = sortByParam === 'recent' ? 'recent' : 'rank';
+    const limit = parseInt(searchParams.get('limit') || '100', 10);
 
     const classGrade = classGradeParam ? parseInt(classGradeParam, 10) : undefined;
 
-    const submissions = getQuizSubmissions({
+    let submissions = getQuizSubmissions({
       classGrade,
       subject,
       examId,
       search,
+      sortBy,
     });
+
+    if (limit > 0 && submissions.length > limit) {
+      submissions = submissions.slice(0, limit);
+    }
 
     // Summary statistics
     const totalCount = submissions.length;
@@ -64,11 +72,12 @@ export async function POST(req: NextRequest) {
       classGrade,
       subject,
       studentName,
-      rollNumber,
       score,
       total,
       timeTakenSeconds,
     } = body;
+
+    const rollNumber = body.rollNumber ?? body.studentRoll;
 
     if (!studentName || score === undefined || !total) {
       return NextResponse.json(
@@ -81,10 +90,10 @@ export async function POST(req: NextRequest) {
     const scored = Number(score);
     const percentage = totalQuestions > 0 ? Math.round((scored / totalQuestions) * 100) : 0;
 
-    let medal = '⭐ Top 10';
-    if (percentage === 100) medal = '🥇 Gold';
-    else if (percentage >= 80) medal = '🥈 Silver';
-    else if (percentage >= 60) medal = '🥉 Bronze';
+    let medal = 'Top 10';
+    if (percentage === 100) medal = 'Gold';
+    else if (percentage >= 80) medal = 'Silver';
+    else if (percentage >= 60) medal = 'Bronze';
 
     const submission: QuizSubmission = {
       id: `sub_${Date.now()}_${Math.floor(100 + Math.random() * 900)}`,
