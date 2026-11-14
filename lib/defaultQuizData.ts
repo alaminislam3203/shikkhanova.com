@@ -435,6 +435,8 @@ export const SCIENCE_SUBJECTS_9_10: QuizSubjectItem[] = [
   { name: 'রসায়ন', icon: '🧪', color: 'from-emerald-500 to-teal-700', group: 'science' },
   { name: 'জীববিজ্ঞান', icon: '🧬', color: 'from-green-500 to-emerald-700', group: 'science' },
   { name: 'উচ্চতর গণিত', icon: '📐', color: 'from-indigo-500 to-purple-700', group: 'science' },
+  { name: 'কৃষিশিক্ষা', icon: '🌾', color: 'from-emerald-600 to-green-800', group: 'science' },
+  { name: 'গার্হস্থ্য বিজ্ঞান', icon: '🏡', color: 'from-pink-500 to-rose-700', group: 'science' },
   { name: 'বাংলাদেশ ও বিশ্বপরিচয়', icon: '🌍', color: 'from-amber-500 to-orange-600', group: 'science' },
 ];
 
@@ -443,6 +445,8 @@ export const HUMANITIES_SUBJECTS_9_10: QuizSubjectItem[] = [
   { name: 'ভূগোল ও পরিবেশ', icon: '🗺️', color: 'from-teal-500 to-emerald-700', group: 'humanities' },
   { name: 'পৌরনীতি ও নাগরিকতা', icon: '⚖️', color: 'from-rose-500 to-red-700', group: 'humanities' },
   { name: 'অর্থনীতি', icon: '📈', color: 'from-blue-500 to-cyan-700', group: 'humanities' },
+  { name: 'কৃষিশিক্ষা', icon: '🌾', color: 'from-emerald-600 to-green-800', group: 'humanities' },
+  { name: 'গার্হস্থ্য বিজ্ঞান', icon: '🏡', color: 'from-pink-500 to-rose-700', group: 'humanities' },
   { name: 'সাধারণ বিজ্ঞান', icon: '🔬', color: 'from-purple-500 to-violet-700', group: 'humanities' },
 ];
 
@@ -450,6 +454,8 @@ export const COMMERCE_SUBJECTS_9_10: QuizSubjectItem[] = [
   { name: 'হিসাববিজ্ঞান', icon: '📊', color: 'from-emerald-600 to-teal-800', group: 'commerce' },
   { name: 'ব্যবসায় উদ্যোগ', icon: '🏢', color: 'from-indigo-600 to-blue-800', group: 'commerce' },
   { name: 'ফিন্যান্স ও ব্যাংকিং', icon: '🏦', color: 'from-cyan-600 to-sky-800', group: 'commerce' },
+  { name: 'কৃষিশিক্ষা', icon: '🌾', color: 'from-emerald-600 to-green-800', group: 'commerce' },
+  { name: 'গার্হস্থ্য বিজ্ঞান', icon: '🏡', color: 'from-pink-500 to-rose-700', group: 'commerce' },
   { name: 'সাধারণ বিজ্ঞান', icon: '🔬', color: 'from-purple-500 to-violet-700', group: 'commerce' },
 ];
 
