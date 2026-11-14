@@ -101,7 +101,7 @@ const INSTANT_SITE_INDEX = [
   },
   {
     id: "page-leaderboard",
-    title: "🏆 মেধা তালিকা ও লিডারবোর্ড (Quiz Leaderboard)",
+    title: "মেধা তালিকা ও লিডারবোর্ড (Quiz Leaderboard)",
     subtitle:
       "সেরা শিক্ষার্থীদের র‍্যাঙ্কিং, গোল্ড/সিলভার মেডেল ও প্রাপ্ত স্কোর",
     categoryLabel: "লিডারবোর্ড",
@@ -208,7 +208,8 @@ const INSTANT_SITE_INDEX = [
     categoryLabel: "ফি পেমেন্ট",
     href: "/pay-fee",
     badge: "৳১২০০",
-    keywords: "pay fee coaching fee tuition fee কোচিং ফি মাসিক ফি বিকাশ নগদ রকেট ট্রানজেকশন রসিদ",
+    keywords:
+      "pay fee coaching fee tuition fee কোচিং ফি মাসিক ফি বিকাশ নগদ রকেট ট্রানজেকশন রসিদ",
   },
 ];
 
@@ -476,89 +477,90 @@ export default function Navbar() {
               {navLinks
                 .filter((link) => !link.mobileOnly)
                 .map((link) => {
-                const Icon = link.icon;
-                const isChildActive = link.children?.some(
-                  (c) => pathname === c.href,
-                );
-                const active = pathname === link.href || Boolean(isChildActive);
-
-                if (link.children) {
-                  return (
-                    <div
-                      key={link.href}
-                      ref={aboutDropdownRef}
-                      onMouseEnter={() => setAboutMenuOpen(true)}
-                      onMouseLeave={() => setAboutMenuOpen(false)}
-                      className="relative"
-                    >
-                      <button
-                        type="button"
-                        onClick={() => setAboutMenuOpen((prev) => !prev)}
-                        className={`px-3 py-2 rounded-sm text-sm font-semibold transition-all flex items-center gap-1.5 relative whitespace-nowrap ${
-                          active
-                            ? "bg-[#C8102E] text-white shadow-sm font-bold"
-                            : "text-[#0A1E3C] hover:text-[#C8102E] hover:bg-red-50/50"
-                        }`}
-                      >
-                        <span>{link.label}</span>
-                        <FaChevronDown
-                          className={`w-3 h-3 transition-transform duration-200 ${
-                            aboutMenuOpen ? "rotate-180" : ""
-                          }`}
-                        />
-                      </button>
-
-                      {aboutMenuOpen && (
-                        <div className="absolute left-0 top-full pt-1.5 w-52 z-50">
-                          <div className="bg-white rounded-md shadow-xl border border-slate-200/90 py-2 overflow-hidden">
-                            {link.children.map((sub) => {
-                              const subActive = pathname === sub.href;
-                              return (
-                                <Link
-                                  key={sub.href}
-                                  href={sub.href}
-                                  onClick={() => setAboutMenuOpen(false)}
-                                  className={`block px-4 py-2.5 text-sm font-semibold transition ${
-                                    subActive
-                                      ? "bg-[#C8102E] text-white font-bold"
-                                      : "text-slate-700 hover:text-[#C8102E] hover:bg-red-50/60"
-                                  }`}
-                                >
-                                  {sub.label}
-                                </Link>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                  const Icon = link.icon;
+                  const isChildActive = link.children?.some(
+                    (c) => pathname === c.href,
                   );
-                }
+                  const active =
+                    pathname === link.href || Boolean(isChildActive);
 
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`px-3 py-2 rounded-sm text-sm font-semibold transition-all flex items-center gap-1.5 relative whitespace-nowrap ${
-                      active
-                        ? "bg-[#C8102E] text-white shadow-sm font-bold"
-                        : "text-[#0A1E3C] hover:text-[#C8102E] hover:bg-red-50/50"
-                    }`}
-                  >
-                    {Icon && (
-                      <Icon
-                        className={`w-4 h-4 ${active ? "text-white" : link.color || "text-slate-500"}`}
-                      />
-                    )}
-                    <span>{link.label}</span>
-                    {link.badge && (
-                      <span className="text-[10px] bg-nova-500 text-white px-1.5 py-0.5 rounded-full font-bold">
-                        {link.badge}
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
+                  if (link.children) {
+                    return (
+                      <div
+                        key={link.href}
+                        ref={aboutDropdownRef}
+                        onMouseEnter={() => setAboutMenuOpen(true)}
+                        onMouseLeave={() => setAboutMenuOpen(false)}
+                        className="relative"
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setAboutMenuOpen((prev) => !prev)}
+                          className={`px-3 py-2 rounded-sm text-sm font-semibold transition-all flex items-center gap-1.5 relative whitespace-nowrap ${
+                            active
+                              ? "bg-[#C8102E] text-white shadow-sm font-bold"
+                              : "text-[#0A1E3C] hover:text-[#C8102E] hover:bg-red-50/50"
+                          }`}
+                        >
+                          <span>{link.label}</span>
+                          <FaChevronDown
+                            className={`w-3 h-3 transition-transform duration-200 ${
+                              aboutMenuOpen ? "rotate-180" : ""
+                            }`}
+                          />
+                        </button>
+
+                        {aboutMenuOpen && (
+                          <div className="absolute left-0 top-full pt-1.5 w-52 z-50">
+                            <div className="bg-white rounded-md shadow-xl border border-slate-200/90 py-2 overflow-hidden">
+                              {link.children.map((sub) => {
+                                const subActive = pathname === sub.href;
+                                return (
+                                  <Link
+                                    key={sub.href}
+                                    href={sub.href}
+                                    onClick={() => setAboutMenuOpen(false)}
+                                    className={`block px-4 py-2.5 text-sm font-semibold transition ${
+                                      subActive
+                                        ? "bg-[#C8102E] text-white font-bold"
+                                        : "text-slate-700 hover:text-[#C8102E] hover:bg-red-50/60"
+                                    }`}
+                                  >
+                                    {sub.label}
+                                  </Link>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`px-3 py-2 rounded-sm text-sm font-semibold transition-all flex items-center gap-1.5 relative whitespace-nowrap ${
+                        active
+                          ? "bg-[#C8102E] text-white shadow-sm font-bold"
+                          : "text-[#0A1E3C] hover:text-[#C8102E] hover:bg-red-50/50"
+                      }`}
+                    >
+                      {Icon && (
+                        <Icon
+                          className={`w-4 h-4 ${active ? "text-white" : link.color || "text-slate-500"}`}
+                        />
+                      )}
+                      <span>{link.label}</span>
+                      {link.badge && (
+                        <span className="text-[10px] bg-nova-500 text-white px-1.5 py-0.5 rounded-full font-bold">
+                          {link.badge}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
 
               {/* Global Website Search Box (Modern Sleek Pill with Integrated Search Action) */}
               <div className="relative ml-2" ref={searchRef}>
@@ -690,7 +692,10 @@ export default function Navbar() {
               </Link>
 
               {mounted && session?.user ? (
-                <div className="hidden lg:block relative" suppressHydrationWarning>
+                <div
+                  className="hidden lg:block relative"
+                  suppressHydrationWarning
+                >
                   {/* Profile Trigger Button - Avatar Only */}
                   <button
                     type="button"
@@ -843,7 +848,10 @@ export default function Navbar() {
                 })}
 
                 {mounted && session?.user && (
-                  <div className="pt-3 mt-2 border-t border-slate-200 space-y-1.5" suppressHydrationWarning>
+                  <div
+                    className="pt-3 mt-2 border-t border-slate-200 space-y-1.5"
+                    suppressHydrationWarning
+                  >
                     <button
                       type="button"
                       onClick={() => {
@@ -901,7 +909,7 @@ export default function Navbar() {
                       onClick={() => setMobileOpen(false)}
                       className="flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-amber-50 hover:text-amber-800"
                     >
-                      <span>🏆 লিডারবোর্ড (মেধাতালিকা)</span>
+                      <span>লিডারবোর্ড (মেধাতালিকা)</span>
                       <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
                         Rank
                       </span>

@@ -1166,7 +1166,7 @@ export default function QuizPage() {
                       onClick={() => scrollTo(resultsRef)}
                       className="px-5 py-2.5 rounded-xl bg-[#C8102E] hover:bg-[#A50D26] text-white text-xs font-black shadow-lg transition cursor-pointer"
                     >
-                      🏆 লিডারবোর্ড দেখুন
+                      লিডারবোর্ড দেখুন
                     </button>
                   </div>
                 </div>
@@ -1894,7 +1894,7 @@ export default function QuizPage() {
               <FaAward /> মেধা তালিকা ও র‍্যাঙ্কিং
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">
-              🏆 Result Board (লিডারবোর্ড)
+              Result Board (লিডারবোর্ড)
             </h2>
             <p className="text-xs text-slate-500 font-medium">
               সাম্প্রতিক পরীক্ষার ফলাফল ও সেরা শিক্ষার্থীদের মেডেল তালিকা

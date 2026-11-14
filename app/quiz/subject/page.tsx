@@ -83,7 +83,6 @@ function SubjectDetailsContent() {
 
   // Data States
   const [customExams, setCustomExams] = useState<CustomExam[]>([]);
-  const [customCards, setCustomCards] = useState<CustomQuizCard[]>([]);
   const [bankQuestions, setBankQuestions] = useState<RawQuestion[]>([]);
   const [covers, setCovers] = useState<QuizCovers>(DEFAULT_QUIZ_COVERS);
   const [quizPrices, setQuizPrices] = useState<QuizPrices>(DEFAULT_QUIZ_PRICES);
@@ -200,20 +199,14 @@ function SubjectDetailsContent() {
           .then((r) => r.json())
           .catch(() => ({ questions: [] }));
 
-        // 3. Fetch Quiz Cards
-        const cardsPromise = fetch("/api/quiz/cards", { cache: "no-store" })
-          .then((r) => r.json())
-          .catch(() => ({ cards: [] }));
-
-        // 4. Fetch Covers
+        // 3. Fetch Covers
         const coversPromise = fetch("/api/quiz/covers", { cache: "no-store" })
           .then((r) => r.json())
           .catch(() => ({ covers: DEFAULT_QUIZ_COVERS }));
 
-        const [examsRes, qsRes, cardsRes, coversRes] = await Promise.all([
+        const [examsRes, qsRes, coversRes] = await Promise.all([
           examsPromise,
           questionsPromise,
-          cardsPromise,
           coversPromise,
         ]);
 
@@ -232,10 +225,6 @@ function SubjectDetailsContent() {
             selectedSubject,
           );
           setBankQuestions(localQs);
-        }
-
-        if (Array.isArray(cardsRes?.cards)) {
-          setCustomCards(cardsRes.cards);
         }
 
         if (coversRes?.covers) {
@@ -324,34 +313,7 @@ function SubjectDetailsContent() {
       });
     });
 
-    // 4. Custom Quiz Cards matching this class & subject
-    customCards
-      .filter(
-        (card) =>
-          card.classGrade === selectedClass &&
-          card.subject.toLowerCase() === selectedSubject.toLowerCase(),
-      )
-      .forEach((card) => {
-        if (!list.some((e) => e.title === card.title)) {
-          list.push({
-            id: `card_${card.id}`,
-            title: card.title,
-            subtitle: card.subtitle,
-            classGrade: card.classGrade,
-            subject: card.subject,
-            durationMinutes: card.durationMinutes || 15,
-            questionCount: card.questionCount || 15,
-            isPaid: Boolean(card.isPaid),
-            price: card.price || 50,
-            badge: card.badge || (card.isPaid ? "পেইড" : "ফ্রি"),
-            coverImage: card.coverImage || subjectCover || classCover,
-            sourceType: "auto_bank",
-            isBuiltIn: false,
-          });
-        }
-      });
-
-    // 5. If bank has more than 15 questions, add a Rapid Speed Test (ফ্রি)
+    // 4. If bank has more than 15 questions, add a Rapid Speed Test (ফ্রি)
     if (totalBank >= 15) {
       list.push({
         id: "builtin_speed_test",
@@ -372,7 +334,6 @@ function SubjectDetailsContent() {
     return list;
   }, [
     customExams,
-    customCards,
     bankQuestions,
     selectedClass,
     selectedSubject,
