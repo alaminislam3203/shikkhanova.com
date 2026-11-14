@@ -744,7 +744,7 @@ function SubjectDetailsContent() {
       } catch {}
     }
 
-    // Save to centralized server API
+    // Save to centralized server API (Leaderboard)
     fetch("/api/quiz/submissions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -754,14 +754,19 @@ function SubjectDetailsContent() {
         classGrade: selectedClass,
         subject: selectedSubject,
         studentName: finalStudentName,
+        rollNumber: finalRoll,
         studentRoll: finalRoll,
         studentEmail: session?.user?.email,
         score,
         total,
         percentage,
-        timeTakenSeconds: totalTime - timeLeft,
+        timeTakenSeconds: Math.max(1, totalTime - timeLeft),
       }),
-    }).catch(() => {});
+    })
+      .then(() => {
+        loadSubjectLeaderboard();
+      })
+      .catch(() => {});
   };
 
   // Format Time Helper
