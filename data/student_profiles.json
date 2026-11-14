@@ -144,69 +144,79 @@
     "motherName": "মোসা: তহুরা বেগম",
     "schoolName": "নীলফামারী সরকারি উচ্চ বিদ্যালয়",
     "dateOfBirth": "10/03/2011",
-    "religion": "ইসলাম"
+    "religion": "ইসলাম",
+    "fourthSubject": "উচ্চতর গণিত"
   },
   "9_2": {
     "fatherName": "মো: জিল্লুর রহমান",
     "motherName": "মোসা: লতিফা পারভীন",
     "schoolName": "নীলফামারী সরকারি বালিকা উচ্চ বিদ্যালয়",
     "dateOfBirth": "23/06/2011",
-    "religion": "ইসলাম"
+    "religion": "ইসলাম",
+    "fourthSubject": "কৃষিশিক্ষা"
   },
   "9_3": {
     "fatherName": "তাপস কুমার দাস",
     "motherName": "শান্তিলতা দাস",
     "schoolName": "নীলফামারী মডেল হাই স্কুল",
     "dateOfBirth": "14/08/2011",
-    "religion": "হিন্দু"
+    "religion": "হিন্দু",
+    "fourthSubject": "গার্হস্থ্য বিজ্ঞান"
   },
   "9_4": {
     "fatherName": "মো: ফজলুর রহমান",
     "motherName": "মোসা: হাসনা হেনা",
     "schoolName": "কালেক্টরেট পাবলিক স্কুল ও কলেজ",
     "dateOfBirth": "05/11/2011",
-    "religion": "ইসলাম"
+    "religion": "ইসলাম",
+    "fourthSubject": "কৃষিশিক্ষা"
   },
   "9_5": {
     "fatherName": "মো: জাহাঙ্গীর আলম",
     "motherName": "মোসা: মেহেরুন্নেসা",
     "schoolName": "নীলফামারী সরকারি উচ্চ বিদ্যালয়",
     "dateOfBirth": "28/12/2011",
-    "religion": "ইসলাম"
+    "religion": "ইসলাম",
+    "fourthSubject": "উচ্চতর গণিত"
   },
   "10_1": {
     "fatherName": "মো: এনামুল হক",
     "motherName": "মোসা: সেলিনা আক্তার",
     "schoolName": "নীলফামারী সরকারি উচ্চ বিদ্যালয়",
     "dateOfBirth": "15/01/2010",
-    "religion": "ইসলাম"
+    "religion": "ইসলাম",
+    "fourthSubject": "উচ্চতর গণিত"
   },
   "10_2": {
     "fatherName": "মো: হারুন অর রশীদ",
     "motherName": "মোসা: খাদিজা বেগম",
     "schoolName": "নীলফামারী সরকারি বালিকা উচ্চ বিদ্যালয়",
     "dateOfBirth": "19/04/2010",
-    "religion": "ইসলাম"
+    "religion": "ইসলাম",
+    "fourthSubject": "কৃষিশিক্ষা"
   },
   "10_3": {
     "fatherName": "অমরেশ চন্দ্র শীল",
     "motherName": "অনিতা শীল",
     "schoolName": "নীলফামারী মডেল হাই স্কুল",
     "dateOfBirth": "27/07/2010",
-    "religion": "হিন্দু"
+    "religion": "হিন্দু",
+    "fourthSubject": "গার্হস্থ্য বিজ্ঞান"
   },
   "10_4": {
     "fatherName": "মো: রিয়াজুল করিম",
     "motherName": "মোসা: আনোয়ারা বেগম",
     "schoolName": "কালেক্টরেট পাবলিক স্কুল ও কলেজ",
     "dateOfBirth": "11/09/2010",
-    "religion": "ইসলাম"
+    "religion": "ইসলাম",
+    "fourthSubject": "কৃষিশিক্ষা"
   },
   "10_5": {
     "fatherName": "মো: সাইদুর রহমান",
     "motherName": "মোসা: তাহমিনা আক্তার",
     "schoolName": "নীলফামারী সরকারি উচ্চ বিদ্যালয়",
     "dateOfBirth": "02/11/2010",
-    "religion": "ইসলাম"
+    "religion": "ইসলাম",
+    "fourthSubject": "উচ্চতর গণিত"
   }
 }

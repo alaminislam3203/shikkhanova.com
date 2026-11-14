@@ -61,7 +61,11 @@ async function ensureSeedResults() {
     const local = readLocalResults();
     if (local.length > 0) {
       const sample = await prisma.examResult.findFirst();
-      const needsSync = !sample || !sample.subjectMarks?.includes('হিন্দুধর্ম ও নৈতিক শিক্ষা');
+      const needsSync =
+        !sample ||
+        !sample.subjectMarks?.includes('হিন্দুধর্ম ও নৈতিক শিক্ষা') ||
+        !sample.subjectMarks?.includes('কৃষিশিক্ষা') ||
+        !sample.subjectMarks?.includes('গার্হস্থ্য বিজ্ঞান');
       if (needsSync) {
         for (const r of local) {
           try {
