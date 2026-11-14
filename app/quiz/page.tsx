@@ -961,7 +961,7 @@ export default function QuizPage() {
               </span>
             </div>
             <div className="text-lg sm:text-2xl font-black text-slate-800 tracking-tight">
-              {toBengaliNumber(availableSubjects.length)}টি বিষয়
+              {toBengaliNumber(currentSubjects.length)}টি বিষয়
             </div>
             <div className="text-[11px] sm:text-xs font-bold text-slate-500 mt-0.5">
               অধ্যায়ভিত্তিক মডেল টেস্ট
