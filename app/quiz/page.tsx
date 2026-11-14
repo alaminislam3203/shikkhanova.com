@@ -869,74 +869,74 @@ export default function QuizPage() {
       {/* ─────────────────────────────────────────────────────────────
           1. LIVE QUIZ STATS & ANALYTICS STRIP
       ───────────────────────────────────────────────────────────── */}
-      <section className="space-y-4">
-        {/* Top Compact Info & Student Capsule Bar */}
-        <div className="bg-gradient-to-r from-[#0A1E3C] via-[#0F2C59] to-[#1A0E2A] text-white rounded-3xl p-5 sm:p-7 shadow-xl border border-slate-700/40 relative overflow-hidden">
+      <section className="space-y-3 sm:space-y-4">
+        {/* Top Compact Info & Student Capsule Bar (Same balanced layout on mobile & desktop, scaled down) */}
+        <div className="bg-gradient-to-r from-[#0A1E3C] via-[#0F2C59] to-[#1A0E2A] text-white rounded-2xl sm:rounded-3xl p-3.5 sm:p-7 shadow-xl border border-slate-700/40 relative overflow-hidden">
           {/* Subtle Glows */}
           <div className="absolute -top-12 -right-12 w-48 h-48 bg-[#C8102E]/20 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-blue-500/15 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-5">
             {/* Title & Badge */}
-            <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-[11px] font-bold text-amber-300">
-                <span className="relative flex h-2 w-2">
+            <div className="space-y-1 sm:space-y-2">
+              <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-[10px] sm:text-[11px] font-bold text-amber-300">
+                <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-emerald-500"></span>
                 </span>
-                <HiSparkles className="w-3.5 h-3.5 text-amber-300" />
+                <HiSparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300" />
                 <span>ডিজিটাল মডেল টেস্ট ২০২৬ • লাইভ সেশন</span>
               </div>
 
-              <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight">
+              <h1 className="text-base sm:text-2xl md:text-3xl font-black text-white tracking-tight">
                 অনলাইন কুইজ ও মডেল টেস্ট হাব
               </h1>
 
-              <p className="text-xs sm:text-sm text-slate-300 font-medium max-w-xl">
+              <p className="text-[10px] sm:text-xs md:text-sm text-slate-300 font-medium max-w-xl leading-relaxed">
                 ৫ম থেকে ১০ম শ্রেণির অধ্যায়ভিত্তিক প্রস্তুতি, ইনস্ট্যান্ট অটো রেজাল্ট, সঠিক উত্তরের ব্যাখ্যা ও রিয়েলটাইম মেধা মূল্যায়ন।
               </p>
             </div>
 
             {/* Quick Student Bar & Action Buttons */}
-            <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-start sm:items-center gap-2.5 bg-white/5 backdrop-blur-md p-3 rounded-2xl border border-white/10 shrink-0">
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <div className="relative flex-1 sm:w-40">
+            <div className="flex items-center gap-1.5 sm:gap-2.5 bg-white/5 backdrop-blur-md p-1.5 sm:p-3 rounded-xl sm:rounded-2xl border border-white/10 shrink-0 self-stretch sm:self-auto justify-between sm:justify-start">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <div className="relative w-28 sm:w-40">
                   <input
                     type="text"
                     value={studentNameInput}
                     onChange={(e) => setStudentNameInput(e.target.value)}
-                    placeholder="আপনার নাম লিখুন..."
-                    className="w-full bg-white/10 border border-white/20 focus:border-[#C8102E] rounded-xl px-3 py-2 text-xs text-white placeholder-slate-400 outline-none transition"
+                    placeholder="আপনার নাম..."
+                    className="w-full bg-white/10 border border-white/20 focus:border-[#C8102E] rounded-lg sm:rounded-xl px-2 py-1.5 sm:px-3 sm:py-2 text-[11px] sm:text-xs text-white placeholder-slate-400 outline-none transition"
                   />
                 </div>
-                <div className="relative w-24">
+                <div className="relative w-14 sm:w-24">
                   <input
                     type="text"
                     value={studentRollInput}
                     onChange={(e) => setStudentRollInput(e.target.value)}
                     placeholder="রোল"
-                    className="w-full bg-white/10 border border-white/20 focus:border-[#C8102E] rounded-xl px-3 py-2 text-xs text-white placeholder-slate-400 outline-none font-mono text-center transition"
+                    className="w-full bg-white/10 border border-white/20 focus:border-[#C8102E] rounded-lg sm:rounded-xl px-1.5 py-1.5 sm:px-3 sm:py-2 text-[11px] sm:text-xs text-white placeholder-slate-400 outline-none font-mono text-center transition"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+              <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                 <button
                   type="button"
                   onClick={() => scrollTo(resultsRef)}
-                  className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black text-xs shadow-md transition active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-lg sm:rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black text-[10px] sm:text-xs shadow-md transition active:scale-95 flex items-center justify-center gap-1 cursor-pointer shrink-0"
                 >
-                  <FaAward className="w-3.5 h-3.5 text-slate-950" />
-                  <span>লিডারবোর্ড</span>
+                  <FaAward className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-950" />
+                  <span className="hidden xs:inline sm:inline">লিডারবোর্ড</span>
                 </button>
 
                 {session?.user?.role === "ADMIN" && (
                   <Link
                     href="/admin?tab=mcqQuiz"
-                    className="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-amber-300 font-bold text-xs border border-amber-400/30 transition flex items-center gap-1"
+                    className="px-2 py-1.5 sm:px-3 sm:py-2 rounded-lg sm:rounded-xl bg-white/10 hover:bg-white/20 text-amber-300 font-bold text-[10px] sm:text-xs border border-amber-400/30 transition flex items-center gap-1 shrink-0"
                   >
                     <FaGear className="w-3 h-3 text-amber-400" />
-                    <span>অ্যাডমিন</span>
+                    <span className="hidden xs:inline sm:inline">অ্যাডমিন</span>
                   </Link>
                 )}
               </div>
@@ -944,80 +944,88 @@ export default function QuizPage() {
           </div>
         </div>
 
-        {/* 4 Interactive Live Stats & Analytics Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {/* 4 Interactive Live Stats Cards in a single scaled-down 4-col strip */}
+        <div className="grid grid-cols-4 gap-2 sm:gap-4">
           {/* Stat 1: Total Question Bank */}
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-xs hover:shadow-md transition-all group">
-            <div className="flex items-center justify-between gap-2 mb-2 sm:mb-3">
-              <span className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm sm:text-base group-hover:scale-110 transition-transform">
+          <div className="bg-white rounded-xl sm:rounded-3xl p-2.5 sm:p-5 border border-slate-200/90 shadow-2xs hover:shadow-md transition-all group flex flex-col justify-between">
+            <div className="flex items-center justify-between gap-1 mb-1 sm:mb-3">
+              <span className="w-6 h-6 sm:w-10 sm:h-10 rounded-lg sm:rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xs sm:text-base group-hover:scale-110 transition-transform">
                 <FaBookOpen />
               </span>
               <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100 hidden sm:inline-block">
                 লাইভ ব্যাংক
               </span>
             </div>
-            <div className="text-lg sm:text-2xl font-black text-slate-800 tracking-tight">
-              {toBengaliNumber(totalQuestionsInClass)}+
-            </div>
-            <div className="text-[11px] sm:text-xs font-bold text-slate-500 mt-0.5">
-              {toBengaliClass(selectedClass)} শ্রেণির প্রশ্ন ব্যাংক
+            <div>
+              <div className="text-xs sm:text-2xl font-black text-slate-800 tracking-tight truncate">
+                {toBengaliNumber(totalQuestionsInClass)}+
+              </div>
+              <div className="text-[9px] sm:text-xs font-bold text-slate-500 mt-0.5 truncate">
+                {selectedClass ? `${toBengaliClass(selectedClass)} শ্রেণির প্রশ্ন` : "প্রশ্ন ব্যাংক"}
+              </div>
             </div>
           </div>
 
           {/* Stat 2: Active Subjects */}
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-xs hover:shadow-md transition-all group">
-            <div className="flex items-center justify-between gap-2 mb-2 sm:mb-3">
-              <span className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm sm:text-base group-hover:scale-110 transition-transform">
+          <div className="bg-white rounded-xl sm:rounded-3xl p-2.5 sm:p-5 border border-slate-200/90 shadow-2xs hover:shadow-md transition-all group flex flex-col justify-between">
+            <div className="flex items-center justify-between gap-1 mb-1 sm:mb-3">
+              <span className="w-6 h-6 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs sm:text-base group-hover:scale-110 transition-transform">
                 <FaLayerGroup />
               </span>
               <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100 hidden sm:inline-block">
                 পাঠ্যসূচি
               </span>
             </div>
-            <div className="text-lg sm:text-2xl font-black text-slate-800 tracking-tight">
-              {toBengaliNumber(currentSubjects.length)}টি বিষয়
-            </div>
-            <div className="text-[11px] sm:text-xs font-bold text-slate-500 mt-0.5">
-              অধ্যায়ভিত্তিক মডেল টেস্ট
+            <div>
+              <div className="text-xs sm:text-2xl font-black text-slate-800 tracking-tight truncate">
+                {selectedClass ? `${toBengaliNumber(currentSubjects.length)}টি বিষয়` : "সকল বিষয়"}
+              </div>
+              <div className="text-[9px] sm:text-xs font-bold text-slate-500 mt-0.5 truncate">
+                {selectedClass ? "মডেল টেস্ট" : "সিলেবাস ভিত্তিক"}
+              </div>
             </div>
           </div>
 
           {/* Stat 3: Participants */}
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-xs hover:shadow-md transition-all group">
-            <div className="flex items-center justify-between gap-2 mb-2 sm:mb-3">
-              <span className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-sm sm:text-base group-hover:scale-110 transition-transform">
+          <div className="bg-white rounded-xl sm:rounded-3xl p-2.5 sm:p-5 border border-slate-200/90 shadow-2xs hover:shadow-md transition-all group flex flex-col justify-between">
+            <div className="flex items-center justify-between gap-1 mb-1 sm:mb-3">
+              <span className="w-6 h-6 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-xs sm:text-base group-hover:scale-110 transition-transform">
                 <FaUsers />
               </span>
               <span className="text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-100 hidden sm:inline-block">
                 অংশগ্রহণ
               </span>
             </div>
-            <div className="text-lg sm:text-2xl font-black text-slate-800 tracking-tight">
-              {toBengaliNumber(Math.max(resultsList.length * 12 + 150, 1250))}+
-            </div>
-            <div className="text-[11px] sm:text-xs font-bold text-slate-500 mt-0.5">
-              পরীক্ষা সম্পন্ন হয়েছে
+            <div>
+              <div className="text-xs sm:text-2xl font-black text-slate-800 tracking-tight truncate">
+                {toBengaliNumber(Math.max(resultsList.length * 12 + 150, 1250))}+
+              </div>
+              <div className="text-[9px] sm:text-xs font-bold text-slate-500 mt-0.5 truncate">
+                পরীক্ষা সম্পন্ন
+              </div>
             </div>
           </div>
 
           {/* Stat 4: Leaderboard / Merits */}
           <div
             onClick={() => scrollTo(resultsRef)}
-            className="bg-gradient-to-br from-amber-50 to-orange-50/60 rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-amber-200/80 shadow-xs hover:shadow-md transition-all cursor-pointer group"
+            className="bg-gradient-to-br from-amber-50 to-orange-50/60 rounded-xl sm:rounded-3xl p-2.5 sm:p-5 border border-amber-200/80 shadow-2xs hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
           >
-            <div className="flex items-center justify-between gap-2 mb-2 sm:mb-3">
-              <span className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-amber-500 text-white flex items-center justify-center text-sm sm:text-base group-hover:rotate-12 transition-transform shadow-xs">
+            <div className="flex items-center justify-between gap-1 mb-1 sm:mb-3">
+              <span className="w-6 h-6 sm:w-10 sm:h-10 rounded-lg sm:rounded-2xl bg-amber-500 text-white flex items-center justify-center text-xs sm:text-base group-hover:rotate-12 transition-transform shadow-xs">
                 <FaAward />
               </span>
-              <span className="text-[10px] font-black text-amber-800 bg-amber-200/60 px-2 py-0.5 rounded-full">
+              <span className="text-[10px] font-black text-amber-800 bg-amber-200/60 px-2 py-0.5 rounded-full hidden sm:inline-block">
                 র‍্যাংকিং ➔
               </span>
             </div>
-            <div className="text-lg sm:text-2xl font-black text-amber-950 tracking-tight flex items-center gap-1.5">
-              <span>শীর্ষ ফলাফল</span>
-            </div>
-            <div className="text-[11px] sm:text-xs font-bold text-amber-800/80 mt-0.5">
-              রিয়েলটাইম মেরিট লিস্ট দেখুন
+            <div>
+              <div className="text-xs sm:text-2xl font-black text-amber-950 tracking-tight truncate">
+                শীর্ষ ফলাফল
+              </div>
+              <div className="text-[9px] sm:text-xs font-bold text-amber-800/80 mt-0.5 truncate">
+                মেরিট লিস্ট ➔
+              </div>
             </div>
           </div>
         </div>
