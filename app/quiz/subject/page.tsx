@@ -59,6 +59,7 @@ interface SubjectExamItem {
   isPaid: boolean;
   price?: number;
   badge?: string;
+  coverImage?: string;
   sourceType: "auto_bank" | "custom";
   examCode?: string;
   questions?: RawQuestion[];
@@ -95,21 +96,29 @@ function SubjectDetailsContent() {
   // Examination Runner States
   const [activeExam, setActiveExam] = useState<SubjectExamItem | null>(null);
   const [examQuestions, setExamQuestions] = useState<RawQuestion[]>([]);
-  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
+  const [selectedAnswers, setSelectedAnswers] = useState<
+    Record<number, number>
+  >({});
   const [isTestActive, setIsTestActive] = useState<boolean>(false);
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [totalTime, setTotalTime] = useState<number>(0);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [quizScore, setQuizScore] = useState<number>(0);
-  const [reviewFilter, setReviewFilter] = useState<"all" | "correct" | "wrong" | "unanswered">("all");
+  const [reviewFilter, setReviewFilter] = useState<
+    "all" | "correct" | "wrong" | "unanswered"
+  >("all");
 
   // Exam Access Code Prompt
   const [enteredCode, setEnteredCode] = useState<string>("");
-  const [codePromptExam, setCodePromptExam] = useState<SubjectExamItem | null>(null);
+  const [codePromptExam, setCodePromptExam] = useState<SubjectExamItem | null>(
+    null,
+  );
 
   // Payment / Unlock Modal State
   const [paymentModalOpen, setPaymentModalOpen] = useState<boolean>(false);
-  const [targetPaidExam, setTargetPaidExam] = useState<SubjectExamItem | null>(null);
+  const [targetPaidExam, setTargetPaidExam] = useState<SubjectExamItem | null>(
+    null,
+  );
   const [accessCodeInput, setAccessCodeInput] = useState<string>("");
   const [unlockSuccessMsg, setUnlockSuccessMsg] = useState<string>("");
 
@@ -139,7 +148,9 @@ function SubjectDetailsContent() {
         setUnlockedClasses(JSON.parse(saved));
       }
       if (session?.user?.id) {
-        const userSaved = localStorage.getItem(`sn_unlocked_classes_${session.user.id}`);
+        const userSaved = localStorage.getItem(
+          `sn_unlocked_classes_${session.user.id}`,
+        );
         if (userSaved) {
           setUnlockedClasses(JSON.parse(userSaved));
         }
@@ -215,7 +226,10 @@ function SubjectDetailsContent() {
           setBankQuestions(qsRes.questions);
         } else {
           // Fallback to local default questions if any
-          const localQs = getStoredSubjectQuestions(selectedClass, selectedSubject);
+          const localQs = getStoredSubjectQuestions(
+            selectedClass,
+            selectedSubject,
+          );
           setBankQuestions(localQs);
         }
 
@@ -250,14 +264,14 @@ function SubjectDetailsContent() {
     // 1. 🎁 Class-wise Free Model Test for this subject
     list.push({
       id: `classwise_free_${selectedClass}_${selectedSubject}`,
-      title: `🎁 ${toBengaliClass(selectedClass)} শ্রেণি — ${selectedSubject} ফ্রি মডেল টেস্ট`,
+      title: `${toBengaliClass(selectedClass)} শ্রেণি — ${selectedSubject} ফ্রি মডেল টেস্ট`,
       subtitle: `${toBengaliClass(selectedClass)} শ্রেণির পাঠ্যবই অনুযায়ী তৈরি ফ্রি বহুনির্বাচনী মডেল টেস্ট ও তাৎক্ষণিক ফলাফল`,
       classGrade: selectedClass,
       subject: selectedSubject,
       durationMinutes: 20,
       questionCount: Math.min(25, Math.max(10, totalBank || 20)),
       isPaid: false,
-      badge: "🎁 Free Model Test",
+      badge: "Free Model Test",
       sourceType: "auto_bank",
       isBuiltIn: true,
     });
@@ -345,7 +359,14 @@ function SubjectDetailsContent() {
     }
 
     return list;
-  }, [customExams, customCards, bankQuestions, selectedClass, selectedSubject, quizPrices]);
+  }, [
+    customExams,
+    customCards,
+    bankQuestions,
+    selectedClass,
+    selectedSubject,
+    quizPrices,
+  ]);
 
   // Filtered Model Tests based on tab
   const displayedModelTests = useMemo(() => {
@@ -359,8 +380,14 @@ function SubjectDetailsContent() {
   }, [allModelTests, filterType]);
 
   // Counts
-  const freeTestsCount = useMemo(() => allModelTests.filter((t) => !t.isPaid).length, [allModelTests]);
-  const paidTestsCount = useMemo(() => allModelTests.filter((t) => t.isPaid).length, [allModelTests]);
+  const freeTestsCount = useMemo(
+    () => allModelTests.filter((t) => !t.isPaid).length,
+    [allModelTests],
+  );
+  const paidTestsCount = useMemo(
+    () => allModelTests.filter((t) => t.isPaid).length,
+    [allModelTests],
+  );
 
   // Handle Starting an Exam
   const handleStartExam = (exam: SubjectExamItem) => {
@@ -430,7 +457,10 @@ function SubjectDetailsContent() {
 
     // Scroll smoothly to test area
     setTimeout(() => {
-      testRunnerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      testRunnerRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     }, 100);
   };
 
@@ -439,7 +469,8 @@ function SubjectDetailsContent() {
     if (!codePromptExam) return;
     if (
       codePromptExam.examCode &&
-      enteredCode.trim().toUpperCase() !== codePromptExam.examCode.trim().toUpperCase()
+      enteredCode.trim().toUpperCase() !==
+        codePromptExam.examCode.trim().toUpperCase()
     ) {
       toast.error("ভুল অ্যাক্সেস কোড! অনুগ্রহ করে সঠিক কোড দিন।");
       return;
@@ -470,11 +501,16 @@ function SubjectDetailsContent() {
       try {
         localStorage.setItem("sn_unlocked_classes", JSON.stringify(updated));
         if (session?.user?.id) {
-          localStorage.setItem(`sn_unlocked_classes_${session.user.id}`, JSON.stringify(updated));
+          localStorage.setItem(
+            `sn_unlocked_classes_${session.user.id}`,
+            JSON.stringify(updated),
+          );
         }
       } catch {}
 
-      setUnlockSuccessMsg(`🎉 অভিনন্দন! ${toBengaliClass(selectedClass)} শ্রেণির মডেল টেস্ট আনলক হয়েছে!`);
+      setUnlockSuccessMsg(
+        `🎉 অভিনন্দন! ${toBengaliClass(selectedClass)} শ্রেণির মডেল টেস্ট আনলক হয়েছে!`,
+      );
       toast.success("পেইড মডেল টেস্ট সফলভাবে আনলক হয়েছে!");
 
       setTimeout(() => {
@@ -545,7 +581,9 @@ function SubjectDetailsContent() {
     setReviewFilter("all");
 
     if (isTimeOut) {
-      toast("⏰ সময় শেষ! আপনার উত্তরপত্র স্বয়ংক্রিয়ভাবে জমা হয়েছে।", { icon: "⏳" });
+      toast("⏰ সময় শেষ! আপনার উত্তরপত্র স্বয়ংক্রিয়ভাবে জমা হয়েছে।", {
+        icon: "⏳",
+      });
     } else {
       toast.success("🎉 আপনার মডেল টেস্ট সফলভাবে সাবমিট হয়েছে!");
     }
@@ -556,9 +594,7 @@ function SubjectDetailsContent() {
       `শিক্ষার্থী #${Math.floor(100 + Math.random() * 900)}`;
 
     const finalRoll =
-      studentRoll.trim() ||
-      (session?.user as any)?.rollNumber ||
-      undefined;
+      studentRoll.trim() || (session?.user as any)?.rollNumber || undefined;
 
     if (studentName.trim()) {
       try {
@@ -620,7 +656,9 @@ function SubjectDetailsContent() {
               {toBengaliClass(selectedClass)} শ্রেণি
             </span>
             <FaChevronRight className="w-2.5 h-2.5 text-slate-300 shrink-0" />
-            <span className="text-[#C8102E] font-black truncate">{selectedSubject}</span>
+            <span className="text-[#C8102E] font-black truncate">
+              {selectedSubject}
+            </span>
           </div>
 
           <Link
@@ -653,14 +691,17 @@ function SubjectDetailsContent() {
               </h1>
 
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                {toBengaliClass(selectedClass)} শ্রেণির {selectedSubject} বিষয়ের সিলেবাস অনুযায়ী সাজানো ফ্রি ও পেইড মডেল টেস্ট।
-                সময়ভিত্তিক পরীক্ষার মাধ্যমে আপনার পূর্ণাঙ্গ প্রস্তুতি যাচাই করুন।
+                {toBengaliClass(selectedClass)} শ্রেণির {selectedSubject} বিষয়ের
+                সিলেবাস অনুযায়ী সাজানো ফ্রি ও পেইড মডেল টেস্ট। সময়ভিত্তিক
+                পরীক্ষার মাধ্যমে আপনার পূর্ণাঙ্গ প্রস্তুতি যাচাই করুন।
               </p>
 
               <div className="flex items-center gap-4 pt-2 text-xs font-bold text-slate-300 flex-wrap">
                 <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-xl border border-white/10">
                   <FaLayerGroup className="text-amber-400" />
-                  <span>মোট মডেল টেস্ট: {toBengaliNumber(allModelTests.length)}টি</span>
+                  <span>
+                    মোট মডেল টেস্ট: {toBengaliNumber(allModelTests.length)}টি
+                  </span>
                 </div>
                 <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-xl border border-white/10">
                   <FaGift className="text-emerald-400" />
@@ -722,7 +763,9 @@ function SubjectDetailsContent() {
                   {activeExam.title}
                 </h2>
                 {activeExam.subtitle && (
-                  <p className="text-xs text-slate-500 font-medium">{activeExam.subtitle}</p>
+                  <p className="text-xs text-slate-500 font-medium">
+                    {activeExam.subtitle}
+                  </p>
                 )}
               </div>
 
@@ -748,7 +791,10 @@ function SubjectDetailsContent() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (!isSubmitted && !confirm("আপনি কি পরীক্ষা বাতিল করে ফিরে যেতে চান?")) {
+                    if (
+                      !isSubmitted &&
+                      !confirm("আপনি কি পরীক্ষা বাতিল করে ফিরে যেতে চান?")
+                    ) {
                       return;
                     }
                     setIsTestActive(false);
@@ -799,12 +845,13 @@ function SubjectDetailsContent() {
                   {quizScore / examQuestions.length >= 0.8
                     ? "🏆"
                     : quizScore / examQuestions.length >= 0.5
-                    ? "🎯"
-                    : "💪"}
+                      ? "🎯"
+                      : "💪"}
                 </div>
                 <div className="space-y-1">
                   <h3 className="text-xl sm:text-2xl font-black">
-                    ফলাফল: {toBengaliNumber(quizScore)} / {toBengaliNumber(examQuestions.length)}
+                    ফলাফল: {toBengaliNumber(quizScore)} /{" "}
+                    {toBengaliNumber(examQuestions.length)}
                   </h3>
                   <p className="text-sm text-slate-300">
                     সাফল্যের হার:{" "}
@@ -837,24 +884,28 @@ function SubjectDetailsContent() {
 
                 {/* Review filter buttons */}
                 <div className="pt-4 border-t border-white/10 flex items-center justify-center gap-1.5 flex-wrap text-xs">
-                  <span className="text-slate-400 font-bold mr-1">পর্যালোচনা:</span>
-                  {(["all", "correct", "wrong", "unanswered"] as const).map((rf) => (
-                    <button
-                      key={rf}
-                      type="button"
-                      onClick={() => setReviewFilter(rf)}
-                      className={`px-3 py-1 rounded-lg font-bold transition text-[11px] cursor-pointer ${
-                        reviewFilter === rf
-                          ? "bg-white text-slate-900"
-                          : "bg-white/10 text-slate-300 hover:bg-white/20"
-                      }`}
-                    >
-                      {rf === "all" && "সকল প্রশ্ন"}
-                      {rf === "correct" && "সঠিক উত্তর"}
-                      {rf === "wrong" && "ভুল উত্তর"}
-                      {rf === "unanswered" && "অনুত্তরিত"}
-                    </button>
-                  ))}
+                  <span className="text-slate-400 font-bold mr-1">
+                    পর্যালোচনা:
+                  </span>
+                  {(["all", "correct", "wrong", "unanswered"] as const).map(
+                    (rf) => (
+                      <button
+                        key={rf}
+                        type="button"
+                        onClick={() => setReviewFilter(rf)}
+                        className={`px-3 py-1 rounded-lg font-bold transition text-[11px] cursor-pointer ${
+                          reviewFilter === rf
+                            ? "bg-white text-slate-900"
+                            : "bg-white/10 text-slate-300 hover:bg-white/20"
+                        }`}
+                      >
+                        {rf === "all" && "সকল প্রশ্ন"}
+                        {rf === "correct" && "সঠিক উত্তর"}
+                        {rf === "wrong" && "ভুল উত্তর"}
+                        {rf === "unanswered" && "অনুত্তরিত"}
+                      </button>
+                    ),
+                  )}
                 </div>
               </div>
             )}
@@ -882,8 +933,8 @@ function SubjectDetailsContent() {
                         ? isCorrect
                           ? "bg-emerald-50/50 border-emerald-200"
                           : isWrong
-                          ? "bg-rose-50/50 border-rose-200"
-                          : "bg-slate-50 border-slate-200"
+                            ? "bg-rose-50/50 border-rose-200"
+                            : "bg-slate-50 border-slate-200"
                         : "bg-slate-50/70 border-slate-200 hover:border-slate-300"
                     }`}
                   >
@@ -934,11 +985,15 @@ function SubjectDetailsContent() {
                           if (optIdx === q.ans) {
                             btnStyle =
                               "bg-emerald-600 text-white border-emerald-600 font-bold shadow-xs";
-                          } else if (selectedOpt === optIdx && selectedOpt !== q.ans) {
+                          } else if (
+                            selectedOpt === optIdx &&
+                            selectedOpt !== q.ans
+                          ) {
                             btnStyle =
                               "bg-rose-500 text-white border-rose-500 font-bold";
                           } else {
-                            btnStyle = "bg-white/60 border-slate-200 text-slate-400";
+                            btnStyle =
+                              "bg-white/60 border-slate-200 text-slate-400";
                           }
                         }
 
@@ -962,7 +1017,9 @@ function SubjectDetailsContent() {
                     {/* Explanation */}
                     {isSubmitted && q.explanation && (
                       <div className="mt-3 pl-8 text-xs text-slate-600 bg-white/70 p-3 rounded-xl border border-slate-200">
-                        <span className="font-bold text-[#C8102E]">💡 ব্যাখ্যা: </span>
+                        <span className="font-bold text-[#C8102E]">
+                          💡 ব্যাখ্যা:{" "}
+                        </span>
                         {q.explanation}
                       </div>
                     )}
@@ -1008,7 +1065,8 @@ function SubjectDetailsContent() {
                 </span>
               </h2>
               <p className="text-xs text-slate-500 font-medium">
-                {toBengaliClass(selectedClass)} শ্রেণির {selectedSubject} বিষয়ের ফ্রি ও পেইড মডেল টেস্ট বেছে নিন।
+                {toBengaliClass(selectedClass)} শ্রেণির {selectedSubject} বিষয়ের
+                ফ্রি ও পেইড মডেল টেস্ট বেছে নিন।
               </p>
             </div>
 
@@ -1075,7 +1133,8 @@ function SubjectDetailsContent() {
                 এই ফিল্টারে কোনো মডেল টেস্ট পাওয়া যায়নি
               </h3>
               <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                অন্যান্য ফিল্টার নির্বাচন করুন অথবা সরাসরি কুইজ ব্যাংকের পূর্ণাঙ্গ টেস্টে অংশ নিন।
+                অন্যান্য ফিল্টার নির্বাচন করুন অথবা সরাসরি কুইজ ব্যাংকের
+                পূর্ণাঙ্গ টেস্টে অংশ নিন।
               </p>
               <button
                 type="button"
@@ -1179,7 +1238,11 @@ function SubjectDetailsContent() {
                           }`}
                         >
                           <FaPlay className="w-3 h-3" />
-                          <span>{exam.isPaid ? "প্রিমিয়াম টেস্ট দিন" : "ফ্রি টেস্ট দিন"}</span>
+                          <span>
+                            {exam.isPaid
+                              ? "প্রিমিয়াম টেস্ট দিন"
+                              : "ফ্রি টেস্ট দিন"}
+                          </span>
                         </button>
                       ) : (
                         <button
@@ -1213,7 +1276,8 @@ function SubjectDetailsContent() {
                   পরীক্ষার অ্যাক্সেস কোড দিন
                 </h3>
                 <p className="text-xs text-slate-500 font-medium">
-                  "{codePromptExam.title}" পরীক্ষায় অংশ নিতে শিক্ষক বা অ্যাডমিন প্রদত্ত কোডটি লিখুন।
+                  "{codePromptExam.title}" পরীক্ষায় অংশ নিতে শিক্ষক বা অ্যাডমিন
+                  প্রদত্ত কোডটি লিখুন।
                 </p>
               </div>
 
@@ -1284,7 +1348,10 @@ function SubjectDetailsContent() {
                     এককালীন ফি
                   </div>
                   <div className="text-xl font-black">
-                    ৳{targetPaidExam?.price || quizPrices.classPrices[selectedClass] || 50}
+                    ৳
+                    {targetPaidExam?.price ||
+                      quizPrices.classPrices[selectedClass] ||
+                      50}
                   </div>
                 </div>
                 <div className="text-right text-[11px] text-slate-200 font-medium">
@@ -1304,8 +1371,12 @@ function SubjectDetailsContent() {
                     className="p-2.5 rounded-xl bg-pink-50 border border-pink-200 text-left hover:bg-pink-100 transition cursor-pointer flex items-center justify-between"
                   >
                     <div>
-                      <div className="font-black text-pink-700 text-[11px]">bKash (Personal)</div>
-                      <div className="font-mono text-slate-800 font-bold text-xs mt-0.5">01712592519</div>
+                      <div className="font-black text-pink-700 text-[11px]">
+                        bKash (Personal)
+                      </div>
+                      <div className="font-mono text-slate-800 font-bold text-xs mt-0.5">
+                        01712592519
+                      </div>
                     </div>
                     <FaCopy className="w-3 h-3 text-pink-600" />
                   </button>
@@ -1316,8 +1387,12 @@ function SubjectDetailsContent() {
                     className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-left hover:bg-amber-100 transition cursor-pointer flex items-center justify-between"
                   >
                     <div>
-                      <div className="font-black text-amber-800 text-[11px]">Nagad (Personal)</div>
-                      <div className="font-mono text-slate-800 font-bold text-xs mt-0.5">01712592519</div>
+                      <div className="font-black text-amber-800 text-[11px]">
+                        Nagad (Personal)
+                      </div>
+                      <div className="font-mono text-slate-800 font-bold text-xs mt-0.5">
+                        01712592519
+                      </div>
                     </div>
                     <FaCopy className="w-3 h-3 text-amber-700" />
                   </button>
@@ -1328,8 +1403,12 @@ function SubjectDetailsContent() {
                     className="p-2.5 rounded-xl bg-purple-50 border border-purple-200 text-left hover:bg-purple-100 transition cursor-pointer flex items-center justify-between"
                   >
                     <div>
-                      <div className="font-black text-purple-700 text-[11px]">Rocket (Personal)</div>
-                      <div className="font-mono text-slate-800 font-bold text-xs mt-0.5">017125925194</div>
+                      <div className="font-black text-purple-700 text-[11px]">
+                        Rocket (Personal)
+                      </div>
+                      <div className="font-mono text-slate-800 font-bold text-xs mt-0.5">
+                        017125925194
+                      </div>
                     </div>
                     <FaCopy className="w-3 h-3 text-purple-600" />
                   </button>
@@ -1340,8 +1419,12 @@ function SubjectDetailsContent() {
                     className="p-2.5 rounded-xl bg-blue-50 border border-blue-200 text-left hover:bg-blue-100 transition cursor-pointer flex items-center justify-between"
                   >
                     <div>
-                      <div className="font-black text-blue-700 text-[11px]">Upay (Personal)</div>
-                      <div className="font-mono text-slate-800 font-bold text-xs mt-0.5">01712592519</div>
+                      <div className="font-black text-blue-700 text-[11px]">
+                        Upay (Personal)
+                      </div>
+                      <div className="font-mono text-slate-800 font-bold text-xs mt-0.5">
+                        01712592519
+                      </div>
                     </div>
                     <FaCopy className="w-3 h-3 text-blue-600" />
                   </button>
@@ -1366,8 +1449,11 @@ function SubjectDetailsContent() {
                     <FaKey className="absolute right-3.5 top-3 text-slate-400 w-3.5 h-3.5" />
                   </div>
                   <p className="text-[10px] text-slate-400 mt-1">
-                    💡 ডেমো কোড: <code className="font-bold text-[#C8102E]">NOVA50</code> বা{" "}
-                    <code className="font-bold text-[#C8102E]">SHIKKHA2026</code>
+                    💡 ডেমো কোড:{" "}
+                    <code className="font-bold text-[#C8102E]">NOVA50</code> বা{" "}
+                    <code className="font-bold text-[#C8102E]">
+                      SHIKKHA2026
+                    </code>
                   </p>
                 </div>
 

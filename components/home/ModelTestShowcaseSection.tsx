@@ -190,7 +190,7 @@ export default function ModelTestShowcaseSection() {
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-black text-slate-800">
                 {activeTab === "free"
-                  ? "🎁 শ্রেণিভিত্তিক ফ্রি মডেল টেস্ট"
+                  ? "শ্রেণিভিত্তিক ফ্রি মডেল টেস্ট"
                   : activeTab === "paid"
                     ? "💎 শ্রেণিভিত্তিক পেইড / প্রিমিয়াম মডেল টেস্ট"
                     : "শ্রেণিভিত্তিক মডেল টেস্ট (ফ্রি ও পেইড)"}

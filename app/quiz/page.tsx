@@ -132,9 +132,13 @@ export default function QuizPage() {
   // Custom Live Exams State
   const [customExams, setCustomExams] = useState<CustomExam[]>([]);
   const [loadingCustomExams, setLoadingCustomExams] = useState<boolean>(false);
-  const [activeCustomExamId, setActiveCustomExamId] = useState<string | null>(null);
+  const [activeCustomExamId, setActiveCustomExamId] = useState<string | null>(
+    null,
+  );
   const [examCodeModalOpen, setExamCodeModalOpen] = useState<boolean>(false);
-  const [targetExamForCode, setTargetExamForCode] = useState<CustomExam | null>(null);
+  const [targetExamForCode, setTargetExamForCode] = useState<CustomExam | null>(
+    null,
+  );
   const [inputExamCode, setInputExamCode] = useState<string>("");
 
   // Leaderboard / Result Board State
@@ -292,9 +296,12 @@ export default function QuizPage() {
   // Fetch active custom exams for the selected class
   useEffect(() => {
     setLoadingCustomExams(true);
-    fetch(`/api/quiz/custom-exams?classGrade=${selectedClass}&activeOnly=true`, {
-      cache: "no-store",
-    })
+    fetch(
+      `/api/quiz/custom-exams?classGrade=${selectedClass}&activeOnly=true`,
+      {
+        cache: "no-store",
+      },
+    )
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data?.exams)) {
@@ -315,7 +322,9 @@ export default function QuizPage() {
         if (Array.isArray(data?.submissions) && data.submissions.length > 0) {
           const mapped: QuizResultItem[] = data.submissions.map((s: any) => ({
             id: s.id,
-            name: s.rollNumber ? `${s.studentName} (রোল: ${s.rollNumber})` : s.studentName,
+            name: s.rollNumber
+              ? `${s.studentName} (রোল: ${s.rollNumber})`
+              : s.studentName,
             classGrade: s.classGrade,
             subject: s.examTitle || s.subject,
             score: s.score,
@@ -466,7 +475,7 @@ export default function QuizPage() {
     setActiveTestSubtitle(
       "বোর্ড স্ট্যান্ডার্ড সকল বিষয়ের সমন্বয়ে ২৫টি গুরুত্বপূর্ণ MCQ",
     );
-    setActiveTestBadge("🎁 Free Board Model Test");
+    setActiveTestBadge("Free Board Model Test");
 
     const secs = Math.max(10, Math.min(25, displayQuestions.length)) * 60;
     setTimeLeft(secs);
@@ -582,7 +591,7 @@ export default function QuizPage() {
         card.subtitle || `${card.subject} স্পেশাল মডেল টেস্ট`,
       );
       setActiveTestBadge(
-        card.badge || (card.isPaid ? "💎 Premium Test" : "🎁 Free Test"),
+        card.badge || (card.isPaid ? "💎 Premium Test" : "Free Test"),
       );
 
       const secs = Math.max(10, Math.min(30, questions.length)) * 60;
@@ -643,7 +652,9 @@ export default function QuizPage() {
 
     const newRecord: QuizResultItem = {
       id: String(Date.now()),
-      name: finalRoll ? `${finalStudentName} (রোল: ${finalRoll})` : finalStudentName,
+      name: finalRoll
+        ? `${finalStudentName} (রোল: ${finalRoll})`
+        : finalStudentName,
       classGrade: selectedClass,
       subject: activeTestTitle.split("—")[1]?.trim() || "মডেল টেস্ট",
       score,
@@ -725,7 +736,7 @@ export default function QuizPage() {
     try {
       const res = await fetch(
         `/api/quiz/custom-exams?id=${encodeURIComponent(exam.id)}`,
-        { cache: "no-store" }
+        { cache: "no-store" },
       );
       const data = await res.json();
       toast.dismiss(loadingToastId);
@@ -740,7 +751,7 @@ export default function QuizPage() {
         setActiveTestTitle(exam.title);
         setActiveTestSubtitle(
           exam.subtitle ||
-            `${toBengaliClass(exam.classGrade)} শ্রেণি — ${exam.subject} স্পেশাল টেস্ট`
+            `${toBengaliClass(exam.classGrade)} শ্রেণি — ${exam.subject} স্পেশাল টেস্ট`,
         );
         setActiveTestBadge(` ${exam.subject}`);
 
@@ -750,7 +761,7 @@ export default function QuizPage() {
 
         scrollTo(testAreaRef);
         toast.success(
-          `"${exam.title}" শুরু হয়েছে! সময়: ${exam.durationMinutes} মিনিট`
+          `"${exam.title}" শুরু হয়েছে! সময়: ${exam.durationMinutes} মিনিট`,
         );
       } else {
         toast.error("এই পরীক্ষার জন্য কোনো প্রশ্ন পাওয়া যায়নি।");
@@ -983,9 +994,7 @@ export default function QuizPage() {
             </div>
 
             <div className="flex items-center gap-1.5">
-              <span className="font-bold text-slate-200 shrink-0">
-                রোল:
-              </span>
+              <span className="font-bold text-slate-200 shrink-0">রোল:</span>
               <input
                 type="text"
                 value={studentRollInput}
@@ -1373,10 +1382,11 @@ export default function QuizPage() {
               <FaClipboardList /> শিক্ষক কর্তৃক নির্ধারিত ক্লাস টেস্ট
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-[#0A1E3C]">
-               {toBengaliClass(selectedClass)} শ্রেণির লাইভ কাস্টম এক্সাম
+              {toBengaliClass(selectedClass)} শ্রেণির লাইভ কাস্টম এক্সাম
             </h2>
             <p className="text-xs text-slate-500 font-medium">
-              আপনার ব্যাচ বা শ্রেণির জন্য নির্ধারিত সাপ্তাহিক ও মাসিক মূল্যায়ন পরীক্ষা
+              আপনার ব্যাচ বা শ্রেণির জন্য নির্ধারিত সাপ্তাহিক ও মাসিক মূল্যায়ন
+              পরীক্ষা
             </p>
           </div>
           {customExams.length > 0 && (
@@ -1394,10 +1404,12 @@ export default function QuizPage() {
           <div className="bg-slate-50/80 rounded-2xl p-5 border border-dashed border-slate-300 text-center space-y-1.5">
             <div className="text-2xl">📋</div>
             <p className="text-xs font-bold text-slate-600">
-              বর্তমানে {toBengaliClass(selectedClass)} শ্রেণির জন্য কোনো কাস্টম এক্সাম শিডিউল করা নেই।
+              বর্তমানে {toBengaliClass(selectedClass)} শ্রেণির জন্য কোনো কাস্টম
+              এক্সাম শিডিউল করা নেই।
             </p>
             <p className="text-[11px] text-slate-400">
-              আপনি নিচের বিষয়ভিত্তিক মডেল টেস্ট বা ফ্রি টেস্টে অংশ নিয়ে প্রস্তুতি নিতে পারেন।
+              আপনি নিচের বিষয়ভিত্তিক মডেল টেস্ট বা ফ্রি টেস্টে অংশ নিয়ে
+              প্রস্তুতি নিতে পারেন।
             </p>
           </div>
         ) : (
@@ -2190,7 +2202,10 @@ export default function QuizPage() {
             </div>
 
             <p className="text-xs text-slate-600 leading-relaxed">
-              <span className="font-bold text-slate-800">"{targetExamForCode.title}"</span> পরীক্ষায় অংশগ্রহণের জন্য আপনার শিক্ষকের দেওয়া এক্সাম কোডটি লিখুন:
+              <span className="font-bold text-slate-800">
+                "{targetExamForCode.title}"
+              </span>{" "}
+              পরীক্ষায় অংশগ্রহণের জন্য আপনার শিক্ষকের দেওয়া এক্সাম কোডটি লিখুন:
             </p>
 
             <form onSubmit={handleVerifyExamCodeAndStart} className="space-y-3">
