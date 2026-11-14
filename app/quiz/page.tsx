@@ -79,12 +79,13 @@ export default function QuizPage() {
   };
 
   // Navigation / Filter States
-  const [selectedClass, setSelectedClass] = useState<number>(6);
+  const [selectedClass, setSelectedClass] = useState<number | null>(null);
   const [selectedGroup, setSelectedGroup] = useState<AcademicGroup>("science");
   const [selectedSubject, setSelectedSubject] =
     useState<string>("বাংলা ১ম পত্র");
 
   const currentSubjects = useMemo(() => {
+    if (!selectedClass) return [];
     try {
       if (typeof getSubjectsForClassAndGroup === "function") {
         const list = getSubjectsForClassAndGroup(selectedClass, selectedGroup);
@@ -245,6 +246,11 @@ export default function QuizPage() {
 
   // Fetch dynamic question counts for the currently selected class
   useEffect(() => {
+    if (!selectedClass) {
+      setSubjectCounts({});
+      setIsLoadingCounts(false);
+      return;
+    }
     setIsLoadingCounts(true);
     fetch(`/api/quiz/questions?classGrade=${selectedClass}&action=summary`, {
       cache: "no-store",
@@ -265,11 +271,16 @@ export default function QuizPage() {
       (acc, curr) => acc + (Number(curr) || 0),
       0,
     );
-    return sum > 0 ? sum : 240;
+    return sum > 0 ? sum : 350;
   }, [subjectCounts]);
 
   // Fetch active custom exams for the selected class
   useEffect(() => {
+    if (!selectedClass) {
+      setCustomExams([]);
+      setLoadingCustomExams(false);
+      return;
+    }
     setLoadingCustomExams(true);
     fetch(
       `/api/quiz/custom-exams?classGrade=${selectedClass}&activeOnly=true`,
@@ -289,7 +300,10 @@ export default function QuizPage() {
 
   // Fetch live centralized leaderboard submissions
   const loadLiveLeaderboard = () => {
-    fetch(`/api/quiz/submissions?classGrade=${selectedClass}`, {
+    const url = selectedClass
+      ? `/api/quiz/submissions?classGrade=${selectedClass}`
+      : `/api/quiz/submissions`;
+    fetch(url, {
       cache: "no-store",
     })
       .then((res) => res.json())
