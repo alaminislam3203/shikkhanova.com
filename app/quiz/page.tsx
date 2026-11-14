@@ -29,10 +29,6 @@ import {
   DEFAULT_QUIZ_COVERS,
   getStoredQuizCovers,
   saveStoredQuizCovers,
-  CustomQuizCard,
-  DEFAULT_CUSTOM_QUIZ_CARDS,
-  getStoredCustomQuizCards,
-  saveStoredCustomQuizCards,
 } from "@/lib/defaultQuizData";
 import {
   FaAward,
@@ -153,9 +149,6 @@ export default function QuizPage() {
     DEFAULT_QUIZ_PACKAGES,
   );
   const [quizCovers, setQuizCovers] = useState<QuizCovers>(DEFAULT_QUIZ_COVERS);
-  const [customCards, setCustomCards] = useState<CustomQuizCard[]>(
-    DEFAULT_CUSTOM_QUIZ_CARDS,
-  );
 
   // Payment / Unlock Modal
   const [paymentModalOpen, setPaymentModalOpen] = useState<boolean>(false);
@@ -245,33 +238,6 @@ export default function QuizPage() {
           };
           setQuizCovers(mergedCovers);
           saveStoredQuizCovers(mergedCovers);
-        }
-      })
-      .catch(() => {});
-
-    try {
-      const storedCards = getStoredCustomQuizCards();
-      if (storedCards && storedCards.length > 0) {
-        setCustomCards(storedCards);
-      }
-    } catch {}
-
-    fetch("/api/quiz/cards", { cache: "no-store" })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data?.cards && Array.isArray(data.cards) && data.cards.length > 0) {
-          const localCards = getStoredCustomQuizCards();
-          const merged = data.cards.map((sCard: CustomQuizCard) => {
-            if (!sCard.coverImage) {
-              const matched = localCards.find((lc) => lc.id === sCard.id);
-              if (matched?.coverImage) {
-                return { ...sCard, coverImage: matched.coverImage };
-              }
-            }
-            return sCard;
-          });
-          setCustomCards(merged);
-          saveStoredCustomQuizCards(merged);
         }
       })
       .catch(() => {});
