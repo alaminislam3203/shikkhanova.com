@@ -20,6 +20,7 @@ import {
   getStoredQuizPrices,
 } from "@/lib/defaultQuizData";
 import { CustomExam } from "@/lib/quizExamStorage";
+import { showConfirmToast } from "@/lib/confirmToast";
 import {
   FaArrowLeft,
   FaBookOpen,
@@ -655,13 +656,31 @@ function SubjectDetailsContent() {
       <div className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-2xs">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-500 overflow-hidden">
-            <Link
-              href={`/quiz?class=${selectedClass}`}
-              className="inline-flex items-center gap-1.5 text-slate-700 hover:text-[#C8102E] transition shrink-0"
+            <button
+              type="button"
+              onClick={() => {
+                if (isTestActive && !isSubmitted) {
+                  showConfirmToast({
+                    title: "পরীক্ষা বাতিল করবেন?",
+                    message: "আপনি কি পরীক্ষা বাতিল করে ফিরে যেতে চান?",
+                    confirmText: "হ্যাঁ, বাতিল করুন",
+                    cancelText: "না, পরীক্ষা দিন",
+                    confirmButtonClass: "bg-[#C8102E] hover:bg-[#A50D26]",
+                    onConfirm: () => {
+                      setIsTestActive(false);
+                      setActiveExam(null);
+                      router.push(`/quiz?class=${selectedClass}`);
+                    },
+                  });
+                  return;
+                }
+                router.push(`/quiz?class=${selectedClass}`);
+              }}
+              className="inline-flex items-center gap-1.5 text-slate-700 hover:text-[#C8102E] transition shrink-0 cursor-pointer"
             >
               <FaArrowLeft className="w-3.5 h-3.5" />
               <span>সকল কুইজ</span>
-            </Link>
+            </button>
             <FaChevronRight className="w-2.5 h-2.5 text-slate-300 shrink-0" />
             <span className="shrink-0 text-slate-600">
               {toBengaliClass(selectedClass)} শ্রেণি
@@ -672,12 +691,30 @@ function SubjectDetailsContent() {
             </span>
           </div>
 
-          <Link
-            href={`/quiz?class=${selectedClass}`}
-            className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5 shrink-0"
+          <button
+            type="button"
+            onClick={() => {
+              if (isTestActive && !isSubmitted) {
+                showConfirmToast({
+                  title: "পরীক্ষা বাতিল করবেন?",
+                  message: "আপনি কি পরীক্ষা বাতিল করে ফিরে যেতে চান?",
+                  confirmText: "হ্যাঁ, বাতিল করুন",
+                  cancelText: "না, পরীক্ষা দিন",
+                  confirmButtonClass: "bg-[#C8102E] hover:bg-[#A50D26]",
+                  onConfirm: () => {
+                    setIsTestActive(false);
+                    setActiveExam(null);
+                    router.push(`/quiz?class=${selectedClass}`);
+                  },
+                });
+                return;
+              }
+              router.push(`/quiz?class=${selectedClass}`);
+            }}
+            className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5 shrink-0 cursor-pointer"
           >
             <span>শ্রেণি/বিষয় বদলান</span>
-          </Link>
+          </button>
         </div>
       </div>
 
@@ -802,10 +839,19 @@ function SubjectDetailsContent() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (
-                      !isSubmitted &&
-                      !confirm("আপনি কি পরীক্ষা বাতিল করে ফিরে যেতে চান?")
-                    ) {
+                    if (!isSubmitted) {
+                      showConfirmToast({
+                        title: "পরীক্ষা বাতিল করবেন?",
+                        message: "আপনি কি পরীক্ষা বাতিল করে ফিরে যেতে চান?",
+                        confirmText: "হ্যাঁ, বাতিল করুন",
+                        cancelText: "না, চালিয়ে যান",
+                        confirmButtonClass: "bg-[#C8102E] hover:bg-[#A50D26]",
+                        onConfirm: () => {
+                          setIsTestActive(false);
+                          setActiveExam(null);
+                          toast.success("পরীক্ষা বাতিল করা হয়েছে।");
+                        },
+                      });
                       return;
                     }
                     setIsTestActive(false);

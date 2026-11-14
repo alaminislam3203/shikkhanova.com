@@ -211,7 +211,7 @@ export default function ModelTestShowcaseSection() {
                 return (
                   <Link
                     key={c.grade}
-                    href={`/quiz`}
+                    href={`/quiz?class=${c.grade}`}
                     className={`group bg-white hover:bg-gradient-to-b hover:from-white hover:to-red-50/60 p-3.5 sm:p-4 rounded-2xl border transition-all flex flex-col justify-between text-center relative overflow-hidden shadow-xs hover:shadow-md ${
                       showPaidBadge
                         ? "border-red-200 hover:border-[#C8102E]"
