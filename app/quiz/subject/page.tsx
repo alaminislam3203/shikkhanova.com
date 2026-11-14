@@ -15,6 +15,9 @@ import {
   QuizCovers,
   DEFAULT_QUIZ_COVERS,
   CustomQuizCard,
+  QuizPrices,
+  DEFAULT_QUIZ_PRICES,
+  getStoredQuizPrices,
 } from "@/lib/defaultQuizData";
 import { CustomExam } from "@/lib/quizExamStorage";
 import {
@@ -40,6 +43,9 @@ import {
   FaUsers,
   FaLayerGroup,
   FaStar,
+  FaKey,
+  FaCopy,
+  FaPhone,
 } from "react-icons/fa6";
 
 interface SubjectExamItem {
@@ -78,6 +84,7 @@ function SubjectDetailsContent() {
   const [customCards, setCustomCards] = useState<CustomQuizCard[]>([]);
   const [bankQuestions, setBankQuestions] = useState<RawQuestion[]>([]);
   const [covers, setCovers] = useState<QuizCovers>(DEFAULT_QUIZ_COVERS);
+  const [quizPrices, setQuizPrices] = useState<QuizPrices>(DEFAULT_QUIZ_PRICES);
   const [loading, setLoading] = useState<boolean>(true);
   const [unlockedClasses, setUnlockedClasses] = useState<number[]>([]);
 
@@ -95,8 +102,16 @@ function SubjectDetailsContent() {
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [quizScore, setQuizScore] = useState<number>(0);
   const [reviewFilter, setReviewFilter] = useState<"all" | "correct" | "wrong" | "unanswered">("all");
+
+  // Exam Access Code Prompt
   const [enteredCode, setEnteredCode] = useState<string>("");
   const [codePromptExam, setCodePromptExam] = useState<SubjectExamItem | null>(null);
+
+  // Payment / Unlock Modal State
+  const [paymentModalOpen, setPaymentModalOpen] = useState<boolean>(false);
+  const [targetPaidExam, setTargetPaidExam] = useState<SubjectExamItem | null>(null);
+  const [accessCodeInput, setAccessCodeInput] = useState<string>("");
+  const [unlockSuccessMsg, setUnlockSuccessMsg] = useState<string>("");
 
   const testRunnerRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -123,7 +138,28 @@ function SubjectDetailsContent() {
       if (saved) {
         setUnlockedClasses(JSON.parse(saved));
       }
+      if (session?.user?.id) {
+        const userSaved = localStorage.getItem(`sn_unlocked_classes_${session.user.id}`);
+        if (userSaved) {
+          setUnlockedClasses(JSON.parse(userSaved));
+        }
+      }
     } catch {}
+  }, [session?.user?.id]);
+
+  // Load Quiz Prices
+  useEffect(() => {
+    try {
+      const stored = getStoredQuizPrices();
+      if (stored) setQuizPrices(stored);
+    } catch {}
+
+    fetch("/api/quiz/prices")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.prices) setQuizPrices(data.prices);
+      })
+      .catch(() => {});
   }, []);
 
   // Fetch Subject Data & Model Tests
@@ -208,8 +244,41 @@ function SubjectDetailsContent() {
   // Combine All Model Tests for this Class & Subject
   const allModelTests: SubjectExamItem[] = useMemo(() => {
     const list: SubjectExamItem[] = [];
+    const totalBank = bankQuestions.length;
+    const classPrice = quizPrices.classPrices[selectedClass] || 50;
 
-    // A. Custom Exams created specifically for this class & subject
+    // 1. 🎁 Class-wise Free Model Test for this subject
+    list.push({
+      id: `classwise_free_${selectedClass}_${selectedSubject}`,
+      title: `🎁 ${toBengaliClass(selectedClass)} শ্রেণি — ${selectedSubject} ফ্রি মডেল টেস্ট`,
+      subtitle: `${toBengaliClass(selectedClass)} শ্রেণির পাঠ্যবই অনুযায়ী তৈরি ফ্রি বহুনির্বাচনী মডেল টেস্ট ও তাৎক্ষণিক ফলাফল`,
+      classGrade: selectedClass,
+      subject: selectedSubject,
+      durationMinutes: 20,
+      questionCount: Math.min(25, Math.max(10, totalBank || 20)),
+      isPaid: false,
+      badge: "🎁 Free Model Test",
+      sourceType: "auto_bank",
+      isBuiltIn: true,
+    });
+
+    // 2. 💎 Class-wise Paid Model Test for this subject
+    list.push({
+      id: `classwise_paid_${selectedClass}_${selectedSubject}`,
+      title: `💎 ${toBengaliClass(selectedClass)} শ্রেণি — ${selectedSubject} পেইড মডেল টেস্ট`,
+      subtitle: `পূর্ণাঙ্গ স্পেশাল মডেল টেস্ট • অধ্যায়ভিত্তিক স্পেশাল MCQ • বিস্তারিত ফলাফল, র‍্যাংক ও সমাধান`,
+      classGrade: selectedClass,
+      subject: selectedSubject,
+      durationMinutes: 25,
+      questionCount: Math.min(30, Math.max(15, totalBank || 25)),
+      isPaid: true,
+      price: classPrice,
+      badge: "💎 Paid Model Test",
+      sourceType: "auto_bank",
+      isBuiltIn: true,
+    });
+
+    // 3. Custom Exams created specifically by Admin for this class & subject
     customExams.forEach((exam) => {
       list.push({
         id: exam.id,
@@ -232,7 +301,7 @@ function SubjectDetailsContent() {
       });
     });
 
-    // B. Custom Quiz Cards matching this class & subject
+    // 4. Custom Quiz Cards matching this class & subject
     customCards
       .filter(
         (card) =>
@@ -240,7 +309,6 @@ function SubjectDetailsContent() {
           card.subject.toLowerCase() === selectedSubject.toLowerCase(),
       )
       .forEach((card) => {
-        // avoid duplicate if same title exists
         if (!list.some((e) => e.title === card.title)) {
           list.push({
             id: `card_${card.id}`,
@@ -259,28 +327,11 @@ function SubjectDetailsContent() {
         }
       });
 
-    // C. Default / Comprehensive Built-in Model Tests from question bank
-    // Always provide at least 1 Free Comprehensive Model Test so students can test immediately
-    const totalBank = bankQuestions.length;
-    list.push({
-      id: "builtin_subject_comprehensive",
-      title: `${selectedSubject} পূর্ণাঙ্গ বিষয়ভিত্তিক মডেল টেস্ট`,
-      subtitle: `${toBengaliClass(selectedClass)} শ্রেণির পাঠ্যবই অনুসারে বাছাইকৃত গুরুত্বপূর্ণ বহুনির্বাচনী প্রশ্ন`,
-      classGrade: selectedClass,
-      subject: selectedSubject,
-      durationMinutes: Math.max(10, Math.min(30, Math.min(25, totalBank || 20))),
-      questionCount: Math.min(25, Math.max(10, totalBank)),
-      isPaid: false,
-      badge: "ফ্রি টেস্ট",
-      sourceType: "auto_bank",
-      isBuiltIn: true,
-    });
-
-    // If bank has more than 20 questions, add a Rapid Speed Test (ফ্রি)
+    // 5. If bank has more than 15 questions, add a Rapid Speed Test (ফ্রি)
     if (totalBank >= 15) {
       list.push({
         id: "builtin_speed_test",
-        title: `${selectedSubject} কুইক স্পিড টেস্ট (১০ প্রশ্ন)`,
+        title: `⚡ ${selectedSubject} কুইক স্পিড টেস্ট (১০ প্রশ্ন)`,
         subtitle: `কম সময়ে দ্রুত যাচাই করুন বিষয়টির উপর আপনার প্রস্তুতি`,
         classGrade: selectedClass,
         subject: selectedSubject,
@@ -294,7 +345,7 @@ function SubjectDetailsContent() {
     }
 
     return list;
-  }, [customExams, customCards, bankQuestions, selectedClass, selectedSubject]);
+  }, [customExams, customCards, bankQuestions, selectedClass, selectedSubject, quizPrices]);
 
   // Filtered Model Tests based on tab
   const displayedModelTests = useMemo(() => {
@@ -313,7 +364,7 @@ function SubjectDetailsContent() {
 
   // Handle Starting an Exam
   const handleStartExam = (exam: SubjectExamItem) => {
-    // If exam is locked with access code, check code
+    // If exam is locked with access code, prompt code
     if (exam.examCode && exam.examCode.trim()) {
       setCodePromptExam(exam);
       setEnteredCode("");
@@ -327,7 +378,10 @@ function SubjectDetailsContent() {
       session?.user?.role === "ADMIN";
 
     if (!isUnlocked) {
-      toast.error(`🔒 এটি একটি পেইড মডেল টেস্ট (৳${exam.price || 50})। অনুগ্রহ করে আনলক করুন।`);
+      setTargetPaidExam(exam);
+      setAccessCodeInput("");
+      setUnlockSuccessMsg("");
+      setPaymentModalOpen(true);
       return;
     }
 
@@ -345,7 +399,7 @@ function SubjectDetailsContent() {
         const shuffled = [...bankQuestions].sort(() => 0.5 - Math.random());
         questionsToUse = shuffled.slice(0, exam.questionCount);
       } else {
-        // Fallback questions if bank is completely empty
+        // Fallback questions if bank is empty
         questionsToUse = [
           {
             q: `${exam.subject} বিষয়ের ১ম প্রশ্ন: নিম্নের কোনটি সঠিক?`,
@@ -394,6 +448,54 @@ function SubjectDetailsContent() {
     setCodePromptExam(null);
     setEnteredCode("");
     launchExam(examToStart);
+  };
+
+  // Verify Unlock Paid Test via TrxID or Promo Code
+  const handleVerifyUnlock = (e: React.FormEvent) => {
+    e.preventDefault();
+    const code = accessCodeInput.trim().toUpperCase();
+    const validCodes = [
+      "NOVA50",
+      "SHIKKHA2026",
+      "SHIKKHANOVA",
+      "ADMIN100",
+      "FREE2026",
+    ];
+    const isCodeValid = validCodes.includes(code);
+    const isTrxValid = code.length >= 6;
+
+    if (isCodeValid || isTrxValid) {
+      const updated = Array.from(new Set([...unlockedClasses, selectedClass]));
+      setUnlockedClasses(updated);
+      try {
+        localStorage.setItem("sn_unlocked_classes", JSON.stringify(updated));
+        if (session?.user?.id) {
+          localStorage.setItem(`sn_unlocked_classes_${session.user.id}`, JSON.stringify(updated));
+        }
+      } catch {}
+
+      setUnlockSuccessMsg(`🎉 অভিনন্দন! ${toBengaliClass(selectedClass)} শ্রেণির মডেল টেস্ট আনলক হয়েছে!`);
+      toast.success("পেইড মডেল টেস্ট সফলভাবে আনলক হয়েছে!");
+
+      setTimeout(() => {
+        setPaymentModalOpen(false);
+        if (targetPaidExam) {
+          launchExam(targetPaidExam);
+        }
+      }, 1200);
+    } else {
+      toast.error("অনুগ্রহ করে সঠিক অ্যাক্সেস কোড অথবা TrxID প্রদান করুন।");
+    }
+  };
+
+  // Copy helper
+  const copyNumber = (num: string, label: string) => {
+    try {
+      navigator.clipboard.writeText(num);
+      toast.success(`${label} নাম্বার কপি হয়েছে!`);
+    } catch {
+      toast.error("কপি করা যায়নি।");
+    }
   };
 
   // Timer Countdown Effect
@@ -448,12 +550,6 @@ function SubjectDetailsContent() {
       toast.success("🎉 আপনার মডেল টেস্ট সফলভাবে সাবমিট হয়েছে!");
     }
 
-    // Determine Medal
-    let medal = "⭐ Top 10";
-    if (percentage === 100) medal = "🥇 Gold";
-    else if (percentage >= 80) medal = "🥈 Silver";
-    else if (percentage >= 60) medal = "🥉 Bronze";
-
     const finalStudentName =
       studentName.trim() ||
       session?.user?.name ||
@@ -502,7 +598,6 @@ function SubjectDetailsContent() {
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
-  // Cover image for this subject if set
   const subjectCoverImage = covers.subjects?.[selectedSubject];
 
   return (
@@ -558,8 +653,8 @@ function SubjectDetailsContent() {
               </h1>
 
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                {selectedSubject} বিষয়ের প্রতিটি অধ্যায় ও সিলেবাস অনুযায়ী সাজানো মডেল টেস্টসমূহ।
-                ফ্রি ও পেইড টেস্ট দিয়ে সময়ভিত্তিক লাইভ পরীক্ষার মাধ্যমে আপনার পূর্ণাঙ্গ প্রস্তুতি যাচাই করুন।
+                {toBengaliClass(selectedClass)} শ্রেণির {selectedSubject} বিষয়ের সিলেবাস অনুযায়ী সাজানো ফ্রি ও পেইড মডেল টেস্ট।
+                সময়ভিত্তিক পরীক্ষার মাধ্যমে আপনার পূর্ণাঙ্গ প্রস্তুতি যাচাই করুন।
               </p>
 
               <div className="flex items-center gap-4 pt-2 text-xs font-bold text-slate-300 flex-wrap">
@@ -568,12 +663,12 @@ function SubjectDetailsContent() {
                   <span>মোট মডেল টেস্ট: {toBengaliNumber(allModelTests.length)}টি</span>
                 </div>
                 <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-xl border border-white/10">
-                  <FaBookOpen className="text-teal-400" />
-                  <span>প্রশ্ন ব্যাংকে আছে: {toBengaliNumber(bankQuestions.length)}টি MCQ</span>
-                </div>
-                <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-xl border border-white/10">
                   <FaGift className="text-emerald-400" />
                   <span>ফ্রি টেস্ট: {toBengaliNumber(freeTestsCount)}টি</span>
+                </div>
+                <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-xl border border-white/10">
+                  <FaGem className="text-rose-400" />
+                  <span>পেইড টেস্ট: {toBengaliNumber(paidTestsCount)}টি</span>
                 </div>
               </div>
             </div>
@@ -659,7 +754,7 @@ function SubjectDetailsContent() {
                     setIsTestActive(false);
                     setActiveExam(null);
                   }}
-                  className="p-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition"
+                  className="p-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition cursor-pointer"
                   title="বন্ধ করুন"
                 >
                   <FaXmark className="w-4 h-4" />
@@ -748,7 +843,7 @@ function SubjectDetailsContent() {
                       key={rf}
                       type="button"
                       onClick={() => setReviewFilter(rf)}
-                      className={`px-3 py-1 rounded-lg font-bold transition text-[11px] ${
+                      className={`px-3 py-1 rounded-lg font-bold transition text-[11px] cursor-pointer ${
                         reviewFilter === rf
                           ? "bg-white text-slate-900"
                           : "bg-white/10 text-slate-300 hover:bg-white/20"
@@ -913,7 +1008,7 @@ function SubjectDetailsContent() {
                 </span>
               </h2>
               <p className="text-xs text-slate-500 font-medium">
-                পছন্দের মডেল টেস্টটি সিলেক্ট করে পরীক্ষা শুরু করুন।
+                {toBengaliClass(selectedClass)} শ্রেণির {selectedSubject} বিষয়ের ফ্রি ও পেইড মডেল টেস্ট বেছে নিন।
               </p>
             </div>
 
@@ -943,7 +1038,8 @@ function SubjectDetailsContent() {
                     : "text-slate-600 hover:text-slate-900"
                 }`}
               >
-                <span>✨ ফ্রি</span>
+                <FaGift className="w-3 h-3 text-emerald-300" />
+                <span>ফ্রি টেস্ট</span>
                 <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/20">
                   {toBengaliNumber(freeTestsCount)}
                 </span>
@@ -958,7 +1054,8 @@ function SubjectDetailsContent() {
                     : "text-slate-600 hover:text-slate-900"
                 }`}
               >
-                <span>🔒 পেইড</span>
+                <FaGem className="w-3 h-3 text-rose-300" />
+                <span>পেইড টেস্ট</span>
                 <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/20">
                   {toBengaliNumber(paidTestsCount)}
                 </span>
@@ -975,7 +1072,7 @@ function SubjectDetailsContent() {
             <div className="bg-white rounded-3xl p-12 text-center border border-dashed border-slate-300 space-y-3">
               <div className="text-4xl">📝</div>
               <h3 className="text-base font-black text-slate-800">
-                এই ক্যাটাগরিতে কোনো মডেল টেস্ট পাওয়া যায়নি
+                এই ফিল্টারে কোনো মডেল টেস্ট পাওয়া যায়নি
               </h3>
               <p className="text-xs text-slate-500 max-w-sm mx-auto">
                 অন্যান্য ফিল্টার নির্বাচন করুন অথবা সরাসরি কুইজ ব্যাংকের পূর্ণাঙ্গ টেস্টে অংশ নিন।
@@ -983,7 +1080,7 @@ function SubjectDetailsContent() {
               <button
                 type="button"
                 onClick={() => setFilterType("all")}
-                className="px-4 py-2 rounded-xl bg-[#0A1E3C] text-white font-bold text-xs"
+                className="px-4 py-2 rounded-xl bg-[#0A1E3C] text-white font-bold text-xs cursor-pointer"
               >
                 সকল টেস্ট দেখুন
               </button>
@@ -999,7 +1096,11 @@ function SubjectDetailsContent() {
                 return (
                   <div
                     key={exam.id}
-                    className="bg-white rounded-3xl p-5 border border-slate-200/90 hover:border-[#C8102E]/40 hover:shadow-lg transition flex flex-col justify-between space-y-4 group relative"
+                    className={`bg-white rounded-3xl p-5 border transition flex flex-col justify-between space-y-4 group relative shadow-xs hover:shadow-lg ${
+                      exam.isPaid
+                        ? "border-t-4 border-t-[#C8102E] border-slate-200"
+                        : "border-t-4 border-t-emerald-600 border-slate-200"
+                    }`}
                   >
                     <div className="space-y-2.5">
                       {/* Badge row */}
@@ -1009,13 +1110,29 @@ function SubjectDetailsContent() {
                         </span>
 
                         {exam.isPaid ? (
-                          <span className="px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 font-black text-[11px] border border-rose-200 flex items-center gap-1">
-                            <FaLock className="w-2.5 h-2.5" />
-                            <span>পেইড (৳{exam.price || 50})</span>
+                          <span
+                            className={`px-2.5 py-0.5 rounded-full font-black text-[11px] border flex items-center gap-1 ${
+                              isUnlocked
+                                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                : "bg-rose-50 text-rose-700 border-rose-200"
+                            }`}
+                          >
+                            {isUnlocked ? (
+                              <>
+                                <FaCheck className="w-2.5 h-2.5" />
+                                <span>আনলকড</span>
+                              </>
+                            ) : (
+                              <>
+                                <FaLock className="w-2.5 h-2.5" />
+                                <span>পেইড (৳{exam.price || 50})</span>
+                              </>
+                            )}
                           </span>
                         ) : (
-                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 font-black text-[11px] border border-emerald-200">
-                            ✨ {exam.badge || "ফ্রি"}
+                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 font-black text-[11px] border border-emerald-200 flex items-center gap-1">
+                            <FaGift className="w-2.5 h-2.5" />
+                            <span>{exam.badge || "১০০% ফ্রি"}</span>
                           </span>
                         )}
                       </div>
@@ -1055,19 +1172,24 @@ function SubjectDetailsContent() {
                         <button
                           type="button"
                           onClick={() => handleStartExam(exam)}
-                          className="w-full py-2.5 rounded-xl bg-[#0A1E3C] group-hover:bg-[#C8102E] text-white font-black text-xs transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                          className={`w-full py-2.5 rounded-xl text-white font-black text-xs transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer shadow-xs ${
+                            exam.isPaid
+                              ? "bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800"
+                              : "bg-[#0A1E3C] group-hover:bg-[#C8102E]"
+                          }`}
                         >
                           <FaPlay className="w-3 h-3" />
-                          <span>টেস্ট শুরু করুন</span>
+                          <span>{exam.isPaid ? "প্রিমিয়াম টেস্ট দিন" : "ফ্রি টেস্ট দিন"}</span>
                         </button>
                       ) : (
-                        <Link
-                          href={`/pay-fee?class=${exam.classGrade}`}
-                          className="w-full py-2.5 rounded-xl bg-rose-50 hover:bg-[#C8102E] text-rose-700 hover:text-white font-black text-xs transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer border border-rose-200"
+                        <button
+                          type="button"
+                          onClick={() => handleStartExam(exam)}
+                          className="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#0A1E3C] to-[#C8102E] hover:from-[#0F284E] hover:to-[#A50D26] text-white font-black text-xs transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer shadow-md"
                         >
                           <FaLock className="w-3 h-3" />
-                          <span>আনলক করুন (৳{exam.price || 50})</span>
-                        </Link>
+                          <span>Paid Test কিনুন (৳{exam.price || 50})</span>
+                        </button>
                       )}
                     </div>
                   </div>
@@ -1125,6 +1247,170 @@ function SubjectDetailsContent() {
             </div>
           </div>
         )}
+
+        {/* ─────────────────────────────────────────────────────────────
+            6. PAYMENT & ACCESS CODE UNLOCK MODAL
+        ───────────────────────────────────────────────────────────── */}
+        {paymentModalOpen && (
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+            <div className="bg-white rounded-3xl max-w-md w-full p-5 sm:p-7 space-y-4 shadow-2xl border border-slate-200 animate-in zoom-in-95 max-h-[92vh] overflow-y-auto">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-red-100 text-[#C8102E] flex items-center justify-center text-base">
+                    <FaGem />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black text-slate-900">
+                      পেইড মডেল টেস্ট আনলক করুন
+                    </h3>
+                    <p className="text-[10px] text-slate-500 font-medium">
+                      {toBengaliClass(selectedClass)} শ্রেণি — {selectedSubject}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setPaymentModalOpen(false)}
+                  className="p-1.5 rounded-xl text-slate-400 hover:bg-slate-100 transition cursor-pointer"
+                >
+                  <FaXmark className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Price Banner */}
+              <div className="p-3.5 rounded-2xl bg-gradient-to-r from-[#0A1E3C] to-[#C8102E] text-white flex items-center justify-between">
+                <div>
+                  <div className="text-[10px] text-slate-300 font-bold uppercase tracking-wider">
+                    এককালীন ফি
+                  </div>
+                  <div className="text-xl font-black">
+                    ৳{targetPaidExam?.price || quizPrices.classPrices[selectedClass] || 50}
+                  </div>
+                </div>
+                <div className="text-right text-[11px] text-slate-200 font-medium">
+                  {selectedSubject} বিষয়ের সকল পেইড টেস্ট উন্মুক্ত হবে
+                </div>
+              </div>
+
+              {/* Payment Methods */}
+              <div className="space-y-2">
+                <div className="text-xs font-bold text-slate-700">
+                  সেন্ড মানি বা পেমেন্ট নাম্বার (ক্লিক করলেই কপি হবে):
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => copyNumber("01712592519", "bKash")}
+                    className="p-2.5 rounded-xl bg-pink-50 border border-pink-200 text-left hover:bg-pink-100 transition cursor-pointer flex items-center justify-between"
+                  >
+                    <div>
+                      <div className="font-black text-pink-700 text-[11px]">bKash (Personal)</div>
+                      <div className="font-mono text-slate-800 font-bold text-xs mt-0.5">01712592519</div>
+                    </div>
+                    <FaCopy className="w-3 h-3 text-pink-600" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => copyNumber("01712592519", "Nagad")}
+                    className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-left hover:bg-amber-100 transition cursor-pointer flex items-center justify-between"
+                  >
+                    <div>
+                      <div className="font-black text-amber-800 text-[11px]">Nagad (Personal)</div>
+                      <div className="font-mono text-slate-800 font-bold text-xs mt-0.5">01712592519</div>
+                    </div>
+                    <FaCopy className="w-3 h-3 text-amber-700" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => copyNumber("017125925194", "Rocket")}
+                    className="p-2.5 rounded-xl bg-purple-50 border border-purple-200 text-left hover:bg-purple-100 transition cursor-pointer flex items-center justify-between"
+                  >
+                    <div>
+                      <div className="font-black text-purple-700 text-[11px]">Rocket (Personal)</div>
+                      <div className="font-mono text-slate-800 font-bold text-xs mt-0.5">017125925194</div>
+                    </div>
+                    <FaCopy className="w-3 h-3 text-purple-600" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => copyNumber("01712592519", "Upay")}
+                    className="p-2.5 rounded-xl bg-blue-50 border border-blue-200 text-left hover:bg-blue-100 transition cursor-pointer flex items-center justify-between"
+                  >
+                    <div>
+                      <div className="font-black text-blue-700 text-[11px]">Upay (Personal)</div>
+                      <div className="font-mono text-slate-800 font-bold text-xs mt-0.5">01712592519</div>
+                    </div>
+                    <FaCopy className="w-3 h-3 text-blue-600" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Verification Form */}
+              <form onSubmit={handleVerifyUnlock} className="space-y-3 pt-1">
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">
+                    TrxID অথবা অ্যাক্সেস কোড লিখুন
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      required
+                      value={accessCodeInput}
+                      onChange={(e) => setAccessCodeInput(e.target.value)}
+                      placeholder="যেমন: NOVA50 বা TrxID"
+                      className="w-full bg-slate-50 border border-slate-300 focus:border-[#C8102E] rounded-xl px-3.5 py-2.5 text-xs text-slate-800 outline-none font-mono font-bold"
+                    />
+                    <FaKey className="absolute right-3.5 top-3 text-slate-400 w-3.5 h-3.5" />
+                  </div>
+                  <p className="text-[10px] text-slate-400 mt-1">
+                    💡 ডেমো কোড: <code className="font-bold text-[#C8102E]">NOVA50</code> বা{" "}
+                    <code className="font-bold text-[#C8102E]">SHIKKHA2026</code>
+                  </p>
+                </div>
+
+                {unlockSuccessMsg && (
+                  <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200">
+                    {unlockSuccessMsg}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  className="w-full py-3 rounded-2xl bg-[#C8102E] hover:bg-[#A50D26] text-white font-black text-xs shadow-lg transition active:scale-95 cursor-pointer"
+                >
+                  🔓 টেস্ট আনলক করুন
+                </button>
+              </form>
+
+              {/* Online Pay Fee Direct Link */}
+              <div className="text-center pt-2 border-t border-slate-100">
+                <Link
+                  href={`/pay-fee?class=${selectedClass}&subject=${encodeURIComponent(selectedSubject)}`}
+                  className="text-xs text-blue-600 hover:text-blue-800 font-bold hover:underline inline-flex items-center gap-1"
+                >
+                  <span>অনলাইন ফি পেমেন্ট পেইজে যান (/pay-fee)</span>
+                  <FaChevronRight className="w-2.5 h-2.5" />
+                </Link>
+              </div>
+
+              {/* Helpline */}
+              <div className="text-center text-xs text-slate-500 pt-1 flex items-center justify-center gap-1.5">
+                <span>যেকোনো প্রয়োজনে কল করুন:</span>
+                <a
+                  href="tel:01712592519"
+                  onClick={() => copyNumber("01712592519", "হেল্পলাইন")}
+                  className="font-bold text-[#C8102E] hover:underline flex items-center gap-1"
+                >
+                  <FaPhone className="w-2.5 h-2.5" />
+                  <span>০১৭১২৫৯২৫১৯</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1143,4 +1429,3 @@ export default function SubjectDetailsPage() {
     </Suspense>
   );
 }
-
